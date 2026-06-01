@@ -16,3 +16,5 @@ filename = sys.argv[1]
 rootgrp  = Dataset(filename)
 
 print(rootgrp)
+
+rootgrp.close()
