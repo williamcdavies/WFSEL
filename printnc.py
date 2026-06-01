@@ -13,6 +13,6 @@ import sys
 from netCDF4 import Dataset
 
 filename = sys.argv[1]
-dataset  = Dataset(filename)
+rootgrp  = Dataset(filename)
 
-print(dataset)
+print(rootgrp)
