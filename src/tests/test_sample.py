@@ -1,5 +1,5 @@
-def func(x: int) -> int:
-    return x + 1
+def foo(x: int) -> int:
+    return x
 
-def test_func():
-    assert func(1) == 2
+def test_foo():
+    assert foo(1) == 1
