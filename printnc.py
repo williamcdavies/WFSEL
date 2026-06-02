@@ -1,5 +1,5 @@
 """
-printnc.py is a utility program that prints *.nc metadata to sys.stdout.
+printnc.py is a utility program that prints netCDF metadata to sys.stdout.
 
 Usage: python printnc.py <file>
 
