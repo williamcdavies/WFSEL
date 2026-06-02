@@ -4,3 +4,4 @@ pylint  >= 4.0.5
 
 # Specific
 netCDF4 >= 1.7.4
+pyshp   >= 3.0.9
