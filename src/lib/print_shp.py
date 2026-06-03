@@ -1,16 +1,16 @@
 r"""
-printshp.py
+print_shp.py
 
 Description:
     The purpose of this prorgam is to print Shapefile metadata to
     `sys.stdout`.
 
 Usage: 
-    python printshp.py <shp_path>
+    python print_shp.py <shp_path>
 
 Example:
     ```sh
-    $ python src/lib/printshp.py /Users/williamchuter-davies/Downloads/WFEL/ESA/lakes_cci_v2.1.0_shp/lakescci_v2.1.0_data-availability.shp
+    $ python src/lib/print_shp.py /Users/williamchuter-davies/Downloads/WFEL/ESA/lakes_cci_v2.1.0_shp/lakescci_v2.1.0_data-availability.shp
                 id    short_name              name lat_centre  ... lic_data lwlr_data  type                                           geometry
     0             2  GLWD00000002          Superior    47,9625  ...        0         0  Lake  MULTIPOLYGON (((-92.27778 46.65417, -92.27223 ...
     1             3  GLWD00000003          Victoria    -0,8764  ...        0         0  Lake  MULTIPOLYGON (((31.6986 -0.85555, 31.6986 -0.8...
@@ -30,6 +30,7 @@ Example:
 Written by William Chuter-Davies
 """
 
+
 # Standard Library Imports
 import sys
 
@@ -37,6 +38,7 @@ from pathlib import Path
 
 # Third-Party Imports
 import geopandas
+
 
 # Read `sys.argv[1]` into `shp_path`
 shp_path = Path(sys.argv[1])
