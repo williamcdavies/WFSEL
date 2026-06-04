@@ -54,25 +54,48 @@ Written by William Chuter-Davies
 
 
 # Standard Library Imports
+import pathlib
 import sys
 
-from pathlib import Path
-
-# Third-Party Imports
+# Related Third-party Imports
 import xarray
 
 
-# Read `sys.argv[1]` into `nc_path`
-nc_path = Path(sys.argv[1])
+# Global Definitions
+RETURN_SUCCESS = 0
+RETURN_FAILURE = 1
 
-# Assert `nc_path.exists()`
-assert nc_path.exists()
 
-# Read `nc_path` into Dataset
-ds = xarray.open_dataset(nc_path)
+def main() -> int:
+    # If argument count is not equal to 2, return with `RETURN_FAILURE`
+    if len(sys.argv) != 2:
+        print(f"fatal: unexpected argument count: {sys.argv}")
+        
+        return RETURN_FAILURE
+    
+	# Read `sys.argv[1]` into `nc_path`
+    nc_path = pathlib.Path(sys.argv[1])
 
-# Print Dataset
-print(ds)
+    # If `nc_path` does not exist, return with `RETURN_FAILURE`
+    if not nc_path.exists():
+        print(f"fatal: no such file or directory: {sys.argv[1]}")
 
-# Close Dataset
-ds.close()
+        return RETURN_FAILURE
+    
+    # Attempt to ...
+    try:
+        # ... open Dataset specified by `nc_path`
+        with xarray.open_dataset(nc_path) as xds:
+            # Print `xds` to `sys.stdout`
+            print(xds)
+    # On exception, return with `RETURN_FAILURE`
+    except Exception as e:
+        print(f"fatal: exception: {e}")
+        
+        return RETURN_FAILURE
+
+    return RETURN_SUCCESS
+
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -32,22 +32,49 @@ Written by William Chuter-Davies
 
 
 # Standard Library Imports
+import pathlib
 import sys
 
-from pathlib import Path
-
-# Third-Party Imports
+# Related Third-party Imports
 import geopandas
 
 
-# Read `sys.argv[1]` into `shp_path`
-shp_path = Path(sys.argv[1])
+# Global Definitions
+RETURN_SUCCESS = 0
+RETURN_FAILURE = 1
 
-# Assert `shp_path.exists()`
-assert shp_path.exists()
 
-# Read `shp_path` into GeoDataFrame
-gdf = geopandas.read_file(shp_path)
+def main() -> int:
+    # If argument count is not equal to 2, return with `RETURN_FAILURE`
+    if len(sys.argv) != 2:
+        print(f"fatal: unexpected argument count: {sys.argv}")
+        
+        return RETURN_FAILURE
+    
+    # Read `sys.argv[1]` into `shp_path`
+    shp_path = pathlib.Path(sys.argv[1])
 
-# Print GeoDataFrame
-print(gdf)
+    # If `shp_path` does not exist, return with `RETURN_FAILURE`
+    if not shp_path.exists():
+        print(f"fatal: no such file or directory: {sys.argv[1]}")
+
+        return RETURN_FAILURE
+    
+    # Attempt to ...
+    try:
+        # ... open GeoDataFrame specified by `shp_path`
+        gdf = geopandas.read_file(shp_path)
+    # On exception, return with `RETURN_FAILURE`
+    except Exception as e:
+        print(f"fatal: exception: {e}")
+        
+        return RETURN_FAILURE
+    
+    # Print `gdf` to `sys.stdout`
+    print(gdf)
+
+    return RETURN_SUCCESS
+
+
+if __name__ == '__main__':
+    sys.exit(main())
