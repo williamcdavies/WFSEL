@@ -33,42 +33,69 @@ def get_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry,
     Parameters
     ----------
     geometry   : :class:`shapely.geometry.base.BaseGeometry`
-        Geometry
+        The geometry
     resolution : :class:`fractions.Fraction`
-        Spatial resolution
+        The spatial resolution
 
     Returns
     -------
     geometry_mask : :class:`numpy.ndarray`
-        2D boolean mask
+        A 2D boolean mask
     transform     : :class:`affine.Affine`
-        Affine transform mapping array coordinates to world coordinates
+        An Affine transform mapping array coordinates to world
+        coordinates
     
     Raises
     ------
     ValueError :
-        If geometry is empty or if it produces a zero-width or
-        zero-height raster at the specified resolution.
+        If geometry is empty or produces zero-width or zero-height
+        raster at the specified resolution.
+
+    Notes
+    -----
+    geometry_mask is inverted. 
     """
     if geometry.is_empty: 
-        raise ValueError("cannot create geometry mask from empty geometry")
+        raise ValueError('geometry must not be empty')
+    
+    if resolution == 0: 
+        raise ValueError('resolution must not be zero')
 
     minx, miny, maxx, maxy = geometry.bounds
     width                  = math.ceil((maxx - minx) / resolution)
     height                 = math.ceil((maxy - miny) / resolution)
 
     if width == 0 or height == 0:
-        raise ValueError("geometry produces zero-width or zero-height raster at this resolution")
+        raise ValueError(f'geometry produces zero-width or zero-height raster at specified resolution: resolution={resolution}')
 
-    transform              = rasterio.transform.from_bounds(minx, 
-                                                            miny, 
-                                                            maxx, 
-                                                            maxy, 
-                                                            width, 
-                                                            height)
-    geometry_mask          = rasterio.features.geometry_mask([geometry], 
-                                                             (height, width), 
-                                                             transform, 
-                                                             invert=True)
+    transform     = rasterio.transform.from_bounds(minx, 
+                                                   miny, 
+                                                   maxx, 
+                                                   maxy, 
+                                                   width, 
+                                                   height)
+    geometry_mask = rasterio.features.geometry_mask([geometry], 
+                                                    (height, width), 
+                                                    transform, 
+                                                    invert=True)
     
     return geometry_mask, transform
+
+
+def save_geometry_mask(geometry_mask: numpy.ndarray, 
+                       transform:     affine.Affine, 
+                       path:          pathlib.Path) -> None:
+    geometry_mask = geometry_mask.astype(numpy.uint8)
+    height, width = geometry_mask.shape
+
+    with rasterio.open(path,
+                       'w', 
+                       driver='GTiff', 
+                       height=height, 
+                       width=width, 
+                       count=1, 
+                       dtype=geometry_mask.dtype, 
+                       crs='EPSG:4326', 
+                       transform=transform) as ds:
+        ds.write(geometry_mask, 
+                 1)
