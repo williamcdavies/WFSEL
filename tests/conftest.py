@@ -16,4 +16,5 @@ def sample_geometry():
 
 @pytest.fixture
 def sample_resolution():
-    return fractions.Fraction(1, 2)
+    return fractions.Fraction(1, 
+                              2)
