@@ -1,5 +1,5 @@
 # WFSEL
-General repository for the Wildfire Engineering Laboratory @ Universtiy of Nevada, Reno
+General repository for the Wildfire Science & Engineering Laboratory @ the Universtiy of Nevada, Reno
 
 ## 1.0
 
