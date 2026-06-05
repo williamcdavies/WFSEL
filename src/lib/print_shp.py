@@ -47,7 +47,7 @@ RETURN_FAILURE = 1
 def main() -> int:
     # If argument count is not equal to 2, return with `RETURN_FAILURE`
     if len(sys.argv) != 2:
-        print(f"fatal: unexpected argument count: {sys.argv}")
+        print(f'fatal: unexpected argument count: {sys.argv}')
         
         return RETURN_FAILURE
     
@@ -56,7 +56,7 @@ def main() -> int:
 
     # If `shp_path` does not exist, return with `RETURN_FAILURE`
     if not shp_path.exists():
-        print(f"fatal: no such file or directory: {sys.argv[1]}")
+        print(f'fatal: no such file or directory: {sys.argv[1]}')
 
         return RETURN_FAILURE
     
@@ -66,7 +66,7 @@ def main() -> int:
         gdf = geopandas.read_file(shp_path)
     # On exception, return with `RETURN_FAILURE`
     except Exception as e:
-        print(f"fatal: exception: {e}")
+        print(f'fatal: exception: {e}')
         
         return RETURN_FAILURE
     

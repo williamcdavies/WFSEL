@@ -69,7 +69,7 @@ RETURN_FAILURE = 1
 def main() -> int:
     # If argument count is not equal to 2, return with `RETURN_FAILURE`
     if len(sys.argv) != 2:
-        print(f"fatal: unexpected argument count: {sys.argv}")
+        print(f'fatal: unexpected argument count: {sys.argv}')
         
         return RETURN_FAILURE
     
@@ -78,19 +78,19 @@ def main() -> int:
 
     # If `nc_path` does not exist, return with `RETURN_FAILURE`
     if not nc_path.exists():
-        print(f"fatal: no such file or directory: {sys.argv[1]}")
+        print(f'fatal: no such file or directory: {sys.argv[1]}')
 
         return RETURN_FAILURE
     
     # Attempt to ...
     try:
         # ... open Dataset specified by `nc_path`
-        with xarray.open_dataset(nc_path) as xds:
+        with xarray.open_dataset(nc_path) as ds:
             # Print `xds` to `sys.stdout`
-            print(xds)
+            print(ds)
     # On exception, return with `RETURN_FAILURE`
     except Exception as e:
-        print(f"fatal: exception: {e}")
+        print(f'fatal: exception: {e}')
         
         return RETURN_FAILURE
 
