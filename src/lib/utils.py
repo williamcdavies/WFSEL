@@ -42,7 +42,7 @@ def get_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry,
     geometry_mask : :class:`numpy.ndarray`
         A 2D boolean mask
     transform     : :class:`affine.Affine`
-        An Affine transform mapping array coordinates to world
+        A transform mapping array coordinates to world
         coordinates
     
     Raises
@@ -82,9 +82,29 @@ def get_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry,
     return geometry_mask, transform
 
 
-def save_geometry_mask(geometry_mask: numpy.ndarray, 
-                       transform:     affine.Affine, 
-                       path:          pathlib.Path) -> None:
+def write_geometry_mask(geometry_mask: numpy.ndarray, 
+                        transform:     affine.Affine, 
+                        path:          pathlib.Path) -> None:
+    """
+    Writes a 2D boolean mask to a GeoTIFF file.
+
+    Parameters
+    ----------
+    geometry_mask : :class:`numpy.ndarray`
+        The 2D boolean mask
+    transform     : :class:`affine.Affine`
+        The transform mapping array coordinates to world coordinates
+    path          : :class:`pathlib.Path`
+        The path
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    CRS is set to EPSG:4326. 
+    """
     geometry_mask = geometry_mask.astype(numpy.uint8)
     height, width = geometry_mask.shape
 
