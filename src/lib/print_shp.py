@@ -62,7 +62,7 @@ def main() -> int:
     
     # Attempt to ...
     try:
-        # ... open GeoDataFrame specified by `shp_path`
+        # Open GeoDataFrame specified by `shp_path`
         gdf = geopandas.read_file(shp_path)
     # On exception, return with `RETURN_FAILURE`
     except Exception as e:

@@ -84,7 +84,7 @@ def main() -> int:
     
     # Attempt to ...
     try:
-        # ... open Dataset specified by `nc_path`
+        # Open Dataset specified by `nc_path`
         with xarray.open_dataset(nc_path) as ds:
             # Print `xds` to `sys.stdout`
             print(ds)
