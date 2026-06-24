@@ -8,12 +8,17 @@ Description:
     system (CRS) and spatial resolution.
 
 Usage: 
-    python get_and_write_geometry_masks.py <src_path> <dst_path>
+    python get_and_write_geometry_masks.py <shp_path> <dst_path>
 
 Example:
     ```sh
-    python get_and_write_geometry_masks.py ~/Downloads/WFSEL/ESA/lakes_cci_v2.1.0_shp/lakescci_v2.1.0_data-availability.shp ~/Downloads/WFSEL/ESA/masks
+    python get_and_write_geometry_masks.py ~/Downloads/WFSEL/ESA/lakes_cci_v2.1.0_shp ~/Downloads/WFSEL/ESA/masks
     ```
+
+Notes:
+    If the Shapefile has no assigned CRS, EPSG:4326 will be assigned. If
+    the Shapefile has an assigned CRS, it will be projected into
+    EPSG:4326.
 
 Written by William Chuter-Davies
 """
@@ -43,26 +48,25 @@ def main() -> int:
         
         return RETURN_FAILURE
 
-    # Read `sys.argv[1]` into `src_path`
-    src_path = pathlib.Path(sys.argv[1])
-    dst_path = pathlib.Path(sys.argv[2])
-    
-    # If `src_path` does not exist, return with `RETURN_FAILURE`
-    if not src_path.exists():
-        print(f'fatal: no such file or directory: {sys.argv[1]}')
+    # For each path in `sys.argv` build corresponding Path and read into
+    # `paths`
+    paths = [pathlib.Path(p) for p in sys.argv[1:3]]
+   
+    # For each path in `paths` ...
+    for path in paths:
+        # If path does not exist, return with `RETURN_FAILURE`
+        if not path.exists():
+            print(f'fatal: no such file or directory: {path}')
+         
+            return RETURN_FAILURE
 
-        return RETURN_FAILURE
-    
-    # If `dst_path` does not exist, return with `RETURN_FAILURE`
-    if not dst_path.exists():
-        print(f'fatal: no such file or directory: {sys.argv[2]}')
-
-        return RETURN_FAILURE
+    # Read `paths` into `shp_path` and `dst_path`
+    shp_path, dst_path = paths
 
     # Attempt to ...
     try:
-        # ... open GeoDataFrame specified by `shp_path`
-        gdf = geopandas.read_file(src_path)
+        # Open GeoDataFrame specified by `shp_path`
+        gdf = geopandas.read_file(shp_path)
     # On exception, return with `RETURN_FAILURE`
     except Exception as e:
         print(f'fatal: exception: {e}')
@@ -84,17 +88,17 @@ def main() -> int:
 
         return RETURN_FAILURE
 
-    # For each row in gdf ...
+    # For each row in `gdf` ...
     for _, data in gdf.iterrows():
-        # ... compute geometry_mask and transform
+        # Build `geometry_mask` and `transform` from `data`
         geometry_mask, transform = get_geometry_mask(data[active_geometry_name], 
                                                      fractions.Fraction(1, 
                                                                         120))
         
-        # ... write geometry_mask and transform
+        # Write `geometry_mask` and `transform` to `dst_path`
         write_geometry_mask(geometry_mask, 
                             transform, 
-                            dst_path / f'{data['id']}.TIFF')
+                            dst_path / f'{data['id']}.tif')
     
     return RETURN_SUCCESS
 
