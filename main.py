@@ -4,11 +4,12 @@ __main__.py
 Description: 
 
 Usage:
-   python __main__.py <lakes_cci_merg_prod_nc_path> <lakes_cci_stat_mask_nc_path> <csv_path> <dst_path>
+   python __main__.py <lakes_cci_merg_prod_nc_path>
+   <lakes_cci_stat_mask_nc_path> <csv_path> <dst_path>
 
 Example:
    ```sh
-   ``
+   `` 
 
 Written by William Chuter-Davies
 """
@@ -68,15 +69,15 @@ def main() -> int:
          csv = pandas.read_csv(csv_path, delimiter=';')
 
          # For each row in `csv` ...
-         for _, csv_data in csv.iterrows():
+         for row in csv.itertuples():
             # Read identity and boundary data into `lakes_cci_id`,
             # `lakes_cci_lat_min_box`, `lakes_cci_lat_max_box`,
             # `lakes_cci_lon_min_box`, and `lakes_cci_lon_max_box`
-            lakes_cci_id          = csv_data['id']
-            lakes_cci_lat_min_box = csv_data['lat_min_box']
-            lakes_cci_lat_max_box = csv_data['lat_max_box']
-            lakes_cci_lon_min_box = csv_data['lon_min_box']
-            lakes_cci_lon_max_box = csv_data['lon_max_box']
+            lakes_cci_id          = row.id
+            lakes_cci_lat_min_box = row.lat_min_box
+            lakes_cci_lat_max_box = row.lat_max_box
+            lakes_cci_lon_min_box = row.lon_min_box
+            lakes_cci_lon_max_box = row.lon_max_box
 
             print(f'Building record for lake: {lakes_cci_id}... ', end='', flush=True)
 
@@ -100,7 +101,14 @@ def main() -> int:
 
             # For each data variable in `clipped_merg_prod_ds.data_vars` ...
             # for data_var in clipped_merg_prod_ds.data_vars:
-            for data_var in ['chla']:
+            for data_var in ['chla', 
+                             'tsm', 
+                             'acdom440', 
+                             'Kd490', 
+                             'KdPAR', 
+                             'phycocyanin', 
+                             'lake_surface_water_temperature', 
+                             'lake_surface_water_extent']:
                # Read data variable values into `data_var_values`
                data_var_values = clipped_merg_prod_ds[data_var].values
 

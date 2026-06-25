@@ -2,8 +2,8 @@ r"""
 utils.py
 
 Description: 
-   The purpose of this file is to provide definitions for utility and
-   utility-like functions.
+   The purpose of this file is to provide definitions for geo-utility
+   functions.
 
 Written by William Chuter-Davies
 """
@@ -23,8 +23,8 @@ import rasterio.transform
 import shapely
 
 
-def get_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry, 
-                      resolution: fractions.Fraction) -> tuple[numpy.ndarray, affine.Affine]:
+def create_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry, 
+                         resolution: fractions.Fraction) -> tuple[numpy.ndarray, affine.Affine]:
     """
     Create a 2D boolean mask of a
     :class:`shapely.geometry.base.BaseGeometry` at a specified spatial
@@ -39,11 +39,10 @@ def get_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry,
 
     Returns
     -------
-    geometry_mask : :class:`numpy.ndarray`
+    mask      : :class:`numpy.ndarray`
         A 2D boolean mask
-    transform     : :class:`affine.Affine`
-        A transform mapping array coordinates to world
-        coordinates
+    transform : :class:`affine.Affine`
+        A transform mapping array coordinates to world coordinates
     
     Raises
     ------
@@ -53,7 +52,7 @@ def get_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry,
 
     Notes
     -----
-    geometry_mask is inverted. 
+    mask is inverted. 
     """
     if geometry.is_empty: 
         raise ValueError('geometry must not be empty')
@@ -69,32 +68,32 @@ def get_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry,
         raise ValueError(f'geometry produces zero-width or zero-height raster at specified resolution: resolution={resolution}')
 
     transform     = rasterio.transform.from_bounds(minx, 
-                                                   miny, 
-                                                   maxx, 
-                                                   maxy, 
-                                                   width, 
-                                                   height)
+                                               miny, 
+                                               maxx, 
+                                               maxy, 
+                                               width, 
+                                               height)
     geometry_mask = rasterio.features.geometry_mask([geometry], 
-                                                    (height, width), 
-                                                    transform, 
-                                                    invert=True)
+                                                (height, width), 
+                                                transform, 
+                                                invert=True)
     
     return geometry_mask, transform
 
 
-def write_geometry_mask(geometry_mask: numpy.ndarray, 
-                        transform:     affine.Affine, 
-                        path:          pathlib.Path) -> None:
+def write_geometry_mask(geometry_mask:      numpy.ndarray, 
+                        transform: affine.Affine, 
+                        path:      pathlib.Path) -> None:
     """
     Writes a 2D boolean mask to a GeoTIFF file.
 
     Parameters
     ----------
-    geometry_mask : :class:`numpy.ndarray`
+    mask      : :class:`numpy.ndarray`
         The 2D boolean mask
-    transform     : :class:`affine.Affine`
+    transform : :class:`affine.Affine`
         The transform mapping array coordinates to world coordinates
-    path          : :class:`pathlib.Path`
+    path      : :class:`pathlib.Path`
         The path
 
     Returns
@@ -103,7 +102,7 @@ def write_geometry_mask(geometry_mask: numpy.ndarray,
 
     Notes
     -----
-    CRS is set to EPSG:4326. 
+    CRS set to EPSG:4326. 
     """
     geometry_mask = geometry_mask.astype(numpy.uint8)
     height, width = geometry_mask.shape
