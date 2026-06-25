@@ -1,10 +1,10 @@
 r"""
-__main__.py
+main.py
 
 Description: 
 
 Usage:
-   python __main__.py <lakes_cci_merg_prod_nc_path>
+   python main.py <lakes_cci_merg_prod_nc_path>
    <lakes_cci_stat_mask_nc_path> <csv_path> <dst_path>
 
 Example:
@@ -23,6 +23,7 @@ import warnings
 # Related Third-party Imports
 import numpy
 import pandas
+import tqdm
 import xarray
 
 
@@ -69,7 +70,7 @@ def main() -> int:
          csv = pandas.read_csv(csv_path, delimiter=';')
 
          # For each row in `csv` ...
-         for row in csv.itertuples():
+         for row in tqdm.tqdm(csv.itertuples(), total=len(csv)):
             # Read identity and boundary data into `lakes_cci_id`,
             # `lakes_cci_lat_min_box`, `lakes_cci_lat_max_box`,
             # `lakes_cci_lon_min_box`, and `lakes_cci_lon_max_box`
@@ -78,8 +79,6 @@ def main() -> int:
             lakes_cci_lat_max_box = row.lat_max_box
             lakes_cci_lon_min_box = row.lon_min_box
             lakes_cci_lon_max_box = row.lon_max_box
-
-            print(f'Building record for lake: {lakes_cci_id}... ', end='', flush=True)
 
             # Clip `merg_prod_ds` to boundary extent
             clipped_merg_prod_ds = merg_prod_ds.sel(lat=slice(lakes_cci_lat_min_box, 
@@ -130,8 +129,6 @@ def main() -> int:
                })
 
             records.append(record)
-
-            print('done')
 
    # On exception, return with `RETURN_FAILURE`
    except Exception as e:
