@@ -2,6 +2,14 @@ r"""
 main.py
 
 Description: 
+   The purpose of main.py is to produce a .csv file containing mean,
+   median, variance, maximum, and minimum values for each Lakes ECVs in
+   `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin',
+   'lake_surface_water_temperature', 'lake_surface_water_extent']` for
+   each lake within the candidate set given an ESA Lakes_cci v3.0
+   dataset, ESA_CCI_static_lake_mask.nc, lakescci_v2.1_metadata.csv, and
+   an output destination.
+
 
 Usage:
    python main.py <lakes_cci_merg_prod_nc_path>
