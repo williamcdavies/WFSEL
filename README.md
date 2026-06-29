@@ -1,8 +1,3 @@
-# WFSEL
-General repository for the Wildfire Science & Engineering Laboratory @ the Universtiy of Nevada, Reno
-
-## 1.0
-
 ## Introduction
 
 ### Scope
@@ -34,25 +29,21 @@ The project repository can be found [here](https://github.com/williamcdavies/WFS
 ### main.py
 
 #### Description
-The purpose of main.py is to produce a .csv file containing mean, median, variance, maximum, and minimum values for each Lakes ECVs in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']` for each lake within the candidate set given an ESA Lakes_cci v3.0 dataset, ESA_CCI_static_lake_mask.nc, lakescci_v2.1_metadata.csv, and an output destination.
+The purpose of main.py is to produce a .csv file containing mean, median, variance, maximum, and minimum values for each Lakes ECV in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']` for each lake within the candidate set given an ESA Lakes_cci v3.0 dataset, ESA_CCI_static_lake_mask.nc, lakescci_v2.1_metadata.csv, and an output destination.
 
 #### Strategy
-The program strategy is as follows:
-1. Open the ESA_CCI_static_lake_mask.nc DataSet 
-2. Open the ESA Lakes CCI v3.0 DataSet
-3. Load the lakescci_v2.1_metadata.csv file into memory
-4. For each lake in the candidate set:
-    1. Create a record containing the lake `id`
-    2. Read `lat_max_box`, `lat_min_box`, `lon_max_box`, and `lon_min_box` from `lakescci_v2.1_metadata.csv` to define the lake's bounding box
-    3. Clip the DataSets to the lake's bounding box
-    4. Load the clipped DataSets into memory
-    5. Create a geometry mask of the lake using the ESA_CCI_static_lake_mask DataSet and the lake `id`
-    6. For each Lakes ECV in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']`:
+1. Open the ESA Lakes CCI v3.0 dataset as an `xarray.DataSet`
+2. Open the ESA_CCI_static_lake_mask.nc dataset as an `xarray.DataSet `
+3. Open the lakescci_v2.1_metadata.csv file as a `pandas.DataFrame`
+4. For each row in lakescci_v2.1_metadata.csv:
+    1. Use `lat_max_box`, `lat_min_box`, `lon_max_box`, and `lon_min_box` to define the lake's bounding box
+    2. Clip the ESA Lakes CCI v3.0 DataSet to the lake's bounding box
+    3. Clip the ESA_CCI_static_lake_mask.nc DataSet to the lake's bounding box
+    4. Create a lake geometry mask using the ESA_CCI_static_lake_mask DataSet
+    5. For each Lakes ECV in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']`:
         1. Apply the geometry mask against the clipped Lakes CCI v3.0 DataSet to extract the Lakes ECV values within the lake
-        2. Read the extracted values into a `numpy.ndarray`
-        3. Calculate the `numpy.nanmean`, `numpy.nanmedian`, `numpy.nanvar`, `numpy.nanmax`, and `numpy.nanmin` of the array
-        4. Append these statistics to the record
-    7. Write the record to the output .csv file
+        2. Calculate the `numpy.nanmean`, `numpy.nanmedian`, `numpy.nanvar`, `numpy.nanmax`, and `numpy.nanmin` of the extracted values
+        3. Write the statistics to the output destination
 
 #### Input
 main.py takes four arguments:
@@ -90,3 +81,4 @@ main.py  depends upon `Python >= 3.14` and the following packages:
 
 > [!note]
 > This list specifies program dependencies for main.py. For a list of repository dependencies, see [pyproject.toml](https://github.com/williamcdavies/WFSEL/blob/main/pyproject.toml). For a complete list of repository dependencies and sub-dependencies, see [requirements.txt](https://github.com/williamcdavies/WFSEL/blob/main/requirements.txt).
+
