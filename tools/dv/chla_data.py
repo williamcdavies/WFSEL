@@ -35,28 +35,28 @@ csv_files = list(target_dir.glob('*.csv'))
 # > `pathlib.Path.glob()` with `pathlib.Path.rglob()`.
 
 sns.set_style()
-sns.set_palette('pastel')
 
-for i in range(0, 5):
-    data = []
+data = []
 
-    for csv_file in csv_files:
-        data.append(pd.read_csv(csv_file).at[i, 'chla_mean'])
+for csv_file in csv_files:
+    data.append(pd.read_csv(csv_file).at[0, 'chla_mean'])
 
-    x = np.arange(1, len(data) + 1)
-    y = np.array(data)
+x = np.arange(1, len(data) + 1)
+y = np.array(data)
 
-    b = np.isnan(y)
+b = np.isnan(y)
 
-    x_nonan = x[~b]
-    y_nonan = y[~b]
+x_nonan = x[~b]
+y_nonan = y[~b]
 
-    sns.regplot(x=x_nonan, 
-                y=y_nonan,
-                scatter=False,
-                order=2,
-                label=f'{i + 1}')
+sns.regplot(x=x_nonan, 
+            y=y_nonan,
+            order=2)
 
 plt.yscale('log')
-plt.legend()
+plt.xlim(1, 365)
+plt.ylim(0.01, 10)
+plt.xlabel('Day')
+plt.ylabel("Concentration of Chlorophyll-A (mg/m^3)")
+plt.title("Lake Superior: Mean Chlorophyll-A Measurements")
 plt.show()
