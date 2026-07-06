@@ -13,50 +13,88 @@ RETURN_SUCCESS = 0
 RETURN_FAILURE = 1
 
 
-# If argument count is not equal to 2, exit with `RETURN_FAILURE`
-if len(sys.argv) != 2:
+# If argument count is not equal to 3, exit with `RETURN_FAILURE`
+if len(sys.argv) != 3:
     print(f'fatal: unexpected argument count: {sys.argv}')
 
     sys.exit(RETURN_FAILURE)
 
-target_dir = pathlib.Path(sys.argv[1])
+# For each path in `sys.argv` create corresponding Path and read into
+# `paths`
+paths = [pathlib.Path(p) for p in sys.argv[1:]]
 
-# If `target_dir` does not exist, exit with `RETURN_FAILURE`
-if not target_dir.exists():
-    print(f'fatal: no such file or directory: {sys.argv[1]}')
+# For each path in `paths` ...
+for path in paths:
+    # If path does not exist, exit with `RETURN_FAILURE`
+    if not path.exists():
+        print(f'fatal: no such file or directory: {path}')
+        
+        sys.exit(RETURN_FAILURE)
 
-    sys.exit(RETURN_FAILURE)
+# Read `paths` into `target_dir`, `target_csv`
+target_dir, target_csv = paths
 
 csv_files = list(target_dir.glob('*.csv'))
 
 # > [!note]
-# > It is assumed that `target_dir` does not contain any subdirectories
-# > that would contain any target files. For this behaviour, replace
-# > `pathlib.Path.glob()` with `pathlib.Path.rglob()`.
+# > It is assumed that `target_dir` does not contain any
+# > subdirectories that would contain any target csvs.
+
+chla_mean_data = []
+
+# For each csv file in `csv_files`
+for csv_file in csv_files:
+    # Append the Lake Superior `chla_mean` value to `chla_mean_data`
+    chla_mean_data.append(pd.read_csv(csv_file)
+                .at[0, 
+                    'chla_mean'])
+    
+# > [!warning]
+# > `pandas.DataFrame.at` arguments should not be hard coded.
+
+chla_mean_x       = np.arange(1, 
+                              len(chla_mean_data) + 1)
+chla_mean_y       = np.array(chla_mean_data)
+chla_mean_b       = np.isnan(chla_mean_y)
+chla_mean_x_nonan = chla_mean_x[~chla_mean_b]
+chla_mean_y_nonan = chla_mean_y[~chla_mean_b]
+
+# > [!note] 
+# > `chla_mean_x` is 1-indexed to prevent misalignment between
+# > regression and histogram plots.
+
+smoke_data = (pd.read_csv(target_csv)
+              .drop_duplicates('day'))
+
+_, ax_regplot = plt.subplots()
+ax_histplot   = ax_regplot.twinx()
+
+sns.regplot(x=chla_mean_x_nonan,
+            y=chla_mean_y_nonan, 
+            ax=ax_regplot,
+            color='green')
+ax_regplot.set_xlim(1,
+                    len(chla_mean_data))
+ax_regplot.set_ylim(0,
+                    max(chla_mean_y_nonan))
+ax_regplot.set_xlabel('Day')
+ax_regplot.set_ylabel('Concentration of Chlorophyll-a (mg.m-3)')
+ax_histplot.set_axis_on()
+
+sns.histplot(x=smoke_data.day, 
+             bins=chla_mean_x,
+             ax=ax_histplot,
+             color='grey',
+             alpha=0.25,
+             linewidth=0.00)
+ax_histplot.set_xlim(1,
+                     len(chla_mean_data))
+ax_histplot.set_ylim(0,
+                     1)
+ax_histplot.set_xlabel('Day')
+ax_histplot.set_ylabel('')
+ax_histplot.set_axis_off()
 
 sns.set_style()
-
-data = []
-
-for csv_file in csv_files:
-    data.append(pd.read_csv(csv_file).at[0, 'chla_mean'])
-
-x = np.arange(1, len(data) + 1)
-y = np.array(data)
-
-b = np.isnan(y)
-
-x_nonan = x[~b]
-y_nonan = y[~b]
-
-sns.regplot(x=x_nonan, 
-            y=y_nonan,
-            order=2)
-
-plt.yscale('log')
-plt.xlim(1, 365)
-plt.ylim(0.01, 10)
-plt.xlabel('Day')
-plt.ylabel("Concentration of Chlorophyll-A (mg/m^3)")
-plt.title("Lake Superior: Mean Chlorophyll-A Measurements")
+plt.title('Lake Superior: Mean Chlorophyll-a Measurements ()')
 plt.show()
