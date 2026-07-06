@@ -51,7 +51,7 @@ def main() -> int:
         
       return RETURN_FAILURE
 
-   # For each path in `sys.argv` build corresponding Path and read into
+   # For each path in `sys.argv` create corresponding Path and read into
    # `paths`
    paths = [pathlib.Path(p) for p in sys.argv[1:5]]
    
@@ -100,7 +100,7 @@ def main() -> int:
                                                     lon=slice(lakes_cci_lon_min_box, 
                                                               lakes_cci_lon_max_box))
             
-            # Build geometry mask from `clipped_stat_mask_ds`
+            # Create geometry mask from `clipped_stat_mask_ds`
             geometry_mask = (clipped_stat_mask_ds['CCI_lakeid'].values == lakes_cci_id)
 
             # Read `lakes_cci_id` into `record`
