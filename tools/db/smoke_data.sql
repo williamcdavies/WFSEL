@@ -1,22 +1,20 @@
-WITH x AS (
+COPY (
+    WITH x AS (
+        SELECT
+            l.name       AS "name",
+            lp.geom_4326 AS "geom"
+        FROM lakes       AS l
+        JOIN lakes_polys AS lp
+        ON l.id = lp.id
+        WHERE l.id = _
+    )
     SELECT
-        lp.geom_4326 AS geom
-    FROM lakes       AS l
-    JOIN lakes_polys AS lp
-    ON l.id = lp.id
-    WHERE l.id = 5
+        x.name      AS "name",
+        s.start_day AS "day"
+    FROM hms_smokes2011 AS s
+    JOIN x              AS x
+    ON ST_INTERSECTS(s.geom, x.geom)
+    WHERE s.density > 1
+    ORDER BY s.start_day
 )
-SELECT
-    s.id,
-    s.start_year,
-    s.start_day,
-    s.start_time,
-    s.end_year,
-    s.end_day,
-    s.end_time,
-    s.density
-FROM hms_smokes2011 AS s
-JOIN x              AS x
-ON ST_INTERSECTS(s.geom, x.geom)
-WHERE s.density > 1
-ORDER BY s.start_day;
+TO STDOUT WITH (FORMAT CSV, HEADER);
