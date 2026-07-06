@@ -81,9 +81,9 @@ def create_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry,
     return geometry_mask, transform
 
 
-def write_geometry_mask(geometry_mask:      numpy.ndarray, 
-                        transform: affine.Affine, 
-                        path:      pathlib.Path) -> None:
+def write_geometry_mask(geometry_mask: numpy.ndarray, 
+                        transform:     affine.Affine, 
+                        path:          pathlib.Path) -> None:
     """
     Writes a 2D boolean mask to a GeoTIFF file.
 
@@ -109,12 +109,12 @@ def write_geometry_mask(geometry_mask:      numpy.ndarray,
 
     with rasterio.open(path,
                        'w', 
-                       driver='GTiff', 
-                       height=height, 
-                       width=width, 
-                       count=1, 
-                       dtype=geometry_mask.dtype, 
-                       crs='EPSG:4326', 
-                       transform=transform) as ds:
+                       'GTiff', 
+                       width, 
+                       height, 
+                       1, 
+                       'EPSG:4326', 
+                       transform,
+                       geometry_mask.dtype) as ds:
         ds.write(geometry_mask, 
                  1)
