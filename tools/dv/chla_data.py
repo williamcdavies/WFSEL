@@ -1,3 +1,18 @@
+r"""
+chla_data.py
+
+Description: 
+   The purpose of this file is to produce a time-series visualisation of
+   mean concentration of chlorophyll-a (mg.m-3) measurements for a
+   single lake. 
+
+Usage:
+   python chla_data.py <target_csv_dir> <target_csv>
+
+Written by William Chuter-Davies
+"""
+
+
 # Standard Library Imports
 import pathlib
 import sys
@@ -32,9 +47,9 @@ for path in paths:
         sys.exit(RETURN_FAILURE)
 
 # Read `paths` into `target_dir`, `target_csv`
-target_dir, target_csv = paths
+target_csv_dir, target_csv = paths
 
-csv_files = list(target_dir.glob('*.csv'))
+csv_files = list(target_csv_dir.glob('*.csv'))
 
 # > [!note]
 # > It is assumed that `target_dir` does not contain any
@@ -96,5 +111,5 @@ ax_histplot.set_ylabel('')
 ax_histplot.set_axis_off()
 
 sns.set_style()
-plt.title('Lake Superior: Mean Chlorophyll-a Measurements ()')
+plt.title('Lake Superior: Mean Chlorophyll-a Measurements (2023)')
 plt.show()
