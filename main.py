@@ -2,7 +2,7 @@ r"""
 main.py
 
 Description: 
-   The purpose of main.py is to produce a .csv file containing mean,
+   The purpose of this file is to produce a .csv file containing mean,
    median, variance, maximum, and minimum values for each Lakes ECVs in
    `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin',
    'lake_surface_water_temperature', 'lake_surface_water_extent']` for
@@ -14,10 +14,6 @@ Description:
 Usage:
    python main.py <lakes_cci_merg_prod_nc_path>
    <lakes_cci_stat_mask_nc_path> <csv_path> <dst_path>
-
-Example:
-   ```sh
-   `` 
 
 Written by William Chuter-Davies
 """
@@ -42,6 +38,14 @@ warnings.filterwarnings('ignore', category=RuntimeWarning)
 # Global Definitions
 RETURN_SUCCESS = 0
 RETURN_FAILURE = 1
+DATA_VARS = ['chla', 
+             'tsm', 
+             'acdom440', 
+             'Kd490', 
+             'KdPAR',
+             'phycocyanin', 
+             'lake_surface_water_temperature',
+             'lake_surface_water_extent']
 
 
 def main() -> int:
@@ -106,16 +110,29 @@ def main() -> int:
             # Read `lakes_cci_id` into `record`
             record = {'id': lakes_cci_id}
 
+            # Read `chla` values into `reference_data_var_values`
+            reference_data_var_values = clipped_merg_prod_ds['chla'].values
+
+            # Read masked `chla` values into `referenc_data`
+            reference_data            = reference_data_var_values[:, geometry_mask]
+            
+            # If the spatial coverage is less than 80%, continue
+            if numpy.isnan(reference_data).sum(axis=-1)[0] > (0.2 * reference_data.shape[-1]):
+                  for data_var in DATA_VARS:
+                     record.update({
+                        f'{data_var}_mean':   numpy.nan,
+                        f'{data_var}_median': numpy.nan,
+                        f'{data_var}_var':    numpy.nan,
+                        f'{data_var}_max':    numpy.nan,
+                        f'{data_var}_min':    numpy.nan,
+                     })
+
+                  records.append(record)
+                  continue
+
             # For each data variable in `clipped_merg_prod_ds.data_vars` ...
             # for data_var in clipped_merg_prod_ds.data_vars:
-            for data_var in ['chla', 
-                             'tsm', 
-                             'acdom440', 
-                             'Kd490', 
-                             'KdPAR', 
-                             'phycocyanin', 
-                             'lake_surface_water_temperature', 
-                             'lake_surface_water_extent']:
+            for data_var in DATA_VARS:
                # Read data variable values into `data_var_values`
                data_var_values = clipped_merg_prod_ds[data_var].values
 
