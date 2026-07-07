@@ -1,3 +1,12 @@
+-- smoke_data.sql
+
+-- Description: 
+--    The purpose of this file is to query hms_smokes for the smoke days of
+--    a single lake.
+
+-- Written by William Chuter-Davies
+
+
 COPY (
     WITH x AS (
         SELECT
@@ -6,12 +15,12 @@ COPY (
         FROM lakes       AS l
         JOIN lakes_polys AS lp
         ON l.id = lp.id
-        WHERE l.id = _
+        WHERE l.id = 5
     )
     SELECT
         x.name      AS "name",
         s.start_day AS "day"
-    FROM hms_smokes2011 AS s
+    FROM hms_smokes2023 AS s
     JOIN x              AS x
     ON ST_INTERSECTS(s.geom, x.geom)
     WHERE s.density > 1
