@@ -26,10 +26,10 @@ import seaborn           as sns
 RETURN_SUCCESS = 0
 RETURN_FAILURE = 1
 LAKE_IDX       = 0
-DATA_VAR       = 'KdPAR_mean'
+DATA_VAR       = 'KdPAR'
 X_LABEL        = 'Day'
 Y_LABEL        = 'Vertical Diffuse Downwelling Attenuation Coefficient Aggregated Over PAR (m-1)'
-T_LABEL        = 'Lake Superior: Mean KdPAR Measurements (2023)'
+T_LABEL        = 'Lake Superior: Centroid KdPAR Measurements (2023)'
 
 
 # If argument count is not equal to 3, exit with `RETURN_FAILURE`

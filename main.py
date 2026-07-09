@@ -128,10 +128,10 @@ def main() -> int:
                      })
 
                   records.append(record)
+                  
                   continue
 
-            # For each data variable in `clipped_merg_prod_ds.data_vars` ...
-            # for data_var in clipped_merg_prod_ds.data_vars:
+            # For data variable in `DATA_VARS`:
             for data_var in DATA_VARS:
                # Read data variable values into `data_var_values`
                data_var_values = clipped_merg_prod_ds[data_var].values
