@@ -15,7 +15,7 @@ COPY (
         FROM lakes       AS l
         JOIN lakes_polys AS lp
         ON l.id = lp.id
-        WHERE l.id = 674
+        WHERE l.id = 0
     )
     SELECT
         x.name      AS "name",
