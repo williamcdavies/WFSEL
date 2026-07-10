@@ -3,7 +3,7 @@ data_var.py
 
 Description: 
    The purpose of this file is to produce a time-series visualisation of
-   some data variable measurements for a single lake. 
+   a Lakes ECV for a single lake. 
 
 Usage:
    python data_var.py <target_csv_dir> <target_csv>
@@ -53,8 +53,7 @@ for path in paths:
 
 # Read `paths` into `target_dir`, `target_csv`
 target_csv_dir, target_csv = paths
-
-csv_files = list(target_csv_dir.glob('*.csv'))
+csv_files                  = list(target_csv_dir.glob('*.csv'))
 
 # > [!note]
 # > It is assumed that `target_dir` does not contain any
