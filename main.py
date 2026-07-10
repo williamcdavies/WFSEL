@@ -155,7 +155,7 @@ def main() -> int:
                record.update({
                   f'{data_var}_mean':   numpy.nanmean(data,   axis=-1).item(),
                   f'{data_var}_median': numpy.nanmedian(data, axis=-1).item(),
-                  f'{data_var}_var':    numpy.nanstd(data,    axis=-1).item(),
+                  f'{data_var}_var':    numpy.nanvar(data,    axis=-1).item(),
                   f'{data_var}_max':    numpy.nanmax(data,    axis=-1).item(),
                   f'{data_var}_min':    numpy.nanmin(data,    axis=-1).item(),
                })

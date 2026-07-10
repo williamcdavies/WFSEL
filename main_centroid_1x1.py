@@ -9,14 +9,13 @@ Description:
    given an ESA Lakes_cci v3.0 dataset, ESA_CCI_static_lake_mask.nc,
    lakescci_v2.1_metadata.csv, and an output destination.
 
-
 Usage:
    python main.py <lakes_cci_merg_prod_nc_path>
    <lakes_cci_stat_mask_nc_path> <csv_path> <dst_path>
 
 Notes:
-   Only those lakes whose satellite coverage exceeds 80% on a given day
-   shall produce a non-NaN record for that given day.
+   Only those lakes whose satellite coverage exceeds 80% and whose
+   centroid is non-NaN on a given day shall produce a non-NaN record.
 
 Written by William Chuter-Davies
 """
@@ -126,14 +125,14 @@ def main() -> int:
             
             # If the spatial coverage is less than 80%, continue
             if numpy.isnan(reference_data).sum(axis=-1)[0] > (0.2 * reference_data.shape[-1]):
-                for data_var in DATA_VARS:
-                    record.update({
-                        f'{data_var}': numpy.nan
-                    })
+               for data_var in DATA_VARS:
+                  record.update({
+                     f'{data_var}': numpy.nan
+                  })
 
-                    records.append(record)
-                  
-                    continue
+               records.append(record)
+            
+               continue
             
             # Select the single pixel nearest to (lat_centre, lon_centre) in `merg_prod_ds`
             clipped_merg_prod_ds = merg_prod_ds.sel(lat=lakes_cci_lat_centre, 
@@ -145,24 +144,24 @@ def main() -> int:
             
             # If `reference_data` is NaN, continue
             if numpy.isnan(reference_data):
-                for data_var in DATA_VARS:
-                    record.update({
-                        f'{data_var}': numpy.nan
-                    })
+               for data_var in DATA_VARS:
+                  record.update({
+                     f'{data_var}': numpy.nan
+                  })
 
-                records.append(record)
-                
-                continue
+               records.append(record)
+               
+               continue
 
             # For data variable in `DATA_VARS`:
             for data_var in DATA_VARS:
-                # Read data variable values into `data`
-                data = clipped_merg_prod_ds[data_var].values.item()
+               # Read data variable values into `data`
+               data = clipped_merg_prod_ds[data_var].values.item()
 
-                # Update `record` with data variable value
-                record.update({
-                    f'{data_var}': data
-                })
+               # Update `record` with data variable value
+               record.update({
+                  f'{data_var}': data
+               })
 
             records.append(record)
 

@@ -9,14 +9,13 @@ Description:
    given an ESA Lakes_cci v3.0 dataset, ESA_CCI_static_lake_mask.nc,
    lakescci_v2.1_metadata.csv, and an output destination.
 
-
 Usage:
-   python main.py <lakes_cci_merg_prod_nc_path>
+   python main_centroid_3x3.py <lakes_cci_merg_prod_nc_path>
    <lakes_cci_stat_mask_nc_path> <csv_path> <dst_path>
 
 Notes:
-   Only those lakes whose satellite coverage exceeds 80% on a given day
-   shall produce a non-NaN record for that given day.
+   Only those lakes whose satellite coverage and centroid satellite
+   coverage exceeds 80% on a given day shall produce a non-NaN record.
 
 Written by William Chuter-Davies
 """
@@ -131,9 +130,9 @@ def main() -> int:
                         f'{data_var}': numpy.nan
                     })
 
-                    records.append(record)
-                  
-                    continue
+                records.append(record)
+                
+                continue
             
             lat_idx              = int(numpy.abs(merg_prod_ds['lat'].values - lakes_cci_lat_centre).argmin())
             lon_idx              = int(numpy.abs(merg_prod_ds['lon'].values - lakes_cci_lon_centre).argmin())
@@ -172,7 +171,7 @@ def main() -> int:
                 record.update({
                     f'{data_var}_mean':   numpy.nanmean(data, ).item(),
                     f'{data_var}_median': numpy.nanmedian(data).item(),
-                    f'{data_var}_var':    numpy.nanstd(data,  ).item(),
+                    f'{data_var}_var':    numpy.nanvar(data,  ).item(),
                     f'{data_var}_max':    numpy.nanmax(data,  ).item(),
                     f'{data_var}_min':    numpy.nanmin(data,  ).item(),
                 })
