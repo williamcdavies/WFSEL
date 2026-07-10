@@ -6,13 +6,17 @@ Description:
    centroid value for each Lakes ECVs in `['chla', 'tsm', 'acdom440',
    'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature',
    'lake_surface_water_extent']` for each lake within the candidate set
-   given an ESA Lakes_cci v3.0 dataset, lakescci_v2.1_metadata.csv, and
-   an output destination.
+   given an ESA Lakes_cci v3.0 dataset, ESA_CCI_static_lake_mask.nc,
+   lakescci_v2.1_metadata.csv, and an output destination.
 
 
 Usage:
-   python main_centroid.py <lakes_cci_merg_prod_nc_path> <csv_path>
-   <dst_path>
+   python main.py <lakes_cci_merg_prod_nc_path>
+   <lakes_cci_stat_mask_nc_path> <csv_path> <dst_path>
+
+Notes:
+   Only those lakes whose satellite coverage exceeds 80% on a given day
+   shall produce a non-NaN record for that given day.
 
 Written by William Chuter-Davies
 """
@@ -48,89 +52,133 @@ DATA_VARS = ['chla',
 
 
 def main() -> int:
-    # If argument count is not equal to 4, return with `RETURN_FAILURE`
-    if len(sys.argv) != 4:
-        print(f'fatal: unexpected argument count: {sys.argv}')
-            
-        return RETURN_FAILURE
+   # ===================================================================================================
+   # If argument count is not equal to 5, return with `RETURN_FAILURE`
+   if len(sys.argv) != 5:
+      print(f'fatal: unexpected argument count: {sys.argv}')
+        
+      return RETURN_FAILURE
 
-    # For each path in `sys.argv` create corresponding Path and read into
-    # `paths`
-    paths = [pathlib.Path(p) for p in sys.argv[1:4]]
-    
-    # For each path in `paths` (excluding `dst_path`) ...
-    for path in paths[0:2]:
-        # If path does not exist, return with `RETURN_FAILURE`
-        if not path.exists():
-            print(f'fatal: no such file or directory: {path}')
-            
-            return RETURN_FAILURE
-
-    # Read `paths` into `lakes_cci_merg_prod_nc_path`, `csv_path`, and
-    # `dst_path`
-    lakes_cci_merg_prod_nc_path, csv_path, dst_path = paths
-
-    records = []
+   # For each path in `sys.argv` create corresponding Path and read into
+   # `paths`
+   paths = [pathlib.Path(p) for p in sys.argv[1:5]]
    
-    # Attempt to ...
-    try:
-        # Open Datasets specified by `lakes_cci_merg_prod_nc_path`
-        with xarray.open_dataset(lakes_cci_merg_prod_nc_path) as merg_prod_ds:
-            # Open DataFrame specified by `csv_path`
-            csv = pandas.read_csv(csv_path, delimiter=';')
+   # For each path in `paths` (excluding `dst_path`) ...
+   for path in paths[0:3]:
+      # If path does not exist, return with `RETURN_FAILURE`
+      if not path.exists():
+         print(f'fatal: no such file or directory: {path}')
+         
+         return RETURN_FAILURE
 
-            # For each row in `csv` ...
-            for row in tqdm.tqdm(csv.itertuples(), total=len(csv)):
-                # Read identity and boundary data into `lakes_cci_id`,
-                # `lakes_cci_lat_centre`, and `lakes_cci_lon_centre`
-                lakes_cci_id         = row.id
-                lakes_cci_lat_centre = row.lat_centre
-                lakes_cci_lon_centre = row.lon_centre
+   # Read `paths` into `lakes_cci_merg_prod_nc_path`,
+   # `lakes_cci_stat_mask_nc_path`, `csv_path`, and `dst_path`
+   lakes_cci_merg_prod_nc_path, lakes_cci_stat_mask_nc_path, csv_path, dst_path = paths
+   # ===================================================================================================
 
-                # Select the single pixel nearest to (lat_centre, lon_centre) in `merg_prod_ds`
-                clipped_merg_prod_ds = merg_prod_ds.sel(lat=lakes_cci_lat_centre, 
-                                                        lon=lakes_cci_lon_centre, 
-                                                        method="nearest")
+   # ===================================================================================================
+   records = []
+   
+   # Attempt to ...
+   try:
+      # Open Datasets specified by `lakes_cci_merg_prod_nc_path` and
+      # `lakes_cci_stat_mask_nc_path`
+      with xarray.open_dataset(lakes_cci_merg_prod_nc_path) as merg_prod_ds, xarray.open_dataset(lakes_cci_stat_mask_nc_path) as stat_mask_ds:
+         # Open DataFrame specified by `csv_path`
+         csv = pandas.read_csv(csv_path, delimiter=';')
 
-                # Read `lakes_cci_id` into `record`
-                record = {'id': lakes_cci_id}
+         # For each row in `csv` ...
+         for row in tqdm.tqdm(csv.itertuples(), total=len(csv)):
+            # Read identity and boundary data into `lakes_cci_id`,
+            # `lakes_cci_lat_min_box`, `lakes_cci_lat_max_box`,
+            # `lakes_cci_lon_min_box`, and `lakes_cci_lon_max_box`
+            lakes_cci_id          = row.id
+            lakes_cci_lat_min_box = row.lat_min_box
+            lakes_cci_lat_max_box = row.lat_max_box
+            lakes_cci_lon_min_box = row.lon_min_box
+            lakes_cci_lon_max_box = row.lon_max_box
+            lakes_cci_lat_centre  = row.lat_centre
+            lakes_cci_lon_centre  = row.lon_centre
 
-                # Read `chla` value into `reference_data`
-                reference_data = clipped_merg_prod_ds['chla'].values.item()
-                
-                # If `reference_data` is NaN, continue
-                if numpy.isnan(reference_data):
-                    for data_var in DATA_VARS:
-                        record.update({
-                            f'{data_var}': numpy.nan
-                        })
+            # Read `lakes_cci_id` into `record`
+            record = {'id': lakes_cci_id}
+
+            # Clip `merg_prod_ds` to boundary extent
+            clipped_merg_prod_ds = merg_prod_ds.sel(lat=slice(lakes_cci_lat_min_box, 
+                                                              lakes_cci_lat_max_box), 
+                                                    lon=slice(lakes_cci_lon_min_box, 
+                                                              lakes_cci_lon_max_box))
+            
+            # Clip `stat_mask_ds` to boundary extent
+            clipped_stat_mask_ds = stat_mask_ds.sel(lat=slice(lakes_cci_lat_min_box, 
+                                                              lakes_cci_lat_max_box), 
+                                                    lon=slice(lakes_cci_lon_min_box, 
+                                                              lakes_cci_lon_max_box))
+            
+            # Create geometry mask from `clipped_stat_mask_ds`
+            geometry_mask = (clipped_stat_mask_ds['CCI_lakeid'].values == lakes_cci_id)
+
+            # Read `chla` values into `reference_data_var_values`
+            reference_data_var_values = clipped_merg_prod_ds['chla'].values
+
+            # Read masked `chla` values into `referenc_data`
+            reference_data            = reference_data_var_values[:, geometry_mask]
+            
+            # If the spatial coverage is less than 80%, continue
+            if numpy.isnan(reference_data).sum(axis=-1)[0] > (0.2 * reference_data.shape[-1]):
+                for data_var in DATA_VARS:
+                    record.update({
+                        f'{data_var}': numpy.nan
+                    })
 
                     records.append(record)
-                    
+                  
                     continue
-
-                # For data variable in `DATA_VARS`:
+            
+            # Select the single pixel nearest to (lat_centre, lon_centre) in `merg_prod_ds`
+            clipped_merg_prod_ds = merg_prod_ds.sel(lat=lakes_cci_lat_centre, 
+                                                    lon=lakes_cci_lon_centre, 
+                                                    method="nearest")
+            
+            # Read `chla` value into `reference_data`
+            reference_data = clipped_merg_prod_ds['chla'].values.item()
+            
+            # If `reference_data` is NaN, continue
+            if numpy.isnan(reference_data):
                 for data_var in DATA_VARS:
-                    # Read data variable values into `data`
-                    data = clipped_merg_prod_ds[data_var].values.item()
-
-                    # Update `record` with data variable value
                     record.update({
-                        f'{data_var}': data
+                        f'{data_var}': numpy.nan
                     })
 
                 records.append(record)
+                
+                continue
 
-    # On exception, return with `RETURN_FAILURE`
-    except Exception as e:
-        print(f'fatal: exception: {e}')
-            
-        return RETURN_FAILURE
-    
-    pdf = pandas.DataFrame(records)
-    pdf.to_csv(dst_path, index=False)
-        
-    return RETURN_SUCCESS
+            # For data variable in `DATA_VARS`:
+            for data_var in DATA_VARS:
+                # Read data variable values into `data`
+                data = clipped_merg_prod_ds[data_var].values.item()
+
+                # Update `record` with data variable value
+                record.update({
+                    f'{data_var}': data
+                })
+
+            records.append(record)
+
+   # On exception, return with `RETURN_FAILURE`
+   except Exception as e:
+      print(f'fatal: exception: {e}')
+         
+      return RETURN_FAILURE
+   # ===================================================================================================
+   
+   # ===================================================================================================
+   pdf = pandas.DataFrame(records)
+   pdf.to_csv(dst_path, index=False)
+   # =================================================================================================== 
+
+   return RETURN_SUCCESS
 
 
 if __name__ == '__main__':

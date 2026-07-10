@@ -26,12 +26,13 @@ import seaborn           as sns
 RETURN_SUCCESS = 0
 RETURN_FAILURE = 1
 LAKE_IDX       = 0
-DATA_VAR       = 'KdPAR'
-X_LABEL        = 'Day'
-Y_LABEL        = 'Vertical Diffuse Downwelling Attenuation Coefficient Aggregated Over PAR (m-1)'
-T_LABEL        = 'Lake Superior: Centroid KdPAR Measurements (2023)'
+DATA_VAR       = ''
+X_LABEL        = ''
+Y_LABEL        = ''
+T_LABEL        = ''
 
 
+# ===================================================================================================
 # If argument count is not equal to 3, exit with `RETURN_FAILURE`
 if len(sys.argv) != 3:
     print(f'fatal: unexpected argument count: {sys.argv}')
@@ -58,18 +59,20 @@ csv_files = list(target_csv_dir.glob('*.csv'))
 # > [!note]
 # > It is assumed that `target_dir` does not contain any
 # > subdirectories that would contain any target csvs.
+# ===================================================================================================
 
+# ===================================================================================================
 data_var_data = []
 
 # For each csv file in `csv_files` ...
 for csv_file in csv_files:
     # Append the Lake `DATA_VAR` value to `data_var_data`
     data_var_data.append(pd.read_csv(csv_file)
-                .at[LAKE_IDX, 
-                    DATA_VAR])
+                         .at[LAKE_IDX, 
+                             DATA_VAR])
 
 data_var_x       = np.arange(1, 
-                              len(data_var_data) + 1)
+                             len(data_var_data) + 1)
 data_var_y       = np.array(data_var_data)
 data_var_b       = np.isnan(data_var_y)
 data_var_x_nonan = data_var_x[~data_var_b]
@@ -81,7 +84,9 @@ data_var_y_nonan = data_var_y[~data_var_b]
 
 smoke_data = (pd.read_csv(target_csv)
               .drop_duplicates('day'))
+# ===================================================================================================
 
+# ===================================================================================================
 _, ax_regplot = plt.subplots()
 ax_histplot   = ax_regplot.twinx()
 
@@ -115,3 +120,4 @@ ax_histplot.set_axis_off()
 sns.set_style()
 plt.title(T_LABEL)
 plt.show()
+# ===================================================================================================

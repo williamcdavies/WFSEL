@@ -15,6 +15,10 @@ Usage:
    python main.py <lakes_cci_merg_prod_nc_path>
    <lakes_cci_stat_mask_nc_path> <csv_path> <dst_path>
 
+Notes:
+   Only those lakes whose satellite coverage exceeds 80% on a given day
+   shall produce a non-NaN record.
+
 Written by William Chuter-Davies
 """
 
@@ -49,6 +53,7 @@ DATA_VARS = ['chla',
 
 
 def main() -> int:
+   # ===================================================================================================
    # If argument count is not equal to 5, return with `RETURN_FAILURE`
    if len(sys.argv) != 5:
       print(f'fatal: unexpected argument count: {sys.argv}')
@@ -70,7 +75,9 @@ def main() -> int:
    # Read `paths` into `lakes_cci_merg_prod_nc_path`,
    # `lakes_cci_stat_mask_nc_path`, `csv_path`, and `dst_path`
    lakes_cci_merg_prod_nc_path, lakes_cci_stat_mask_nc_path, csv_path, dst_path = paths
+   # ===================================================================================================
 
+   # ===================================================================================================
    records = []
    
    # Attempt to ...
@@ -92,6 +99,9 @@ def main() -> int:
             lakes_cci_lon_min_box = row.lon_min_box
             lakes_cci_lon_max_box = row.lon_max_box
 
+            # Read `lakes_cci_id` into `record`
+            record = {'id': lakes_cci_id}
+
             # Clip `merg_prod_ds` to boundary extent
             clipped_merg_prod_ds = merg_prod_ds.sel(lat=slice(lakes_cci_lat_min_box, 
                                                               lakes_cci_lat_max_box), 
@@ -106,9 +116,6 @@ def main() -> int:
             
             # Create geometry mask from `clipped_stat_mask_ds`
             geometry_mask = (clipped_stat_mask_ds['CCI_lakeid'].values == lakes_cci_id)
-
-            # Read `lakes_cci_id` into `record`
-            record = {'id': lakes_cci_id}
 
             # Read `chla` values into `reference_data_var_values`
             reference_data_var_values = clipped_merg_prod_ds['chla'].values
@@ -160,10 +167,13 @@ def main() -> int:
       print(f'fatal: exception: {e}')
          
       return RETURN_FAILURE
+   # ===================================================================================================
    
+   # ===================================================================================================
    pdf = pandas.DataFrame(records)
    pdf.to_csv(dst_path, index=False)
-       
+   # =================================================================================================== 
+
    return RETURN_SUCCESS
 
 
