@@ -123,16 +123,21 @@ def main() -> int:
             # Read masked `chla` values into `referenc_data`
             reference_data            = reference_data_var_values[:, geometry_mask]
             
-            # If the spatial coverage is less than 80%, continue
-            if numpy.isnan(reference_data).sum(axis=-1)[0] > (0.2 * reference_data.shape[-1]):
-               for data_var in DATA_VARS:
-                  record.update({
-                     f'{data_var}': numpy.nan
-                  })
+            # # If the spatial coverage is less than 80%, continue
+            # if numpy.isnan(reference_data).sum(axis=-1)[0] > (0.2 * reference_data.shape[-1]):
+            #    for data_var in DATA_VARS:
+            #       record.update({
+            #          f'{data_var}': numpy.nan
+            #       })
 
-               records.append(record)
+            #    records.append(record)
             
-               continue
+            #    continue
+
+            # [!note] 
+            # > Applying an 80% spatial coverage filter to both the
+            # > entire lake and to the centroid results in many lakes
+            # > having no data. 
             
             # Select the single pixel nearest to (lat_centre, lon_centre) in `merg_prod_ds`
             clipped_merg_prod_ds = merg_prod_ds.sel(lat=lakes_cci_lat_centre, 
