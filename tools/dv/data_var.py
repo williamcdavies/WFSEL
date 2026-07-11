@@ -25,11 +25,11 @@ import seaborn           as sns
 # Global Definitions
 RETURN_SUCCESS = 0
 RETURN_FAILURE = 1
-LAKE_IDX       = 0
-DATA_VAR       = ''
-X_LABEL        = ''
-Y_LABEL        = ''
-T_LABEL        = ''
+LAKE_IDX       = 5
+DATA_VAR       = 'chla_mean'
+X_LABEL        = 'Day'
+Y_LABEL        = 'Concentration of Chlorophyll-a (mg.m-3)'
+T_LABEL        = 'Lake Erie: Mean Chlorophyll-a Measurements of 3x3 Centroid (2023)'
 
 
 # ===================================================================================================
@@ -77,6 +77,11 @@ data_var_b       = np.isnan(data_var_y)
 data_var_x_nonan = data_var_x[~data_var_b]
 data_var_y_nonan = data_var_y[~data_var_b]
 
+if len(data_var_x_nonan) == 0 or len(data_var_y) == 0:
+    print(f'fatal: no data: {LAKE_IDX}')
+        
+    sys.exit(RETURN_FAILURE)
+
 # > [!note] 
 # > `data_var_x` is 1-indexed to prevent misalignment between
 # > regression and histogram plots.
@@ -93,7 +98,7 @@ sns.regplot(x=data_var_x_nonan,
             y=data_var_y_nonan, 
             ax=ax_regplot,
             order=4,
-            color='red')
+            color='blue')
 ax_regplot.set_xlim(1,
                     len(data_var_data))
 ax_regplot.set_ylim(0,
