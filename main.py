@@ -13,11 +13,12 @@ Description:
 
 Usage:
    python main.py <lakes_cci_merg_prod_nc_path>
-   <lakes_cci_stat_mask_nc_path> <csv_path> <dst_path>
+   <lakes_cci_stat_mask_nc_path> <lakes_cci_meta_data_csv_path>
+   <dst_csv_path>
 
 Notes:
-   Only those lakes whose satellite coverage exceeds 80% on a given day
-   shall produce a non-NaN record.
+   Only those lakes whose complete satellite coverage exceeds 80% on a
+   given day shall produce a non-NaN record.
 
 Written by William Chuter-Davies
 """
@@ -34,22 +35,12 @@ import pandas
 import tqdm
 import xarray
 
+# Local Application/Library Specific Imports
+from lib.esa.vars import ECVS
+from lib.io.vars  import RETURN_SUCCESS, RETURN_FAILURE
 
 # Warning stuff
 warnings.filterwarnings('ignore', category=RuntimeWarning)
-
-
-# Global Definitions
-RETURN_SUCCESS = 0
-RETURN_FAILURE = 1
-DATA_VARS = ['chla', 
-             'tsm', 
-             'acdom440', 
-             'Kd490', 
-             'KdPAR',
-             'phycocyanin', 
-             'lake_surface_water_temperature',
-             'lake_surface_water_extent']
 
 
 def main() -> int:
@@ -60,11 +51,11 @@ def main() -> int:
         
       return RETURN_FAILURE
 
-   # For each path in `sys.argv` create corresponding Path and read into
-   # `paths`
+   # For each path argument in `sys.argv` create corresponding
+   # `pathlib.Path` and read into `paths`
    paths = [pathlib.Path(p) for p in sys.argv[1:5]]
    
-   # For each path in `paths` (excluding `dst_path`) ...
+   # For each path in `paths` (excluding `dst_csv_path`) ...
    for path in paths[0:3]:
       # If path does not exist, return with `RETURN_FAILURE`
       if not path.exists():
@@ -73,8 +64,9 @@ def main() -> int:
          return RETURN_FAILURE
 
    # Read `paths` into `lakes_cci_merg_prod_nc_path`,
-   # `lakes_cci_stat_mask_nc_path`, `csv_path`, and `dst_path`
-   lakes_cci_merg_prod_nc_path, lakes_cci_stat_mask_nc_path, csv_path, dst_path = paths
+   # `lakes_cci_stat_mask_nc_path`, `lakes_cci_meta_data_csv_path`, and
+   # `dst_csv_path`
+   lakes_cci_merg_prod_nc_path, lakes_cci_stat_mask_nc_path, lakes_cci_meta_data_csv_path, dst_csv_path = paths
    # ===================================================================================================
 
    # ===================================================================================================
@@ -85,11 +77,11 @@ def main() -> int:
       # Open Datasets specified by `lakes_cci_merg_prod_nc_path` and
       # `lakes_cci_stat_mask_nc_path`
       with xarray.open_dataset(lakes_cci_merg_prod_nc_path) as merg_prod_ds, xarray.open_dataset(lakes_cci_stat_mask_nc_path) as stat_mask_ds:
-         # Open DataFrame specified by `csv_path`
-         csv = pandas.read_csv(csv_path, delimiter=';')
+         # Open DataFrame specified by `lakes_cci_meta_data_csv_path`
+         lakes_cci_meta_data_csv = pandas.read_csv(lakes_cci_meta_data_csv_path, delimiter=';')
 
-         # For each row in `csv` ...
-         for row in tqdm.tqdm(csv.itertuples(), total=len(csv)):
+         # For each row in `lakes_cci_meta_data_csv` ...
+         for row in tqdm.tqdm(lakes_cci_meta_data_csv.itertuples(), total=len(lakes_cci_meta_data_csv)):
             # Read identity and boundary data into `lakes_cci_id`,
             # `lakes_cci_lat_min_box`, `lakes_cci_lat_max_box`,
             # `lakes_cci_lon_min_box`, and `lakes_cci_lon_max_box`
@@ -117,47 +109,47 @@ def main() -> int:
             # Create geometry mask from `clipped_stat_mask_ds`
             geometry_mask = (clipped_stat_mask_ds['CCI_lakeid'].values == lakes_cci_id)
 
-            # Read `chla` values into `reference_data_var_values`
-            reference_data_var_values = clipped_merg_prod_ds['chla'].values
+            # Read `chla` values into `reference_ecv_values`
+            reference_ecv_values = clipped_merg_prod_ds['chla'].values
 
-            # Read masked `chla` values into `referenc_data`
-            reference_data            = reference_data_var_values[:, geometry_mask]
+            # Read masked `chla` values into `reference_ecv_data`
+            reference_ecv_data = reference_ecv_values[:, geometry_mask]
             
             # If the spatial coverage is less than 80%, continue
-            if numpy.isnan(reference_data).sum(axis=-1)[0] > (0.2 * reference_data.shape[-1]):
-                  for data_var in DATA_VARS:
-                     record.update({
-                        f'{data_var}_mean':   numpy.nan,
-                        f'{data_var}_median': numpy.nan,
-                        f'{data_var}_var':    numpy.nan,
-                        f'{data_var}_max':    numpy.nan,
-                        f'{data_var}_min':    numpy.nan,
-                     })
+            if numpy.isnan(reference_ecv_data).sum(axis=-1)[0] > (0.2 * reference_ecv_data.shape[-1]):
+               for ecv in ECVS:
+                  record.update({
+                     f'{ecv}_mean':   numpy.nan,
+                     f'{ecv}_median': numpy.nan,
+                     f'{ecv}_var':    numpy.nan,
+                     f'{ecv}_max':    numpy.nan,
+                     f'{ecv}_min':    numpy.nan,
+                  })
 
-                  records.append(record)
-                  
-                  continue
+               records.append(record)
+               
+               continue
 
-            # For data variable in `DATA_VARS`:
-            for data_var in DATA_VARS:
-               # Read data variable values into `data_var_values`
-               data_var_values = clipped_merg_prod_ds[data_var].values
+            # For each ecv in `ECVS`:
+            for ecv in ECVS:
+               # Read ecv values into `ecv_values`
+               ecv_values = clipped_merg_prod_ds[ecv].values
 
-               # If dimensionality of `data_var_values` is not 3, continue
-               if data_var_values.ndim != 3:
+               # If dimensionality of `ecv_values` is not 3, continue
+               if ecv_values.ndim != 3:
                   continue
                
-               # Read masked data variable values into `data`
-               data = data_var_values[:, geometry_mask]
+               # Read masked ecv values into `ecv_data`
+               ecv_data = ecv_values[:, geometry_mask]
 
                # Update `record` with mean, median, standard
-               # deviation, variance, maximum, and minimum of `data`
+               # deviation, variance, maximum, and minimum of `ecv_data`
                record.update({
-                  f'{data_var}_mean':   numpy.nanmean(data,   axis=-1).item(),
-                  f'{data_var}_median': numpy.nanmedian(data, axis=-1).item(),
-                  f'{data_var}_var':    numpy.nanvar(data,    axis=-1).item(),
-                  f'{data_var}_max':    numpy.nanmax(data,    axis=-1).item(),
-                  f'{data_var}_min':    numpy.nanmin(data,    axis=-1).item(),
+                  f'{ecv}_mean':   numpy.nanmean(ecv_data,   axis=-1).item(),
+                  f'{ecv}_median': numpy.nanmedian(ecv_data, axis=-1).item(),
+                  f'{ecv}_var':    numpy.nanvar(ecv_data,    axis=-1).item(),
+                  f'{ecv}_max':    numpy.nanmax(ecv_data,    axis=-1).item(),
+                  f'{ecv}_min':    numpy.nanmin(ecv_data,    axis=-1).item(),
                })
 
             records.append(record)
@@ -171,7 +163,7 @@ def main() -> int:
    
    # ===================================================================================================
    pdf = pandas.DataFrame(records)
-   pdf.to_csv(dst_path, index=False)
+   pdf.to_csv(dst_csv_path, index=False)
    # =================================================================================================== 
 
    return RETURN_SUCCESS
