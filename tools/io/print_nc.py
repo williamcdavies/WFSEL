@@ -60,10 +60,8 @@ import sys
 # Related Third-party Imports
 import xarray
 
-
-# Global Definitions
-RETURN_SUCCESS = 0
-RETURN_FAILURE = 1
+# Local Application/Library Specific Imports
+from lib.io.vars import RETURN_SUCCESS, RETURN_FAILURE
 
 
 def main() -> int:
