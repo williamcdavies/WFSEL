@@ -6,7 +6,7 @@ Description:
    a Lakes ECV for a single lake. 
 
 Usage:
-   python data_var.py <target_csv_dir> <target_csv>
+   python data_var.py <target_lake_data_dir> <target_smoke_data_csv>
 
 Written by William Chuter-Davies
 """
@@ -25,12 +25,27 @@ import seaborn           as sns
 # Global Definitions
 RETURN_SUCCESS = 0
 RETURN_FAILURE = 1
-LAKE_IDX       = 5
-DATA_VAR       = 'chla_mean'
+LAKE_IDX       = -1
+
+# > [!note]
+# > LAKE_IDX=0: Superior
+# > LAKE_IDX=1: Huron
+# > LAKE_IDX=2: Michigan
+# > LAKE_IDX=5: Erie
+# > LAKE_IDX=7: Ontario
+
+# DATA_VAR       = 'chla_mean'
+# X_LABEL        = 'Day'
+# Y_LABEL        = 'Concentration of Chlorophyll-a (mg.m-3)'
+# T_LABEL        = 'Lake _: Mean Chlorophyll-a Measurements of 3x3 Centroid (_)'
+# REGR_COLOR     = 'blue'
+# HIST_COLOR     = 'grey'
+
+DATA_VAR       = 'KdPAR_mean'
 X_LABEL        = 'Day'
-Y_LABEL        = 'Concentration of Chlorophyll-a (mg.m-3)'
-T_LABEL        = 'Lake Erie: Mean Chlorophyll-a Measurements of 3x3 Centroid (2023)'
-REGR_COLOR     = 'blue'
+Y_LABEL        = 'Vertical Diffuse Downwelling Attenuation Coefficient Aggregated Over PAR (m-1)'
+T_LABEL        = 'Lake _: Mean KdPAR Measurements of 3x3 Centroid (_)'
+REGR_COLOR     = 'red'
 HIST_COLOR     = 'grey'
 
 
@@ -53,12 +68,12 @@ for path in paths:
         
         sys.exit(RETURN_FAILURE)
 
-# Read `paths` into `target_dir`, `target_csv`
-target_csv_dir, target_csv = paths
-csv_files                  = sorted(target_csv_dir.glob('*.csv'))
+# Read `paths` into `target_lake_data_dir`, `target_smoke_data_csv`
+target_lake_data_dir, target_smoke_data_csv = paths
+csv_files                                   = sorted(target_lake_data_dir.glob('*.csv'))
 
 # > [!note]
-# > It is assumed that `target_dir` does not contain any
+# > It is assumed that `target_lake_data_dir` does not contain any
 # > subdirectories that would contain any target csvs.
 # ===================================================================================================
 
@@ -88,7 +103,7 @@ if len(data_var_x_nonan) == 0 or len(data_var_y) == 0:
 # > `data_var_x` is 1-indexed to prevent misalignment between
 # > regression and histogram plots.
 
-smoke_data = (pd.read_csv(target_csv)
+smoke_data = (pd.read_csv(target_smoke_data_csv)
               .drop_duplicates('day'))
 # ===================================================================================================
 
