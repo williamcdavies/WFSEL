@@ -152,11 +152,11 @@ def main() -> int:
                 # Update `record` with mean, median, standard
                 # deviation, variance, maximum, and minimum of `data`
                 record.update({
-                    f'{ecv}_mean':   numpy.nanmean(ecv_data, ).item(),
+                    f'{ecv}_mean':   numpy.nanmean(ecv_data  ).item(),
                     f'{ecv}_median': numpy.nanmedian(ecv_data).item(),
-                    f'{ecv}_var':    numpy.nanvar(ecv_data,  ).item(),
-                    f'{ecv}_max':    numpy.nanmax(ecv_data,  ).item(),
-                    f'{ecv}_min':    numpy.nanmin(ecv_data,  ).item(),
+                    f'{ecv}_var':    numpy.nanvar(ecv_data   ).item(),
+                    f'{ecv}_max':    numpy.nanmax(ecv_data   ).item(),
+                    f'{ecv}_min':    numpy.nanmin(ecv_data   ).item(),
                 })
 
             records.append(record)
