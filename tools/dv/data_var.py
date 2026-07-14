@@ -30,6 +30,8 @@ DATA_VAR       = 'chla_mean'
 X_LABEL        = 'Day'
 Y_LABEL        = 'Concentration of Chlorophyll-a (mg.m-3)'
 T_LABEL        = 'Lake Erie: Mean Chlorophyll-a Measurements of 3x3 Centroid (2023)'
+REGR_COLOR     = 'blue'
+HIST_COLOR     = 'grey'
 
 
 # ===================================================================================================
@@ -53,7 +55,7 @@ for path in paths:
 
 # Read `paths` into `target_dir`, `target_csv`
 target_csv_dir, target_csv = paths
-csv_files                  = list(target_csv_dir.glob('*.csv'))
+csv_files                  = sorted(target_csv_dir.glob('*.csv'))
 
 # > [!note]
 # > It is assumed that `target_dir` does not contain any
@@ -98,7 +100,7 @@ sns.regplot(x=data_var_x_nonan,
             y=data_var_y_nonan, 
             ax=ax_regplot,
             order=4,
-            color='blue')
+            color=REGR_COLOR)
 ax_regplot.set_xlim(1,
                     len(data_var_data))
 ax_regplot.set_ylim(0,
@@ -110,7 +112,7 @@ ax_histplot.set_axis_on()
 sns.histplot(x=smoke_data.day, 
              bins=data_var_x,
              ax=ax_histplot,
-             color='grey',
+             color=HIST_COLOR,
              alpha=0.25,
              linewidth=0.00)
 ax_histplot.set_xlim(1,
