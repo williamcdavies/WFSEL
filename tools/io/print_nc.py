@@ -51,11 +51,10 @@ def main() -> int:
     try:
         # Open `xarray.Dataset` specified by `args.nc_path`
         with xarray.open_dataset(args.nc_path) as ds:
-            # Print `ds` to `sys.stdout`
             print(ds)
     # On exception, return with `RETURN_FAILURE`
     except Exception as e:
-        print(f'error: exception: {e}')
+        print(f'''error: exception: {e}''')
         
         return RETURN_FAILURE
 

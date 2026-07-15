@@ -53,11 +53,10 @@ def main() -> int:
         gdf = geopandas.read_file(args.shp_path)
     # On exception, return with `RETURN_FAILURE`
     except Exception as e:
-        print(f'fatal: exception: {e}')
+        print(f'''fatal: exception: {e}''')
         
         return RETURN_FAILURE
     
-    # Print `gdf` to `sys.stdout`
     print(gdf)
 
     return RETURN_SUCCESS
