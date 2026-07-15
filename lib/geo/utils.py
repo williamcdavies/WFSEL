@@ -1,12 +1,11 @@
-r"""
+r'''
 utils.py
 
 Description: 
-   The purpose of this file is to provide definitions for geo-utility
-   functions.
+   Provides definitions for geo-utility functions.
 
 Written by William Chuter-Davies
-"""
+'''
 
 
 # Standard Library Imports
@@ -25,7 +24,7 @@ import shapely
 
 def create_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry, 
                          resolution: fractions.Fraction) -> tuple[numpy.ndarray, affine.Affine]:
-    """
+    '''
     Create a 2D boolean mask of a
     :class:`shapely.geometry.base.BaseGeometry` at a specified spatial
     resolution.
@@ -53,7 +52,7 @@ def create_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry,
     Notes
     -----
     mask is inverted. 
-    """
+    '''
     if geometry.is_empty: 
         raise ValueError('geometry must not be empty')
     
@@ -84,7 +83,7 @@ def create_geometry_mask(geometry:   shapely.geometry.base.BaseGeometry,
 def write_geometry_mask(geometry_mask: numpy.ndarray, 
                         transform:     affine.Affine, 
                         path:          pathlib.Path) -> None:
-    """
+    '''
     Writes a 2D boolean mask to a GeoTIFF file.
 
     Parameters
@@ -103,7 +102,7 @@ def write_geometry_mask(geometry_mask: numpy.ndarray,
     Notes
     -----
     CRS set to EPSG:4326. 
-    """
+    '''
     geometry_mask = geometry_mask.astype(numpy.uint8)
     height, width = geometry_mask.shape
 

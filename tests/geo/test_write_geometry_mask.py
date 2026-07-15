@@ -1,11 +1,11 @@
-r"""
+r'''
 test_write_geometry_mask.py
 
 Description: 
-   The purpose of this file is to test lib.utils.write_geometry_mask.
+   Tests lib.utils.write_geometry_mask.
 
 Written by William Chuter-Davies
-"""
+'''
 
 
 # Standard Library Imports
