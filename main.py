@@ -1,41 +1,18 @@
-r"""
+r'''
 main.py
 
-Description: 
-   The purpose of this file is to produce a .csv file containing the
-   mean, median, variance, maximum, and minimum values for each Lakes
-   ECVs in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin',
-   'lake_surface_water_temperature', 'lake_surface_water_extent']` for
-   each lake within the candidate set given a infinite or finite buffer,
-   ESA Lakes_cci v3.0 dataset, lakescci_v2.1_metadata.csv, and an output
-   destination.
-
-Usage:
-   python main_centroid.py <buffer> <lakes_cci_merged_prod_nc_path>
-   <lakes_cci_static_mask_nc_path> <lakes_cci_meta_data_csv_path>
-   <dst_csv_path>
-
-Notes:
-   inf buffer: 
-      Only those lakes whose complete satellite coverage exceeds 80%
-      shall produce a non-NaN record
-   
-   finite buffer: 
-      Only those lakes whose centroid satellite coverage exceeds 80%
-      shall produce a non-NaN record. The buffer argument is considered
-      in pixels. e.g., a buffer=1 shall produce a 3x3 centroid. See
-      dataset resolution for metric sizing.
-
 Written by William Chuter-Davies
-"""
+'''
 
 
 # Standard Library Imports
 import pathlib
+import re
 import sys
 import warnings
 
 # Related Third-party Imports
+import argparse
 import numpy
 import pandas
 import tqdm
@@ -43,15 +20,12 @@ import xarray
 
 # Local Application/Library Specific Imports
 from lib.esa.vars import ECVS
-from lib.io.vars  import RETURN_SUCCESS, RETURN_FAILURE
+from lib.io.vars  import (RETURN_SUCCESS, 
+                          RETURN_FAILURE)
 
 
 # Warning stuff
 warnings.filterwarnings('ignore', category=RuntimeWarning)
-
-
-def usage() -> None:
-   print('usage: python main_centroid.py <buffer> <lakes_cci_merged_prod_nc_path> <lakes_cci_static_mask_nc_path> <lakes_cci_meta_data_csv_path> <dst_csv_path>')
 
 
 def comp_with_inf_buffer(lakes_cci_merged_prod_nc_path: pathlib.Path,
@@ -250,70 +224,126 @@ def comp_with_fin_buffer(buffer:                        int,
 
 
 def main() -> int:
-   # ===================================================================================================
-   # If argument count is not equal to 5, return with `RETURN_FAILURE`
-   if len(sys.argv) < 5:
-      print(f'fatal: too few arguments: {len(sys.argv)}')
-      usage()
-        
+   # Argument parsing
+   # ==================================================================================================
+   parser = argparse.ArgumentParser(prog='main.py',
+                                    usage='%(prog)s [options]', 
+                                    description='''Produces a .csv file
+                                                containing the mean,
+                                                median, variance,
+                                                maximum, and minimum
+                                                values for each Lakes
+                                                ECVs in `['chla', 'tsm',
+                                                'acdom440', 'Kd490',
+                                                'KdPAR', 'phycocyanin',
+                                                'lake_surface_water_temperature',
+                                                'lake_surface_water_extent']`
+                                                for each lake within the
+                                                candidate set given a
+                                                infinite or finite
+                                                buffer, ESA Lakes_cci
+                                                v3.0 dataset,
+                                                lakescci_v2.1_metadata.csv,
+                                                and an output
+                                                destination.''')
+
+   # Positional arguments
+   parser.add_argument('buffer',
+                        type=str,
+                        help=f'''n in N | n >= 0 or 'inf''')
+   parser.add_argument('lakes_cci_merged_prod_nc_path',
+                       type=pathlib.Path,
+                       help=f'''path to
+                             `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc`
+                             as provided by ESA Lakes Climate Change
+                             Initiative (Lakes_cci): Lake products,
+                             Version 3.0''')
+   parser.add_argument('lakes_cci_static_mask_nc_path', 
+                       type=pathlib.Path, 
+                       help=f'''path to `ESA_CCI_static_lake_mask.nc` as
+                             provided by ESA Lakes Climate Change
+                             Initiative (Lakes_cci): Lake products,
+                             Version 3.0''')
+   parser.add_argument('lakes_cci_meta_data_csv_path',
+                       type=pathlib.Path,
+                       help=f'''path to `lakescci_v2.1.0_metadata` as
+                             provided by ESA Lakes Climate Change
+                             Initiative (Lakes_cci): Lake products,
+                             Version 3.0''')
+   parser.add_argument('dst_csv_path',
+                       type=pathlib.Path,
+                       help=f'''path to destination csv file''')
+   
+   args = parser.parse_args()
+   # ==================================================================================================
+
+   # Argument validation
+   # ==================================================================================================
+   # If `args.buffer` is invalid, return with `RETURN_FAILURE`
+   if not bool(re.fullmatch(r"^([0-9]+|inf)$", args.buffer)) :
+      print(f'''error: argument buffer: unexpected value:
+             {args.buffer}''')
+      
       return RETURN_FAILURE
    
-   # If `buffer` is not a digit string nor 'inf', return with `RETURN_FAILURE`
-   if (not sys.argv[1].isdigit() and
-       not sys.argv[1] == 'inf'):
-      print(f'fatal: unexpected value: {sys.argv[1]}')
-      usage()
-
+   # If `args.lakes_cci_merged_prod_nc_path` does not exist, return with
+   # `RETURN_FAILURE`
+   if not args.lakes_cci_merged_prod_nc_path.exists():
+      print(f'''error: argument lakes_cci_merged_prod_nc_path: no such
+             file or directory: {args.lakes_cci_merged_prod_nc_path}''')
+      
       return RETURN_FAILURE
 
-   # Read `buffer` into `buffer`
-   buffer = sys.argv[1]
-
-   # For each path argument in `sys.argv` create corresponding `Path`
-   # and read into `paths`
-   paths = [pathlib.Path(p) for p in sys.argv[2:6]]
+   # If `args.lakes_cci_static_mask_nc_path` does not exist, return with
+   # `RETURN_FAILURE`
+   if not args.lakes_cci_static_mask_nc_path.exists():
+      print(f'''error: argument lakes_cci_static_mask_nc_path: no such
+             file or directory: {args.lakes_cci_static_mask_nc_path}''')
+      
+      return RETURN_FAILURE
    
-   # For each `path` in `paths` (excluding `dst_csv_path`) ...
-   for path in paths[:3]:
-      # If `path` does not exist, return with `RETURN_FAILURE`
-      if not path.exists():
-         print(f'fatal: no such file or directory: {path}')
-         usage()
-         
-         return RETURN_FAILURE
-
-   # Read `paths` into
-   # `lakes_cci_merged_prod_nc_path`,`lakes_cci_meta_data_csv_path`, and
-   # `dst_csv_path`
-   lakes_cci_merged_prod_nc_path, lakes_cci_static_mask_nc_path, lakes_cci_meta_data_csv_path, dst_csv_path = paths
-   # ===================================================================================================
-
-   # ===================================================================================================
+   # If `args.lakes_cci_meta_data_csv_path` does not exist, return with
+   # `RETURN_FAILURE`
+   if not args.lakes_cci_meta_data_csv_path.exists():
+      print(f'''error: argument lakes_cci_meta_data_csv_path: no such
+             file or directory: {args.lakes_cci_meta_data_csv_path}''')
+      
+      return RETURN_FAILURE
+   # ==================================================================================================
+   
+   # Program logic
+   # ==================================================================================================
    # Attempt to ...
    try:
-      if buffer == 'inf':
-         records = comp_with_inf_buffer(lakes_cci_merged_prod_nc_path, 
-                                        lakes_cci_static_mask_nc_path, 
-                                        lakes_cci_meta_data_csv_path)
+      # If `args.buffer` is 'inf', run with infinite buffer
+      if args.buffer == 'inf':
+         records = comp_with_inf_buffer(args.lakes_cci_merged_prod_nc_path, 
+                                        args.lakes_cci_static_mask_nc_path, 
+                                        args.lakes_cci_meta_data_csv_path)
+      # Else, run with finite buffer
       else:
-         records = comp_with_fin_buffer(int(buffer), 
-                                        lakes_cci_merged_prod_nc_path, 
-                                        lakes_cci_static_mask_nc_path, 
-                                        lakes_cci_meta_data_csv_path)
-
+         records = comp_with_fin_buffer(int(args.buffer), 
+                                        args.lakes_cci_merged_prod_nc_path, 
+                                        args.lakes_cci_static_mask_nc_path, 
+                                        args.lakes_cci_meta_data_csv_path)
    # On exception, return with `RETURN_FAILURE`
    except Exception as e:
-      print(f'fatal: exception: {e}')
+      print(f'error: exception: {e}')
          
       return RETURN_FAILURE
-   # ===================================================================================================
    
-   # ===================================================================================================
-   pdf = pandas.DataFrame(records)
-   pdf.to_csv(dst_csv_path, index=False)
-   # =================================================================================================== 
+   # Attempt to ...
+   try:
+      pdf = pandas.DataFrame(records)
+      pdf.to_csv(args.dst_csv_path, index=False)
+   # On exception, return with `RETURN_FAILURE`
+   except Exception as e:
+      print(f'error: exception: {e}')
+         
+      return RETURN_FAILURE
 
    return RETURN_SUCCESS
+   # ==================================================================================================
 
 
 if __name__ == '__main__':

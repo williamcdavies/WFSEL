@@ -31,14 +31,14 @@ year="${2}"
 
 # If `buffer` is invalid, exit 1
 if [[ ! "${buffer}" =~ ^([0-9]+|inf)$ ]]; then
-    echo "error: argument buffer: invalid int value: "${buffer}""
+    echo "error: argument buffer: unexpected value: "${buffer}""
 
     exit 1
 fi
 
 # If `year` is invalid, exit 1
 if [[ ! "${year}" =~ ^(2011|2023)$ ]]; then
-    echo "error: argument year: invalid int value: "${year}""
+    echo "error: argument year: unexpected value: "${year}""
 
     exit 1
 fi
