@@ -36,7 +36,7 @@ def main() -> int:
 
     # Positional arguments
     parser.add_argument('lakes_cci_id', 
-                        type=str,
+                        type=int,
                         help='''CCI_lakeid as provided by ESA Lakes
                              Climate Change Initiative (Lakes_cci): Lake
                              products, Version 3.0''')
@@ -147,8 +147,8 @@ def main() -> int:
                 color=args.reg_colour)
     ax_regplot.set_xlim(1,
                         len(ecv_data))
-    ax_regplot.set_ylim(0,
-                        max(ecv_y_nonan))
+    ax_regplot.set_ylim(250,
+                        300)
     ax_regplot.set_xlabel(args.x_label)
     ax_regplot.set_ylabel(args.y_label)
     ax_histplot.set_axis_on()
