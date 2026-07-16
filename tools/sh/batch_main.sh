@@ -16,8 +16,8 @@ positional arguments:
     "
 }
 
-# If first argument is `-h` or `--help`, or argument count is not 2, exit 1
-if [[ "${1}" = "-h" || "${1}" = "--help" || "$#" -ne 2 ]]; then
+# If first argument is `-h` or `--help`, exit 1
+if [[ "${1}" = "-h" || "${1}" = "--help" ]]; then
     help
     
     exit 1
