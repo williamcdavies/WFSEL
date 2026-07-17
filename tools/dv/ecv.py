@@ -147,8 +147,8 @@ def main() -> int:
                 color=args.reg_colour)
     ax_regplot.set_xlim(1,
                         len(ecv_data))
-    ax_regplot.set_ylim(250,
-                        300)
+    ax_regplot.set_ylim(0,
+                        0)
     ax_regplot.set_xlabel(args.x_label)
     ax_regplot.set_ylabel(args.y_label)
     ax_histplot.set_axis_on()
