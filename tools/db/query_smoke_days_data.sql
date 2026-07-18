@@ -1,4 +1,4 @@
--- query_smoke_data.sql
+-- query_smoke_days_data.sql
 
 -- Description: 
 --    Queries `spatial.hms_smokes` for the smoke days of a single lake.

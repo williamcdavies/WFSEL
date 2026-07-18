@@ -77,7 +77,7 @@ smoke_data_csv_path=data/"${lakes_id}"_"${year}".csv
 
 psql -d spatial \
     -v lakes_id="${lakes_id}" -v hms_smokes_table=hms_smokes"${year}" \
-    -f tools/db/query_smoke_data.sql \
+    -f tools/db/query_smoke_day_data.sql \
     > "${smoke_data_csv_path}"
 
 python tools/dv/ecv.py \

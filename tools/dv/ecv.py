@@ -50,10 +50,10 @@ def main() -> int:
                         type=pathlib.Path,
                         help=f'''path to Lakes ECV data directory as
                               produced by main.py''')
-    parser.add_argument('smoke_data_csv_path',
+    parser.add_argument('smoke_days_data_csv_path',
                         type=pathlib.Path,
-                        help=f'''path to smoke data csv as produced by
-                              tools/db/query_smoke_days.sql''')
+                        help=f'''path to smoke days data csv as produced
+                              by tools/db/query_smoke_days.sql''')
 
     # Optional arguments
     parser.add_argument('--x_label', 
@@ -90,11 +90,11 @@ def main() -> int:
         
         return RETURN_FAILURE
     
-    # If `args.smoke_data_csv_path` does not exist, return with
+    # If `args.smoke_days_data_csv_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.smoke_data_csv_path.exists():
-        print(f'''error: argument smoke_data_csv_path: no such file or
-               directory: {args.smoke_data_csv_path}''')
+    if not args.smoke_days_data_csv_path.exists():
+        print(f'''error: argument smoke_days_data_csv_path: no such file or
+               directory: {args.smoke_days_data_csv_path}''')
         
         return RETURN_FAILURE
     # ==================================================================================================
@@ -133,8 +133,8 @@ def main() -> int:
     # > `ecv_x` is 1-indexed to prevent misalignment between regression
     # > and histogram plots.
 
-    # Read `smoke_data_csv` into `args.smoke_data_csv_path`
-    smoke_data_csv = (pd.read_csv(args.smoke_data_csv_path)
+    # Read `smoke_days_data_csv` into `args.smoke_days_data_csv_path`
+    smoke_days_data_csv = (pd.read_csv(args.smoke_days_data_csv_path)
                       .drop_duplicates('day'))
 
     _, ax_regplot = plt.subplots()
@@ -153,7 +153,7 @@ def main() -> int:
     ax_regplot.set_ylabel(args.y_label)
     ax_histplot.set_axis_on()
 
-    sns.histplot(x=smoke_data_csv.day, 
+    sns.histplot(x=smoke_days_data_csv.day, 
                 bins=ecv_x,
                 ax=ax_histplot,
                 color=args.hist_colour,

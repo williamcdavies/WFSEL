@@ -12,7 +12,7 @@ positional arguments:
         n in N | n >= 0 or 'inf'
 
     year
-        s in ['2011', '2023']
+        2011--2023
     "
 }
 
@@ -37,7 +37,7 @@ if [[ ! "${buffer}" =~ ^([0-9]+|inf)$ ]]; then
 fi
 
 # If `year` is invalid, exit 1
-if [[ ! "${year}" =~ ^(2011|2023)$ ]]; then
+if [[ ! "${year}" =~ ^[0-9]{4}$ ]]; then
     echo "error: argument year: unexpected value: "${year}""
 
     exit 1
