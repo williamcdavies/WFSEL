@@ -41,7 +41,8 @@ def comp_with_inf_buffer(lakes_cci_merged_prod_nc_path: pathlib.Path,
          lakes_cci_meta_data_csv = pandas.read_csv(lakes_cci_meta_data_csv_path, delimiter=';')
 
          # For each `row` in `lakes_cci_meta_data_csv` ...
-         for row in tqdm.tqdm(lakes_cci_meta_data_csv.itertuples(), total=len(lakes_cci_meta_data_csv)):
+         for row in tqdm.tqdm(lakes_cci_meta_data_csv.itertuples(), 
+                              total=len(lakes_cci_meta_data_csv)):
             # Read identity and boundary data into `lakes_cci_id`,
             # `lakes_cci_lat_min_box`, `lakes_cci_lat_max_box`,
             # `lakes_cci_lon_min_box`, and `lakes_cci_lon_max_box`
@@ -134,7 +135,8 @@ def comp_with_fin_buffer(buffer:                        int,
       lakes_cci_meta_data_csv = pandas.read_csv(lakes_cci_meta_data_csv_path, delimiter=';')
 
       # For each `row` in `lakes_cci_meta_data_csv` ...
-      for row in tqdm.tqdm(lakes_cci_meta_data_csv.itertuples(), total=len(lakes_cci_meta_data_csv)):
+      for row in tqdm.tqdm(lakes_cci_meta_data_csv.itertuples(), 
+                           total=len(lakes_cci_meta_data_csv)):
          # Read identity and centroid data into `lakes_cci_id`,
          # `lakes_cci_lat_centre`, `lat_idx`, `lakes_cci_lon_centre`,
          # and `lon_idx`
@@ -155,6 +157,7 @@ def comp_with_fin_buffer(buffer:                        int,
                                                                 0), 
                                                             lon_idx + buffer + 1))
          
+         # Clip `stat_mask_ds` to centroid extent
          clipped_stat_mask_ds = stat_mask_ds.isel(lat=slice(max(lat_idx - buffer, 
                                                                 0), 
                                                             lat_idx + buffer + 1), 
