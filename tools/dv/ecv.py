@@ -6,11 +6,11 @@ Written by William Chuter-Davies
 
 
 # Standard Library Imports
+import argparse
 import pathlib
 import sys
 
 # Related Third-party Imports
-import argparse
 import matplotlib.pyplot as plt
 import numpy             as np
 import pandas            as pd

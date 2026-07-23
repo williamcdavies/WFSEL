@@ -6,11 +6,11 @@ Written by William Chuter-Davies
 
 
 # Standard Library Imports
+import argparse
 import pathlib
 import sys
 
 # Related Third-party Imports
-import argparse
 import geopandas
 
 # Local Application/Library Specific Imports

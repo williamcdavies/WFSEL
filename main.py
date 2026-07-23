@@ -6,13 +6,13 @@ Written by William Chuter-Davies
 
 
 # Standard Library Imports
+import argparse
 import pathlib
 import re
 import sys
 import warnings
 
 # Related Third-party Imports
-import argparse
 import numpy
 import pandas
 import tqdm
