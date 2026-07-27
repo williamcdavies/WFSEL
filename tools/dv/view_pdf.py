@@ -29,7 +29,7 @@ def main() -> int:
                                      description='''''')
 
     # Positional arguments
-    parser.add_argument('query_count_of_smoke_days_data_path', 
+    parser.add_argument('count_of_smoke_days_data_csv_path', 
                         type=pathlib.Path,
                         help='''''')
     
@@ -38,23 +38,26 @@ def main() -> int:
 
     # Argument validation
     # ==================================================================================================
-    # If `args.query_count_of_smoke_days_data_path` does not exist, return with
+    # If `args.count_of_smoke_days_data_csv_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.query_count_of_smoke_days_data_path.exists():
-        print(f'''error: argument query_count_of_smoke_days_data_path:
+    if not args.count_of_smoke_days_data_csv_path.exists():
+        print(f'''error: argument count_of_smoke_days_data_csv_path:
                no such file or directory:
-               {args.query_count_of_smoke_days_data_path}''')
+               {args.count_of_smoke_days_data_csv_path}''')
         
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    wide_df = pandas.read_csv(args.query_count_of_smoke_days_data_path)
+    wide_df = pandas.read_csv(args.count_of_smoke_days_data_csv_path)
     long_df = wide_df.melt(id_vars='lakes_cci_id', 
                            var_name='year', 
                            value_name='count_of_smoke_days')
-    print(long_df['count_of_smoke_days'].describe())
+    p25 = numpy.percentile(long_df['count_of_smoke_days'], 
+                           25)
+    p75 = numpy.percentile(long_df['count_of_smoke_days'], 
+                           75)
     
     # fig, (ax1, ax2) = matplotlib.pyplot.subplots(
     #     nrows=2,
@@ -85,6 +88,18 @@ def main() -> int:
     #                 x='count_of_smoke_days',
     #                 color='black',
     #                 ax=ax2)
+
+    ax2.axvline(p25, 
+                color='red', 
+                linestyle='--', 
+                alpha=0.75, 
+                label=f'25th Percentile: {p25:.0f}')
+    ax2.axvline(p75, 
+                color='blue', 
+                linestyle='--', 
+                alpha=0.75, 
+                label=f'75th Percentile: {p75:.0f}')
+    ax2.legend()
     
     # ax1.grid(True, alpha=0.25)
     ax2.grid(True, alpha=0.25)
@@ -99,13 +114,6 @@ def main() -> int:
     fig.suptitle('Cumulative Distribution of North American Lakes by Number of Smoke Days', 
                  fontsize=18, 
                  y=0.95)
-    
-    p25 = numpy.percentile(long_df['count_of_smoke_days'], 25)
-    p75 = numpy.percentile(long_df['count_of_smoke_days'], 75)
-
-    ax2.axvline(p25, color='red', linestyle='--', alpha=0.75, label=f'25th Percentile: {p25:.0f}')
-    ax2.axvline(p75, color='blue', linestyle='--', alpha=0.75, label=f'75th Percentile: {p75:.0f}')
-    ax2.legend()
     
     matplotlib.pyplot.show()
 
