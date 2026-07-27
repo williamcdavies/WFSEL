@@ -1,4 +1,4 @@
--- query_smoke_days2.sql
+-- query_count_of_smoke_days.sql
 
 -- Description: 
 --    Queries count of smoke days for all lakes in spatial.esa_lakes
@@ -33,7 +33,7 @@ COPY (
     FROM esa_lakes AS l
     LEFT JOIN hms_smokes AS s
         ON ST_INTERSECTS(s.geom, l.geom)
-        AND s.density    > 1
+        AND s.density > 1
         AND s.start_year BETWEEN 2011 AND 2023
     GROUP BY l.id
     ORDER BY l.id
