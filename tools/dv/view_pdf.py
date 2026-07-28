@@ -29,7 +29,7 @@ def main() -> int:
                                      description='''''')
 
     # Positional arguments
-    parser.add_argument('count_of_smoke_days_data_csv_path', 
+    parser.add_argument('count_of_smoke_days_csv_path', 
                         type=pathlib.Path,
                         help='''''')
     
@@ -38,19 +38,19 @@ def main() -> int:
 
     # Argument validation
     # ==================================================================================================
-    # If `args.count_of_smoke_days_data_csv_path` does not exist, return with
+    # If `args.count_of_smoke_days_csv_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.count_of_smoke_days_data_csv_path.exists():
-        print(f'''error: argument count_of_smoke_days_data_csv_path:
-               no such file or directory:
-               {args.count_of_smoke_days_data_csv_path}''')
+    if not args.count_of_smoke_days_csv_path.exists():
+        print(f'''error: argument count_of_smoke_days_csv_path: no such
+               file or directory:
+               {args.count_of_smoke_days_csv_path}''')
         
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    wide_df = pandas.read_csv(args.count_of_smoke_days_data_csv_path)
+    wide_df = pandas.read_csv(args.count_of_smoke_days_csv_path)
     long_df = wide_df.melt(id_vars='lakes_cci_id', 
                            var_name='year', 
                            value_name='count_of_smoke_days')
