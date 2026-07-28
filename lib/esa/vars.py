@@ -8,16 +8,18 @@ Written by William Chuter-Davies
 '''
 
 
-ECVS     = ['chla', 
-            'tsm', 
-            'acdom440', 
-            'Kd490', 
-            'KdPAR', 
-            'phycocyanin', 
-            'lake_surface_water_temperature', 
-            'lake_surface_water_extent']
-MEASURES = ['mean', 
-            'median', 
-            'var', 
-            'max', 
-            'min']
+ECVS           = ['chla', 
+                  'tsm', 
+                  'acdom440', 
+                  'Kd490', 
+                  'KdPAR', 
+                  'phycocyanin', 
+                  'lake_surface_water_temperature', 
+                  'lake_surface_water_extent']
+MEASURES       = ['mean', 
+                  'median', 
+                  'var', 
+                  'max', 
+                  'min']
+LOWER_QUARTILE = 6
+UPPER_QUARTILE = 27
