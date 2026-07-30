@@ -17,10 +17,10 @@ import pandas            as pd
 import seaborn           as sns
 
 # Local Application/Library Specific Imports
-from lib.esa.vars import (ECVS, 
-                          MEASURES)
-from lib.io.vars  import (RETURN_FAILURE, 
-                          RETURN_SUCCESS)
+from lib.lakes_cci.vars import (ECVS, 
+                                MEASURES)
+from lib.io.vars        import (RETURN_FAILURE, 
+                                RETURN_SUCCESS)
 
 
 def main() -> int:
