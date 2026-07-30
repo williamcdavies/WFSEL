@@ -16,13 +16,23 @@ import numpy             as np
 import pandas            as pd
 import seaborn           as sns
 
+from pygam import LinearGAM, s
+
 # Local Application/Library Specific Imports
-from lib.esa.vars import (ECVS, 
-                          MEASURES,
-                          LOWER_QUARTILE,
-                          UPPER_QUARTILE)
-from lib.io.vars  import (RETURN_FAILURE, 
-                          RETURN_SUCCESS)
+from lib.lakes_cci.vars import (ECVS, 
+                                MEASURES,
+                                LOWER_QUARTILE,
+                                UPPER_QUARTILE)
+from lib.io.vars        import (RETURN_FAILURE, 
+                                RETURN_SUCCESS)
+
+
+def fit(df: pd.DataFrame, ecv: str, measure: str) -> LinearGAM:
+    df_nonan = df.dropna(subset=[f'{ecv}_{measure}'])
+    X        = df_nonan['index'].values
+    y        = df_nonan[[f'{ecv}_{measure}']].values
+
+    return LinearGAM(s(0)).fit(X, y)
 
 
 def load(dir_paths: list[pathlib.Path], lakes_cci_id: int) -> list[pd.DataFrame]:
@@ -30,8 +40,9 @@ def load(dir_paths: list[pathlib.Path], lakes_cci_id: int) -> list[pd.DataFrame]
 
     for dir_path in dir_paths:
         csv_paths = sorted(dir_path.glob('*.csv'))
-        data      = [pd.read_csv(csv_path, 
-                                 index_col='id').loc[lakes_cci_id] for csv_path in csv_paths]
+        data      = [(pd.read_csv(csv_path, 
+                                  index_col='id')
+                        .loc[lakes_cci_id]) for csv_path in csv_paths]
 
         dataframes.append(pd.DataFrame(data).reset_index(drop=True))
 
@@ -94,7 +105,7 @@ def main() -> int:
                        for (year, 
                             count_of_smoke_days) 
                        in (count_of_smoke_days_csv.loc[args.lakes_cci_id]
-                           .items()) 
+                                                  .items()) 
                        if count_of_smoke_days <= LOWER_QUARTILE]
     high_smoke_years = [year 
                         for (year, 
@@ -136,12 +147,22 @@ def main() -> int:
                                  in high_smoke_year_dataframes]
     
     # 6. Concatenate dataframes (allows us to include multiple
-    #    dataframes in the sample set for our general additive model
-    #    (GAM))
-    low_smoke_years_dataframe  = pd.concat(low_smoke_year_dataframes)
-    high_smoke_years_dataframe = pd.concat(high_smoke_year_dataframes)
+    #    dataframes in the sample set for our general additive models
+    #    (GAMs))
+    low_smoke_years_dataframe  = pd.concat(low_smoke_year_dataframes, 
+                                           ignore_index=True)
+    high_smoke_years_dataframe = pd.concat(high_smoke_year_dataframes, 
+                                           ignore_index=True)
 
-    # 7. Plot
+    # 7.
+    high_smoke_years_gam = fit(high_smoke_years_dataframe, 
+                                args.ecv, 
+                                args.measure)
+    low_smoke_years_gam  = fit(low_smoke_years_dataframe, 
+                               args.ecv, 
+                               args.measure)
+
+    # 8. Plot
     _, ax = plt.subplots()
 
     plt.title('Title', 
@@ -153,22 +174,33 @@ def main() -> int:
                   fontsize=14)
     ax.grid(True, alpha=0.25)
 
-    sns.regplot(data=low_smoke_years_dataframe,
-                x='index',
-                y=f'{args.ecv}_{args.measure}',
-                order=4,
-                color='red',
-                scatter_kws={"alpha": 0.25, 
-                             "edgecolor": "none"},
-                ax=ax)
-    sns.regplot(data=high_smoke_years_dataframe,
-                x='index',
-                y=f'{args.ecv}_{args.measure}',
-                order=4,
-                color='blue',
-                scatter_kws={"alpha": 0.25, 
-                             "edgecolor": "none"},
-                ax=ax)
+    sns.scatterplot(data=low_smoke_years_dataframe,
+                    x='index',
+                    y=f'{args.ecv}_{args.measure}',
+                    ax=ax,
+                    alpha=0.25,
+                    edgecolor='none',
+                    color='grey')
+    low_smoke_years_X = np.linspace(low_smoke_years_dataframe['index'].min(), 
+                                    low_smoke_years_dataframe['index'].max(), 
+                                    low_smoke_years_dataframe['index'].max())
+    ax.plot(low_smoke_years_X, 
+            low_smoke_years_gam.predict(low_smoke_years_X), 
+            color='grey')
+    
+    sns.scatterplot(data=high_smoke_years_dataframe,
+                    x='index',
+                    y=f'{args.ecv}_{args.measure}',
+                    ax=ax,
+                    alpha=0.25,
+                    edgecolor='none',
+                    color='orange')
+    high_smoke_years_X = np.linspace(high_smoke_years_dataframe['index'].min(), 
+                                     high_smoke_years_dataframe['index'].max(),
+                                     high_smoke_years_dataframe['index'].max())
+    ax.plot(high_smoke_years_X, 
+            high_smoke_years_gam.predict(high_smoke_years_X), 
+            color='orange')
 
     plt.show()
 
