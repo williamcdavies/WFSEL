@@ -30,7 +30,7 @@ from lib.io.vars        import (RETURN_FAILURE,
 def fit(df: pd.DataFrame, ecv: str, measure: str) -> LinearGAM:
     df_nonan = df.dropna(subset=[f'{ecv}_{measure}'])
     X        = df_nonan['index'].values
-    y        = df_nonan[[f'{ecv}_{measure}']].values
+    y        = df_nonan[f'{ecv}_{measure}'].values
 
     return LinearGAM(s(0)).fit(X, y)
 
@@ -52,7 +52,7 @@ def load(dir_paths: list[pathlib.Path], lakes_cci_id: int) -> list[pd.DataFrame]
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = argparse.ArgumentParser(prog='ecv.py',
+    parser = argparse.ArgumentParser(prog='view_gam.py',
                                      usage='%(prog)s [options]', 
                                      description='''''')
 
@@ -154,7 +154,10 @@ def main() -> int:
     high_smoke_years_dataframe = pd.concat(high_smoke_year_dataframes, 
                                            ignore_index=True)
 
-    # 7.
+    # low_smoke_years_dataframe[f'{args.ecv}_{args.measure}']  = low_smoke_years_dataframe[f'{args.ecv}_{args.measure}'].apply(lambda x: x - 273.15)
+    # high_smoke_years_dataframe[f'{args.ecv}_{args.measure}'] = high_smoke_years_dataframe[f'{args.ecv}_{args.measure}'].apply(lambda x: x - 273.15)
+
+    # 7. GAM!
     high_smoke_years_gam = fit(high_smoke_years_dataframe, 
                                 args.ecv, 
                                 args.measure)
@@ -165,13 +168,17 @@ def main() -> int:
     # 8. Plot
     _, ax = plt.subplots()
 
-    plt.title('Title', 
+    plt.title('Lake _: _', 
               fontsize=18)
     
-    ax.set_xlabel(ax.get_xlabel(), 
+    ax.set_xlabel('Day', 
                   fontsize=14)
-    ax.set_ylabel(ax.get_ylabel(), 
+    ax.set_ylabel('_ (_)', 
                   fontsize=14)
+    # ax.set_xlim(1, 
+    #             366)
+    # ax.set_ylim(0, 
+    #             0)
     ax.grid(True, alpha=0.25)
 
     sns.scatterplot(data=low_smoke_years_dataframe,
@@ -186,7 +193,8 @@ def main() -> int:
                                     low_smoke_years_dataframe['index'].max())
     ax.plot(low_smoke_years_X, 
             low_smoke_years_gam.predict(low_smoke_years_X), 
-            color='grey')
+            color='grey',
+            label=f'Low smoke years: {low_smoke_years}')
     
     sns.scatterplot(data=high_smoke_years_dataframe,
                     x='index',
@@ -194,14 +202,16 @@ def main() -> int:
                     ax=ax,
                     alpha=0.25,
                     edgecolor='none',
-                    color='orange')
+                    color='blue')
     high_smoke_years_X = np.linspace(high_smoke_years_dataframe['index'].min(), 
                                      high_smoke_years_dataframe['index'].max(),
                                      high_smoke_years_dataframe['index'].max())
     ax.plot(high_smoke_years_X, 
             high_smoke_years_gam.predict(high_smoke_years_X), 
-            color='orange')
+            color='blue',
+            label=f'High smoke years: {high_smoke_years}')
 
+    plt.legend()
     plt.show()
 
     return RETURN_SUCCESS

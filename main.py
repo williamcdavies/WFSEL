@@ -19,9 +19,9 @@ import tqdm
 import xarray
 
 # Local Application/Library Specific Imports
-from lib.esa.vars import ECVS
-from lib.io.vars  import (RETURN_SUCCESS, 
-                          RETURN_FAILURE)
+from lib.lakes_cci.vars import ECVS
+from lib.io.vars        import (RETURN_SUCCESS, 
+                                RETURN_FAILURE)
 
 
 # Warning stuff
