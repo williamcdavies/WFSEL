@@ -30,7 +30,7 @@ COPY (
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2021) AS "2021",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2022) AS "2022",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2023) AS "2023"
-    FROM esa_lakes AS l
+    FROM lakes_cci_lakes AS l
     LEFT JOIN hms_smokes AS s
         ON ST_INTERSECTS(s.geom, l.geom)
         AND s.density > 1
