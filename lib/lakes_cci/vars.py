@@ -21,5 +21,5 @@ MEASURES       = ['mean',
                   'var', 
                   'max', 
                   'min']
-LOWER_QUARTILE = 6
-UPPER_QUARTILE = 27
+LOWER_QUARTILE = 7
+UPPER_QUARTILE = 24
