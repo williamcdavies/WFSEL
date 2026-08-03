@@ -16,7 +16,7 @@
 
 COPY (
     SELECT
-        l.id                                                           AS "lakes_cci_id",
+        l.gid                                                          AS "lakes_cci_id",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2011) AS "2011",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2012) AS "2012",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2013) AS "2013",
@@ -35,6 +35,6 @@ COPY (
         ON ST_INTERSECTS(s.geom, l.geom)
         AND s.density > 1
         AND s.start_year BETWEEN 2011 AND 2023
-    GROUP BY l.id
-    ORDER BY l.id
+    GROUP BY l.gid
+    ORDER BY l.gid
 ) TO STDOUT WITH (FORMAT CSV, HEADER);

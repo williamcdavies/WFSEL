@@ -9,15 +9,17 @@
 COPY (
     WITH x AS (
         SELECT
-            l.name       AS "name",
-            lp.geom_4326 AS "geom"
-        FROM lakes       AS l
-        JOIN lakes_polys AS lp
-        ON l.id = lp.id
-        WHERE l.id = :lakes_id
+            l.gid,
+            l.short_name,
+            l.name,
+            l.geom
+        FROM lakes_cci_lakes AS l
+        WHERE l.gid = :lakes_cci_id
     )
-    SELECT
-        x.name      AS "name",
+    SELECT DISTINCT ON (s.start_day)
+        x.gid,
+        x.short_name,
+        x.name,
         s.start_day AS "day"
     FROM :hms_smokes_table AS s
     JOIN x                 AS x
