@@ -1,5 +1,5 @@
 r'''
-view_ecv.py
+view_one_smoke_year.py
 
 Written by William Chuter-Davies
 '''
@@ -26,7 +26,7 @@ from lib.io.vars        import (RETURN_FAILURE,
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = argparse.ArgumentParser(prog='view_ecv.py',
+    parser = argparse.ArgumentParser(prog='view_one_smoke_year.py',
                                      usage='%(prog)s [options]', 
                                      description='''Produces a
                                                  time-series
@@ -133,9 +133,9 @@ def main() -> int:
     # > `ecv_x` is 1-indexed to prevent misalignment between regression
     # > and histogram plots.
 
-    # Read `smoke_days_data_csv` into `args.smoke_days_csv_path`
-    smoke_days_data_csv = (pd.read_csv(args.smoke_days_csv_path)
-                      .drop_duplicates('day'))
+    # Read `smoke_days_csv` into `args.smoke_days_csv_path`
+    smoke_days_csv = (pd.read_csv(args.smoke_days_csv_path)
+                        .drop_duplicates('day'))
 
     _, ax_regplot = plt.subplots()
     ax_histplot   = ax_regplot.twinx()
@@ -153,7 +153,7 @@ def main() -> int:
     ax_regplot.set_ylabel(args.y_label)
     ax_histplot.set_axis_on()
 
-    sns.histplot(x=smoke_days_data_csv.day, 
+    sns.histplot(x=smoke_days_csv.day, 
                 bins=ecv_x,
                 ax=ax_histplot,
                 color=args.hist_colour,
