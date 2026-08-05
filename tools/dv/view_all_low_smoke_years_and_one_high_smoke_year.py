@@ -233,7 +233,7 @@ def main() -> int:
                          1)
     ax_histplot.set_axis_off()
 
-    plt.title('Lake _: _', 
+    plt.title(f'_ ({args.lakes_cci_id}): Mean {args.ecv} Measurements', 
               fontsize=18)
     plt.show()
 
