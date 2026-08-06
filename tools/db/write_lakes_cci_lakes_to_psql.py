@@ -31,7 +31,13 @@ def main() -> int:
     # ==================================================================================================
     parser = argparse.ArgumentParser(prog='write_lakes_cci_lakes_to_psql.py',
                                      usage='%(prog)s [options]', 
-                                     description='''''')
+                                     description='''Writes ESA Lakes
+                                                 Climate Change
+                                                 Initiative (Lakes_cci):
+                                                 Lake products, Version
+                                                 3.0 metadata and
+                                                 geometries to psql for
+                                                 use with PostGIS.''')
 
     # Positional arguments
     parser.add_argument('lakes_cci_static_mask_nc_path', 
