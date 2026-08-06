@@ -26,12 +26,19 @@ def main() -> int:
     # ==================================================================================================
     parser = argparse.ArgumentParser(prog='ecv.py',
                                      usage='%(prog)s [options]', 
-                                     description='''''')
+                                     description='''Produces a
+                                                 distribution
+                                                 visualisation of the
+                                                 "count of smoke days"
+                                                 for all lake-smoke
+                                                 years from [2011,
+                                                 2023].''')
 
     # Positional arguments
     parser.add_argument('count_of_smoke_days_csv_path', 
                         type=pathlib.Path,
-                        help='''''')
+                        help='''Count of smoke days data as produced by
+                             `tools/db/query_count_of_smoke_days.sql''')
     
     args = parser.parse_args()
     # ==================================================================================================
