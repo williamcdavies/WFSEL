@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Usage ./fast_view_all_low_smoke_years_and_one_high_smoke_year.sh <lakes_cci_id> <ecv> <measure>
+
 LAKES_CCI_ID="${1}"
 ECV="${2}"
 MEASURE="${3}"
