@@ -21,7 +21,7 @@ LAKES_CCI_ID = 'lakes_cci_id'
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = argparse.ArgumentParser(prog='comp_lakes_cci_lakes_trophic_states.py', 
+    parser = argparse.ArgumentParser(prog='comp_lakes_cci_id_trophic_class.py', 
                                      usage='%(prog)s [options]', 
                                      description='''Computes trophic
                                                  state classifications
@@ -77,7 +77,7 @@ def main() -> int:
     df                  = df.drop(CHLA_MEAN, 
                                   axis=1)
 
-    df.to_csv('data/lakes_cci_lakes_trophic_states.csv')
+    df.to_csv('data/lakes_cci_id_trophic_class.csv')
 
     return RETURN_SUCCESS
     # ==================================================================================================
