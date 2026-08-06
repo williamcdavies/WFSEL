@@ -1,4 +1,4 @@
--- query_count_of_smoke_days.sql
+-- query_lakes_cci_id_hylak_id.sql
 
 -- Description: Queries HYDROLakes v1.0 polygons against ESA Lakes
 -- Climate Change Initiative (Lakes_cci): Lake products, Version 3.0

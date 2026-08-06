@@ -1,4 +1,4 @@
--- query_count_of_smoke_days.sql
+-- query_lakes_cci_id_count_of_smoke_days.sql
 
 -- Description: 
 --    Queries count of smoke days for all lakes in spatial.esa_lakes
