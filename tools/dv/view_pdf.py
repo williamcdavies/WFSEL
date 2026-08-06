@@ -24,7 +24,7 @@ from lib.io.vars import (RETURN_FAILURE,
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = argparse.ArgumentParser(prog='ecv.py',
+    parser = argparse.ArgumentParser(prog='view_pdf.py',
                                      usage='%(prog)s [options]', 
                                      description='''Produces a
                                                  distribution
