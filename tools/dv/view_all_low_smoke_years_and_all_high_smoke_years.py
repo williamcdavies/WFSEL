@@ -57,7 +57,23 @@ def main() -> int:
     # ==================================================================================================
     parser = argparse.ArgumentParser(prog='view_all_low_smoke_years_and_all_high_smoke_years.py',
                                      usage='%(prog)s [options]', 
-                                     description='''''')
+                                     description='''Produces a
+                                                 time-series
+                                                 visualisation of a
+                                                 Lakes ECV for a single
+                                                 lake. Lake-smoke years
+                                                 whose "count of smoke
+                                                 days" is greater than
+                                                 or equal to
+                                                 `UPPER_QUARTILE` are
+                                                 considered "high smoke
+                                                 years". Lake-smoke
+                                                 years whose "count of
+                                                 smoke days" is less
+                                                 than or equal to
+                                                 `LOWER_QUARTILE` are
+                                                 considered "low smoke
+                                                 years".''')
 
     # Positional arguments
     parser.add_argument('lakes_cci_id', 
