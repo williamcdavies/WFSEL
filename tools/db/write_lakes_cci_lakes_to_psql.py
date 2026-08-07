@@ -22,12 +22,10 @@ import tqdm
 import xarray
 
 # Local Application/Library Specific Imports
-from lib.io.vars import (RETURN_FAILURE, 
-                         RETURN_SUCCESS)
-from lib.lakes_cci.utils import (add_argument_lakes_cci_merged_prod_nc_path,  
-                                 add_argument_lakes_cci_meta_data_csv_path, 
+from lib.io.vars         import (RETURN_FAILURE, 
+                                 RETURN_SUCCESS)
+from lib.lakes_cci.utils import (add_argument_lakes_cci_meta_data_csv_path, 
                                  add_argument_lakes_cci_static_mask_nc_path, 
-                                 argument_lakes_cci_merged_prod_nc_path_exists, 
                                  argument_lakes_cci_meta_data_csv_path_exists, 
                                  argument_lakes_cci_static_mask_nc_path_exists)
 

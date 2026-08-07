@@ -19,6 +19,8 @@ import seaborn
 # Local Application/Library Specific Imports
 from lib.io.vars import (RETURN_FAILURE, 
                          RETURN_SUCCESS)
+from lib.lakes_cci.utils import (add_argument_lakes_cci_count_of_smoke_days_csv_path, 
+                                 argument_lakes_cci_count_of_smoke_days_csv_path_exists)
 
 
 def main() -> int:
@@ -35,31 +37,23 @@ def main() -> int:
                                                  2023].''')
 
     # Positional arguments
-    parser.add_argument('lakes_cci_id_count_of_smoke_days_csv_path', 
-                        type=pathlib.Path,
-                        help=f'''path to smoke days data csv as produced
-                              by
-                              tools/db/query_lakes_cci_id_count_of_smoke_days.sql''')
+    add_argument_lakes_cci_count_of_smoke_days_csv_path(parser)
     
     args = parser.parse_args()
     # ==================================================================================================
 
     # Argument validation
     # ==================================================================================================
-    # If `args.lakes_cci_id_count_of_smoke_days_csv_path` does not exist, return with
-    # `RETURN_FAILURE`
-    if not args.lakes_cci_id_count_of_smoke_days_csv_path.exists():
-        print(f'''error: argument
-               lakes_cci_id_count_of_smoke_days_csv_path: no such file
-               or directory:
-               {args.lakes_cci_id_count_of_smoke_days_csv_path}''')
-        
+    # If `args.lakes_cci_count_of_smoke_days_csv_path` does not exist,
+    # return with `RETURN_FAILURE`
+    if not argument_lakes_cci_count_of_smoke_days_csv_path_exists(args.lakes_cci_count_of_smoke_days_csv_path, 
+                                                                    loud=True):
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    wide_df = pandas.read_csv(args.lakes_cci_id_count_of_smoke_days_csv_path)
+    wide_df = pandas.read_csv(args.lakes_cci_count_of_smoke_days_csv_path)
     long_df = wide_df.melt(id_vars='lakes_cci_id', 
                            var_name='year', 
                            value_name='count_of_smoke_days')

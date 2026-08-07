@@ -78,17 +78,17 @@ def comp_with_inf_buffer(lakes_cci_merged_prod_nc_path: pathlib.Path,
             geometry_mask = (clipped_stat_mask_ds['CCI_lakeid'].values == lakes_cci_id)
 
             # Read `chla` values into `reference_ecv_values`
-            reference_ecv_values = clipped_merg_prod_ds['chla'].values
+            reference_lakes_cci_ecv_values = clipped_merg_prod_ds['chla'].values
 
             # Read masked `chla` values into `reference_ecv_data`
-            reference_ecv_data = reference_ecv_values[:, geometry_mask]
+            reference_lakes_cci_ecv_data = reference_lakes_cci_ecv_values[:, geometry_mask]
             
             # If geometry mask contains no `True` pixels, or complete
             # spatial coverage is less than 80%, write NaN record and
             # continue
             if (geometry_mask.sum() == 0 or 
-                (numpy.isnan(reference_ecv_data)
-                      .sum(axis=-1)[0]) > (0.2 * reference_ecv_data.shape[-1])):
+                (numpy.isnan(reference_lakes_cci_ecv_data)
+                      .sum(axis=-1)[0]) > (0.2 * reference_lakes_cci_ecv_data.shape[-1])):
                for lakes_cci_ecv in LAKES_CCI_ECVS:
                   record.update({
                      f'{lakes_cci_ecv}_mean':   numpy.nan,
@@ -179,10 +179,10 @@ def comp_with_fin_buffer(buffer:                        int,
          geometry_mask = (clipped_stat_mask_ds['CCI_lakeid'].values == lakes_cci_id)
 
          # Read `chla` values into `reference_ecv_values`
-         reference_ecv_values = clipped_merg_prod_ds['chla'].values
+         reference_lakes_cci_ecv_values = clipped_merg_prod_ds['chla'].values
 
          # Read masked `chla` values into `reference_ecv_data`
-         reference_ecv_data = reference_ecv_values[:, geometry_mask]
+         reference_lakes_cci_ecv_data = reference_lakes_cci_ecv_values[:, geometry_mask]
          
          # If `clipped_merg_prod_ds` buffer window is not (1 + (2 *
          # `buffer`)) by (1 + (2 * `buffer`)), or `clipped_stat_mask_ds`
@@ -195,8 +195,8 @@ def comp_with_fin_buffer(buffer:                        int,
              clipped_stat_mask_ds.sizes['lat'] != (1 + (2 * buffer)) or
              clipped_stat_mask_ds.sizes['lon'] != (1 + (2 * buffer)) or
              geometry_mask.sum() == 0 or
-             (numpy.isnan(reference_ecv_data)
-                   .sum(axis=-1)[0]) > (0.2 * reference_ecv_data.shape[-1])):
+             (numpy.isnan(reference_lakes_cci_ecv_data)
+                   .sum(axis=-1)[0]) > (0.2 * reference_lakes_cci_ecv_data.shape[-1])):
             for lakes_cci_ecv in LAKES_CCI_ECVS:
                record.update({
                   f'{lakes_cci_ecv}_mean':   numpy.nan,

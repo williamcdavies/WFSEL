@@ -17,15 +17,14 @@ import numpy  as np
 import pandas as pd
 
 # Local Application/Library Specific Imports
-from lib.io.vars import (RETURN_FAILURE, 
-                         RETURN_SUCCESS)
-from lib.lakes_cci.vars import (COUNT_OF_SMOKE_DAYS_LOWER_BOUND,
-                                COUNT_OF_SMOKE_DAYS_UPPER_BOUND)
+from lib.io.vars         import (RETURN_FAILURE, 
+                                 RETURN_SUCCESS)
 from lib.lakes_cci.utils import (add_argument_lakes_cci_count_of_smoke_days_csv_path, 
                                  add_argument_lakes_cci_ecv_data_dir_path, 
                                  argument_lakes_cci_count_of_smoke_days_csv_path_exists, 
                                  argument_lakes_cci_ecv_data_dir_path_exists)
-
+from lib.lakes_cci.vars  import (COUNT_OF_SMOKE_DAYS_LOWER_BOUND,
+                                 COUNT_OF_SMOKE_DAYS_UPPER_BOUND)
 
 def main() -> int:
     # Argument parsing
@@ -48,14 +47,14 @@ def main() -> int:
     # ==================================================================================================
     # If `args.lakes_cci_ecv_data_dir_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not argument_lakes_cci_ecv_data_dir_path_exists(args.lakes_cci_ecv_data_dir_path):
-
+    if not argument_lakes_cci_ecv_data_dir_path_exists(args.lakes_cci_ecv_data_dir_path, 
+                                                       loud=True):
         return RETURN_FAILURE
 
     # If `args.lakes_cci_count_of_smoke_days_csv_path` does not exist,
     # return with `RETURN_FAILURE`
-    if not argument_lakes_cci_count_of_smoke_days_csv_path_exists(args.lakes_cci_count_of_smoke_days_csv_path):
-
+    if not argument_lakes_cci_count_of_smoke_days_csv_path_exists(args.lakes_cci_count_of_smoke_days_csv_path, 
+                                                                  loud=True):
         return RETURN_FAILURE
     # ==================================================================================================
     
