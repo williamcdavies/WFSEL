@@ -44,7 +44,8 @@ def comp_with_inf_buffer(lakes_cci_merged_prod_nc_path: pathlib.Path,
    with (xarray.open_dataset(lakes_cci_merged_prod_nc_path) as merg_prod_ds, 
          xarray.open_dataset(lakes_cci_static_mask_nc_path) as stat_mask_ds):
          # Open DataFrame specified by `lakes_cci_meta_data_csv_path`
-         lakes_cci_meta_data_csv = pandas.read_csv(lakes_cci_meta_data_csv_path, delimiter=';')
+         lakes_cci_meta_data_csv = pandas.read_csv(lakes_cci_meta_data_csv_path, 
+                                                   delimiter=';')
 
          # For each `row` in `lakes_cci_meta_data_csv` ...
          for row in tqdm.tqdm(lakes_cci_meta_data_csv.itertuples(), 
@@ -140,7 +141,8 @@ def comp_with_fin_buffer(buffer:                        int,
    with (xarray.open_dataset(lakes_cci_merged_prod_nc_path) as merg_prod_ds, 
          xarray.open_dataset(lakes_cci_static_mask_nc_path) as stat_mask_ds):
       # Open DataFrame specified by `lakes_cci_meta_data_csv_path`
-      lakes_cci_meta_data_csv = pandas.read_csv(lakes_cci_meta_data_csv_path, delimiter=';')
+      lakes_cci_meta_data_csv = pandas.read_csv(lakes_cci_meta_data_csv_path, 
+                                                delimiter=';')
 
       # For each `row` in `lakes_cci_meta_data_csv` ...
       for row in tqdm.tqdm(lakes_cci_meta_data_csv.itertuples(), 
