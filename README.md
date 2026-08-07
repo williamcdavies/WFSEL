@@ -29,38 +29,39 @@ The project repository can be found [here](https://github.com/williamcdavies/WFS
 ### main.py
 
 #### Description
-The purpose of main.py is to produce a .csv file containing mean, median, variance, maximum, and minimum values for each Lakes ECV in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']` for each lake within the candidate set given an ESA Lakes_cci v3.0 dataset, ESA_CCI_static_lake_mask.nc, lakescci_v2.1_metadata.csv, and an output destination.
+The purpose of main.py is to produces a .csv file containing the mean, median, variance, maximum, and minimum values for each Lakes ECVs in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']` for each lake within the candidate set given a infinite or finite buffer, ESA Lakes_cci v3.0 dataset, lakescci_v2.1_metadata.csv, and an output destination.
 
 #### Strategy
 1. Open the ESA Lakes CCI v3.0 dataset as an `xarray.DataSet`
 2. Open the ESA_CCI_static_lake_mask.nc dataset as an `xarray.DataSet `
 3. Open the lakescci_v2.1_metadata.csv file as a `pandas.DataFrame`
 4. For each row in lakescci_v2.1_metadata.csv:
-    1. Use `lat_max_box`, `lat_min_box`, `lon_max_box`, and `lon_min_box` to define the lake's bounding box
-    2. Clip the ESA Lakes CCI v3.0 DataSet to the lake's bounding box
-    3. Clip the ESA_CCI_static_lake_mask.nc DataSet to the lake's bounding box
+    1. Use `lat_max_box`, `lat_min_box`, `lon_max_box`, and `lon_min_box` to define the lake's bounding box or centroid
+    2. Clip the ESA Lakes CCI v3.0 DataSet to the lake's bounding box or centroid
+    3. Clip the ESA_CCI_static_lake_mask.nc DataSet to the lake's bounding box or centroid
     4. Create a lake geometry mask using the ESA_CCI_static_lake_mask DataSet
     5. For each Lakes ECV in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']`:
         1. Apply the geometry mask against the clipped Lakes CCI v3.0 DataSet to extract the Lakes ECV values within the lake
         2. Calculate the `numpy.nanmean`, `numpy.nanmedian`, `numpy.nanvar`, `numpy.nanmax`, and `numpy.nanmin` of the extracted values
-        3. Write the statistics to the output destination
+        3. Write the statistics to the output destination csv file
 
 #### Input
-main.py takes four arguments:
-1. `lakes_cci_merg_prod_nc_path`: The path to an [ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc](https://dap.ceda.ac.uk/neodc/esacci/lakes/data/lake_products/L3S/v3.0/merged_product/) file
-2. `lakes_cci_stat_mask_nc_path`: The path to the [ESA_CCI_static_lake_mask.nc](https://dap.ceda.ac.uk/neodc/esacci/lakes/data/lake_products/L3S/v3.0/ESA_CCI_static_lake_mask.nc) file
-3. `csv_path`: The path to the lakescci_v2.1_metadata.csv file.
-4. `dst_path`: The destination path.
+main.py takes five arguments:
+1. `lakes_cci_merg_prod_nc_path`: Path to some `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` file as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0
+2. `lakes_cci_static_mask_nc_path`: Path to the `ESA_CCI_static_lake_mask.nc` file as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0
+3. `lakes_cci_meta_data_csv_path`: Path to the `lakescci_v2.1.0_metadata.csv` file provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0
+4. `buffer`: n in N | n >= 0 or "inf"
+5. `dst_csv_path` : Path to destination csv file
 
 > [!note]
-> `dst_path` must point to a .csv file.
+> `dst_csv_path` must point to a .csv file.
 
 > [!note]
 > main.py is compatible with any subset of lakescci_v2.1.0_metadata.csv.
 
 > [!example]
 > ```sh
-> >>> python main.py ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20230101-fv3.0.0.nc ESA_CCI_static_lake_mask.nc lakescci_v2.1.0_metadata_filtered ./ESACCI-LAKES-L3S-OUTPUT-20230101-fv3.0.0.csv
+> >>> python main.py ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20230601-fv3.0.0.nc ESA_CCI_static_lake_mask.nc lakescci_v2.1.0_metadata.csv inf ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20230601-fv3.0.0.csv
 > ```
 
 #### Output
@@ -81,4 +82,3 @@ main.py  depends upon `Python >= 3.14` and the following packages:
 
 > [!note]
 > This list specifies program dependencies for main.py. For a list of repository dependencies, see [pyproject.toml](https://github.com/williamcdavies/WFSEL/blob/main/pyproject.toml). For a complete list of repository dependencies and sub-dependencies, see [requirements.txt](https://github.com/williamcdavies/WFSEL/blob/main/requirements.txt).
-
