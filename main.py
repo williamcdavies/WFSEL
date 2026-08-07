@@ -279,19 +279,19 @@ def main() -> int:
    # If `args.lakes_cci_merged_prod_nc_path` does not exist, return with
    # `RETURN_FAILURE`
    if not argument_lakes_cci_merged_prod_nc_path_exists(args.lakes_cci_merged_prod_nc_path, 
-                                                        quiet=False):
+                                                        loud=True):
       return RETURN_FAILURE
 
    # If `args.lakes_cci_static_mask_nc_path` does not exist, return with
    # `RETURN_FAILURE`
    if not argument_lakes_cci_static_mask_nc_path_exists(args.lakes_cci_static_mask_nc_path, 
-                                                        quiet=False):
+                                                        loud=True):
       return RETURN_FAILURE
 
    # If `args.lakes_cci_meta_data_csv_path` does not exist, return with
    # `RETURN_FAILURE`
    if not argument_lakes_cci_meta_data_csv_path_exists(args.lakes_cci_meta_data_csv_path, 
-                                                         quiet=False):
+                                                       loud=True):
       return RETURN_FAILURE
 
    # If `args.buffer` is invalid, return with `RETURN_FAILURE`
