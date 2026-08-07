@@ -8,18 +8,18 @@ Written by William Chuter-Davies
 '''
 
 
-ECVS           = ['chla', 
-                  'tsm', 
-                  'acdom440', 
-                  'Kd490', 
-                  'KdPAR', 
-                  'phycocyanin', 
-                  'lake_surface_water_temperature', 
-                  'lake_surface_water_extent']
-MEASURES       = ['mean', 
-                  'median', 
-                  'var', 
-                  'max', 
-                  'min']
-LOWER_QUARTILE = 7
-UPPER_QUARTILE = 24
+LAKES_CCI_ECVS     = ['chla', 
+                      'tsm', 
+                      'acdom440', 
+                      'Kd490', 
+                      'KdPAR', 
+                      'phycocyanin', 
+                      'lake_surface_water_temperature', 
+                      'lake_surface_water_extent']
+LAKES_CCI_MEASURES = ['mean', 
+                      'median', 
+                      'var', 
+                      'max', 
+                      'min']
+COUNT_OF_SMOKE_DAYS_LOWER_BOUND = 7
+COUNT_OF_SMOKE_DAYS_UPPER_BOUND = 24
