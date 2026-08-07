@@ -35,29 +35,31 @@ def main() -> int:
                                                  2023].''')
 
     # Positional arguments
-    parser.add_argument('count_of_smoke_days_csv_path', 
+    parser.add_argument('lakes_cci_id_count_of_smoke_days_csv_path', 
                         type=pathlib.Path,
-                        help='''Count of smoke days data as produced by
-                             `tools/db/query_count_of_smoke_days.sql''')
+                        help=f'''path to smoke days data csv as produced
+                              by
+                              tools/db/query_lakes_cci_id_count_of_smoke_days.sql''')
     
     args = parser.parse_args()
     # ==================================================================================================
 
     # Argument validation
     # ==================================================================================================
-    # If `args.count_of_smoke_days_csv_path` does not exist, return with
+    # If `args.lakes_cci_id_count_of_smoke_days_csv_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.count_of_smoke_days_csv_path.exists():
-        print(f'''error: argument count_of_smoke_days_csv_path: no such
-               file or directory:
-               {args.count_of_smoke_days_csv_path}''')
+    if not args.lakes_cci_id_count_of_smoke_days_csv_path.exists():
+        print(f'''error: argument
+               lakes_cci_id_count_of_smoke_days_csv_path: no such file
+               or directory:
+               {args.lakes_cci_id_count_of_smoke_days_csv_path}''')
         
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    wide_df = pandas.read_csv(args.count_of_smoke_days_csv_path)
+    wide_df = pandas.read_csv(args.lakes_cci_id_count_of_smoke_days_csv_path)
     long_df = wide_df.melt(id_vars='lakes_cci_id', 
                            var_name='year', 
                            value_name='count_of_smoke_days')

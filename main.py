@@ -19,7 +19,7 @@ import tqdm
 import xarray
 
 # Local Application/Library Specific Imports
-from lib.lakes_cci.vars import ECVS
+from lib.lakes_cci.vars import LAKES_CCI_ECVS
 from lib.io.vars        import (RETURN_SUCCESS, 
                                 RETURN_FAILURE)
 
@@ -81,7 +81,7 @@ def comp_with_inf_buffer(lakes_cci_merged_prod_nc_path: pathlib.Path,
             # continue
             if (geometry_mask.sum() == 0 or 
                 numpy.isnan(reference_ecv_data).sum(axis=-1)[0] > (0.2 * reference_ecv_data.shape[-1])):
-               for ecv in ECVS:
+               for ecv in LAKES_CCI_ECVS:
                   record.update({
                      f'{ecv}_mean':   numpy.nan,
                      f'{ecv}_median': numpy.nan,
@@ -95,7 +95,7 @@ def comp_with_inf_buffer(lakes_cci_merged_prod_nc_path: pathlib.Path,
                continue
 
             # For each `ecv` in `ECVS`:
-            for ecv in ECVS:
+            for ecv in LAKES_CCI_ECVS:
                # Read ecv values into `ecv_values`
                ecv_values = clipped_merg_prod_ds[ecv].values
 
@@ -186,7 +186,7 @@ def comp_with_fin_buffer(buffer:                        int,
              clipped_stat_mask_ds.sizes['lon'] != (1 + (2 * buffer)) or
              geometry_mask.sum() == 0 or
              numpy.isnan(reference_ecv_data).sum(axis=-1)[0] > (0.2 * reference_ecv_data.shape[-1])):
-            for ecv in ECVS:
+            for ecv in LAKES_CCI_ECVS:
                record.update({
                   f'{ecv}_mean':   numpy.nan,
                   f'{ecv}_median': numpy.nan,
@@ -200,7 +200,7 @@ def comp_with_fin_buffer(buffer:                        int,
             continue
 
          # For each `ecv` in `ECVS`:
-         for ecv in ECVS:
+         for ecv in LAKES_CCI_ECVS:
             # Read ecv values into `ecv_data`
             ecv_values = clipped_merg_prod_ds[ecv].values
 

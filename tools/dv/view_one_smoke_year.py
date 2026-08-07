@@ -46,14 +46,14 @@ def main() -> int:
     parser.add_argument('measure',
                         type=str,
                         help=f'''one of {MEASURES}''')
-    parser.add_argument('ecv_data_dir_path',
+    parser.add_argument('lakes_cci_ecv_data_dir_path',
                         type=pathlib.Path,
                         help=f'''path to Lakes ECV data directory as
                               produced by main.py''')
-    parser.add_argument('smoke_days_csv_path',
+    parser.add_argument('lakes_cci_id_smoke_days_path',
                         type=pathlib.Path,
                         help=f'''path to smoke days csv as produced by
-                              tools/db/query_smoke_days.sql''')
+                              tools/db/query_lakes_cci_id_smoke_days.sql''')
 
     # Optional arguments
     parser.add_argument('--x_label', 
@@ -82,44 +82,48 @@ def main() -> int:
 
     # Argument validation
     # ==================================================================================================
-    # If `args.ecv_data_dir_path` does not exist, return with
+    # If `args.lakes_cci_ecv_data_dir_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.ecv_data_dir_path.exists():
-        print(f'''error: argument ecv_data_dir_path: no such file or
-               directory: {args.ecv_data_dir_path}''')
+    if not args.lakes_cci_ecv_data_dir_path.exists():
+        print(f'''error: argument lakes_cci_ecv_data_dir_path: no such
+               file or directory: {args.lakes_cci_ecv_data_dir_path}''')
         
         return RETURN_FAILURE
     
-    # If `args.smoke_days_csv_path` does not exist, return with
+    # If `args.lakes_cci_id_smoke_days_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.smoke_days_csv_path.exists():
-        print(f'''error: argument smoke_days_csv_path: no such file or
-               directory: {args.smoke_days_csv_path}''')
+    if not args.lakes_cci_id_smoke_days_path.exists():
+        print(f'''error: argument lakes_cci_id_smoke_days_path: no such
+               file or directory:
+               {args.lakes_cci_id_smoke_days_path}''')
         
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    # Read `args.ecv_data_dir_path` into `ecv_data_csv_paths`
-    ecv_data_csv_paths = sorted(args.ecv_data_dir_path.glob('*.csv'))
+    # Read `args.lakes_cci_ecv_data_dir_path` into
+    # `lakes_cci_ecv_data_csv_paths`
+    lakes_cci_ecv_data_csv_paths = sorted(args.lakes_cci_ecv_data_dir_path.glob('*.csv'))
 
-    # > [!note]
-    # > It is assumed that `args.ecv_data_dir_path` does not contain any
-    # > subdirectories that would contain any target csvs. i.e.,
-    # > `pathlib.Path.glob()` is not recursive
+    # > [!note] 
+    # > It is assumed that `args.lakes_cci_ecv_data_dir_path` does not
+    # > contain any subdirectories that would contain any target csvs.
+    # > i.e., `pathlib.Path.glob()` is not recursive
 
     ecv_data = []
 
-    # For each `ecv_data_csv_path` in `ecv_data_csv_paths` ...
-    for ecv_data_csv_path in ecv_data_csv_paths:
-        # Read `ecv_data_csv_path` into `ecv_data_csv`
-        ecv_data_csv = pd.read_csv(ecv_data_csv_path)
+    # For each `lakes_cci_ecv_data_csv_path` in
+    # `lakes_cci_ecv_data_csv_paths` ...
+    for lakes_cci_ecv_data_csv_path in lakes_cci_ecv_data_csv_paths:
+        # Read `lakes_cci_ecv_data_csv_path` into
+        # `lakes_cci_ecv_data_csv`
+        lakes_cci_ecv_data_csv = pd.read_csv(lakes_cci_ecv_data_csv_path)
         
         # Append the Lakes ECV value at `[ecv_data_csv['id'] ==
         # args.lakes_cci_id, f'{args.ecv}_{args.measure}']` to
         # `ecv_data`
-        ecv_data.append(ecv_data_csv.loc[ecv_data_csv['id'] == args.lakes_cci_id, 
+        ecv_data.append(lakes_cci_ecv_data_csv.loc[lakes_cci_ecv_data_csv['id'] == args.lakes_cci_id, 
                                          f'{args.ecv}_{args.measure}'].item()) # type: ignore[attr-defined]
 
     ecv_x       = np.arange(1, 
@@ -133,9 +137,9 @@ def main() -> int:
     # > `ecv_x` is 1-indexed to prevent misalignment between regression
     # > and histogram plots.
 
-    # Read `smoke_days_csv` into `args.smoke_days_csv_path`
-    smoke_days_csv = (pd.read_csv(args.smoke_days_csv_path)
-                        .drop_duplicates('day'))
+    # Read `lakes_cci_id_smoke_days` into `args.lakes_cci_id_smoke_days_path`
+    lakes_cci_id_smoke_days = (pd.read_csv(args.lakes_cci_id_smoke_days_path)
+                                 .drop_duplicates('day'))
 
     _, ax_regplot = plt.subplots()
     ax_histplot   = ax_regplot.twinx()
@@ -153,7 +157,7 @@ def main() -> int:
     ax_regplot.set_ylabel(args.y_label)
     ax_histplot.set_axis_on()
 
-    sns.histplot(x=smoke_days_csv.day, 
+    sns.histplot(x=lakes_cci_id_smoke_days.day, 
                 bins=ecv_x,
                 ax=ax_histplot,
                 color=args.hist_colour,

@@ -85,67 +85,78 @@ def main() -> int:
     parser.add_argument('measure',
                         type=str,
                         help=f'''one of {MEASURES}''')
-    parser.add_argument('ecv_data_dir_path',
+    parser.add_argument('lakes_cci_ecv_data_dir_path',
                         type=pathlib.Path,
                         help=f'''path to Lakes ECV data directory as
                               produced by main.py''')
-    parser.add_argument('count_of_smoke_days_csv_path',
+    parser.add_argument('lakes_cci_id_count_of_smoke_days_csv_path',
                         type=pathlib.Path,
                         help=f'''path to smoke days data csv as produced
                               by
-                              tools/db/query_count_of_smoke_days.sql''')
-    parser.add_argument('smoke_days_csv_path',
+                              tools/db/query_lakes_cci_id_count_of_smoke_days.sql''')
+    parser.add_argument('lakes_cci_id_smoke_days_csv_path',
                             type=pathlib.Path,
-                            help=f'''path to smoke days csv as produced by
-                                  tools/db/query_smoke_days.sql''')
+                            help=f'''path to smoke days csv as produced
+                                  by
+                                  tools/db/query_lakes_cci_id_smoke_days.sql''')
 
     args = parser.parse_args()
     # ==================================================================================================
 
     # Argument validation
     # ==================================================================================================
-    # If `args.count_of_smoke_days_csv_path` does not exist, return with
+    # If `args.lakes_cci_ecv_data_dir_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.count_of_smoke_days_csv_path.exists():
-        print(f'''error: argument count_of_smoke_days_csv_path: no such
+    if not args.lakes_cci_ecv_data_dir_path.exists():
+        print(f'''error: argument lakes_cci_ecv_data_dir_path: no such
+               file or directory: {args.lakes_cci_ecv_data_dir_path}''')
+        
+        return RETURN_FAILURE
+    
+    # If `args.lakes_cci_id_count_of_smoke_days_csv_path` does not
+    # exist, return with `RETURN_FAILURE`
+    if not args.lakes_cci_id_count_of_smoke_days_csv_path.exists():
+        print(f'''error: argument lakes_cci_id_count_of_smoke_days_csv_path: no such
                file or directory:
-               {args.count_of_smoke_days_csv_path}''')
+               {args.lakes_cci_id_count_of_smoke_days_csv_path}''')
         
         return RETURN_FAILURE
 
-    # If `args.smoke_days_csv_path` does not exist, return with
-    # `RETURN_FAILURE`
-    if not args.smoke_days_csv_path.exists():
-        print(f'''error: argument smoke_days_csv_path: no such file or
-                directory: {args.smoke_days_csv_path}''')
+    # If `args.lakes_cci_id_smoke_days_csv_path` does not exist, return
+    # with `RETURN_FAILURE`
+    if not args.lakes_cci_id_smoke_days_csv_path.exists():
+        print(f'''error: argument lakes_cci_id_smoke_days_csv_path: no
+               such file or directory:
+               {args.lakes_cci_id_smoke_days_csv_path}''')
         
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    # 1. Load `count_of_smoke_days.csv` (/output produced by
-    #    `query_count_of_smoke_days.sql`) and `smoke_days.csv` (/output
-    #    produced by `query_smoke_days.sql`)
-    count_of_smoke_days_csv = pd.read_csv(args.count_of_smoke_days_csv_path, 
-                                          index_col='lakes_cci_id')
-    smoke_days_csv          = pd.read_csv(args.smoke_days_csv_path)
+    # 1. Load `lakes_cci_id_count_of_smoke_days.csv` (/output produced
+    #    by `query_lakes_cci_id_count_of_smoke_days.sql`) and
+    #    `lakes_cci_id_smoke_days.csv` (/output produced by
+    #    `query_smoke_days.sql`)
+    lakes_cci_id_count_of_smoke_days_csv = pd.read_csv(args.lakes_cci_id_count_of_smoke_days_csv_path, 
+                                                       index_col='lakes_cci_id')
+    lakes_cci_id_smoke_days_csv          = pd.read_csv(args.lakes_cci_id_smoke_days_csv_path)
     
     # 2. Determine high smoke year and low smoke years
     low_smoke_years = [year 
                        for (year, 
                             count_of_smoke_days) 
-                       in (count_of_smoke_days_csv.loc[args.lakes_cci_id]
-                                                  .items()) 
+                       in (lakes_cci_id_count_of_smoke_days_csv.loc[args.lakes_cci_id]
+                                                               .items()) 
                        if count_of_smoke_days <= LOWER_QUARTILE]
-    high_smoke_year = (count_of_smoke_days_csv.loc[args.lakes_cci_id]
-                                              .idxmax())
+    high_smoke_year = (lakes_cci_id_count_of_smoke_days_csv.loc[args.lakes_cci_id]
+                                                           .idxmax())
 
     # 2. Create paths to ecv data directories. 
-    low_smoke_year_dir_paths  = [pathlib.Path(args.ecv_data_dir_path / f'{year}_3x3') 
+    low_smoke_year_dir_paths  = [pathlib.Path(args.lakes_cci_ecv_data_dir_path / f'{year}_3x3') 
                                  for year 
                                  in low_smoke_years]
-    high_smoke_year_dir_paths = [pathlib.Path(args.ecv_data_dir_path / f'{year}_3x3') 
+    high_smoke_year_dir_paths = [pathlib.Path(args.lakes_cci_ecv_data_dir_path / f'{year}_3x3') 
                                  for year 
                                  in [high_smoke_year]]
     
@@ -226,7 +237,7 @@ def main() -> int:
             color='blue',
             label=f'High smoke year: {high_smoke_year}')
 
-    sns.histplot(x=smoke_days_csv.day, 
+    sns.histplot(x=lakes_cci_id_smoke_days_csv.day, 
                  bins=np.arange(1, 
                                 366), 
                  ax=ax_histplot, 

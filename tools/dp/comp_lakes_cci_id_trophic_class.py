@@ -29,28 +29,43 @@ def main() -> int:
                                                  candidate set.''')
 
     # Positional arguments
-    parser.add_argument('ecv_data_dir_path',
+    parser.add_argument('lakes_cci_ecv_data_dir_path',
                         type=pathlib.Path,
                         help=f'''path to Lakes ECV data directory as
                               produced by main.py''')
+    parser.add_argument('lakes_cci_id_count_of_smoke_days_csv_path',
+                        type=pathlib.Path,
+                        help=f'''path to smoke days data csv as produced
+                              by
+                              tools/db/query_lakes_cci_id_count_of_smoke_days.sql''')
 
     args = parser.parse_args()
     # ==================================================================================================
 
     # Argument validation
     # ==================================================================================================
-    # If `args.ecv_data_dir_path` does not exist, return with
+    # If `args.lakes_cci_ecv_data_dir_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.ecv_data_dir_path.exists():
-        print(f'''error: argument ecv_data_dir_path: no such file or
-               directory: {args.ecv_data_dir_path}''')
+    if not args.lakes_cci_ecv_data_dir_path.exists():
+        print(f'''error: argument lakes_cci_ecv_data_dir_path: no such
+               file or directory: {args.lakes_cci_ecv_data_dir_path}''')
+        
+        return RETURN_FAILURE
+
+    # If `args.lakes_cci_id_count_of_smoke_days_csv_path` does not
+    # exist, return with `RETURN_FAILURE`
+    if not args.lakes_cci_id_count_of_smoke_days_csv_path.exists():
+        print(f'''error: argument
+                lakes_cci_id_count_of_smoke_days_csv_path: no such file
+                or directory:
+                {args.lakes_cci_id_count_of_smoke_days_csv_path}''')
         
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    csv_paths = list(args.ecv_data_dir_path.glob('**/ESA*.csv'))
+    csv_paths = list(args.lakes_cci_ecv_data_dir_path.glob('**/ESA*.csv'))
     data      = []
     
     for csv_path in tqdm.tqdm(csv_paths):
