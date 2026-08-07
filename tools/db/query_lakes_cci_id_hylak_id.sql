@@ -1,15 +1,14 @@
 -- query_lakes_cci_id_hylak_id.sql
 
--- Description: Queries HYDROLakes v1.0 polygons against ESA Lakes
--- Climate Change Initiative (Lakes_cci): Lake products, Version 3.0
--- centroid data to match `hylak_id`s to `lakes_cci_id`s. Of the 667
--- lakes in the candidate set, 15 do not have `hylak_id` where a
--- `lakes_cci_id` is present. 
+-- Description: 
+--     Queries HYDROLakes v1.0 polygons against ESA Lakes
+--     Climate Change Initiative (Lakes_cci): Lake products, Version 3.0
+--     centroid data to match `hylak_id`s to `lakes_cci_id`s. 
 
--- The `lake_cci_id`s of these 15 are as follows:
-
--- [141, 143, 149, 211, 293, 317, 363, 420, 451, 473, 507, 512, 581,
--- 2132, 3171]
+-- Of the 667 lakes in the candidate set, 15 do not have `hylak_id`
+-- where a `lakes_cci_id` is present. The `lake_cci_id`s of these 15 are
+-- as follows: [141, 143, 149, 211, 293, 317, 363, 420, 451, 473, 507,
+-- 512, 581, 2132, 3171]
 
 -- Written by William Chuter-Davies
 

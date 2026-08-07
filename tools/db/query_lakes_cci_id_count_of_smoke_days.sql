@@ -1,10 +1,10 @@
 -- query_lakes_cci_id_count_of_smoke_days.sql
 
 -- Description: 
---    Queries count of smoke days for all lakes in spatial.esa_lakes
---    (Same lakes as provided by as provided by ESA Lakes Climate Change
---    Initiative (Lakes_cci): Lake products, Version 3.0) for each year
---    between 2011--2023 inclusive.
+--     Queries count of smoke days for all lakes in
+--     spatial.esa_lakes (Same lakes as provided by as provided by ESA
+--     Lakes Climate Change Initiative (Lakes_cci): Lake products,
+--     Version 3.0) for each year between 2011--2023 inclusive.
 
 -- | lakes_cci_id | 2011     | $\cdots$ | 2023     |
 -- |:------------ |:-------- |:-------- |:-------- |

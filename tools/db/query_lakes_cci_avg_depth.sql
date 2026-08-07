@@ -1,6 +1,9 @@
 -- query_lakes_cci_avg_depth.sql
 
--- Description: 
+-- Description:
+--     Queries average depth for all lakes in spatial.esa_lakes (Same
+--     lakes as provided by as provided by ESA Lakes Climate Change
+--     Initiative (Lakes_cci): Lake products, Version 3.0)
 
 -- Written by William Chuter-Davies
 
