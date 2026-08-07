@@ -46,6 +46,7 @@ ecv="${2}"
 # Read third argument into `measure`
 measure="${3}"
 
+# Run view_all_low_smoke_years_and_one_high_smoke_year.py on assumed parameters.
 psql -d spatial \
      -v lakes_cci_id="${lakes_cci_id}" \
      -v hms_smokes_table=hms_smokes2021 \
