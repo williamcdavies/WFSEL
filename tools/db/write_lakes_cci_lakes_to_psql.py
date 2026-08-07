@@ -24,6 +24,12 @@ import xarray
 # Local Application/Library Specific Imports
 from lib.io.vars import (RETURN_FAILURE, 
                          RETURN_SUCCESS)
+from lib.lakes_cci.utils import (add_argument_lakes_cci_merged_prod_nc_path,  
+                                 add_argument_lakes_cci_meta_data_csv_path, 
+                                 add_argument_lakes_cci_static_mask_nc_path, 
+                                 argument_lakes_cci_merged_prod_nc_path_exists, 
+                                 argument_lakes_cci_meta_data_csv_path_exists, 
+                                 argument_lakes_cci_static_mask_nc_path_exists)
 
 
 def main() -> int:
@@ -40,40 +46,24 @@ def main() -> int:
                                                  use with PostGIS.''')
 
     # Positional arguments
-    parser.add_argument('lakes_cci_static_mask_nc_path', 
-                        type=pathlib.Path, 
-                        help=f'''path to `ESA_CCI_static_lake_mask.nc`
-                              as provided by ESA Lakes Climate Change
-                              Initiative (Lakes_cci): Lake products,
-                              Version 3.0''')
-    parser.add_argument('lakes_cci_meta_data_csv_path',
-                         type=pathlib.Path,
-                         help=f'''path to `lakescci_v2.1.0_metadata` as
-                               provided by ESA Lakes Climate Change
-                               Initiative (Lakes_cci): Lake products,
-                               Version 3.0''')
+    add_argument_lakes_cci_static_mask_nc_path(parser)
+    add_argument_lakes_cci_meta_data_csv_path(parser)
 
     args = parser.parse_args()
     # ==================================================================================================
 
     # Argument validation
     # ==================================================================================================
-    # If `args.lakes_cci_static_mask_nc_path` does not exist, return
-    # with `RETURN_FAILURE`
-    if not args.lakes_cci_static_mask_nc_path.exists():
-        print(f'''error: argument lakes_cci_static_mask_nc_path: no
-               suchfile or directory:
-               {args.lakes_cci_static_mask_nc_path}''')
-        
+    # If `args.lakes_cci_static_mask_nc_path` does not exist, return with
+    # `RETURN_FAILURE`
+    if not argument_lakes_cci_static_mask_nc_path_exists(args.lakes_cci_static_mask_nc_path, 
+                                                         loud=True):
         return RETURN_FAILURE
-    
+
     # If `args.lakes_cci_meta_data_csv_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.lakes_cci_meta_data_csv_path.exists():
-        print(f'''error: argument lakes_cci_meta_data_csv_path: no such
-               file or directory:
-               {args.lakes_cci_meta_data_csv_path}''')
-        
+    if not argument_lakes_cci_meta_data_csv_path_exists(args.lakes_cci_meta_data_csv_path, 
+                                                        loud=True):
         return RETURN_FAILURE
     # ==================================================================================================
     
@@ -84,7 +74,8 @@ def main() -> int:
     with (xarray.open_dataset(args.lakes_cci_static_mask_nc_path) as stat_mask_ds,
           psycopg.connect("dbname=spatial") as conn):
         # Open DataFrame specified by `lakes_cci_meta_data_csv_path`
-        lakes_cci_meta_data_csv = pandas.read_csv(args.lakes_cci_meta_data_csv_path, delimiter=';')
+        lakes_cci_meta_data_csv = pandas.read_csv(args.lakes_cci_meta_data_csv_path, 
+                                                  delimiter=';')
           
         # For each `row` in `lakes_cci_meta_data_csv` ...
         for row in tqdm.tqdm(lakes_cci_meta_data_csv.itertuples(), 
@@ -112,7 +103,11 @@ def main() -> int:
             clipped_stat_mask_lat_resolution = float(clipped_stat_mask_lats[1] - clipped_stat_mask_lats[0])
             clipped_stat_mask_lon_resolution = float(clipped_stat_mask_lons[1] - clipped_stat_mask_lons[0])
 
-            assert clipped_stat_mask_lon_resolution > 0
+            if clipped_stat_mask_lon_resolution > 0:
+                print(f'''error: unexpected longitude resolution:
+                       {clipped_stat_mask_lon_resolution}''')
+
+                return RETURN_FAILURE
 
             if clipped_stat_mask_lat_resolution < 0:
                 transform = rasterio.transform.from_origin(clipped_stat_mask_lons[0] - (clipped_stat_mask_lon_resolution / 2), 
@@ -132,7 +127,8 @@ def main() -> int:
             polygons = [shapely.geometry.shape(geom) for geom, _ in shapes]
             geometry = shapely.ops.unary_union(polygons)
             
-            if isinstance(geometry, shapely.geometry.Polygon):
+            if isinstance(geometry, 
+                          shapely.geometry.Polygon):
                 geometry = shapely.geometry.MultiPolygon([geometry])
 
             wkb = shapely.to_wkb(geometry)
