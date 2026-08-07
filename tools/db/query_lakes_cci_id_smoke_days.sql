@@ -5,7 +5,8 @@
 
 -- Parameters
 --     lakes_cci_id
---         lakes_cci_id as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0
+--         lakes_cci_id as provided by ESA Lakes Climate Change
+--         Initiative (Lakes_cci): Lake products, Version 3.0
 
 --     hms_smokes_table
 --         One of ['hms_smokes2005', 
