@@ -19,9 +19,15 @@ import tqdm
 import xarray
 
 # Local Application/Library Specific Imports
-from lib.lakes_cci.vars import LAKES_CCI_ECVS
-from lib.io.vars        import (RETURN_SUCCESS, 
-                                RETURN_FAILURE)
+from lib.io.vars         import (RETURN_SUCCESS, 
+                                 RETURN_FAILURE)
+from lib.lakes_cci.utils import (add_argument_lakes_cci_merged_prod_nc_path,  
+                                 add_argument_lakes_cci_meta_data_csv_path, 
+                                 add_argument_lakes_cci_static_mask_nc_path, 
+                                 argument_lakes_cci_merged_prod_nc_path_exists, 
+                                 argument_lakes_cci_meta_data_csv_path_exists, 
+                                 argument_lakes_cci_static_mask_nc_path_exists)
+from lib.lakes_cci.vars  import LAKES_CCI_ECVS
 
 
 # Warning stuff
@@ -80,40 +86,42 @@ def comp_with_inf_buffer(lakes_cci_merged_prod_nc_path: pathlib.Path,
             # spatial coverage is less than 80%, write NaN record and
             # continue
             if (geometry_mask.sum() == 0 or 
-                numpy.isnan(reference_ecv_data).sum(axis=-1)[0] > (0.2 * reference_ecv_data.shape[-1])):
-               for ecv in LAKES_CCI_ECVS:
+                (numpy.isnan(reference_ecv_data)
+                      .sum(axis=-1)[0]) > (0.2 * reference_ecv_data.shape[-1])):
+               for lakes_cci_ecv in LAKES_CCI_ECVS:
                   record.update({
-                     f'{ecv}_mean':   numpy.nan,
-                     f'{ecv}_median': numpy.nan,
-                     f'{ecv}_var':    numpy.nan,
-                     f'{ecv}_max':    numpy.nan,
-                     f'{ecv}_min':    numpy.nan,
+                     f'{lakes_cci_ecv}_mean':   numpy.nan,
+                     f'{lakes_cci_ecv}_median': numpy.nan,
+                     f'{lakes_cci_ecv}_var':    numpy.nan,
+                     f'{lakes_cci_ecv}_max':    numpy.nan,
+                     f'{lakes_cci_ecv}_min':    numpy.nan,
                   })
 
                records.append(record)
                
                continue
 
-            # For each `ecv` in `ECVS`:
-            for ecv in LAKES_CCI_ECVS:
-               # Read ecv values into `ecv_values`
-               ecv_values = clipped_merg_prod_ds[ecv].values
+            # For each `lakes_cci_ecv` in `LAKES_CCI_ECVS`:
+            for lakes_cci_ecv in LAKES_CCI_ECVS:
+               # Read ecv values into `lakes_cci_ecv_values`
+               lakes_cci_ecv_values = clipped_merg_prod_ds[lakes_cci_ecv].values
 
-               # If dimensionality of `ecv_values` is not 3, continue
-               if ecv_values.ndim != 3:
+               # If dimensionality of `lakes_cci_ecv_values` is not 3,
+               # continue
+               if lakes_cci_ecv_values.ndim != 3:
                   continue
                
-               # Read masked ecv values into `ecv_data`
-               ecv_data = ecv_values[:, geometry_mask]
+               # Read masked ecv values into `lakes_cci_ecv_data`
+               lakes_cci_ecv_data = lakes_cci_ecv_values[:, geometry_mask]
 
-               # Update `record` with mean, median, standard
-               # deviation, variance, maximum, and minimum of `ecv_data`
+               # Update `record` with mean, median, standard deviation,
+               # variance, maximum, and minimum of `lakes_cci_ecv_data`
                record.update({
-                  f'{ecv}_mean':   numpy.nanmean(ecv_data,   axis=-1).item(),
-                  f'{ecv}_median': numpy.nanmedian(ecv_data, axis=-1).item(),
-                  f'{ecv}_var':    numpy.nanvar(ecv_data,    axis=-1).item(),
-                  f'{ecv}_max':    numpy.nanmax(ecv_data,    axis=-1).item(),
-                  f'{ecv}_min':    numpy.nanmin(ecv_data,    axis=-1).item(),
+                  f'{lakes_cci_ecv}_mean':   numpy.nanmean(lakes_cci_ecv_data,   axis=-1).item(),
+                  f'{lakes_cci_ecv}_median': numpy.nanmedian(lakes_cci_ecv_data, axis=-1).item(),
+                  f'{lakes_cci_ecv}_var':    numpy.nanvar(lakes_cci_ecv_data,    axis=-1).item(),
+                  f'{lakes_cci_ecv}_max':    numpy.nanmax(lakes_cci_ecv_data,    axis=-1).item(),
+                  f'{lakes_cci_ecv}_min':    numpy.nanmin(lakes_cci_ecv_data,    axis=-1).item(),
                })
 
             records.append(record)
@@ -175,50 +183,52 @@ def comp_with_fin_buffer(buffer:                        int,
          reference_ecv_data = reference_ecv_values[:, geometry_mask]
          
          # If `clipped_merg_prod_ds` buffer window is not (1 + (2 *
-         # `buffer`)) by (1 + (2 * `buffer`)), or
-         # `clipped_stat_mask_ds` buffer window is not (1 + (2 *
-         # `buffer`)) by (1 + (2 * `buffer`)), or geometry mask
-         # contains no `True` pixels, or centroid spatial coverage is
-         # less than 80%, write NaN record and continue
+         # `buffer`)) by (1 + (2 * `buffer`)), or `clipped_stat_mask_ds`
+         # buffer window is not (1 + (2 * `buffer`)) by (1 + (2 *
+         # `buffer`)), or geometry mask contains no `True` pixels, or
+         # centroid spatial coverage is less than 80%, write NaN record
+         # and continue
          if (clipped_merg_prod_ds.sizes['lat'] != (1 + (2 * buffer)) or 
              clipped_merg_prod_ds.sizes['lon'] != (1 + (2 * buffer)) or
              clipped_stat_mask_ds.sizes['lat'] != (1 + (2 * buffer)) or
              clipped_stat_mask_ds.sizes['lon'] != (1 + (2 * buffer)) or
              geometry_mask.sum() == 0 or
-             numpy.isnan(reference_ecv_data).sum(axis=-1)[0] > (0.2 * reference_ecv_data.shape[-1])):
-            for ecv in LAKES_CCI_ECVS:
+             (numpy.isnan(reference_ecv_data)
+                   .sum(axis=-1)[0]) > (0.2 * reference_ecv_data.shape[-1])):
+            for lakes_cci_ecv in LAKES_CCI_ECVS:
                record.update({
-                  f'{ecv}_mean':   numpy.nan,
-                  f'{ecv}_median': numpy.nan,
-                  f'{ecv}_var':    numpy.nan,
-                  f'{ecv}_max':    numpy.nan,
-                  f'{ecv}_min':    numpy.nan,
+                  f'{lakes_cci_ecv}_mean':   numpy.nan,
+                  f'{lakes_cci_ecv}_median': numpy.nan,
+                  f'{lakes_cci_ecv}_var':    numpy.nan,
+                  f'{lakes_cci_ecv}_max':    numpy.nan,
+                  f'{lakes_cci_ecv}_min':    numpy.nan,
                })
 
             records.append(record)
             
             continue
 
-         # For each `ecv` in `ECVS`:
-         for ecv in LAKES_CCI_ECVS:
-            # Read ecv values into `ecv_data`
-            ecv_values = clipped_merg_prod_ds[ecv].values
+         # For each `lakes_cci_ecv` in `LAKES_CCI_ECVS`:
+         for lakes_cci_ecv in LAKES_CCI_ECVS:
+            # Read ecv values into `lakes_cci_ecv_values`
+            lakes_cci_ecv_values = clipped_merg_prod_ds[lakes_cci_ecv].values
 
-            # If dimensionality of `ecv_values` is not 3, continue
-            if ecv_values.ndim != 3:
+            # If dimensionality of `lakes_cci_ecv_values` is not 3,
+            # continue
+            if lakes_cci_ecv_values.ndim != 3:
                continue
 
-            # Read masked ecv values into `ecv_data`
-            ecv_data = ecv_values[:, geometry_mask]
+            # Read masked ecv values into `lakes_cci_ecv_data`
+            lakes_cci_ecv_data = lakes_cci_ecv_values[:, geometry_mask]
 
-            # Update `record` with mean, median, standard
-            # deviation, variance, maximum, and minimum of `ecv_data`
+            # Update `record` with mean, median, standard deviation,
+            # variance, maximum, and minimum of `lakes_cci_ecv_data`
             record.update({
-               f'{ecv}_mean':   numpy.nanmean(ecv_data,   axis=-1).item(),
-               f'{ecv}_median': numpy.nanmedian(ecv_data, axis=-1).item(),
-               f'{ecv}_var':    numpy.nanvar(ecv_data,    axis=-1).item(),
-               f'{ecv}_max':    numpy.nanmax(ecv_data,    axis=-1).item(),
-               f'{ecv}_min':    numpy.nanmin(ecv_data,    axis=-1).item(),
+               f'{lakes_cci_ecv}_mean':   numpy.nanmean(lakes_cci_ecv_data,   axis=-1).item(),
+               f'{lakes_cci_ecv}_median': numpy.nanmedian(lakes_cci_ecv_data, axis=-1).item(),
+               f'{lakes_cci_ecv}_var':    numpy.nanvar(lakes_cci_ecv_data,    axis=-1).item(),
+               f'{lakes_cci_ecv}_max':    numpy.nanmax(lakes_cci_ecv_data,    axis=-1).item(),
+               f'{lakes_cci_ecv}_min':    numpy.nanmin(lakes_cci_ecv_data,    axis=-1).item(),
             })
 
          records.append(record)
@@ -251,28 +261,12 @@ def main() -> int:
                                                 destination.''')
 
    # Positional arguments
+   add_argument_lakes_cci_merged_prod_nc_path(parser)
+   add_argument_lakes_cci_static_mask_nc_path(parser)
+   add_argument_lakes_cci_meta_data_csv_path(parser)
    parser.add_argument('buffer',
                         type=str,
-                        help=f'''n in N | n >= 0 or 'inf''')
-   parser.add_argument('lakes_cci_merged_prod_nc_path',
-                       type=pathlib.Path,
-                       help=f'''path to
-                             `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc`
-                             as provided by ESA Lakes Climate Change
-                             Initiative (Lakes_cci): Lake products,
-                             Version 3.0''')
-   parser.add_argument('lakes_cci_static_mask_nc_path', 
-                       type=pathlib.Path, 
-                       help=f'''path to `ESA_CCI_static_lake_mask.nc` as
-                             provided by ESA Lakes Climate Change
-                             Initiative (Lakes_cci): Lake products,
-                             Version 3.0''')
-   parser.add_argument('lakes_cci_meta_data_csv_path',
-                       type=pathlib.Path,
-                       help=f'''path to `lakescci_v2.1.0_metadata` as
-                             provided by ESA Lakes Climate Change
-                             Initiative (Lakes_cci): Lake products,
-                             Version 3.0''')
+                        help=f'''n in N | n >= 0 or "inf"''')
    parser.add_argument('dst_csv_path',
                        type=pathlib.Path,
                        help=f'''path to destination csv file''')
@@ -281,35 +275,30 @@ def main() -> int:
    # ==================================================================================================
 
    # Argument validation
-   # ==================================================================================================
-   # If `args.buffer` is invalid, return with `RETURN_FAILURE`
-   if not bool(re.fullmatch(r"^([0-9]+|inf)$", args.buffer)) :
-      print(f'''error: argument buffer: unexpected value:
-             {args.buffer}''')
-      
-      return RETURN_FAILURE
-   
+   # ==================================================================================================   
    # If `args.lakes_cci_merged_prod_nc_path` does not exist, return with
    # `RETURN_FAILURE`
-   if not args.lakes_cci_merged_prod_nc_path.exists():
-      print(f'''error: argument lakes_cci_merged_prod_nc_path: no such
-             file or directory: {args.lakes_cci_merged_prod_nc_path}''')
-      
+   if not argument_lakes_cci_merged_prod_nc_path_exists(args.lakes_cci_merged_prod_nc_path, 
+                                                        quiet=False):
       return RETURN_FAILURE
 
    # If `args.lakes_cci_static_mask_nc_path` does not exist, return with
    # `RETURN_FAILURE`
-   if not args.lakes_cci_static_mask_nc_path.exists():
-      print(f'''error: argument lakes_cci_static_mask_nc_path: no such
-             file or directory: {args.lakes_cci_static_mask_nc_path}''')
-      
+   if not argument_lakes_cci_static_mask_nc_path_exists(args.lakes_cci_static_mask_nc_path, 
+                                                        quiet=False):
       return RETURN_FAILURE
-   
+
    # If `args.lakes_cci_meta_data_csv_path` does not exist, return with
    # `RETURN_FAILURE`
-   if not args.lakes_cci_meta_data_csv_path.exists():
-      print(f'''error: argument lakes_cci_meta_data_csv_path: no such
-             file or directory: {args.lakes_cci_meta_data_csv_path}''')
+   if not argument_lakes_cci_meta_data_csv_path_exists(args.lakes_cci_meta_data_csv_path, 
+                                                         quiet=False):
+      return RETURN_FAILURE
+
+   # If `args.buffer` is invalid, return with `RETURN_FAILURE`
+   if not bool(re.fullmatch(r"^([0-9]+|inf)$", 
+                            args.buffer)) :
+      print(f'''error: argument buffer: unexpected value:
+             {args.buffer}''')
       
       return RETURN_FAILURE
    # ==================================================================================================
@@ -337,8 +326,10 @@ def main() -> int:
    
    # Attempt to ...
    try:
-      pdf = pandas.DataFrame(records)
-      pdf.to_csv(args.dst_csv_path, index=False)
+      df = pandas.DataFrame(records)
+
+      df.to_csv(args.dst_csv_path, 
+                index=False)
    # On exception, return with `RETURN_FAILURE`
    except Exception as e:
       print(f'error: exception: {e}')
