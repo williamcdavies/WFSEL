@@ -1,4 +1,4 @@
--- query_lakes_cci_id_hylak_id.sql
+-- query_lakes_cci_hydro_lakes.sql
 
 -- Description: 
 --     Queries HYDROLakes v1.0 polygons against ESA Lakes

@@ -1,4 +1,4 @@
--- query_lakes_cci_avg_depth.sql
+-- query_lakes_cci_depth_avg.sql
 
 -- Description:
 --     Queries average depth for all lakes in spatial.esa_lakes (Same

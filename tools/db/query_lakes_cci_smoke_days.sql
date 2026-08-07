@@ -1,4 +1,4 @@
--- query_lakes_cci_id_smoke_days.sql
+-- query_lakes_cci_smoke_days.sql
 
 -- Description: 
 --     Queries `spatial.hms_smokes` for the smoke days of a single lake.

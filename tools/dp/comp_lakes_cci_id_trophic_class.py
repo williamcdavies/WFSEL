@@ -1,3 +1,10 @@
+r'''
+comp_lakes_cci_id_trophic_class.py
+
+Written by William Chuter-Davies
+'''
+
+
 # Standard Library Imports
 import argparse
 import pathlib
@@ -12,10 +19,12 @@ import pandas as pd
 # Local Application/Library Specific Imports
 from lib.io.vars import (RETURN_FAILURE, 
                          RETURN_SUCCESS)
-
-
-CHLA_MEAN    = 'chla_mean'
-LAKES_CCI_ID = 'lakes_cci_id'
+from lib.lakes_cci.vars import (COUNT_OF_SMOKE_DAYS_LOWER_BOUND,
+                                COUNT_OF_SMOKE_DAYS_UPPER_BOUND)
+from lib.lakes_cci.utils import (add_argument_lakes_cci_count_of_smoke_days_csv_path, 
+                                 add_argument_lakes_cci_ecv_data_dir_path, 
+                                 argument_lakes_cci_count_of_smoke_days_csv_path_exists, 
+                                 argument_lakes_cci_ecv_data_dir_path_exists)
 
 
 def main() -> int:
@@ -29,15 +38,8 @@ def main() -> int:
                                                  candidate set.''')
 
     # Positional arguments
-    parser.add_argument('lakes_cci_ecv_data_dir_path',
-                        type=pathlib.Path,
-                        help=f'''path to Lakes ECV data directory as
-                              produced by main.py''')
-    parser.add_argument('lakes_cci_id_count_of_smoke_days_csv_path',
-                        type=pathlib.Path,
-                        help=f'''path to smoke days data csv as produced
-                              by
-                              tools/db/query_lakes_cci_id_count_of_smoke_days.sql''')
+    add_argument_lakes_cci_ecv_data_dir_path(parser)
+    add_argument_lakes_cci_count_of_smoke_days_csv_path(parser)
 
     args = parser.parse_args()
     # ==================================================================================================
@@ -46,53 +48,47 @@ def main() -> int:
     # ==================================================================================================
     # If `args.lakes_cci_ecv_data_dir_path` does not exist, return with
     # `RETURN_FAILURE`
-    if not args.lakes_cci_ecv_data_dir_path.exists():
-        print(f'''error: argument lakes_cci_ecv_data_dir_path: no such
-               file or directory: {args.lakes_cci_ecv_data_dir_path}''')
-        
+    if not argument_lakes_cci_ecv_data_dir_path_exists(args.lakes_cci_ecv_data_dir_path):
+
         return RETURN_FAILURE
 
-    # If `args.lakes_cci_id_count_of_smoke_days_csv_path` does not
-    # exist, return with `RETURN_FAILURE`
-    if not args.lakes_cci_id_count_of_smoke_days_csv_path.exists():
-        print(f'''error: argument
-                lakes_cci_id_count_of_smoke_days_csv_path: no such file
-                or directory:
-                {args.lakes_cci_id_count_of_smoke_days_csv_path}''')
-        
+    # If `args.lakes_cci_count_of_smoke_days_csv_path` does not exist,
+    # return with `RETURN_FAILURE`
+    if not argument_lakes_cci_count_of_smoke_days_csv_path_exists(args.lakes_cci_count_of_smoke_days_csv_path):
+
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    csv_paths = list(args.lakes_cci_ecv_data_dir_path.glob('**/ESA*.csv'))
+    lakes_cci_ecv_data_csv_paths = list(args.lakes_cci_ecv_data_dir_path.glob('**/ESA*.csv'))
     data      = []
     
-    for csv_path in tqdm.tqdm(csv_paths):
-        csv = pd.read_csv(csv_path, 
-                          index_col='id')
-        ser = csv[CHLA_MEAN]
-        ser = ser.dropna()
-        it  = ser.items()
+    for lakes_cci_ecv_data_csv_path in tqdm.tqdm(lakes_cci_ecv_data_csv_paths):
+        lakes_cci_ecv_data_csv  = pd.read_csv(lakes_cci_ecv_data_csv_path, 
+                                              index_col='id')
+        chla_mean_ser = lakes_cci_ecv_data_csv['chla_mean']
+        chla_mean_ser = chla_mean_ser.dropna()
+        it            = chla_mean_ser.items()
 
         data.extend(list(it))
 
     df                  = pd.DataFrame(data, 
-                                       columns=[LAKES_CCI_ID, 
-                                                CHLA_MEAN])
-    df                  = (df.groupby(LAKES_CCI_ID)
+                                       columns=['lakes_cci_id', 
+                                                'chla_mean'])
+    df                  = (df.groupby('lakes_cci_id')
                              .agg('mean'))
-    df['trophic_class'] = np.select([df[CHLA_MEAN] < 2.6, 
-                                     df[CHLA_MEAN] < 7.3, 
-                                     df[CHLA_MEAN] < 56], 
+    df['trophic_class'] = np.select([df['chla_mean'] < 2.6, 
+                                     df['chla_mean'] < 7.3, 
+                                     df['chla_mean'] < 56], 
                                      ['Oligotrophic', 
                                       'Mesotrophic', 
                                       'Eutrophic'], 
                                      'Hypertrophic')
-    df                  = df.drop(CHLA_MEAN, 
+    df                  = df.drop('chla_mean', 
                                   axis=1)
 
-    df.to_csv('data/lakes_cci_id_trophic_class.csv')
+    df.to_csv('data/lakes_cci_trophic_class.csv')
 
     return RETURN_SUCCESS
     # ==================================================================================================
