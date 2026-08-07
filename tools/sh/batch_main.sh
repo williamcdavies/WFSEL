@@ -5,7 +5,7 @@
 function help() {
     echo "usage: ${0} [options]
     
-Runs main.py on each netcdf file in ~/dap.ceda.ac.uk/neodc/esacci/lakes/data/lake_products/L3S/v3.0/merged_product/<year>
+Runs main.py on each netcdf file in ~/dap.ceda.ac.uk/neodc/esacci/lakes/data/lake_products/L3S/v3.0/merged_product/<year>.
 
 positional arguments:
     buffer
