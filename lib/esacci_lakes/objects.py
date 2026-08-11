@@ -19,3 +19,6 @@ class ESACCILakesVariable():
         self.var_id    = var_id
         self.long_name = long_name
         self.units     = units
+
+    def __repr__(self) -> str:
+        return f'f{self.__class__.__name__}({self.var_id}, {self.long_name}, {self.units})'
