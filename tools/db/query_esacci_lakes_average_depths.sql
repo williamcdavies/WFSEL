@@ -1,44 +1,44 @@
--- query_lakes_cci_depth_avg.sql
+-- query_esacci_lakes_average_depths.sql
 
 -- Description:
---     Queries average depth for all lakes in spatial.esa_lakes (Same
+--     Queries average depth for all lakes in spatial.esacci_lakes (Same
 --     lakes as provided by as provided by ESA Lakes Climate Change
---     Initiative (Lakes_cci): Lake products, Version 3.0)
+--     Initiative (esacci_lakes): Lake products, Version 3.0)
 
 -- Written by William Chuter-Davies
 
 COPY (
     WITH x1 AS (
         SELECT
-            lp.gid       AS "gid",
+            lp.id        AS "id",
             lp.geom_4326 AS "geom"
         FROM lakes AS l
         JOIN lakes_polys AS lp
-            ON lp.gid = l.id
+            ON lp.id = l.id
     ),
     x2 AS (
         SELECT
-            lakes_cci.gid AS "gid",
+            l.id          AS "id",
             ST_SetSRID(
-                ST_MakePoint(lakes_cci.lon_centre, 
-                             lakes_cci.lat_centre),
+                ST_MakePoint(l.lon_centre, 
+                             l.lat_centre),
                 4326
             )             AS "geom"
-        FROM lakes_cci_lakes AS lakes_cci
+        FROM esacci_lakes AS l
     ),
     x3 AS (
         SELECT
-            x2.gid AS "lakes_cci_id",
-            x1.gid AS "hylak_id"
+            x2.id AS "esacci_lakes_id",
+            x1.id AS "hylak_id"
         FROM x2
         LEFT JOIN x1
             ON ST_Covers(x1.geom, x2.geom)
     )
     SELECT
-        x3.lakes_cci_id AS "lakes_cci_id",
-        h.depth_avg     AS "depth_avg"
+        x3.esacci_lakes_id AS "esacci_lakes_id",
+        h.depth_avg        AS "depth_avg"
     FROM x3
     JOIN hylak AS h
         ON h.hylak_id = x3.hylak_id
-    ORDER BY x3.lakes_cci_id ASC
+    ORDER BY x3.esacci_lakes_id ASC
 ) TO STDOUT WITH (FORMAT CSV, HEADER);

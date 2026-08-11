@@ -1,11 +1,11 @@
--- query_lakes_cci_smoke_days.sql
+-- query_esacci_lakes_smoke_days.sql
 
 -- Description: 
 --     Queries `spatial.hms_smokes` for the smoke days of a single lake.
 
 -- Parameters
---     lakes_cci_id
---         lakes_cci_id as provided by ESA Lakes Climate Change
+--     esacci_lakes_id
+--         esacci_lakes_id as provided by ESA Lakes Climate Change
 --         Initiative (Lakes_cci): Lake products, Version 3.0
 
 --     hms_smokes_table
@@ -37,15 +37,15 @@
 COPY (
     WITH x AS (
         SELECT
-            l.gid,
+            l.id,
             l.short_name,
             l.name,
             l.geom
-        FROM lakes_cci_lakes AS l
-        WHERE l.gid = :lakes_cci_id
+        FROM esacci_lakes AS l
+        WHERE l.id = :esacci_lakes_id
     )
     SELECT DISTINCT ON (s.start_day)
-        x.gid,
+        x.id,
         x.short_name,
         x.name,
         s.start_day AS "day"

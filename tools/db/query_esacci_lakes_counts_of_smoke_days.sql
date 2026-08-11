@@ -1,22 +1,21 @@
--- query_lakes_cci_count_of_smoke_days.sql
+-- query_esacci_lakes_counts_of_smoke_days.sql
 
--- Description: 
---     Queries count of smoke days for all lakes in
---     spatial.lakes_cci_lakes (Same lakes as provided by as provided by
+-- Description: Queries counts of smoke days for all lakes in
+--     spatial.esacci_lakes (Same lakes as provided by as provided by
 --     ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
 --     Version 3.0) for each year between 2011--2023 inclusive.
 
--- | lakes_cci_id | 2011     | $\cdots$ | 2023     |
--- |:------------ |:-------- |:-------- |:-------- |
--- | $i_1$        | $d_{11}$ | $\cdots$ | $d_{1n}$ |
--- | $\vdots$     | $\vdots$ | $\ddots$ | $\vdots$ |
--- | $i_m$        | $d_{m1}$ | $\cdots$ | $d_{mn}$ |
+-- | esacci_lakes_id | 2011     | $\cdots$ | 2023     |
+-- |:--------------- |:-------- |:-------- |:-------- |
+-- | $i_1$           | $d_{11}$ | $\cdots$ | $d_{1n}$ |
+-- | $\vdots$        | $\vdots$ | $\ddots$ | $\vdots$ |
+-- | $i_m$           | $d_{m1}$ | $\cdots$ | $d_{mn}$ |
 
 -- Written by William Chuter-Davies
 
 COPY (
     SELECT
-        l.gid                                                          AS "lakes_cci_id",
+        l.id                                                           AS "esacci_lakes_id",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2011) AS "2011",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2012) AS "2012",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2013) AS "2013",
@@ -30,11 +29,11 @@ COPY (
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2021) AS "2021",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2022) AS "2022",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2023) AS "2023"
-    FROM lakes_cci_lakes AS l
+    FROM esacci_lakes AS l
     LEFT JOIN hms_smokes AS s
         ON ST_INTERSECTS(s.geom, l.geom)
         AND s.density > 1
         AND s.start_year BETWEEN 2011 AND 2023
-    GROUP BY l.gid
-    ORDER BY l.gid
+    GROUP BY l.id
+    ORDER BY l.id
 ) TO STDOUT WITH (FORMAT CSV, HEADER);
