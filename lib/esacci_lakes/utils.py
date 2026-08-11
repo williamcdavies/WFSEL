@@ -16,7 +16,7 @@ import pathlib
 from lib.esacci_lakes.vars import ESACCI_LAKES_VARIABLES
 
 
-# Argument functions (main.py output)
+# Argument functions (main.py)
 # ==================================================================================================
 def add_argument_esacci_lakes_data_dir_path(parser: argparse.ArgumentParser) -> None:
    '''
@@ -65,7 +65,7 @@ def argument_esacci_lakes_data_dir_path_exists(esacci_lakes_data_dir_path: pathl
 # ==================================================================================================
 
 
-# Argument functions (SQL outputs)
+# Argument functions (SQL)
 # ==================================================================================================
 def add_argument_esacci_lakes_average_depths_csv_path(parser: argparse.ArgumentParser) -> None:
    '''
@@ -260,7 +260,7 @@ def argument_esacci_lakes_smoke_days_csv_path_exists(esacci_lakes_smoke_days_csv
 # ==================================================================================================
 
 
-# Argument functions (ESA CCI Lakes outputs)
+# Argument functions (ESA CCI Lakes)
 # ==================================================================================================
 def add_argument_esacci_lakes_id(parser: argparse.ArgumentParser) -> None:
    '''
@@ -281,6 +281,55 @@ def add_argument_esacci_lakes_id(parser: argparse.ArgumentParser) -> None:
                        help=f'''lake_cci_id as provided by ESA Lakes
                              Climate Change Initiative (Lakes_cci): Lake
                              products, Version 3.0''')
+
+
+def add_argument_esacci_lakes_merged_product_dir_path(parser: argparse.ArgumentParser) -> None:
+   '''
+   Adds an `esacci_lakes_merged_product_dir_path` argument to a
+   :class:`argparse.ArgumentParser`.
+
+   Parameters
+   ----------
+   parser : :class:`argparse.ArgumentParser`
+      The parser
+
+   Notes
+   -----
+   Argument `esacci_lakes_merged_product_dir_path` is of type
+   :class:`pathlib.Path`
+   '''
+   parser.add_argument('esacci_lakes_merged_product_dir_path', 
+                       type=pathlib.Path, 
+                       help=f'''path to the ESA CCI merged_product
+                             directory as provided by ESA Lakes Climate
+                             Change Initiative (Lakes_cci): Lake
+                             products, Version 3.0''')
+
+
+def argument_esacci_lakes_merged_product_dir_path_exists(esacci_lakes_merged_product_dir_path: pathlib.Path, 
+                                                         *, 
+                                                         loud: bool=False) -> bool:
+   '''
+   Returns true if `esacci_lakes_merged_product_dir_path` exists,
+   returns false otherwise.
+
+   Parameters
+   ----------
+   esacci_lakes_merged_product_dir_path : :class:`pathlib.Path`
+      The argument `esacci_lakes_merged_product_dir_path`
+
+   loud : bool
+      If true, prints an error message to stdout. default=False
+   '''
+   if esacci_lakes_merged_product_dir_path.exists():
+      return True
+
+   if loud:
+      print(f'''error: argument esacci_lakes_merged_product_dir_path: no
+             such file or directory:
+             {esacci_lakes_merged_product_dir_path}''')
+
+   return False
 
 
 def add_argument_esacci_lakes_metadata_csv_path(parser: argparse.ArgumentParser) -> None:
