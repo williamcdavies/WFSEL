@@ -163,9 +163,9 @@ def argument_esacci_lakes_counts_of_smoke_days_csv_path_exists(esacci_lakes_coun
    return False
 
 
-def add_argument_esacci_lakes_hydro_lakes_csv_path(parser: argparse.ArgumentParser) -> None:
+def add_argument_esacci_lakes_hydro_lakes_ids_csv_path(parser: argparse.ArgumentParser) -> None:
    '''
-   Adds an `esacci_lakes_hydro_lakes_csv_path` argument to a
+   Adds an `esacci_lakes_hydro_lakes_ids_csv_path` argument to a
    :class:`argparse.ArgumentParser`.
 
    Parameters
@@ -175,38 +175,38 @@ def add_argument_esacci_lakes_hydro_lakes_csv_path(parser: argparse.ArgumentPars
 
    Notes
    -----
-   Argument `esacci_lakes_hydro_lakes_csv_path` is of type
+   Argument `esacci_lakes_hydro_lakes_ids_csv_path` is of type
    :class:`pathlib.Path`
    '''
-   parser.add_argument('esacci_lakes_hydro_lakes_csv_path', 
+   parser.add_argument('esacci_lakes_hydro_lakes_ids_csv_path', 
                        type=pathlib.Path, 
                        help=f'''path to some hydro lakes ids data csv
                              file as produced by
                              query_esacci_lakes_hydro_lakes_ids.sql''')
 
 
-def argument_esacci_lakes_hydro_lakes_csv_path_exists(esacci_lakes_hydro_lakes_csv_path: pathlib.Path, 
-                                                               *, 
-                                                               loud: bool=False) -> bool:
+def argument_esacci_lakes_hydro_lakes_ids_csv_path_exists(esacci_lakes_hydro_lakes_ids_csv_path: pathlib.Path, 
+                                                          *, 
+                                                          loud: bool=False) -> bool:
    '''
-   Returns true if `esacci_lakes_hydro_lakes_csv_path` exists, returns
-   false otherwise.
+   Returns true if `esacci_lakes_hydro_lakes_ids_csv_path` exists,
+   returns false otherwise.
 
    Parameters
    ----------
-   esacci_lakes_hydro_lakes_csv_path : :class:`pathlib.Path`
-      The argument `esacci_lakes_hydro_lakes_csv_path`
+   esacci_lakes_hydro_lakes_ids_csv_path : :class:`pathlib.Path`
+      The argument `esacci_lakes_hydro_lakes_ids_csv_path`
 
    loud : bool
       If true, prints an error message to stdout. default=False
    '''
-   if esacci_lakes_hydro_lakes_csv_path.exists():
+   if esacci_lakes_hydro_lakes_ids_csv_path.exists():
       return True
 
    if loud:
-      print(f'''error: argument esacci_lakes_hydro_lakes_csv_path: no
-             such file or directory:
-             {esacci_lakes_hydro_lakes_csv_path}''')
+      print(f'''error: argument esacci_lakes_hydro_lakes_ids_csv_path:
+             no such file or directory:
+             {esacci_lakes_hydro_lakes_ids_csv_path}''')
 
    return False
 
