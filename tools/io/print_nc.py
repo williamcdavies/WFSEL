@@ -37,7 +37,6 @@ def main() -> int:
 
     # Argument validation
     # ==================================================================================================
-    # If `args.nc_path` does not exist, return with `RETURN_FAILURE`
     if not args.nc_path.exists():
         print(f'''error: argument nc_path: no such file or directory:
                {args.nc_path}''')
@@ -47,12 +46,9 @@ def main() -> int:
     
     # Program logic
     # ==================================================================================================
-    # Attempt to ...
     try:
-        # Open `xarray.Dataset` specified by `args.nc_path`
         with xarray.open_dataset(args.nc_path) as ds:
             print(ds)
-    # On exception, return with `RETURN_FAILURE`
     except Exception as e:
         print(f'''error: exception: {e}''')
         

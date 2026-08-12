@@ -37,7 +37,6 @@ def main() -> int:
 
     # Argument validation
     # ==================================================================================================
-    # If `args.shp_path` does not exist, return with `RETURN_FAILURE`
     if not args.shp_path.exists():
         print(f'''error: argument shp_path: no such file or directory:
                {args.shp_path}''')
@@ -47,11 +46,8 @@ def main() -> int:
 
     # Program logic
     # ==================================================================================================
-    # Attempt to ...
     try:
-        # Read `args.shp_path` into `gdf`
         gdf = geopandas.read_file(args.shp_path)
-    # On exception, return with `RETURN_FAILURE`
     except Exception as e:
         print(f'''fatal: exception: {e}''')
         
