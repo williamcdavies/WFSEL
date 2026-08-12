@@ -8,17 +8,15 @@ Written by William Chuter-Davies
 '''
 
 
+# Standard Library Imports
+from dataclasses import dataclass
+
+
+@dataclass
 class ESACCILakesVariable():
     '''
     Object for representing an ESA CCI Lakes variable.
     '''
-    def __init__(self, 
-                 var_id:    str, 
-                 long_name: str, 
-                 units:     str):
-        self.var_id    = var_id
-        self.long_name = long_name
-        self.units     = units
-
-    def __repr__(self) -> str:
-        return f'f{self.__class__.__name__}({self.var_id}, {self.long_name}, {self.units})'
+    var_id:    str
+    long_name: str
+    units:     str
