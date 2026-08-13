@@ -51,9 +51,9 @@ def dfs(esacci_lakes_data_dir_paths: list[pathlib.Path],
 
     for esacci_lakes_data_dir_path in esacci_lakes_data_dir_paths:
         esacci_lakes_data_csv_paths = sorted(esacci_lakes_data_dir_path.glob('*.csv'))
-        esacci_lakes_data      = [(pd.read_csv(lakes_cci_ecv_data_csv_path, 
+        esacci_lakes_data      = [(pd.read_csv(esacci_lakes_data_csv_path, 
                                                index_col='id')
-                                     .loc[esacci_lakes_id]) for lakes_cci_ecv_data_csv_path in esacci_lakes_data_csv_paths]
+                                     .loc[esacci_lakes_id]) for esacci_lakes_data_csv_path in esacci_lakes_data_csv_paths]
 
         dfs.append(pd.DataFrame(esacci_lakes_data).reset_index(drop=True))
 
@@ -137,7 +137,7 @@ def main() -> int:
 
     sns.scatterplot(data=low_smoke_years_dataframe,
                     x='index',
-                    y=f'{args.esacci_lakes_variable}_mean',
+                    y=f'{args.esacci_lakes_variable}_mean', 
                     ax=ax,
                     alpha=0.25,
                     edgecolor='none',
@@ -152,7 +152,7 @@ def main() -> int:
     
     sns.scatterplot(data=high_smoke_years_dataframe,
                     x='index',
-                    y=f'{args.esacci_lakes_variable}_mean',
+                    y=f'{args.esacci_lakes_variable}_mean', 
                     ax=ax,
                     alpha=0.25,
                     edgecolor='none',
@@ -167,7 +167,7 @@ def main() -> int:
     
     ax.set_xlabel('Day', 
                   fontsize=14)
-    ax.set_ylabel(f'{ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].long_name} ({ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].units})',\
+    ax.set_ylabel(f'{ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].long_name} ({ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].units})', 
                   fontsize=14)
     ax.grid(True, 
             alpha=0.25)
