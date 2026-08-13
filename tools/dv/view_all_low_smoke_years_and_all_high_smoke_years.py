@@ -19,42 +19,43 @@ import seaborn           as sns
 from pygam import LinearGAM, s
 
 # Local Application/Library Specific Imports
-from lib.io.vars         import (RETURN_FAILURE, 
-                                 RETURN_SUCCESS)
-from lib.lakes_cci.utils import (add_argument_lakes_cci_count_of_smoke_days_csv_path, 
-                                 add_argument_lakes_cci_ecv_data_dir_path, 
-                                 add_argument_lakes_cci_ecv, 
-                                 add_argument_lakes_cci_id, 
-                                 add_argument_lakes_cci_measure, 
-                                 argument_lakes_cci_count_of_smoke_days_csv_path_exists, 
-                                 argument_lakes_cci_ecv_data_dir_path_exists, 
-                                 argument_lakes_cci_ecv_is_in_lakes_cci_ecvs, 
-                                 argument_lakes_cci_measure_is_in_lakes_cci_measures)
-from lib.lakes_cci.vars  import (COUNT_OF_SMOKE_DAYS_LOWER_BOUND,
-                                 COUNT_OF_SMOKE_DAYS_UPPER_BOUND)
+from lib.io.vars            import (RETURN_FAILURE, 
+                                    RETURN_SUCCESS)
+from lib.esacci_lakes.utils import (add_argument_esacci_lakes_counts_of_smoke_days_csv_path, 
+                                    add_argument_esacci_lakes_data_dir_path, 
+                                    add_argument_esacci_lakes_id,
+                                    add_argument_esacci_lakes_variable, 
+                                    argument_esacci_lakes_counts_of_smoke_days_csv_path_exists, 
+                                    argument_esacci_lakes_data_dir_path_exists, 
+                                    argument_esacci_lakes_variable_is_in_esacci_lakes_variables)
+from lib.esacci_lakes.vars  import (COUNT_OF_SMOKE_DAYS_LOWER_BOUND, 
+                                    COUNT_OF_SMOKE_DAYS_UPPER_BOUND, 
+                                    ESACCI_LAKES_VARIABLES)
 
 
-def fit(df: pd.DataFrame, 
-        lakes_cci_ecv: str, 
-        lakes_cci_measure: str) -> LinearGAM:
-    df_nonan = df.dropna(subset=[f'{lakes_cci_ecv}_{lakes_cci_measure}'])
+PROG='view_all_low_smoke_years_and_all_high_smoke_years.py'
+
+
+def fit(df:                    pd.DataFrame, 
+        esacci_lakes_variable: str) -> LinearGAM:
+    df_nonan = df.dropna(subset=[f'{esacci_lakes_variable}_mean'])
     X        = df_nonan['index'].values
-    y        = df_nonan[f'{lakes_cci_ecv}_{lakes_cci_measure}'].values
+    y        = df_nonan[f'{esacci_lakes_variable}_mean'].values
 
-    return LinearGAM(s(0)).fit(X, y)
+    return LinearGAM(s(0)).fit(X, y) # type: ignore[arg-type]
 
 
-def dfs(lakes_cci_ecv_data_dir_paths: list[pathlib.Path], 
-        lakes_cci_id:                 int) -> list[pd.DataFrame]:
+def dfs(esacci_lakes_data_dir_paths: list[pathlib.Path], 
+        esacci_lakes_id:             int) -> list[pd.DataFrame]:
     dfs = []
 
-    for lakes_cci_ecv_data_dir_path in lakes_cci_ecv_data_dir_paths:
-        lakes_cci_ecv_data_csv_paths = sorted(lakes_cci_ecv_data_dir_path.glob('*.csv'))
-        lakes_cci_ecv_data_data      = [(pd.read_csv(lakes_cci_ecv_data_csv_path, 
-                                                     index_col='id')
-                                            .loc[lakes_cci_id]) for lakes_cci_ecv_data_csv_path in lakes_cci_ecv_data_csv_paths]
+    for esacci_lakes_data_dir_path in esacci_lakes_data_dir_paths:
+        esacci_lakes_data_csv_paths = sorted(esacci_lakes_data_dir_path.glob('*.csv'))
+        esacci_lakes_data      = [(pd.read_csv(lakes_cci_ecv_data_csv_path, 
+                                               index_col='id')
+                                     .loc[esacci_lakes_id]) for lakes_cci_ecv_data_csv_path in esacci_lakes_data_csv_paths]
 
-        dfs.append(pd.DataFrame(lakes_cci_ecv_data_data).reset_index(drop=True))
+        dfs.append(pd.DataFrame(esacci_lakes_data).reset_index(drop=True))
 
     return dfs
 
@@ -62,7 +63,7 @@ def dfs(lakes_cci_ecv_data_dir_paths: list[pathlib.Path],
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = argparse.ArgumentParser(prog='view_all_low_smoke_years_and_all_high_smoke_years.py',
+    parser = argparse.ArgumentParser(prog=f'{PROG}',
                                      usage='%(prog)s [options]', 
                                      description='''Produces a
                                                  time-series
@@ -84,120 +85,59 @@ def main() -> int:
                                                  smoke years".''')
 
     # Positional arguments
-    add_argument_lakes_cci_id(parser)
-    add_argument_lakes_cci_ecv(parser)
-    add_argument_lakes_cci_measure(parser)
-    add_argument_lakes_cci_ecv_data_dir_path(parser)
-    add_argument_lakes_cci_count_of_smoke_days_csv_path(parser)
+    add_argument_esacci_lakes_counts_of_smoke_days_csv_path(parser)
+    add_argument_esacci_lakes_data_dir_path(parser)
+    add_argument_esacci_lakes_id(parser)
+    add_argument_esacci_lakes_variable(parser)
 
     args = parser.parse_args()
     # ==================================================================================================
 
     # Argument validation
     # ==================================================================================================
-    # If `args.lakes_cci_ecv` is not in `LAKES_CCI_ECVS`, return with
-    # `RETURN_FAILURE`
-    if not argument_lakes_cci_ecv_is_in_lakes_cci_ecvs(args.lakes_cci_ecv, 
-                                                       loud=True):
+    if not argument_esacci_lakes_counts_of_smoke_days_csv_path_exists(args.esacci_lakes_counts_of_smoke_days_csv_path, 
+                                                                      loud=True):
         return RETURN_FAILURE
 
-    # If `args.lakes_cci_measure` is not in `LAKES_CCI_MEASURES`, return with
-    # `RETURN_FAILURE`
-    if not argument_lakes_cci_measure_is_in_lakes_cci_measures(args.lakes_cci_measure, 
-                                                               loud=True):
+    if not argument_esacci_lakes_data_dir_path_exists(args.esacci_lakes_data_dir_path, 
+                                                      loud=True):
         return RETURN_FAILURE
     
-    # If `args.lakes_cci_ecv_data_dir_path` does not exist, return with
-    # `RETURN_FAILURE`
-    if not argument_lakes_cci_ecv_data_dir_path_exists(args.lakes_cci_ecv_data_dir_path, 
-                                                       loud=True):
-        return RETURN_FAILURE
-
-    # If `args.lakes_cci_count_of_smoke_days_csv_path` does not exist,
-    # return with `RETURN_FAILURE`
-    if not argument_lakes_cci_count_of_smoke_days_csv_path_exists(args.lakes_cci_count_of_smoke_days_csv_path, 
-                                                                  loud=True):
+    if not argument_esacci_lakes_variable_is_in_esacci_lakes_variables(args.esacci_lakes_variable, 
+                                                                       loud=True):
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    # 1. Load `lakes_cci_id_count_of_smoke_days.csv` (/output produced
-    #    by `query_lakes_cci_id_count_of_smoke_days.sql`)
-    lakes_cci_id_count_of_smoke_days_csv = pd.read_csv(args.lakes_cci_count_of_smoke_days_csv_path, 
-                                                       index_col='lakes_cci_id')
-    
-    # 2. Determine high and low smoke years
-    low_smoke_years  = [year 
-                        for (year, 
-                             count_of_smoke_days) 
-                        in (lakes_cci_id_count_of_smoke_days_csv.loc[args.lakes_cci_id]
-                                                                .items()) 
-                        if count_of_smoke_days <= COUNT_OF_SMOKE_DAYS_LOWER_BOUND]
-    high_smoke_years = [year 
-                        for (year, 
-                             count_of_smoke_days) 
-                        in (lakes_cci_id_count_of_smoke_days_csv.loc[args.lakes_cci_id]
-                                                                .items()) 
-                        if count_of_smoke_days >= COUNT_OF_SMOKE_DAYS_UPPER_BOUND]
+    esacci_lakes_counts_of_smoke_days_csv = pd.read_csv(args.esacci_lakes_counts_of_smoke_days_csv_path, 
+                                                        index_col='esacci_lakes_id')
+    low_smoke_years                       = [year for (year, count_of_smoke_days) in (esacci_lakes_counts_of_smoke_days_csv.loc[args.esacci_lakes_id]
+                                                                                                                           .items()) if count_of_smoke_days <= COUNT_OF_SMOKE_DAYS_LOWER_BOUND]
+    high_smoke_years                      = [year for (year, count_of_smoke_days) in (esacci_lakes_counts_of_smoke_days_csv.loc[args.esacci_lakes_id]
+                                                                                                                           .items()) if count_of_smoke_days >= COUNT_OF_SMOKE_DAYS_UPPER_BOUND]
+    low_smoke_year_dataframes             = [dataframe[[f'{args.esacci_lakes_variable}_mean']].reset_index() for dataframe in dfs([pathlib.Path(args.esacci_lakes_data_dir_path / f'{year}_3x3') for year in low_smoke_years], 
+                                                                                                                            args.esacci_lakes_id)]
+    high_smoke_year_dataframes            = [dataframe[[f'{args.esacci_lakes_variable}_mean']].reset_index() for dataframe in dfs([pathlib.Path(args.esacci_lakes_data_dir_path / f'{year}_3x3') for year in high_smoke_years], 
+                                                                                                                            args.esacci_lakes_id)]
+    low_smoke_years_dataframe             = pd.concat(low_smoke_year_dataframes, 
+                                                      ignore_index=True)
+    high_smoke_years_dataframe            = pd.concat(high_smoke_year_dataframes, 
+                                                      ignore_index=True)
 
-    # 2. Create paths to ecv data directories. 
-    low_smoke_year_dir_paths  = [pathlib.Path(args.lakes_cci_ecv_data_dir_path / f'{year}_3x3') 
-                                 for year 
-                                 in low_smoke_years]
-    high_smoke_year_dir_paths = [pathlib.Path(args.lakes_cci_ecv_data_dir_path / f'{year}_3x3') 
-                                 for year 
-                                 in high_smoke_years]
-    
-    # 3. Create dataframes from ecv data directories (one dataframe
-    #    represents one year)
-    low_smoke_year_dataframes  = dfs(low_smoke_year_dir_paths, 
-                                     args.lakes_cci_id)
-    high_smoke_year_dataframes = dfs(high_smoke_year_dir_paths, 
-                                     args.lakes_cci_id)
-    
-    # 4. Remove excess columns from dataframes
-    low_smoke_year_dataframes = [dataframe[[f'{args.lakes_cci_ecv}_{args.lakes_cci_measure}']] 
-                                 for dataframe 
-                                 in low_smoke_year_dataframes]
-    high_smoke_year_dataframes = [dataframe[[f'{args.lakes_cci_ecv}_{args.lakes_cci_measure}']] 
-                                 for dataframe 
-                                 in high_smoke_year_dataframes]
-    
-    # 5. Add index column to dataframes (allows us to pass around the
-    #    index column for plotting)
-    low_smoke_year_dataframes = [dataframe.reset_index() 
-                                 for dataframe 
-                                 in low_smoke_year_dataframes]
-    high_smoke_year_dataframes = [dataframe.reset_index() 
-                                 for dataframe 
-                                 in high_smoke_year_dataframes]
-    
-    # 6. Concatenate dataframes (allows us to include multiple
-    #    dataframes in the sample set for our general additive models
-    #    (GAMs))
-    low_smoke_years_dataframe  = pd.concat(low_smoke_year_dataframes, 
-                                           ignore_index=True)
-    high_smoke_years_dataframe = pd.concat(high_smoke_year_dataframes, 
-                                           ignore_index=True)
+    # low_smoke_years_dataframe[f'{args.esacci_lakes_id}_mean']  = low_smoke_years_dataframe[f'{args.esacci_lakes_id}_mean'].apply(lambda x: x - 273.15)
+    # high_smoke_years_dataframe[f'{args.esacci_lakes_id}_mean'] = high_smoke_years_dataframe[f'{args.esacci_lakes_id}_mean'].apply(lambda x: x - 273.15)
 
-    # low_smoke_years_dataframe[f'{args.lakes_cci_ecv}_{args.lakes_cci_measure}']  = low_smoke_years_dataframe[f'{args.lakes_cci_ecv}_{args.lakes_cci_measure}'].apply(lambda x: x - 273.15)
-    # high_smoke_years_dataframe[f'{args.lakes_cci_ecv}_{args.lakes_cci_measure}'] = high_smoke_years_dataframe[f'{args.lakes_cci_ecv}_{args.lakes_cci_measure}'].apply(lambda x: x - 273.15)
-
-    # 7. GAM!
-    high_smoke_years_gam = fit(high_smoke_years_dataframe, 
-                                args.lakes_cci_ecv, 
-                                args.lakes_cci_measure)
     low_smoke_years_gam  = fit(low_smoke_years_dataframe, 
-                               args.lakes_cci_ecv, 
-                               args.lakes_cci_measure)
-
-    # 8. Plot
+                               args.esacci_lakes_variable)
+    high_smoke_years_gam = fit(high_smoke_years_dataframe, 
+                               args.esacci_lakes_variable)
+    
     _, ax = plt.subplots()
 
     sns.scatterplot(data=low_smoke_years_dataframe,
                     x='index',
-                    y=f'{args.lakes_cci_ecv}_{args.lakes_cci_measure}',
+                    y=f'{args.esacci_lakes_variable}_mean',
                     ax=ax,
                     alpha=0.25,
                     edgecolor='none',
@@ -212,7 +152,7 @@ def main() -> int:
     
     sns.scatterplot(data=high_smoke_years_dataframe,
                     x='index',
-                    y=f'{args.lakes_cci_ecv}_{args.lakes_cci_measure}',
+                    y=f'{args.esacci_lakes_variable}_mean',
                     ax=ax,
                     alpha=0.25,
                     edgecolor='none',
@@ -226,16 +166,16 @@ def main() -> int:
             label=f'High smoke years: {high_smoke_years}')
     
     ax.set_xlabel('Day', 
-                    fontsize=14)
-    ax.set_ylabel('_ (_)', 
-                    fontsize=14)
+                  fontsize=14)
+    ax.set_ylabel(f'{ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].long_name} ({ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].units})',\
+                  fontsize=14)
     ax.grid(True, 
             alpha=0.25)
     ax.legend()
 
-    plt.title('Lake _: _', 
+    plt.title(f'_ ({args.esacci_lakes_id}): Mean {args.esacci_lakes_variable} Measurements', 
               fontsize=18)
-    plt.show()
+    plt.show()    
 
     return RETURN_SUCCESS
    # ==================================================================================================
