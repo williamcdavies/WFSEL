@@ -522,7 +522,7 @@ def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(esacci_lakes_var
 
    if loud:
       print(f'''error: argument esacci_lakes_variable: not one of
-             {ESACCI_LAKES_VARIABLES}: {esacci_lakes_variable}''')
-
+             {list(ESACCI_LAKES_VARIABLES.keys())}:
+             {esacci_lakes_variable}''')
    return False
 # ==================================================================================================
