@@ -101,21 +101,20 @@ def main() -> int:
             assert isinstance(esacci_lakes_static_lake_mask, 
                               xarray.DataArray)
 
-            lons = esacci_lakes_static_lake_mask['lon'].values
-            lats = esacci_lakes_static_lake_mask['lat'].values
-
+            lons      = esacci_lakes_static_lake_mask['lon'].values
+            lats      = esacci_lakes_static_lake_mask['lat'].values
+            mask      = numpy.flipud(esacci_lakes_static_lake_mask.values)
             transform = rasterio.transform.from_bounds(lons.min(), 
                                                        lats.min(), 
                                                        lons.max(), 
                                                        lats.max(), 
                                                        len(lons), 
                                                        len(lats))
-            mask     = numpy.flipud(esacci_lakes_static_lake_mask.values)
-            shapes   = rasterio.features.shapes(mask.astype(numpy.uint8), 
-                                                mask=mask, 
-                                                transform=transform)
-            polygons = [shapely.geometry.shape(geom) for geom, _ in shapes]
-            geometry = shapely.ops.unary_union(polygons)
+            shapes    = rasterio.features.shapes(mask.astype(numpy.uint8), 
+                                                 mask=mask, 
+                                                 transform=transform)
+            polygons  = [shapely.geometry.shape(geom) for geom, _ in shapes]
+            geometry  = shapely.ops.unary_union(polygons)
 
             if isinstance(geometry, shapely.geometry.Polygon):
                 geometry = shapely.geometry.MultiPolygon([geometry])
