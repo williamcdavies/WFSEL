@@ -19,11 +19,11 @@ import seaborn           as sns
 from pygam import LinearGAM, s
 
 # Local Application/Library Specific Imports
-from lib.io.vars         import (RETURN_FAILURE, 
-                                 RETURN_SUCCESS)
+from lib.io.vars            import (RETURN_FAILURE, 
+                                    RETURN_SUCCESS)
 from lib.esacci_lakes.utils import (add_argument_esacci_lakes_counts_of_smoke_days_csv_path, 
                                     add_argument_esacci_lakes_data_dir_path, 
-                                    add_argument_esacci_lakes_id,
+                                    add_argument_esacci_lakes_id, 
                                     add_argument_esacci_lakes_smoke_days_csv_path,
                                     add_argument_esacci_lakes_variable, 
                                     argument_esacci_lakes_counts_of_smoke_days_csv_path_exists, 

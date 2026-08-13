@@ -1,5 +1,5 @@
 r'''
-view_ecv.py
+view_pdf.py
 
 Written by William Chuter-Davies
 '''
@@ -17,16 +17,19 @@ import pandas
 import seaborn
 
 # Local Application/Library Specific Imports
-from lib.io.vars import (RETURN_FAILURE, 
-                         RETURN_SUCCESS)
-from lib.lakes_cci.utils import (add_argument_lakes_cci_count_of_smoke_days_csv_path, 
-                                 argument_lakes_cci_count_of_smoke_days_csv_path_exists)
+from lib.io.vars            import (RETURN_FAILURE, 
+                                    RETURN_SUCCESS)
+from lib.esacci_lakes.utils import (add_argument_esacci_lakes_counts_of_smoke_days_csv_path, 
+                                    argument_esacci_lakes_counts_of_smoke_days_csv_path_exists)
+
+
+PROG='view_pdf.py'
 
 
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = argparse.ArgumentParser(prog='view_pdf.py',
+    parser = argparse.ArgumentParser(prog=f'{PROG}',
                                      usage='%(prog)s [options]', 
                                      description='''Produces a
                                                  distribution
@@ -37,24 +40,22 @@ def main() -> int:
                                                  2023].''')
 
     # Positional arguments
-    add_argument_lakes_cci_count_of_smoke_days_csv_path(parser)
+    add_argument_esacci_lakes_counts_of_smoke_days_csv_path(parser)
     
     args = parser.parse_args()
     # ==================================================================================================
 
     # Argument validation
     # ==================================================================================================
-    # If `args.lakes_cci_count_of_smoke_days_csv_path` does not exist,
-    # return with `RETURN_FAILURE`
-    if not argument_lakes_cci_count_of_smoke_days_csv_path_exists(args.lakes_cci_count_of_smoke_days_csv_path, 
-                                                                    loud=True):
+    if not argument_esacci_lakes_counts_of_smoke_days_csv_path_exists(args.esacci_lakes_counts_of_smoke_days_csv_path, 
+                                                                      loud=True):
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    wide_df = pandas.read_csv(args.lakes_cci_count_of_smoke_days_csv_path)
-    long_df = wide_df.melt(id_vars='lakes_cci_id', 
+    wide_df = pandas.read_csv(args.esacci_lakes_counts_of_smoke_days_csv_path)
+    long_df = wide_df.melt(id_vars='esacci_lakes_id', 
                            var_name='year', 
                            value_name='count_of_smoke_days')
     p25 = numpy.percentile(long_df['count_of_smoke_days'], 
