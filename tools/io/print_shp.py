@@ -11,7 +11,7 @@ import pathlib
 import sys
 
 # Related Third-party Imports
-import geopandas
+import geopandas as gpd
 
 # Local Application/Library Specific Imports
 from lib.io.vars import (RETURN_SUCCESS, 
@@ -47,7 +47,7 @@ def main() -> int:
     # Program logic
     # ==================================================================================================
     try:
-        gdf = geopandas.read_file(args.shp_path)
+        gdf = gpd.read_file(args.shp_path)
     except Exception as e:
         print(f'''fatal: exception: {e}''')
         

@@ -163,13 +163,13 @@ def main() -> int:
                     ax=ax,
                     alpha=0.25,
                     edgecolor='none',
-                    color='blue')
+                    color='green')
     high_smoke_years_X = np.linspace(high_smoke_years_dataframe['index'].min(), 
                                      high_smoke_years_dataframe['index'].max(),
                                      high_smoke_years_dataframe['index'].max())
     ax.plot(high_smoke_years_X, 
             high_smoke_years_gam.predict(high_smoke_years_X), 
-            color='blue',
+            color='green',
             label=f'High smoke year: {high_smoke_year}')
 
     sns.histplot(x=esacci_lakes_smoke_days_csv.day, 

@@ -10,15 +10,15 @@ import argparse
 import sys
 
 # Related Third-party Imports
-import numpy
-import pandas
+import numpy              as np
+import pandas             as pd
 import psycopg
 import rasterio.transform
 import rasterio.features
 import shapely.geometry
 import shapely.ops
 import tqdm
-import xarray
+import xarray             as xr
 
 # Local Application/Library Specific Imports
 from lib.io.vars            import (RETURN_FAILURE, 
@@ -65,12 +65,12 @@ def main() -> int:
     
     # Program logic
     # ==================================================================================================
-    esacci_lakes_metadata_csv = pandas.read_csv(args.esacci_lakes_metadata_csv_path, 
-                                                delimiter=';', 
-                                                index_col='id')
+    esacci_lakes_metadata_csv = pd.read_csv(args.esacci_lakes_metadata_csv_path, 
+                                            delimiter=';', 
+                                            index_col='id')
     
-    with (xarray.open_dataset(args.esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc,
-          psycopg.connect("dbname=spatial")                               as conn):
+    with (xr.open_dataset(args.esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc,
+          psycopg.connect("dbname=spatial")                           as conn):
         for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
                              total=len(esacci_lakes_metadata_csv)):
             lat_max_box                     = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_max_box, 
@@ -99,18 +99,18 @@ def main() -> int:
                                                                                               lon_max_box))['CCI_lakeid']
                                                == row.Index)
             assert isinstance(esacci_lakes_static_lake_mask, 
-                              xarray.DataArray)
+                              xr.DataArray)
 
             lons      = esacci_lakes_static_lake_mask['lon'].values
             lats      = esacci_lakes_static_lake_mask['lat'].values
-            mask      = numpy.flipud(esacci_lakes_static_lake_mask.values)
+            mask      = np.flipud(esacci_lakes_static_lake_mask.values)
             transform = rasterio.transform.from_bounds(lons.min(), 
                                                        lats.min(), 
                                                        lons.max(), 
                                                        lats.max(), 
                                                        len(lons), 
                                                        len(lats))
-            shapes    = rasterio.features.shapes(mask.astype(numpy.uint8), 
+            shapes    = rasterio.features.shapes(mask.astype(np.uint8), 
                                                  mask=mask, 
                                                  transform=transform)
             polygons  = [shapely.geometry.shape(geom) for geom, _ in shapes]

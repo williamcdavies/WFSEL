@@ -7,14 +7,13 @@ Written by William Chuter-Davies
 
 # Standard Library Imports
 import argparse
-import pathlib
 import sys
 
 # Related Third-party Imports
-import matplotlib.pyplot
-import numpy
-import pandas
-import seaborn
+import matplotlib.pyplot as plt
+import numpy             as np
+import pandas            as pd
+import seaborn           as sns
 
 # Local Application/Library Specific Imports
 from lib.io.vars            import (RETURN_FAILURE, 
@@ -54,44 +53,44 @@ def main() -> int:
     
     # Program logic
     # ==================================================================================================
-    wide_df = pandas.read_csv(args.esacci_lakes_counts_of_smoke_days_csv_path)
+    wide_df = pd.read_csv(args.esacci_lakes_counts_of_smoke_days_csv_path)
     long_df = wide_df.melt(id_vars='esacci_lakes_id', 
                            var_name='year', 
                            value_name='count_of_smoke_days')
-    p25 = numpy.percentile(long_df['count_of_smoke_days'], 
-                           25)
-    p75 = numpy.percentile(long_df['count_of_smoke_days'], 
-                           75)
+    p25 = np.percentile(long_df['count_of_smoke_days'], 
+                        25)
+    p75 = np.percentile(long_df['count_of_smoke_days'], 
+                        75)
     
-    # fig, (ax1, ax2) = matplotlib.pyplot.subplots(
+    # fig, (ax1, ax2) = plt.subplots(
     #     nrows=2,
     #     sharex=True,
     #     gridspec_kw={'height_ratios': (0.10, 0.90)}
     # )
 
-    fig, ax2 = matplotlib.pyplot.subplots()
+    fig, ax2 = plt.subplots()
 
-    # seaborn.boxplot(data=long_df,
-    #                 x='count_of_smoke_days',
-    #                 color='black',
-    #                 fill=False,
-    #                 ax=ax1)    
-    seaborn.histplot(data=long_df,
-                     x='count_of_smoke_days',
-                    #  hue='year',
-                     stat='density',
-                     binwidth=5,
-                     binrange=(0, 365),
-                     cumulative=True,
-                    #  multiple='stack',
-                     element='step',
-                     fill=False,
-                     color='black',
-                     ax=ax2)
-    # seaborn.kdeplot(data=long_df,
-    #                 x='count_of_smoke_days',
-    #                 color='black',
-    #                 ax=ax2)
+    # sns.boxplot(data=long_df,
+    #             x='count_of_smoke_days',
+    #             color='black',
+    #             fill=False,
+    #             ax=ax1)    
+    sns.histplot(data=long_df,
+                 x='count_of_smoke_days',
+                #  hue='year',
+                 stat='density',
+                 binwidth=5,
+                 binrange=(0, 365),
+                 cumulative=True,
+                #  multiple='stack',
+                 element='step',
+                 fill=False,
+                 color='black',
+                 ax=ax2)
+    # sns.kdeplot(data=long_df,
+    #             x='count_of_smoke_days',
+    #             color='black',
+    #             ax=ax2)
 
     ax2.axvline(p25, 
                 color='red', 
@@ -119,7 +118,7 @@ def main() -> int:
                  fontsize=18, 
                  y=0.95)
     
-    matplotlib.pyplot.show()
+    plt.show()
 
     return RETURN_SUCCESS
    # ==================================================================================================

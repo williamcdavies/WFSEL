@@ -12,10 +12,10 @@ import re
 import sys
 
 # Related Third-party Imports
-import numpy
-import pandas
+import numpy  as np
+import pandas as pd
 import tqdm
-import xarray
+import xarray as xr
 
 # Local Application/Library Specific Imports
 from lib.io.vars            import (RETURN_SUCCESS, 
@@ -36,12 +36,12 @@ def comp_with_inf_buffer(esacci_lakes_metadata_csv_path:        pathlib.Path,
                          esacci_lakes_products_merged_nc_path:  pathlib.Path,
                          esacci_lakes_static_lake_mask_nc_path: pathlib.Path) -> list:
    records                   = []
-   esacci_lakes_metadata_csv = pandas.read_csv(esacci_lakes_metadata_csv_path, 
+   esacci_lakes_metadata_csv = pd.read_csv(esacci_lakes_metadata_csv_path, 
                                                delimiter=';', 
                                                index_col='id')
 
-   with (xarray.open_dataset(esacci_lakes_products_merged_nc_path)  as esacci_lakes_products_merged_nc, 
-         xarray.open_dataset(esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc):
+   with (xr.open_dataset(esacci_lakes_products_merged_nc_path)  as esacci_lakes_products_merged_nc, 
+         xr.open_dataset(esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc):
          for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
                               total=len(esacci_lakes_metadata_csv)):
             record                          = {'id': row.Index}
@@ -71,22 +71,22 @@ def comp_with_inf_buffer(esacci_lakes_metadata_csv_path:        pathlib.Path,
                                                                                               lon_max_box))['CCI_lakeid']
                                                == row.Index)
             assert isinstance(esacci_lakes_static_lake_mask, 
-                              xarray.DataArray)
+                              xr.DataArray)
             esacci_lakes_products_merged    = esacci_lakes_products_merged_nc.sel(lat=slice(lat_min_box, 
                                                                                             lat_max_box), 
                                                                                   lon=slice(lon_min_box, 
                                                                                             lon_max_box))
 
-            for esacci_lakes_variable in ESACCI_LAKES_VARIABLES:
+            for esacci_lakes_variable in ESACCI_LAKES_VARIABLES.values():
                if ((esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
                                                                               .notnull()
                                                                               .sum()
                                                                               .item()) 
                    / (esacci_lakes_static_lake_mask.sum()
                                                    .item())) < 0.8:
-                  record.update({f'{esacci_lakes_variable.var_id}_mean': numpy.nan})
+                  record.update({f'{esacci_lakes_variable.var_id}_mean': np.nan})
                else:
-                  record.update({f'{esacci_lakes_variable.var_id}_mean': numpy.nanmean(esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
+                  record.update({f'{esacci_lakes_variable.var_id}_mean': np.nanmean(esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
                                                                                                                                                  .values)})
 
             records.append(record)
@@ -99,12 +99,12 @@ def comp_with_fin_buffer(buffer:                                int,
                          esacci_lakes_products_merged_nc_path:  pathlib.Path,
                          esacci_lakes_static_lake_mask_nc_path: pathlib.Path) -> list:
    records                   = []
-   esacci_lakes_metadata_csv = pandas.read_csv(esacci_lakes_metadata_csv_path, 
-                                               delimiter=';', 
-                                               index_col='id')
+   esacci_lakes_metadata_csv = pd.read_csv(esacci_lakes_metadata_csv_path, 
+                                           delimiter=';', 
+                                           index_col='id')
 
-   with (xarray.open_dataset(esacci_lakes_products_merged_nc_path)  as esacci_lakes_products_merged_nc, 
-         xarray.open_dataset(esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc):
+   with (xr.open_dataset(esacci_lakes_products_merged_nc_path)  as esacci_lakes_products_merged_nc, 
+         xr.open_dataset(esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc):
          for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
                               total=len(esacci_lakes_metadata_csv)):
             record                          = {'id': row.Index}
@@ -134,7 +134,7 @@ def comp_with_fin_buffer(buffer:                                int,
                                                                                                lon_centre_idx + buffer + 1))['CCI_lakeid'] 
                                                == row.Index)
             assert isinstance(esacci_lakes_static_lake_mask, 
-                              xarray.DataArray)
+                              xr.DataArray)
             esacci_lakes_products_merged = esacci_lakes_products_merged_nc.isel(lat=slice(max(lat_centre_idx - buffer, 
                                                                                               0), 
                                                                                           lat_centre_idx + buffer + 1), 
@@ -142,16 +142,16 @@ def comp_with_fin_buffer(buffer:                                int,
                                                                                               0), 
                                                                                           lon_centre_idx + buffer + 1))
 
-            for esacci_lakes_variable in ESACCI_LAKES_VARIABLES:
+            for esacci_lakes_variable in ESACCI_LAKES_VARIABLES.values():
                if ((esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
                                                                               .notnull()
                                                                               .sum()
                                                                               .item()) 
                      / (esacci_lakes_static_lake_mask.sum()
                                                      .item())) < 0.8:
-                  record.update({f'{esacci_lakes_variable.var_id}_mean': numpy.nan})
+                  record.update({f'{esacci_lakes_variable.var_id}_mean': np.nan})
                else:
-                  record.update({f'{esacci_lakes_variable.var_id}_mean': numpy.nanmean(esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
+                  record.update({f'{esacci_lakes_variable.var_id}_mean': np.nanmean(esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
                                                                                                                                                  .values)})
 
             records.append(record)
@@ -235,7 +235,7 @@ def main() -> int:
       return RETURN_FAILURE
    
    try:
-      df = pandas.DataFrame(records)
+      df = pd.DataFrame(records)
 
       df.to_csv(args.dst_csv_path, 
                 index=False)

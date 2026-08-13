@@ -11,7 +11,7 @@ import pathlib
 import sys
 
 # Related Third-party Imports
-import xarray
+import xarray as xr
 
 # Local Application/Library Specific Imports
 from lib.io.vars import (RETURN_SUCCESS, 
@@ -47,7 +47,7 @@ def main() -> int:
     # Program logic
     # ==================================================================================================
     try:
-        with xarray.open_dataset(args.nc_path) as ds:
+        with xr.open_dataset(args.nc_path) as ds:
             print(ds)
     except Exception as e:
         print(f'''error: exception: {e}''')

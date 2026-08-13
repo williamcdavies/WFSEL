@@ -11,8 +11,8 @@ Written by William Chuter-Davies
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.objects import ESACCILakesVariable
 
-COUNT_OF_SMOKE_DAYS_LOWER_BOUND = 7
-COUNT_OF_SMOKE_DAYS_UPPER_BOUND = 24
+COUNT_OF_SMOKE_DAYS_LOWER_BOUND = 2
+COUNT_OF_SMOKE_DAYS_UPPER_BOUND = 42
 ESACCI_LAKES_VARIABLES          = {'chla':                           ESACCILakesVariable('chla', 
                                                                                          'Concentration of Chlorophyll-a', 
                                                                                          'mg.m-3'), 

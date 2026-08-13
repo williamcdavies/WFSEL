@@ -13,9 +13,9 @@ import sys
 # Related Third-party Imports
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import pandas
+import pandas            as pd
 import tqdm
-import xarray
+import xarray            as xr
 
 # Local Application/Library Specific Imports
 from lib.io.vars            import (RETURN_FAILURE, 
@@ -70,12 +70,12 @@ def main() -> int:
     
     # Program logic
     # ==================================================================================================
-    esacci_lakes_metadata = (pandas.read_csv(args.esacci_lakes_metadata_csv_path, 
-                                             delimiter=';', 
-                                             index_col='id')
+    esacci_lakes_metadata = (pd.read_csv(args.esacci_lakes_metadata_csv_path, 
+                                         delimiter=';', 
+                                         index_col='id')
                                    .loc[args.esacci_lakes_id])
          
-    with xarray.open_dataset(args.esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc:
+    with xr.open_dataset(args.esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc:
         lat_max_box                   = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=esacci_lakes_metadata['lat_max_box'], 
                                                                                      method='nearest')
                                                                                 .item())
@@ -102,14 +102,14 @@ def main() -> int:
                                                                                         lon_max_box))['CCI_lakeid']
                                          == args.esacci_lakes_id)
         assert isinstance(esacci_lakes_static_lake_mask, 
-                          xarray.DataArray)
+                          xr.DataArray)
 
         frames_dir_path = pathlib.Path(f'data/{PROG}/{args.esacci_lakes_id}/frames')
         frames_dir_path.mkdir(parents=True, 
                               exist_ok=True)
 
         for i, esacci_lakes_products_merged_nc_path in enumerate(tqdm.tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob('2023/*/*.nc')))):
-            with xarray.open_dataset(esacci_lakes_products_merged_nc_path) as esacci_lakes_products_merged:
+            with xr.open_dataset(esacci_lakes_products_merged_nc_path) as esacci_lakes_products_merged:
                 esacci_lakes_products_merged = (esacci_lakes_products_merged.squeeze()
                                                                             .sel(lat=slice(lat_min_box, 
                                                                                            lat_max_box), 
