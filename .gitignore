@@ -223,4 +223,5 @@ __marimo__/
 # WFSEL
 *.csv
 *.mp4
+*.nc
 *.png
