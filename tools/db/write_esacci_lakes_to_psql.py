@@ -93,10 +93,10 @@ def main() -> int:
                                                                                       .item())
             assert isinstance(lon_min_box, 
                               float)
-            esacci_lakes_static_lake_mask   = (esacci_lakes_static_lake_mask_nc.sel(lat=slice(lat_min_box, 
-                                                                                              lat_max_box), 
-                                                                                    lon=slice(lon_min_box, 
-                                                                                              lon_max_box))['CCI_lakeid']
+            esacci_lakes_static_lake_mask   = (esacci_lakes_static_lake_mask_nc['CCI_lakeid'].sel(lat=slice(lat_min_box, 
+                                                                                                            lat_max_box), 
+                                                                                                  lon=slice(lon_min_box, 
+                                                                                                            lon_max_box))
                                                == row.Index)
             assert isinstance(esacci_lakes_static_lake_mask, 
                               xr.DataArray)
@@ -116,7 +116,8 @@ def main() -> int:
             polygons  = [shapely.geometry.shape(geom) for geom, _ in shapes]
             geometry  = shapely.ops.unary_union(polygons)
 
-            if isinstance(geometry, shapely.geometry.Polygon):
+            if isinstance(geometry, 
+                          shapely.geometry.Polygon):
                 geometry = shapely.geometry.MultiPolygon([geometry])
 
             wkb = shapely.to_wkb(geometry)
