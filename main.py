@@ -42,54 +42,53 @@ def comp_with_inf_buffer(esacci_lakes_metadata_csv_path:        pathlib.Path,
 
    with (xr.open_dataset(esacci_lakes_products_merged_nc_path)  as esacci_lakes_products_merged_nc, 
          xr.open_dataset(esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc):
-         for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
-                              total=len(esacci_lakes_metadata_csv)):
-            record                          = {'id': row.Index}
-            lat_max_box                     = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_max_box, 
-                                                                                           method='nearest')
-                                                                                      .item())
-            assert isinstance(lat_max_box, 
-                              float)
-            lat_min_box                     = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_min_box, 
-                                                                                           method='nearest')
-                                                                                      .item())
-            assert isinstance(lat_min_box, 
-                              float)
-            lon_max_box                     = (esacci_lakes_static_lake_mask_nc['lon'].sel(lon=row.lon_max_box, 
-                                                                                           method='nearest')
-                                                                                      .item())
-            assert isinstance(lon_max_box, 
-                              float)
-            lon_min_box                     = (esacci_lakes_static_lake_mask_nc['lon'].sel(lon=row.lon_min_box, 
-                                                                                           method='nearest')
-                                                                                      .item())
-            assert isinstance(lon_min_box, 
-                              float)
-            esacci_lakes_static_lake_mask   = (esacci_lakes_static_lake_mask_nc.sel(lat=slice(lat_min_box, 
-                                                                                              lat_max_box), 
-                                                                                    lon=slice(lon_min_box, 
-                                                                                              lon_max_box))['CCI_lakeid']
-                                               == row.Index)
-            assert isinstance(esacci_lakes_static_lake_mask, 
-                              xr.DataArray)
-            esacci_lakes_products_merged    = esacci_lakes_products_merged_nc.sel(lat=slice(lat_min_box, 
-                                                                                            lat_max_box), 
-                                                                                  lon=slice(lon_min_box, 
-                                                                                            lon_max_box))
+      for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
+                           total=len(esacci_lakes_metadata_csv)):
+         record                          = {'id': row.Index}
+         lat_max_box                     = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_max_box, 
+                                                                                        method='nearest')
+                                                                                   .item())
+         assert isinstance(lat_max_box, 
+                           float)
+         lat_min_box                     = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_min_box, 
+                                                                                        method='nearest')
+                                                                                   .item())
+         assert isinstance(lat_min_box, 
+                           float)
+         lon_max_box                     = (esacci_lakes_static_lake_mask_nc['lon'].sel(lon=row.lon_max_box, 
+                                                                                        method='nearest')
+                                                                                   .item())
+         assert isinstance(lon_max_box, 
+                           float)
+         lon_min_box                     = (esacci_lakes_static_lake_mask_nc['lon'].sel(lon=row.lon_min_box, 
+                                                                                        method='nearest')
+                                                                                   .item())
+         assert isinstance(lon_min_box, 
+                           float)
+         esacci_lakes_static_lake_mask   = (esacci_lakes_static_lake_mask_nc['CCI_lakeid'].sel(lat=slice(lat_min_box, 
+                                                                                                         lat_max_box), 
+                                                                                               lon=slice(lon_min_box, 
+                                                                                                         lon_max_box)) 
+                                            == row.Index)
+         assert isinstance(esacci_lakes_static_lake_mask, 
+                           xr.DataArray)
+         esacci_lakes_products_merged    = esacci_lakes_products_merged_nc.sel(lat=slice(lat_min_box, 
+                                                                                         lat_max_box), 
+                                                                               lon=slice(lon_min_box, 
+                                                                                         lon_max_box))
 
-            for esacci_lakes_variable in ESACCI_LAKES_VARIABLES.values():
-               if ((esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
-                                                                              .notnull()
-                                                                              .sum()
-                                                                              .item()) 
-                   / (esacci_lakes_static_lake_mask.sum()
-                                                   .item())) < 0.8:
-                  record.update({f'{esacci_lakes_variable.var_id}_mean': np.nan})
-               else:
-                  record.update({f'{esacci_lakes_variable.var_id}_mean': np.nanmean(esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
-                                                                                                                                                 .values)})
-
-            records.append(record)
+         if ((esacci_lakes_products_merged[ESACCI_LAKES_VARIABLES['lake_surface_water_temperature'].var_id].where(esacci_lakes_static_lake_mask)
+                                                                                                           .notnull()
+                                                                                                           .sum()
+                                                                                                           .item()) 
+             / 
+             (esacci_lakes_static_lake_mask.sum()
+                                           .item())) < 0.5:
+            record.update({f'{ESACCI_LAKES_VARIABLES['lake_surface_water_temperature'].var_id}_mean': np.nan})
+         else:
+            record.update({f'{ESACCI_LAKES_VARIABLES['lake_surface_water_temperature'].var_id}_mean': np.nanmean(esacci_lakes_products_merged[ESACCI_LAKES_VARIABLES['lake_surface_water_temperature'].var_id].where(esacci_lakes_static_lake_mask)
+                                                                                                                                                                                                              .values)})
+         records.append(record)
    
    return records
 
@@ -105,56 +104,55 @@ def comp_with_fin_buffer(buffer:                                int,
 
    with (xr.open_dataset(esacci_lakes_products_merged_nc_path)  as esacci_lakes_products_merged_nc, 
          xr.open_dataset(esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc):
-         for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
-                              total=len(esacci_lakes_metadata_csv)):
-            record                          = {'id': row.Index}
-            lat_centre                      = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_centre, 
-                                                                                           method='nearest')
-                                                                                      .item())
-            assert isinstance(lat_centre, 
-                              float)
-            lat_centre_idx                  = (esacci_lakes_static_lake_mask_nc['lat'].get_index('lat')
-                                                                                      .get_loc(lat_centre))
-            assert isinstance(lat_centre_idx, 
-                              int)
-            lon_centre                      = (esacci_lakes_static_lake_mask_nc['lon'].sel(lon=row.lon_centre, 
-                                                                                           method='nearest')
-                                                                                      .item())
-            assert isinstance(lon_centre, 
-                              float)
-            lon_centre_idx                  = (esacci_lakes_static_lake_mask_nc['lon'].get_index('lon')
-                                                                                      .get_loc(lon_centre))
-            assert isinstance(lon_centre_idx, 
-                              int)
-            esacci_lakes_static_lake_mask   = (esacci_lakes_static_lake_mask_nc.isel(lat=slice(max(lat_centre_idx - buffer, 
-                                                                                                   0), 
-                                                                                               lat_centre_idx + buffer + 1), 
-                                                                                     lon=slice(max(lon_centre_idx - buffer, 
-                                                                                                   0), 
-                                                                                               lon_centre_idx + buffer + 1))['CCI_lakeid'] 
-                                               == row.Index)
-            assert isinstance(esacci_lakes_static_lake_mask, 
-                              xr.DataArray)
-            esacci_lakes_products_merged = esacci_lakes_products_merged_nc.isel(lat=slice(max(lat_centre_idx - buffer, 
+      for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
+                           total=len(esacci_lakes_metadata_csv)):
+         record                          = {'id': row.Index}
+         lat_centre                      = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_centre, 
+                                                                                        method='nearest')
+                                                                                   .item())
+         assert isinstance(lat_centre, 
+                           float)
+         lat_centre_idx                  = (esacci_lakes_static_lake_mask_nc['lat'].get_index('lat')
+                                                                                   .get_loc(lat_centre))
+         assert isinstance(lat_centre_idx, 
+                           int)
+         lon_centre                      = (esacci_lakes_static_lake_mask_nc['lon'].sel(lon=row.lon_centre, 
+                                                                                        method='nearest')
+                                                                                   .item())
+         assert isinstance(lon_centre, 
+                           float)
+         lon_centre_idx                  = (esacci_lakes_static_lake_mask_nc['lon'].get_index('lon')
+                                                                                   .get_loc(lon_centre))
+         assert isinstance(lon_centre_idx, 
+                           int)
+         esacci_lakes_static_lake_mask   = (esacci_lakes_static_lake_mask_nc['CCI_lakeid'].isel(lat=slice(max(lat_centre_idx - buffer, 
+                                                                                                              0), 
+                                                                                                          lat_centre_idx + buffer + 1), 
+                                                                                                lon=slice(max(lon_centre_idx - buffer, 
+                                                                                                              0), 
+                                                                                                          lon_centre_idx + buffer + 1))
+                                            == row.Index)
+         assert isinstance(esacci_lakes_static_lake_mask, 
+                           xr.DataArray)
+         esacci_lakes_products_merged    = esacci_lakes_products_merged_nc.isel(lat=slice(max(lat_centre_idx - buffer, 
                                                                                               0), 
                                                                                           lat_centre_idx + buffer + 1), 
                                                                                 lon=slice(max(lon_centre_idx - buffer, 
                                                                                               0), 
                                                                                           lon_centre_idx + buffer + 1))
 
-            for esacci_lakes_variable in ESACCI_LAKES_VARIABLES.values():
-               if ((esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
-                                                                              .notnull()
-                                                                              .sum()
-                                                                              .item()) 
-                     / (esacci_lakes_static_lake_mask.sum()
-                                                     .item())) < 0.8:
-                  record.update({f'{esacci_lakes_variable.var_id}_mean': np.nan})
-               else:
-                  record.update({f'{esacci_lakes_variable.var_id}_mean': np.nanmean(esacci_lakes_products_merged[esacci_lakes_variable.var_id].where(esacci_lakes_static_lake_mask)
-                                                                                                                                                 .values)})
-
-            records.append(record)
+         if ((esacci_lakes_products_merged[ESACCI_LAKES_VARIABLES['chla'].var_id].where(esacci_lakes_static_lake_mask)
+                                                                                                            .notnull()
+                                                                                                            .sum()
+                                                                                                            .item()) 
+             / 
+             (esacci_lakes_static_lake_mask.sum()
+                                           .item())) < 0.5:
+            record.update({f'{ESACCI_LAKES_VARIABLES['chla'].var_id}_mean': np.nan})
+         else:
+            record.update({f'{ESACCI_LAKES_VARIABLES['chla'].var_id}_mean': np.nanmean(esacci_lakes_products_merged[ESACCI_LAKES_VARIABLES['chla'].var_id].where(esacci_lakes_static_lake_mask)
+                                                                                                                                                          .values)})
+         records.append(record)
    
    return records
 
@@ -186,8 +184,8 @@ def main() -> int:
    add_argument_esacci_lakes_products_merged_nc_path(parser)
    add_argument_esacci_lakes_static_lake_mask_nc_path(parser)
    parser.add_argument('buffer',
-                        type=str,
-                        help=f'''n in N | n >= 0 or "inf"''')
+                       type=str,
+                       help=f'''n in N | n >= 0 or "inf"''')
    parser.add_argument('dst_csv_path',
                        type=pathlib.Path,
                        help=f'''path to destination csv file''')
@@ -211,8 +209,8 @@ def main() -> int:
 
    if not bool(re.fullmatch(r"^([0-9]+|inf)$", 
                             args.buffer)) :
-      print(f'''error: argument buffer: unexpected value:
-             {args.buffer}''')
+      print(f'''
+error: argument buffer: unexpected value: {args.buffer}''')
       
       return RETURN_FAILURE
    # ==================================================================================================
