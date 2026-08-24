@@ -11,7 +11,7 @@ Written by William Chuter-Davies
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.objects import ESACCILakesVariable
 
-COUNT_OF_SMOKE_DAYS_LOWER_BOUND = 2
+COUNT_OF_SMOKE_DAYS_LOWER_BOUND = 7
 COUNT_OF_SMOKE_DAYS_UPPER_BOUND = 42
 ESACCI_LAKES_VARIABLES          = {'chla':                           ESACCILakesVariable('chla', 
                                                                                          'Concentration of Chlorophyll-a', 
@@ -33,7 +33,7 @@ ESACCI_LAKES_VARIABLES          = {'chla':                           ESACCILakes
                                                                                          'mg.m-3'), 
                                    'lake_surface_water_temperature': ESACCILakesVariable('lake_surface_water_temperature', 
                                                                                          'Lake Surface Skin Temperature', 
-                                                                                         'kelvin'), 
+                                                                                         '˚C'), 
                                    'lake_surface_water_extent':      ESACCILakesVariable('lake_surface_water_extent', 
                                                                                          'Lake Water Extent', 
                                                                                          'km2')}
