@@ -14,9 +14,9 @@ from dataclasses import dataclass
 
 @dataclass
 class ESACCILakesVariable():
-    '''
-    Object for representing an ESA CCI Lakes variable.
-    '''
-    var_id:    str
-    long_name: str
-    units:     str
+   '''
+   Object for representing an ESA CCI Lakes variable.
+   '''
+   var_id:    str
+   long_name: str
+   units:     str
