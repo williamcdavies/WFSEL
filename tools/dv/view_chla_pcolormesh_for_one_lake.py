@@ -73,7 +73,7 @@ def main() -> int:
     esacci_lakes_metadata = (pd.read_csv(args.esacci_lakes_metadata_csv_path, 
                                          delimiter=';', 
                                          index_col='id')
-                                   .loc[args.esacci_lakes_id])
+                               .loc[args.esacci_lakes_id])
          
     with xr.open_dataset(args.esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc:
         lat_max_box                   = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=esacci_lakes_metadata['lat_max_box'], 
@@ -96,10 +96,10 @@ def main() -> int:
                                                                                 .item())
         assert isinstance(lon_min_box, 
                           float)
-        esacci_lakes_static_lake_mask = (esacci_lakes_static_lake_mask_nc.sel(lat=slice(lat_min_box, 
-                                                                                        lat_max_box), 
-                                                                              lon=slice(lon_min_box, 
-                                                                                        lon_max_box))['CCI_lakeid']
+        esacci_lakes_static_lake_mask = (esacci_lakes_static_lake_mask_nc['CCI_lakeid'].sel(lat=slice(lat_min_box, 
+                                                                                                      lat_max_box), 
+                                                                                            lon=slice(lon_min_box, 
+                                                                                                      lon_max_box))
                                          == args.esacci_lakes_id)
         assert isinstance(esacci_lakes_static_lake_mask, 
                           xr.DataArray)
@@ -108,13 +108,13 @@ def main() -> int:
         frames_dir_path.mkdir(parents=True, 
                               exist_ok=True)
 
-        for i, esacci_lakes_products_merged_nc_path in enumerate(tqdm.tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob('2023/*/*.nc')))):
+        for i, esacci_lakes_products_merged_nc_path in enumerate(tqdm.tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob('*/*.nc')))):
             with xr.open_dataset(esacci_lakes_products_merged_nc_path) as esacci_lakes_products_merged:
-                esacci_lakes_products_merged = (esacci_lakes_products_merged.squeeze()
-                                                                            .sel(lat=slice(lat_min_box, 
-                                                                                           lat_max_box), 
-                                                                                 lon=slice(lon_min_box, 
-                                                                                           lon_max_box))[['chla', 'chla_uncertainty']])
+                esacci_lakes_products_merged = (esacci_lakes_products_merged[['chla', 'chla_uncertainty']].squeeze()
+                                                                                                          .sel(lat=slice(lat_min_box, 
+                                                                                                                         lat_max_box), 
+                                                                                                               lon=slice(lon_min_box, 
+                                                                                                                         lon_max_box)))
                 esacci_lakes_nans               = (esacci_lakes_products_merged['chla'].isnull() 
                                                    & esacci_lakes_static_lake_mask)
                 esacci_lakes_vals               = esacci_lakes_products_merged['chla'].where(esacci_lakes_static_lake_mask)
@@ -133,9 +133,8 @@ def main() -> int:
                                                   cmap=mcolors.ListedColormap(['white', 'black']), 
                                                   add_colorbar=False)
                 esacci_lakes_vals.plot.pcolormesh(ax=ax1, 
-                                                  vmin=0, 
-                                                  vmax=56, 
-                                                  cmap='jet', 
+                                                  norm=mcolors.LogNorm(0.01, 100), 
+                                                  cmap='viridis', 
                                                   cbar_kwargs={'extend': 'neither'})
 
                 esacci_lakes_uncertainty_nans.plot.pcolormesh(ax=ax2, 
@@ -146,7 +145,7 @@ def main() -> int:
                 esacci_lakes_uncertainty_vals.plot.pcolormesh(ax=ax2, 
                                                               vmin=0, 
                                                               vmax=100, 
-                                                              cmap='jet', 
+                                                              cmap='plasma', 
                                                               cbar_kwargs={'extend': 'neither'})
 
                 frame_png_path = frames_dir_path / pathlib.Path(f'frame_{i:03d}.png')

@@ -51,9 +51,9 @@ def dfs(esacci_lakes_data_dir_paths: list[pathlib.Path],
 
     for esacci_lakes_data_dir_path in esacci_lakes_data_dir_paths:
         esacci_lakes_data_csv_paths = sorted(esacci_lakes_data_dir_path.glob('*.csv'))
-        esacci_lakes_data      = [(pd.read_csv(esacci_lakes_data_csv_path, 
-                                               index_col='id')
-                                     .loc[esacci_lakes_id]) for esacci_lakes_data_csv_path in esacci_lakes_data_csv_paths]
+        esacci_lakes_data           = [(pd.read_csv(esacci_lakes_data_csv_path, 
+                                                    index_col='id')
+                                          .loc[esacci_lakes_id]) for esacci_lakes_data_csv_path in esacci_lakes_data_csv_paths]
 
         dfs.append(pd.DataFrame(esacci_lakes_data).reset_index(drop=True))
 
@@ -116,17 +116,17 @@ def main() -> int:
                                                                                                                            .items()) if count_of_smoke_days <= COUNT_OF_SMOKE_DAYS_LOWER_BOUND]
     high_smoke_years                      = [year for (year, count_of_smoke_days) in (esacci_lakes_counts_of_smoke_days_csv.loc[args.esacci_lakes_id]
                                                                                                                            .items()) if count_of_smoke_days >= COUNT_OF_SMOKE_DAYS_UPPER_BOUND]
-    low_smoke_year_dataframes             = [dataframe[[f'{args.esacci_lakes_variable}_mean']].reset_index() for dataframe in dfs([pathlib.Path(args.esacci_lakes_data_dir_path / f'{year}_3x3') for year in low_smoke_years], 
-                                                                                                                            args.esacci_lakes_id)]
-    high_smoke_year_dataframes            = [dataframe[[f'{args.esacci_lakes_variable}_mean']].reset_index() for dataframe in dfs([pathlib.Path(args.esacci_lakes_data_dir_path / f'{year}_3x3') for year in high_smoke_years], 
-                                                                                                                            args.esacci_lakes_id)]
+    low_smoke_year_dataframes             = [dataframe[[f'{args.esacci_lakes_variable}_mean']].reset_index() for dataframe in dfs([pathlib.Path(args.esacci_lakes_data_dir_path / f'{year}') for year in low_smoke_years], 
+                                                                                                                                  args.esacci_lakes_id)]
+    high_smoke_year_dataframes            = [dataframe[[f'{args.esacci_lakes_variable}_mean']].reset_index() for dataframe in dfs([pathlib.Path(args.esacci_lakes_data_dir_path / f'{year}') for year in high_smoke_years], 
+                                                                                                                                  args.esacci_lakes_id)]
     low_smoke_years_dataframe             = pd.concat(low_smoke_year_dataframes, 
                                                       ignore_index=True)
     high_smoke_years_dataframe            = pd.concat(high_smoke_year_dataframes, 
                                                       ignore_index=True)
 
-    # low_smoke_years_dataframe[f'{args.esacci_lakes_id}_mean']  = low_smoke_years_dataframe[f'{args.esacci_lakes_id}_mean'].apply(lambda x: x - 273.15)
-    # high_smoke_years_dataframe[f'{args.esacci_lakes_id}_mean'] = high_smoke_years_dataframe[f'{args.esacci_lakes_id}_mean'].apply(lambda x: x - 273.15)
+    low_smoke_years_dataframe[f'{args.esacci_lakes_variable}_mean']  = low_smoke_years_dataframe[f'{args.esacci_lakes_variable}_mean'].apply(lambda x: x - 273.15)
+    high_smoke_years_dataframe[f'{args.esacci_lakes_variable}_mean'] = high_smoke_years_dataframe[f'{args.esacci_lakes_variable}_mean'].apply(lambda x: x - 273.15)
 
     low_smoke_years_gam  = fit(low_smoke_years_dataframe, 
                                args.esacci_lakes_variable)
@@ -142,9 +142,10 @@ def main() -> int:
                     alpha=0.25,
                     edgecolor='none',
                     color='grey')
-    low_smoke_years_X = np.linspace(low_smoke_years_dataframe['index'].min(), 
-                                    low_smoke_years_dataframe['index'].max(), 
-                                    low_smoke_years_dataframe['index'].max())
+    low_smoke_years_nonan = low_smoke_years_dataframe.dropna(subset=[f'{args.esacci_lakes_variable}_mean'])
+    low_smoke_years_X     = np.linspace(low_smoke_years_nonan['index'].min(), 
+                                        low_smoke_years_nonan['index'].max(), 
+                                        300)
     ax.plot(low_smoke_years_X, 
             low_smoke_years_gam.predict(low_smoke_years_X), 
             color='grey',
@@ -157,9 +158,10 @@ def main() -> int:
                     alpha=0.25,
                     edgecolor='none',
                     color='blue')
-    high_smoke_years_X = np.linspace(high_smoke_years_dataframe['index'].min(), 
-                                     high_smoke_years_dataframe['index'].max(),
-                                     high_smoke_years_dataframe['index'].max())
+    high_smoke_years_nonan = high_smoke_years_dataframe.dropna(subset=[f'{args.esacci_lakes_variable}_mean'])
+    high_smoke_years_X     = np.linspace(high_smoke_years_nonan['index'].min(), 
+                                         high_smoke_years_nonan['index'].max(), 
+                                         300)
     ax.plot(high_smoke_years_X, 
             high_smoke_years_gam.predict(high_smoke_years_X), 
             color='blue',
