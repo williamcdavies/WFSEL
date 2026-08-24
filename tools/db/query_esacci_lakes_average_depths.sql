@@ -38,7 +38,7 @@ COPY (
         x3.esacci_lakes_id AS "esacci_lakes_id",
         h.depth_avg        AS "depth_avg"
     FROM x3
-    JOIN hylak AS h
+    LEFT JOIN hylak_points AS h
         ON h.hylak_id = x3.hylak_id
     ORDER BY x3.esacci_lakes_id ASC
 ) TO STDOUT WITH (FORMAT CSV, HEADER);
