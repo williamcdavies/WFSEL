@@ -351,9 +351,9 @@ def argument_esacci_lakes_metadata_csv_path_exists(esacci_lakes_metadata_csv_pat
    return False
 
 
-def add_argument_esacci_lakes_products_merged_nc_path(parser: argparse.ArgumentParser) -> None:
+def add_argument_esacci_lakes_metadata_filtered_csv_path(parser: argparse.ArgumentParser) -> None:
    '''
-   Adds an `esacci_lakes_products_merged_nc_path` argument to a
+   Adds an `esacci_lakes_metadata_filtered_csv_path` argument to a
    :class:`argparse.ArgumentParser`.
 
    Parameters
@@ -363,34 +363,78 @@ def add_argument_esacci_lakes_products_merged_nc_path(parser: argparse.ArgumentP
 
    Notes
    -----
-   Argument `esacci_lakes_products_merged_nc_path` is of type
+   Argument `esacci_lakes_metadata_filtered_csv_path` is of type
    :class:`pathlib.Path`
    '''
-   parser.add_argument('esacci_lakes_products_merged_nc_path', 
-                       type=pathlib.Path, 
-                       help=f'''path to some `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` file as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
+   parser.add_argument('esacci_lakes_metadata_filtered_csv_path',
+                       type=pathlib.Path,
+                       help=f'''path to the `lakescci_v2.1.0_metadata_filtered.csv` file as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
 
 
-def argument_esacci_lakes_products_merged_nc_path_exists(esacci_lakes_products_merged_nc_path: pathlib.Path, 
-                                                         *, 
-                                                         loud: bool=False) -> bool:
+def argument_esacci_lakes_metadata_filtered_csv_path_exists(esacci_lakes_metadata_filtered_csv_path: pathlib.Path, 
+                                                            *, 
+                                                            loud: bool=False) -> bool:
    '''
-   Returns true if `esacci_lakes_products_merged_nc_path` exists,
+   Returns true if `esacci_lakes_metadata_filtered_csv_path` exists,
    returns false otherwise.
 
    Parameters
    ----------
-   esacci_lakes_products_merged_nc_path : :class:`pathlib.Path`
-      The argument `esacci_lakes_products_merged_nc_path`
+   esacci_lakes_metadata_filtered_csv_path : :class:`pathlib.Path`
+      The argument `esacci_lakes_metadata_filtered_csv_path`
 
    loud : bool
       If true, prints an error message to stdout. default=False
    '''
-   if esacci_lakes_products_merged_nc_path.exists():
+   if esacci_lakes_metadata_filtered_csv_path.exists():
       return True
 
    if loud:
-      print(f'''error: argument esacci_lakes_products_merged_nc_path: no such file or directory: {esacci_lakes_products_merged_nc_path}''')
+      print(f'''error: argument esacci_lakes_metadata_filtered_csv_path: no such file or directory: {esacci_lakes_metadata_filtered_csv_path}''')
+
+   return False
+
+
+def add_argument_esacci_lakes_merged_product_nc_path(parser: argparse.ArgumentParser) -> None:
+   '''
+   Adds an `esacci_lakes_merged_product_nc_path` argument to a
+   :class:`argparse.ArgumentParser`.
+
+   Parameters
+   ----------
+   parser : :class:`argparse.ArgumentParser`
+      The parser
+
+   Notes
+   -----
+   Argument `esacci_lakes_merged_product_nc_path` is of type
+   :class:`pathlib.Path`
+   '''
+   parser.add_argument('esacci_lakes_merged_product_nc_path', 
+                       type=pathlib.Path, 
+                       help=f'''path to some `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` file as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
+
+
+def argument_esacci_lakes_merged_product_nc_path_exists(esacci_lakes_merged_product_nc_path: pathlib.Path, 
+                                                         *, 
+                                                         loud: bool=False) -> bool:
+   '''
+   Returns true if `esacci_lakes_merged_product_nc_path` exists, returns
+   false otherwise.
+
+   Parameters
+   ----------
+   esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
+      The argument `esacci_lakes_merged_product_nc_path`
+
+   loud : bool
+      If true, prints an error message to stdout. default=False
+   '''
+   if esacci_lakes_merged_product_nc_path.exists():
+      return True
+
+   if loud:
+      print(f'''error: argument esacci_lakes_merged_product_nc_path: no such file or directory: {esacci_lakes_merged_product_nc_path}''')
 
    return False
 
