@@ -27,13 +27,12 @@ mkdir -p "data/main.py/buffer_inf/${outdir}"
 # Run `main.py` on each netcdf file in <path>, skipping macOS AppleDouble shadow files
 find "${path}" -type f -name "*.nc" ! -name "._*" -exec sh -c '
     ncfilename="$1"
-    outdir="$2"
     ncbasename=$(basename "${ncfilename}" .nc)
+    outdir="$2"
 
     python main.py \
         data/lakescci_v2.1.0_metadata_filtered.csv \
-        "${ncfilename}" \
         data/ESA_CCI_static_lake_mask.nc \
-        inf \
+        "${ncfilename}" \
         "data/main.py/buffer_inf/${outdir}/${ncbasename}.csv"
 ' _ {} "${outdir}" \;
