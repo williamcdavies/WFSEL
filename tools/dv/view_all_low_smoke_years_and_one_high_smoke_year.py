@@ -19,15 +19,15 @@ import seaborn           as sns
 from pygam import LinearGAM, s
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils import (add_argument_esacci_lakes_counts_of_smoke_days_csv_path, 
-                                    add_argument_esacci_lakes_data_dir_path, 
-                                    add_argument_esacci_lakes_id, 
-                                    add_argument_esacci_lakes_smoke_days_csv_path,
+from lib.esacci_lakes.utils import (add_argument_esacci_lakes_id, 
                                     add_argument_esacci_lakes_variable, 
-                                    argument_esacci_lakes_counts_of_smoke_days_csv_path_exists, 
+                                    add_argument_esacci_lakes_data_dir_path, 
+                                    add_argument_esacci_lakes_smoke_days_csv_path, 
+                                    add_argument_esacci_lakes_counts_of_smoke_days_csv_path,
+                                    argument_esacci_lakes_variable_is_in_esacci_lakes_variables, 
                                     argument_esacci_lakes_data_dir_path_exists, 
                                     argument_esacci_lakes_smoke_days_csv_path_exists, 
-                                    argument_esacci_lakes_variable_is_in_esacci_lakes_variables)
+                                    argument_esacci_lakes_counts_of_smoke_days_csv_path_exists) 
 from lib.esacci_lakes.vars  import (COUNT_OF_SMOKE_DAYS_LOWER_BOUND, 
                                     COUNT_OF_SMOKE_DAYS_UPPER_BOUND, 
                                     ESACCI_LAKES_VARIABLES)
@@ -44,7 +44,7 @@ def fit(df:                    pd.DataFrame,
     X        = df_nonan['index'].values
     y        = df_nonan[f'{esacci_lakes_variable}_mean'].values
 
-    return LinearGAM(s(0)).fit(X, y) # type: ignore[arg-type]
+    return LinearGAM(s(0)).fit(X, y) # type: ignore
 
 
 def dfs(esacci_lakes_data_dir_paths: list[pathlib.Path], 
@@ -70,19 +70,19 @@ def main() -> int:
                                      description='''Produces a time-series visualisation of a Lakes ECV for a single lake. The lake-smoke years with the highest "count of smoke days" value is considered the "high smoke year". Lake-smoke years whose "count of smoke days" is less than or equal to `COUNT_OF_SMOKE_DAYS_LOWER_BOUND` are considered "low smoke years".''')
 
     # Positional arguments
-    add_argument_esacci_lakes_counts_of_smoke_days_csv_path(parser)
-    add_argument_esacci_lakes_data_dir_path(parser)
     add_argument_esacci_lakes_id(parser)
-    add_argument_esacci_lakes_smoke_days_csv_path(parser)
     add_argument_esacci_lakes_variable(parser)
+    add_argument_esacci_lakes_data_dir_path(parser)
+    add_argument_esacci_lakes_smoke_days_csv_path(parser)
+    add_argument_esacci_lakes_counts_of_smoke_days_csv_path(parser)
     
     args = parser.parse_args()
     # ==================================================================================================
 
     # Argument validation
     # ==================================================================================================
-    if not argument_esacci_lakes_counts_of_smoke_days_csv_path_exists(args.esacci_lakes_counts_of_smoke_days_csv_path, 
-                                                                      loud=True):
+    if not argument_esacci_lakes_variable_is_in_esacci_lakes_variables(args.esacci_lakes_variable, 
+                                                                       loud=True):
         return RETURN_FAILURE
 
     if not argument_esacci_lakes_data_dir_path_exists(args.esacci_lakes_data_dir_path, 
@@ -93,8 +93,8 @@ def main() -> int:
                                                             loud=True):
         return RETURN_FAILURE
     
-    if not argument_esacci_lakes_variable_is_in_esacci_lakes_variables(args.esacci_lakes_variable, 
-                                                                       loud=True):
+    if not argument_esacci_lakes_counts_of_smoke_days_csv_path_exists(args.esacci_lakes_counts_of_smoke_days_csv_path, 
+                                                                      loud=True):
         return RETURN_FAILURE
     # ==================================================================================================
     

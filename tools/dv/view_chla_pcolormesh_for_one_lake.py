@@ -20,12 +20,12 @@ from tqdm import tqdm
 
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.utils import (add_argument_esacci_lakes_id, 
-                                    add_argument_esacci_lakes_merged_product_dir_path, 
-                                    add_argument_esacci_lakes_static_lake_mask_nc_path, 
                                     add_argument_esacci_lakes_metadata_csv_path, 
-                                    argument_esacci_lakes_merged_product_dir_path_exists, 
+                                    add_argument_esacci_lakes_static_lake_mask_nc_path, 
+                                    add_argument_esacci_lakes_merged_product_dir_path, 
+                                    argument_esacci_lakes_metadata_csv_path_exists, 
                                     argument_esacci_lakes_static_lake_mask_nc_path_exists, 
-                                    argument_esacci_lakes_metadata_csv_path_exists)
+                                    argument_esacci_lakes_merged_product_dir_path_exists)
 from lib.io.vars            import (RETURN_FAILURE, 
                                     RETURN_SUCCESS)
 
@@ -42,25 +42,25 @@ def main() -> int:
 
     # Positional arguments
     add_argument_esacci_lakes_id(parser)
-    add_argument_esacci_lakes_merged_product_dir_path(parser)
     add_argument_esacci_lakes_metadata_csv_path(parser)
     add_argument_esacci_lakes_static_lake_mask_nc_path(parser)
+    add_argument_esacci_lakes_merged_product_dir_path(parser)
 
     args = parser.parse_args()
     # ==================================================================================================
 
     # Argument validation
     # ==================================================================================================
-    if not argument_esacci_lakes_merged_product_dir_path_exists(args.esacci_lakes_merged_product_dir_path, 
-                                                                loud=True):
-        return RETURN_FAILURE
-
     if not argument_esacci_lakes_metadata_csv_path_exists(args.esacci_lakes_metadata_csv_path, 
                                                           loud=True):
         return RETURN_FAILURE
     
     if not argument_esacci_lakes_static_lake_mask_nc_path_exists(args.esacci_lakes_static_lake_mask_nc_path, 
                                                                  loud=True):
+        return RETURN_FAILURE
+    
+    if not argument_esacci_lakes_merged_product_dir_path_exists(args.esacci_lakes_merged_product_dir_path, 
+                                                                loud=True):
         return RETURN_FAILURE
     # ==================================================================================================
     
@@ -104,7 +104,7 @@ def main() -> int:
         frames_dir_path.mkdir(parents=True, 
                               exist_ok=True)
 
-        for i, esacci_lakes_products_merged_nc_path in enumerate(tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob('*/*.nc')))):
+        for i, esacci_lakes_products_merged_nc_path in enumerate(tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob('**/*.nc')))):
             with xr.open_dataset(esacci_lakes_products_merged_nc_path) as esacci_lakes_products_merged:
                 esacci_lakes_products_merged = (esacci_lakes_products_merged[['chla', 'chla_uncertainty']].squeeze()
                                                                                                           .sel(lat=slice(lat_min_box, 
