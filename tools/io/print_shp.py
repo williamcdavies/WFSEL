@@ -23,9 +23,7 @@ def main() -> int:
     # ==================================================================================================
     parser = argparse.ArgumentParser(prog='print_shp.py', 
                                      usage='%(prog)s [options]', 
-                                     description='''Prints Shapefile
-                                                 file metadata to
-                                                 `sys.stdout`.''')
+                                     description='''Prints Shapefile file metadata to `sys.stdout`.''')
     
     # Positional arguments
     parser.add_argument('shp_path',
@@ -38,20 +36,14 @@ def main() -> int:
     # Argument validation
     # ==================================================================================================
     if not args.shp_path.exists():
-        print(f'''error: argument shp_path: no such file or directory:
-               {args.shp_path}''')
+        print(f'''error: argument shp_path: no such file or directory: {args.shp_path}''')
         
         return RETURN_FAILURE
     # ==================================================================================================
 
     # Program logic
     # ==================================================================================================
-    try:
-        gdf = gpd.read_file(args.shp_path)
-    except Exception as e:
-        print(f'''fatal: exception: {e}''')
-        
-        return RETURN_FAILURE
+    gdf = gpd.read_file(args.shp_path)
     
     print(gdf)
 
