@@ -19,8 +19,6 @@ import seaborn           as sns
 from pygam import LinearGAM, s
 
 # Local Application/Library Specific Imports
-from lib.io.vars            import (RETURN_FAILURE, 
-                                    RETURN_SUCCESS)
 from lib.esacci_lakes.utils import (add_argument_esacci_lakes_counts_of_smoke_days_csv_path, 
                                     add_argument_esacci_lakes_data_dir_path, 
                                     add_argument_esacci_lakes_id, 
@@ -31,6 +29,8 @@ from lib.esacci_lakes.utils import (add_argument_esacci_lakes_counts_of_smoke_da
 from lib.esacci_lakes.vars  import (COUNT_OF_SMOKE_DAYS_LOWER_BOUND, 
                                     COUNT_OF_SMOKE_DAYS_UPPER_BOUND, 
                                     ESACCI_LAKES_VARIABLES)
+from lib.io.vars            import (RETURN_FAILURE, 
+                                    RETURN_SUCCESS)
 
 
 PROG='view_all_low_smoke_years_and_all_high_smoke_years.py'
@@ -65,24 +65,7 @@ def main() -> int:
     # ==================================================================================================
     parser = argparse.ArgumentParser(prog=f'{PROG}',
                                      usage='%(prog)s [options]', 
-                                     description='''Produces a
-                                                 time-series
-                                                 visualisation of a
-                                                 Lakes ECV for a single
-                                                 lake. Lake-smoke years
-                                                 whose "count of
-                                                 smokedays" is greater
-                                                 than or equal to
-                                                 `COUNT_OF_SMOKE_DAYS_UPPER_BOUND`
-                                                 are considered "high
-                                                 smoke years".
-                                                 Lake-smoke years whose
-                                                 "count of smoke days"
-                                                 is less than or equal
-                                                 to
-                                                 `COUNT_OF_SMOKE_DAYS_LOWER_BOUND`
-                                                 are considered "low
-                                                 smoke years".''')
+                                     description='''Produces a time-series visualisation of a Lakes ECV for a single lake. Lake-smoke years whose "count of smokedays" is greater than or equal to `COUNT_OF_SMOKE_DAYS_UPPER_BOUND` are considered "high smoke years". Lake-smoke years whose "count of smoke days" is less than or equal to `COUNT_OF_SMOKE_DAYS_LOWER_BOUND` are considered "low smoke years".''')
 
     # Positional arguments
     add_argument_esacci_lakes_counts_of_smoke_days_csv_path(parser)

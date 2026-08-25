@@ -16,10 +16,10 @@ import pandas            as pd
 import seaborn           as sns
 
 # Local Application/Library Specific Imports
-from lib.io.vars            import (RETURN_FAILURE, 
-                                    RETURN_SUCCESS)
 from lib.esacci_lakes.utils import (add_argument_esacci_lakes_counts_of_smoke_days_csv_path, 
                                     argument_esacci_lakes_counts_of_smoke_days_csv_path_exists)
+from lib.io.vars            import (RETURN_FAILURE, 
+                                    RETURN_SUCCESS)
 
 
 PROG='view_pdf.py'
@@ -30,13 +30,7 @@ def main() -> int:
     # ==================================================================================================
     parser = argparse.ArgumentParser(prog=f'{PROG}',
                                      usage='%(prog)s [options]', 
-                                     description='''Produces a
-                                                 distribution
-                                                 visualisation of the
-                                                 "count of smoke days"
-                                                 for all lake-smoke
-                                                 years from [2011,
-                                                 2023].''')
+                                     description='''Produces a distribution visualisation of the "count of smoke days" for all lake-smoke years from [2011, 2023].''')
 
     # Positional arguments
     add_argument_esacci_lakes_counts_of_smoke_days_csv_path(parser)

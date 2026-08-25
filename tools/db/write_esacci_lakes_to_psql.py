@@ -17,8 +17,9 @@ import rasterio.transform
 import rasterio.features
 import shapely.geometry
 import shapely.ops
-import tqdm
 import xarray             as xr
+
+from tqdm import tqdm
 
 # Local Application/Library Specific Imports
 from lib.io.vars            import (RETURN_FAILURE, 
@@ -37,13 +38,7 @@ def main() -> int:
     # ==================================================================================================
     parser = argparse.ArgumentParser(prog=f'{PROG}.py',
                                      usage='%(prog)s [options]', 
-                                     description='''Writes ESA Lakes
-                                                 Climate Change
-                                                 Initiative (Lakes_cci):
-                                                 Lake products, Version
-                                                 3.0 metadata and
-                                                 geometries to psql for
-                                                 use with PostGIS.''')
+                                     description='''Writes ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0 metadata and geometries to psql for use with PostGIS.''')
 
     # Positional arguments
     add_argument_esacci_lakes_static_lake_mask_nc_path(parser)
@@ -71,8 +66,8 @@ def main() -> int:
     
     with (xr.open_dataset(args.esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc,
           psycopg.connect("dbname=spatial")                           as conn):
-        for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
-                             total=len(esacci_lakes_metadata_csv)):
+        for row in tqdm(esacci_lakes_metadata_csv.itertuples(), 
+                        total=len(esacci_lakes_metadata_csv)):
             lat_max_box                     = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_max_box, 
                                                                                            method='nearest')
                                                                                       .item())

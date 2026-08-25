@@ -14,12 +14,11 @@ import sys
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import pandas            as pd
-import tqdm
 import xarray            as xr
 
+from tqdm import tqdm
+
 # Local Application/Library Specific Imports
-from lib.io.vars            import (RETURN_FAILURE, 
-                                    RETURN_SUCCESS)
 from lib.esacci_lakes.utils import (add_argument_esacci_lakes_id, 
                                     add_argument_esacci_lakes_merged_product_dir_path, 
                                     add_argument_esacci_lakes_static_lake_mask_nc_path, 
@@ -27,6 +26,8 @@ from lib.esacci_lakes.utils import (add_argument_esacci_lakes_id,
                                     argument_esacci_lakes_merged_product_dir_path_exists, 
                                     argument_esacci_lakes_static_lake_mask_nc_path_exists, 
                                     argument_esacci_lakes_metadata_csv_path_exists)
+from lib.io.vars            import (RETURN_FAILURE, 
+                                    RETURN_SUCCESS)
 
 
 PROG = 'view_chla_pcolormesh_for_one_lake.py'
@@ -37,12 +38,7 @@ def main() -> int:
     # ==================================================================================================
     parser = argparse.ArgumentParser(prog=f'{PROG}',
                                      usage='%(prog)s [options]', 
-                                     description='''Produces a chla
-                                                 pcolormesh and
-                                                 chla_uncertainty
-                                                 pcolormesh
-                                                 visualisation for one
-                                                 lake''')
+                                     description='''Produces a chla pcolormesh andchla_uncertainty pcolormesh visualisation for one lake''')
 
     # Positional arguments
     add_argument_esacci_lakes_id(parser)
@@ -108,7 +104,7 @@ def main() -> int:
         frames_dir_path.mkdir(parents=True, 
                               exist_ok=True)
 
-        for i, esacci_lakes_products_merged_nc_path in enumerate(tqdm.tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob('*/*.nc')))):
+        for i, esacci_lakes_products_merged_nc_path in enumerate(tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob('*/*.nc')))):
             with xr.open_dataset(esacci_lakes_products_merged_nc_path) as esacci_lakes_products_merged:
                 esacci_lakes_products_merged = (esacci_lakes_products_merged[['chla', 'chla_uncertainty']].squeeze()
                                                                                                           .sel(lat=slice(lat_min_box, 

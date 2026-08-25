@@ -14,12 +14,11 @@ import sys
 # Related Third-party Imports
 import numpy  as np
 import pandas as pd
-import tqdm
 import xarray as xr
 
+from tqdm import tqdm
+
 # Local Application/Library Specific Imports
-from lib.io.vars            import (RETURN_SUCCESS, 
-                                    RETURN_FAILURE)
 from lib.esacci_lakes.utils import (add_argument_esacci_lakes_metadata_csv_path, 
                                     add_argument_esacci_lakes_products_merged_nc_path,
                                     add_argument_esacci_lakes_static_lake_mask_nc_path, 
@@ -27,6 +26,8 @@ from lib.esacci_lakes.utils import (add_argument_esacci_lakes_metadata_csv_path,
                                     argument_esacci_lakes_products_merged_nc_path_exists, 
                                     argument_esacci_lakes_static_lake_mask_nc_path_exists)
 from lib.esacci_lakes.vars  import ESACCI_LAKES_VARIABLES
+from lib.io.vars            import (RETURN_SUCCESS, 
+                                    RETURN_FAILURE)
 
 
 PROG = 'main.py'
@@ -42,8 +43,8 @@ def comp_with_inf_buffer(esacci_lakes_metadata_csv_path:        pathlib.Path,
 
    with (xr.open_dataset(esacci_lakes_products_merged_nc_path)  as esacci_lakes_products_merged_nc, 
          xr.open_dataset(esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc):
-      for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
-                           total=len(esacci_lakes_metadata_csv)):
+      for row in tqdm(esacci_lakes_metadata_csv.itertuples(), 
+                      total=len(esacci_lakes_metadata_csv)):
          record                          = {'id': row.Index}
          lat_max_box                     = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_max_box, 
                                                                                         method='nearest')
@@ -104,8 +105,8 @@ def comp_with_fin_buffer(buffer:                                int,
 
    with (xr.open_dataset(esacci_lakes_products_merged_nc_path)  as esacci_lakes_products_merged_nc, 
          xr.open_dataset(esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_nc):
-      for row in tqdm.tqdm(esacci_lakes_metadata_csv.itertuples(), 
-                           total=len(esacci_lakes_metadata_csv)):
+      for row in tqdm(esacci_lakes_metadata_csv.itertuples(), 
+                      total=len(esacci_lakes_metadata_csv)):
          record                          = {'id': row.Index}
          lat_centre                      = (esacci_lakes_static_lake_mask_nc['lat'].sel(lat=row.lat_centre, 
                                                                                         method='nearest')
@@ -162,22 +163,7 @@ def main() -> int:
    # ==================================================================================================
    parser = argparse.ArgumentParser(prog='main.py',
                                     usage='%(prog)s [options]', 
-                                    description='''Produces a .csv file
-                                                containing the mean for
-                                                each Lakes ECVs in
-                                                `['chla', 'tsm',
-                                                'acdom440', 'Kd490',
-                                                'KdPAR', 'phycocyanin',
-                                                'lake_surface_water_temperature',
-                                                'lake_surface_water_extent']`
-                                                for each lake within the
-                                                candidate set given a
-                                                infinite or finite
-                                                buffer, ESA Lakes_cci
-                                                v3.0 dataset,
-                                                lakescci_v2.1_metadata.csv,
-                                                and an output
-                                                destination.''')
+                                    description='''Produces a .csv file containing the mean for each Lakes ECVs in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']` for each lake within the candidate set given a infinite or finite buffer, ESA Lakes_cci v3.0 dataset, lakescci_v2.1_metadata.csv, and an output destination.''')
 
    # Positional arguments
    add_argument_esacci_lakes_metadata_csv_path(parser)
@@ -209,8 +195,7 @@ def main() -> int:
 
    if not bool(re.fullmatch(r"^([0-9]+|inf)$", 
                             args.buffer)) :
-      print(f'''
-error: argument buffer: unexpected value: {args.buffer}''')
+      print(f'''error: argument buffer: unexpected value: {args.buffer}''')
       
       return RETURN_FAILURE
    # ==================================================================================================

@@ -35,8 +35,7 @@ def add_argument_esacci_lakes_data_dir_path(parser: argparse.ArgumentParser) -> 
    '''
    parser.add_argument('esacci_lakes_data_dir_path', 
                        type=pathlib.Path, 
-                       help=f'''
-path to the ESA CCI Lakes data directory as produced by main.py''')
+                       help=f'''path to the ESA CCI Lakes data directory as produced by main.py''')
 
 
 def argument_esacci_lakes_data_dir_path_exists(esacci_lakes_data_dir_path: pathlib.Path, 
@@ -58,9 +57,7 @@ def argument_esacci_lakes_data_dir_path_exists(esacci_lakes_data_dir_path: pathl
       return True
 
    if loud:
-      print(f'''
-error: argument esacci_lakes_data_dir_path: no such file or directory:
-{esacci_lakes_data_dir_path}''')
+      print(f'''error: argument esacci_lakes_data_dir_path: no such file or directory: {esacci_lakes_data_dir_path}''')
 
    return False
 # ==================================================================================================
@@ -85,9 +82,7 @@ def add_argument_esacci_lakes_average_depths_csv_path(parser: argparse.ArgumentP
    '''
    parser.add_argument('esacci_lakes_average_depths_csv_path', 
                        type=pathlib.Path, 
-                       help=f'''
-path to some average depths data csv file as produced by
-query_esacci_lakes_average_depths.sql''')
+                       help=f'''path to some average depths data csv file as produced by query_esacci_lakes_average_depths.sql''')
 
 
 def argument_esacci_lakes_average_depths_csv_path_exists(esacci_lakes_average_depths_csv_path: pathlib.Path, 
@@ -109,9 +104,7 @@ def argument_esacci_lakes_average_depths_csv_path_exists(esacci_lakes_average_de
       return True
 
    if loud:
-      print(f'''
-error: argument esacci_lakes_average_depths_csv_path: no such file or
-directory: {esacci_lakes_average_depths_csv_path}''')
+      print(f'''error: argument esacci_lakes_average_depths_csv_path: no such file or directory: {esacci_lakes_average_depths_csv_path}''')
 
    return False
 
@@ -133,9 +126,7 @@ def add_argument_esacci_lakes_counts_of_smoke_days_csv_path(parser: argparse.Arg
    '''
    parser.add_argument('esacci_lakes_counts_of_smoke_days_csv_path', 
                        type=pathlib.Path, 
-                       help=f'''
-path to some counts of smoke days data csv file as produced by
-query_esacci_lakes_counts_of_smoke_days.sql''')
+                       help=f'''path to some counts of smoke days data csv file as produced by query_esacci_lakes_counts_of_smoke_days.sql''')
 
 
 def argument_esacci_lakes_counts_of_smoke_days_csv_path_exists(esacci_lakes_counts_of_smoke_days_csv_path: pathlib.Path, 
@@ -157,9 +148,7 @@ def argument_esacci_lakes_counts_of_smoke_days_csv_path_exists(esacci_lakes_coun
       return True
 
    if loud:
-      print(f'''
-error: argument esacci_lakes_counts_of_smoke_days_csv_path: no such file
-or directory: {esacci_lakes_counts_of_smoke_days_csv_path}''')
+      print(f'''error: argument esacci_lakes_counts_of_smoke_days_csv_path: no such file or directory: {esacci_lakes_counts_of_smoke_days_csv_path}''')
 
    return False
 
@@ -181,9 +170,7 @@ def add_argument_esacci_lakes_hydro_lakes_ids_csv_path(parser: argparse.Argument
    '''
    parser.add_argument('esacci_lakes_hydro_lakes_ids_csv_path', 
                        type=pathlib.Path, 
-                       help=f'''
-path to some hydro lakes ids data csv file as produced by
-query_esacci_lakes_hydro_lakes_ids.sql''')
+                       help=f'''path to some hydro lakes ids data csv file as produced by query_esacci_lakes_hydro_lakes_ids.sql''')
 
 
 def argument_esacci_lakes_hydro_lakes_ids_csv_path_exists(esacci_lakes_hydro_lakes_ids_csv_path: pathlib.Path, 
@@ -205,9 +192,7 @@ def argument_esacci_lakes_hydro_lakes_ids_csv_path_exists(esacci_lakes_hydro_lak
       return True
 
    if loud:
-      print(f'''
-error: argument esacci_lakes_hydro_lakes_ids_csv_path: no such file or
-directory: {esacci_lakes_hydro_lakes_ids_csv_path}''')
+      print(f'''error: argument esacci_lakes_hydro_lakes_ids_csv_path: no such file or directory: {esacci_lakes_hydro_lakes_ids_csv_path}''')
 
    return False
 
@@ -229,9 +214,7 @@ def add_argument_esacci_lakes_smoke_days_csv_path(parser: argparse.ArgumentParse
    '''
    parser.add_argument('esacci_lakes_smoke_days_csv_path', 
                        type=pathlib.Path, 
-                       help=f'''
-path to some smoke days data csv file as produced by
-query_esacci_lakes_smoke_days.sql''')
+                       help=f'''path to some smoke days data csv file as produced by query_esacci_lakes_smoke_days.sql''')
 
 
 def argument_esacci_lakes_smoke_days_csv_path_exists(esacci_lakes_smoke_days_csv_path: pathlib.Path, 
@@ -253,9 +236,7 @@ def argument_esacci_lakes_smoke_days_csv_path_exists(esacci_lakes_smoke_days_csv
       return True
 
    if loud:
-      print(f'''
-error: argument esacci_lakes_smoke_days_csv_path: no such file or
-directory: {esacci_lakes_smoke_days_csv_path}''')
+      print(f'''error: argument esacci_lakes_smoke_days_csv_path: no such file or directory: {esacci_lakes_smoke_days_csv_path}''')
 
    return False
 # ==================================================================================================
@@ -279,9 +260,7 @@ def add_argument_esacci_lakes_id(parser: argparse.ArgumentParser) -> None:
    '''
    parser.add_argument('esacci_lakes_id', 
                        type=int, 
-                       help=f'''
-lake_cci_id as provided by ESA Lakes Climate Change Initiative
-(Lakes_cci): Lake products, Version 3.0''')
+                       help=f'''lake_cci_id as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
 
 
 def add_argument_esacci_lakes_merged_product_dir_path(parser: argparse.ArgumentParser) -> None:
@@ -301,10 +280,7 @@ def add_argument_esacci_lakes_merged_product_dir_path(parser: argparse.ArgumentP
    '''
    parser.add_argument('esacci_lakes_merged_product_dir_path', 
                        type=pathlib.Path, 
-                       help=f'''path to the ESA CCI merged_product
-                             directory as provided by ESA Lakes Climate
-                             Change Initiative (Lakes_cci): Lake
-                             products, Version 3.0''')
+                       help=f'''path to the ESA CCI merged_product directory as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
 
 
 def argument_esacci_lakes_merged_product_dir_path_exists(esacci_lakes_merged_product_dir_path: pathlib.Path, 
@@ -326,9 +302,7 @@ def argument_esacci_lakes_merged_product_dir_path_exists(esacci_lakes_merged_pro
       return True
 
    if loud:
-      print(f'''error: argument esacci_lakes_merged_product_dir_path: no
-             such file or directory:
-             {esacci_lakes_merged_product_dir_path}''')
+      print(f'''error: argument esacci_lakes_merged_product_dir_path: no such file or directory: {esacci_lakes_merged_product_dir_path}''')
 
    return False
 
@@ -350,9 +324,7 @@ def add_argument_esacci_lakes_metadata_csv_path(parser: argparse.ArgumentParser)
    '''
    parser.add_argument('esacci_lakes_metadata_csv_path',
                        type=pathlib.Path,
-                       help=f'''
-path to the `lakescci_v2.1.0_metadata.csv` file as provided by ESA Lakes
-Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
+                       help=f'''path to the `lakescci_v2.1.0_metadata.csv` file as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
 
 
 def argument_esacci_lakes_metadata_csv_path_exists(esacci_lakes_metadata_csv_path: pathlib.Path, 
@@ -374,9 +346,7 @@ def argument_esacci_lakes_metadata_csv_path_exists(esacci_lakes_metadata_csv_pat
       return True
 
    if loud:
-      print(f'''
-error: argument esacci_lakes_metadata_csv_path: no such file or
-directory: {esacci_lakes_metadata_csv_path}''')
+      print(f'''error: argument esacci_lakes_metadata_csv_path: no such file or directory: {esacci_lakes_metadata_csv_path}''')
 
    return False
 
@@ -398,10 +368,7 @@ def add_argument_esacci_lakes_products_merged_nc_path(parser: argparse.ArgumentP
    '''
    parser.add_argument('esacci_lakes_products_merged_nc_path', 
                        type=pathlib.Path, 
-                       help=f'''
-path to some `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc`
-file as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
-Lake products, Version 3.0''')
+                       help=f'''path to some `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` file as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
 
 
 def argument_esacci_lakes_products_merged_nc_path_exists(esacci_lakes_products_merged_nc_path: pathlib.Path, 
@@ -423,9 +390,7 @@ def argument_esacci_lakes_products_merged_nc_path_exists(esacci_lakes_products_m
       return True
 
    if loud:
-      print(f'''
-error: argument esacci_lakes_products_merged_nc_path: no such file or
-directory: {esacci_lakes_products_merged_nc_path}''')
+      print(f'''error: argument esacci_lakes_products_merged_nc_path: no such file or directory: {esacci_lakes_products_merged_nc_path}''')
 
    return False
 
@@ -447,9 +412,7 @@ def add_argument_esacci_lakes_static_lake_mask_nc_path(parser: argparse.Argument
    '''
    parser.add_argument('esacci_lakes_static_lake_mask_nc_path', 
                        type=pathlib.Path, 
-                       help=f'''
-path to the `ESA_CCI_static_lake_mask.nc` file as provided by ESA Lakes
-Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
+                       help=f'''path to the `ESA_CCI_static_lake_mask.nc` file as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0''')
 
 
 def argument_esacci_lakes_static_lake_mask_nc_path_exists(esacci_lakes_static_lake_mask_nc_path: pathlib.Path, 
@@ -471,9 +434,7 @@ def argument_esacci_lakes_static_lake_mask_nc_path_exists(esacci_lakes_static_la
       return True
 
    if loud:
-      print(f'''
-error: argument esacci_lakes_static_lake_mask_nc_path: no such file or
-directory: {esacci_lakes_static_lake_mask_nc_path}''')
+      print(f'''error: argument esacci_lakes_static_lake_mask_nc_path: no such file or directory: {esacci_lakes_static_lake_mask_nc_path}''')
 
    return False
 
@@ -494,8 +455,7 @@ def add_argument_esacci_lakes_variable(parser: argparse.ArgumentParser) -> None:
    '''
    parser.add_argument('esacci_lakes_variable', 
                        type=str, 
-                       help=f'''
-one of {ESACCI_LAKES_VARIABLES}''')
+                       help=f'''one of {ESACCI_LAKES_VARIABLES}''')
 
 
 def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(esacci_lakes_variable: str, 
@@ -519,8 +479,7 @@ def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(esacci_lakes_var
       return True
 
    if loud:
-      print(f'''
-error: argument esacci_lakes_variable: not one of
-{list(ESACCI_LAKES_VARIABLES.keys())}: {esacci_lakes_variable}''')
+      print(f'''error: argument esacci_lakes_variable: not one of {list(ESACCI_LAKES_VARIABLES.keys())}: {esacci_lakes_variable}''')
+
    return False
 # ==================================================================================================
