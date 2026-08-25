@@ -23,9 +23,7 @@ def main() -> int:
     # ==================================================================================================
     parser = argparse.ArgumentParser(prog='print_nc.py', 
                                      usage='%(prog)s [options]', 
-                                     description='''Prints netCDF file
-                                                 metadata to
-                                                 `sys.stdout`.''')
+                                     description='''Prints netCDF file metadata to `sys.stdout`.''')
     
     # Positional arguments
     parser.add_argument('nc_path',
@@ -38,21 +36,15 @@ def main() -> int:
     # Argument validation
     # ==================================================================================================
     if not args.nc_path.exists():
-        print(f'''error: argument nc_path: no such file or directory:
-               {args.nc_path}''')
+        print(f'''error: argument nc_path: no such file or directory: {args.nc_path}''')
         
         return RETURN_FAILURE
     # ==================================================================================================
     
     # Program logic
     # ==================================================================================================
-    try:
-        with xr.open_dataset(args.nc_path) as ds:
-            print(ds)
-    except Exception as e:
-        print(f'''error: exception: {e}''')
-        
-        return RETURN_FAILURE
+    with xr.open_dataset(args.nc_path) as ds:
+        print(ds)
 
     return RETURN_SUCCESS
     # ==================================================================================================
