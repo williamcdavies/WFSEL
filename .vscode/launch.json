@@ -11,10 +11,6 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "data/lakescci_v2.1.0_metadata_filtered.csv", 
-                "data/db/esacci_lakes_average_depths.csv", 
-                "data/db/esacci_lakes_counts_of_smoke_days.csv", 
-                "data/main.py/buffer_inf"
             ]
         }
     ]
