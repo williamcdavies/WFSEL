@@ -110,17 +110,18 @@ def main() -> int:
                                                                             lon=slice(lon_min_box, 
                                                                                       lon_max_box))
 
-         if ((esacci_lakes_merged_product[ESACCI_LAKES_VARIABLES['lake_surface_water_temperature'].var_id].where(esacci_lakes_static_lake_mask)
-                                                                                                          .notnull()
-                                                                                                          .sum()
-                                                                                                          .item()) 
-            / 
-            (esacci_lakes_static_lake_mask.sum()
-                                          .item())) < 0.5:
-            record[f"{ESACCI_LAKES_VARIABLES['lake_surface_water_temperature'].var_id}_mean"] = np.nan
-         else:
-            record[f"{ESACCI_LAKES_VARIABLES['lake_surface_water_temperature'].var_id}_mean"] = (esacci_lakes_merged_product['lake_surface_water_temperature'].mean(dim=["time", "lat", "lon"], skipna=True)
-                                                                                                                                                              .item())
+         for esacci_lakes_variable in ESACCI_LAKES_VARIABLES:
+            if ((esacci_lakes_merged_product[ESACCI_LAKES_VARIABLES[esacci_lakes_variable].var_id].where(esacci_lakes_static_lake_mask)
+                                                                                                  .notnull()
+                                                                                                  .sum()
+                                                                                                  .item()) 
+               / 
+               (esacci_lakes_static_lake_mask.sum()
+                                             .item())) < 0.5:
+               record[f"{ESACCI_LAKES_VARIABLES[esacci_lakes_variable].var_id}_mean"] = np.nan
+            else:
+               record[f"{ESACCI_LAKES_VARIABLES[esacci_lakes_variable].var_id}_mean"] = (esacci_lakes_merged_product[esacci_lakes_variable].mean(dim=["time", "lat", "lon"], skipna=True)
+                                                                                                                                           .item())
    
          records.append(record)
 

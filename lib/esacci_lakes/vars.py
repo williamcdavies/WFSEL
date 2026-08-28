@@ -11,6 +11,8 @@ Written by William Chuter-Davies
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.objects import ESACCILakesVariable
 
+AVERAGE_DEPTH_LOWER_BOUND       = 10
+AVERAGE_DEPTH_UPPER_BOUND       = 50
 COUNT_OF_SMOKE_DAYS_LOWER_BOUND = 7
 COUNT_OF_SMOKE_DAYS_UPPER_BOUND = 42
 ESACCI_LAKES_VARIABLES          = {'chla':                           ESACCILakesVariable('chla', 

@@ -12,9 +12,9 @@
             "console": "integratedTerminal",
             "args": [
                 "data/lakescci_v2.1.0_metadata_filtered.csv", 
-                "data/ESA_CCI_static_lake_mask.nc", 
-                "/Volumes/TOSHIBA EXT/2023/01/ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20230115-fv3.0.0.nc", 
-                "out.csv"
+                "data/db/esacci_lakes_average_depths.csv", 
+                "data/db/esacci_lakes_counts_of_smoke_days.csv", 
+                "data/main.py/buffer_inf"
             ]
         }
     ]
