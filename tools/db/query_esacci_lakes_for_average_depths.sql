@@ -47,3 +47,46 @@ COPY (
         ON h.hylak_id = x3.hylak_id
     ORDER BY x3.esacci_lakes_id ASC
 ) TO STDOUT WITH (FORMAT csv, HEADER);
+
+
+INSERT INTO esacci_lakes
+(
+    id,
+    short_name,
+    name,
+    country,
+    max_distance_to_land,
+    lat_min_box,
+    lat_max_box,
+    lon_min_box,
+    lon_max_box,
+    lat_centre,
+    lon_centre,
+    lwl_data,
+    lwe_data,
+    lswt_data,
+    lic_data,
+    lwlr_data,
+    type,
+    geom
+) VALUES
+(
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    ST_GEOMFROMWKB(1, 4326)
+)
