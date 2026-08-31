@@ -45,42 +45,42 @@ ESACCI_LAKES_VARIABLES = {
     "chla": ESACCILakesVariable(
         "chla",
         "Concentration of Chlorophyll-a",
-        "mg.m-3",
+        "mg.m-3"
     ),
     "tsm": ESACCILakesVariable(
         "tsm",
         "Concentration of Total Suspended Matter",
-        "g.m-3",
+        "g.m-3"
     ),
     "acdom440": ESACCILakesVariable(
         "acdom440",
         "Absorption Coefficient of Coloured Dissolved Organic Matter at 440 nm",
-        "m-1",
+        "m-1"
     ),
     "Kd490": ESACCILakesVariable(
         "Kd490",
         "Vertical Diffuse Downwelling Attenuation Coefficient at 490 nm",
-        "m-1",
+        "m-1"
     ),
     "KdPAR": ESACCILakesVariable(
         "KdPAR",
         "Vertical Diffuse Downwelling Attenuation Coefficient Aggregated Over PAR",
-        "m-1",
+        "m-1"
     ),
     "phycocyanin": ESACCILakesVariable(
         "phycocyanin",
         "Concentration of Phycocyanin Calculated From MDN Algorithm by O'Shea et al. 2021",
-        "mg.m-3",
+        "mg.m-3"
     ),
     "lake_surface_water_temperature": ESACCILakesVariable(
         "lake_surface_water_temperature",
         "Lake Surface Skin Temperature",
-        "˚C",
+        "˚C"
     ),
     "lake_surface_water_extent": ESACCILakesVariable(
         "lake_surface_water_extent",
         "Lake Water Extent",
-        "km2",
-    ),
+        "km2"
+    )
 }
 # ==================================================================================================

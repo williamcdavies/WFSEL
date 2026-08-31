@@ -16,15 +16,15 @@ from lib.geo.objects import GeoBoundingBox
 
 def sel(
     ds: xr.Dataset,
-    geo_bounding_box: GeoBoundingBox,
+    geo_bounding_box: GeoBoundingBox
 ) -> xr.Dataset:
     return ds.sel(
         lat=slice(
             geo_bounding_box.lat_min,
-            geo_bounding_box.lat_max,
+            geo_bounding_box.lat_max
         ),
         lon=slice(
             geo_bounding_box.lon_min,
-            geo_bounding_box.lon_max,
-        ),
+            geo_bounding_box.lon_max
+        )
     )

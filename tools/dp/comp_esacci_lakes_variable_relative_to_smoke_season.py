@@ -53,7 +53,7 @@ NUMBER_OF_LOOKBACK_WEEKS = 3
 
 def comp_week_index(
     day: int,
-    anchor: int,
+    anchor: int
 ) -> int:
     """
     Returns a week index given an arbitrary julian day and an anchor
@@ -72,7 +72,7 @@ def comp_week_index(
 
 def comp_first_day_in_week(
     week_idx: int,
-    anchor: int,
+    anchor: int
 ) -> int:
     """
     Returns the first julian day in a week given an arbitrary week index
@@ -91,7 +91,7 @@ def comp_first_day_in_week(
 
 def comp_last_day_in_week(
     week_idx: int,
-    anchor: int,
+    anchor: int
 ) -> int:
     """
     Returns the last julian day in a week given an arbitrary week index
@@ -198,7 +198,13 @@ def main() -> int:
                     }
                 )
 
-                esacci_lakes_distinct_start_days = pd.Series([record[0] for record in cur.fetchall()])
+                esacci_lakes_distinct_start_days = pd.Series(
+                    [
+                        record[0] 
+                        for record 
+                        in cur.fetchall()
+                    ]
+                )
 
             high_smoke_year_files = sorted(Path(args.local_data_dir_path / high_smoke_year).glob("**/*.csv"))
             low_smoke_year_files  = sorted(Path(args.local_data_dir_path / low_smoke_year).glob("**/*.csv"))
@@ -238,17 +244,25 @@ def main() -> int:
             for day_n in range(start, stop + 1):
                 week_idx = comp_week_index(day_n, day_0)
 
-                high_smoke_year_df                          = pd.read_csv(high_smoke_year_files[day_n - 1], index_col="id")
-                high_smoke_year_esacci_lakes_variable_value = (high_smoke_year_df[f"{args.esacci_lakes_variable}_mean"]
-                                                               .loc[esacci_lakes_id]
-                                                               .item()
+                high_smoke_year_df                          = pd.read_csv(
+                    high_smoke_year_files[day_n - 1],
+                    index_col="id"
+                )
+                high_smoke_year_esacci_lakes_variable_value = (
+                    high_smoke_year_df[f"{args.esacci_lakes_variable}_mean"]
+                    .loc[esacci_lakes_id]
+                    .item()
                 )
                 high_smoke_year_esacci_lakes_variable_values[week_idx].append(high_smoke_year_esacci_lakes_variable_value)
 
-                low_smoke_year_df                          = pd.read_csv(low_smoke_year_files[day_n - 1], index_col="id")
-                low_smoke_year_esacci_lakes_variable_value = (low_smoke_year_df[f"{args.esacci_lakes_variable}_mean"]
-                                                              .loc[esacci_lakes_id]
-                                                              .item()
+                low_smoke_year_df                          = pd.read_csv(
+                    low_smoke_year_files[day_n - 1],
+                    index_col="id"
+                )
+                low_smoke_year_esacci_lakes_variable_value = (
+                    low_smoke_year_df[f"{args.esacci_lakes_variable}_mean"]
+                    .loc[esacci_lakes_id]
+                    .item()
                 )
                 low_smoke_year_esacci_lakes_variable_values[week_idx].append(low_smoke_year_esacci_lakes_variable_value)
 
@@ -256,7 +270,7 @@ def main() -> int:
                 high_smoke_year_record[f"w{i}"] = np.nanmean(l)
 
             for i, l in low_smoke_year_esacci_lakes_variable_values.items():
-                low_smoke_year_record[f"w{i}"] = np.nanmean(l)
+                low_smoke_year_record[f"w{i}"]  = np.nanmean(l)
 
             for i in set(high_smoke_year_esacci_lakes_variable_values) | set(low_smoke_year_esacci_lakes_variable_values):
                 key = f"w{i}"

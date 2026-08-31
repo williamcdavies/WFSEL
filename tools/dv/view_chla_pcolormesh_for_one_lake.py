@@ -44,7 +44,7 @@ def main() -> int:
     parser = ArgumentParser(
         prog=PROG,
         usage="%(prog)s [options]",
-        description="""Produces a chla pcolormesh and chla_uncertainty pcolormesh visualisation for one lake""",
+        description="""Produces a chla pcolormesh and chla_uncertainty pcolormesh visualisation for one lake"""
     )
 
     # Positional arguments

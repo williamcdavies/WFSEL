@@ -46,7 +46,7 @@ PROG = "view_all_low_smoke_years_and_all_high_smoke_years.py"
 
 def fit(
     df: pd.DataFrame,
-    esacci_lakes_variable: str,
+    esacci_lakes_variable: str
 ) -> LinearGAM:
     df_nonan = df.dropna(subset=[f"{esacci_lakes_variable}_mean"])
     X        = df_nonan["index"].values
@@ -56,14 +56,21 @@ def fit(
 
 
 def to_dfs(
-    local_data_dir_paths: list[Path],
-    esacci_lakes_id: int,
+    local_data_sub_dir_paths: list[Path],
+    esacci_lakes_id: int
 ) -> list[pd.DataFrame]:
     dfs = []
 
-    for local_data_dir_path in local_data_dir_paths:
-        local_data_csv_paths = sorted(local_data_dir_path.glob("*.csv"))
-        local_data            = [pd.read_csv(local_data_csv_path, index_col="id").loc[esacci_lakes_id] for local_data_csv_path in local_data_csv_paths]
+    for local_data_sub_dir_path in local_data_sub_dir_paths:
+        local_data_csv_paths = sorted(local_data_sub_dir_path.glob("*.csv"))
+        local_data           = [
+            pd.read_csv(
+                local_data_csv_path, 
+                index_col="id"
+            ).loc[esacci_lakes_id] 
+            for local_data_csv_path 
+            in local_data_csv_paths
+        ]
 
         dfs.append(pd.DataFrame(local_data).reset_index(drop=True))
 
@@ -76,7 +83,7 @@ def main() -> int:
     parser = ArgumentParser(
         prog=PROG,
         usage="%(prog)s [options]",
-        description="""Produces a time-series visualisation of a Lakes ECV for a single lake. Lake-smoke years whose "count of smokedays" is greater than or equal to `COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND` are considered "high smoke years". Lake-smoke years whose "count of smoke days" is less than or equal to `COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND` are considered "low smoke years".""",
+        description="""Produces a time-series visualisation of a Lakes ECV for a single lake. Lake-smoke years whose "count of smokedays" is greater than or equal to `COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND` are considered "high smoke years". Lake-smoke years whose "count of smoke days" is less than or equal to `COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND` are considered "low smoke years"."""
     )
 
     # Positional arguments
@@ -109,27 +116,45 @@ def main() -> int:
 
     low_smoke_years  = [
         year 
-        for (year, count_of_smoke_days) 
-        in esacci_lakes_counts_of_distinct_start_days_df.loc[args.esacci_lakes_id].items() if count_of_smoke_days <= COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND]
+        for year, count_of_smoke_days
+        in (
+            esacci_lakes_counts_of_distinct_start_days_df
+            .loc[args.esacci_lakes_id]
+            .items()
+        ) if count_of_smoke_days <= COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND
+    ]
     high_smoke_years = [
         year 
-        for (year, count_of_smoke_days) 
-        in esacci_lakes_counts_of_distinct_start_days_df.loc[args.esacci_lakes_id].items() if count_of_smoke_days >= COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND]
+        for year, count_of_smoke_days
+        in (
+            esacci_lakes_counts_of_distinct_start_days_df
+            .loc[args.esacci_lakes_id]
+            .items()
+        ) if count_of_smoke_days >= COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
+    ]
 
     low_smoke_year_dataframes  = [
         dataframe[[f"{args.esacci_lakes_variable}_mean"]].reset_index()
         for dataframe 
         in to_dfs(
-            [Path(args.local_data_dir_path / f"{year}") for year in low_smoke_years],
-            args.esacci_lakes_id,
+            [
+                Path(args.local_data_dir_path / f"{year}") 
+                for year 
+                in low_smoke_years
+            ],
+            args.esacci_lakes_id
         )
     ]
     high_smoke_year_dataframes = [
         dataframe[[f"{args.esacci_lakes_variable}_mean"]].reset_index()
         for dataframe 
         in to_dfs(
-            [Path(args.local_data_dir_path / f"{year}") for year in high_smoke_years],
-            args.esacci_lakes_id,
+            [
+                Path(args.local_data_dir_path / f"{year}") 
+                for year 
+                in high_smoke_years
+            ],
+            args.esacci_lakes_id
         )
     ]
 

@@ -19,31 +19,31 @@ from lib.geo.objects import GeoBoundingBox
 
 def get_geo_bounding_box(
     esacci_lakes_metadata: Any,
-    esacci_lakes_static_lake_mask_ds: xr.Dataset,
+    esacci_lakes_static_lake_mask_ds: xr.Dataset
 ) -> GeoBoundingBox:
     return GeoBoundingBox(
         esacci_lakes_static_lake_mask_ds["lat"]
         .sel(
             lat=esacci_lakes_metadata.lat_max_box,
-            method="nearest",
+            method="nearest"
         )
         .item(),
         esacci_lakes_static_lake_mask_ds["lat"]
         .sel(
             lat=esacci_lakes_metadata.lat_min_box,
-            method="nearest",
+            method="nearest"
         )
         .item(),
         esacci_lakes_static_lake_mask_ds["lon"]
         .sel(
             lon=esacci_lakes_metadata.lon_max_box,
-            method="nearest",
+            method="nearest"
         )
         .item(),
         esacci_lakes_static_lake_mask_ds["lon"]
         .sel(
             lon=esacci_lakes_metadata.lon_min_box,
-            method="nearest",
+            method="nearest"
         )
-        .item(),
+        .item()
     )

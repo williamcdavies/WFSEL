@@ -15,6 +15,7 @@ import psycopg
 import psycopg.sql
 import rasterio.features
 import rasterio.transform
+import shapely.geometry
 import shapely.ops
 import xarray             as xr
 
@@ -39,13 +40,14 @@ PROG = "write_esacci_lakes_to_psql.py"
 
 
 def to_wkb(
-    esacci_lakes_static_lake_mask: xr.DataArray,
+    da: xr.DataArray
 ) -> bytes:
-    lons = esacci_lakes_static_lake_mask["lon"].values
-    lats = esacci_lakes_static_lake_mask["lat"].values
+    da   = da.sortby(["lon", "lat"])
+    lons = da["lon"].values
+    lats = da["lat"].values
 
-    mask      = np.flipud(esacci_lakes_static_lake_mask.values)
-    transform = rasterio.transform.from_bounds(
+    mask        = np.flipud(da.values)
+    transform   = rasterio.transform.from_bounds(
         west=lons.min(),
         south=lats.min(),
         east=lons.max(),
@@ -53,17 +55,19 @@ def to_wkb(
         width=len(lons),
         height=len(lats)
     )
-
-    shapes = rasterio.features.shapes(
+    polygons, _ = rasterio.features.shapes(
         mask.astype(np.uint8),
-        mask=mask,
+        mask=mask.astype(bool),
         transform=transform
     )
-
-    geometry = shapely.ops.unary_union([shapely.geometry.shape(polygon) for polygon, _ in shapes])
-
-    if isinstance(geometry, shapely.geometry.Polygon):
-        geometry = shapely.geometry.MultiPolygon([geometry])
+    geometry    = shapely.ops.unary_union(
+        [
+            shapely.geometry.shape(polygon) 
+            for polygon 
+            in polygons
+        ]
+    )
+    geometry    = shapely.MultiPolygon([geometry]) if geometry.geom_type == "Polygon" else geometry # type: ignore
 
     return shapely.to_wkb(geometry)
 
@@ -74,7 +78,7 @@ def main() -> int:
     parser = ArgumentParser(
         prog=PROG,
         usage="%(prog)s [options]",
-        description="""Writes ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0 metadata and geometries to psql for use with PostGIS.""",
+        description="""Writes ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0 metadata and geometries to psql for use with PostGIS."""
     )
 
     # Positional arguments
@@ -120,7 +124,7 @@ def main() -> int:
                 esacci_lakes_static_lake_mask_ds,
                 geo_bounding_box
             )
-            esacci_lakes_static_lake_mask = esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"] == row.Index
+            esacci_lakes_static_lake_mask           = esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"] == row.Index
             assert isinstance(esacci_lakes_static_lake_mask, xr.DataArray)
 
             with conn.cursor() as cur:

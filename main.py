@@ -117,30 +117,40 @@ def main() -> int:
             assert isinstance(esacci_lakes_static_lake_mask_b, xr.DataArray)
 
             for esacci_lakes_variable in ESACCI_LAKES_VARIABLES:
-                record[f"{esacci_lakes_variable}_mean"] = (esacci_lakes_merged_product_ds_window[esacci_lakes_variable]
-                                                           .where(esacci_lakes_static_lake_mask_a)
-                                                           .where(esacci_lakes_static_lake_mask_b)
-                                                           .mean(dim=["time",
-                                                                      "lat",
-                                                                      "lon"],
-                                                                 skipna=True)
-                                                           .item()
+                record[f"{esacci_lakes_variable}_mean"] = (
+                    esacci_lakes_merged_product_ds_window[esacci_lakes_variable]
+                    .where(esacci_lakes_static_lake_mask_a)
+                    .where(esacci_lakes_static_lake_mask_b)
+                    .mean(
+                        dim=[
+                            "time",
+                            "lat",
+                            "lon"
+                        ],
+                        skipna=True
+                    )
+                    .item()
                 )
 
-            numer = ((esacci_lakes_static_lake_mask_a & esacci_lakes_static_lake_mask_b)
-                     .sum()
-                     .item()
+            numer = (
+                (esacci_lakes_static_lake_mask_a & esacci_lakes_static_lake_mask_b)
+                .sum()
+                .item()
             )
-            denom = (esacci_lakes_static_lake_mask_a
-                     .sum()
-                     .item()
+            denom = (
+                esacci_lakes_static_lake_mask_a
+                .sum()
+                .item()
             )
 
             record["coverage"] = 100 * (numer / denom) if denom > 0 else np.nan
             records.append(record)
 
     output_df = pd.DataFrame(records)
-    output_df.to_csv(args.output_csv_path, index=False)
+    output_df.to_csv(
+        args.output_csv_path,
+        index=False
+    )
 
     return RETURN_SUCCESS
     # ==================================================================================================

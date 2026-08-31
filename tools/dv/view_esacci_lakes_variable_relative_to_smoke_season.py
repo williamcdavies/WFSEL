@@ -37,13 +37,13 @@ PROG = "view_esacci_lakes_variable_relative_to_smoke_season.py"
 def plot(
     ax: matplotlib.axes.Axes,
     df: pd.DataFrame,
-    esacci_lakes_variable: str,
+    esacci_lakes_variable: str
 ) -> None:
-    labels  = list(range(df["week_val"].min(), df["week_val"].max() + 1))
+    labels  = list(range(df["label_as_int"].min(), df["label_as_int"].max() + 1))
     medians = []
 
     for label in labels:
-        y = df.loc[df["week_val"] == label, esacci_lakes_variable]
+        y = df.loc[df["label_as_int"] == label, esacci_lakes_variable]
         x = [label] * len(y)
         
         ax.scatter(
@@ -131,25 +131,25 @@ def main() -> int:
         df[df["depth_avg"] <= AVERAGE_DEPTH_LOWER_BOUND]
         .melt(
             ["esacci_lakes_id", "depth_avg"],
-            var_name="week_var",
+            var_name="label",
             value_name=args.esacci_lakes_variable
         )
         .drop(columns=["depth_avg"])
         .dropna(subset=args.esacci_lakes_variable)
     )
-    shal_df["week_val"] = shal_df["week_var"].str[1:].astype(int)
+    shal_df["label_as_int"] = shal_df["label"].str[1:].astype(int)
 
     deep_df             = (
         df[df["depth_avg"] >= AVERAGE_DEPTH_UPPER_BOUND]
         .melt(
             ["esacci_lakes_id", "depth_avg"],
-            var_name="week_var",
+            var_name="label",
             value_name=args.esacci_lakes_variable
         )
         .drop(columns=["depth_avg"])
         .dropna(subset=args.esacci_lakes_variable)
     )
-    deep_df["week_val"] = deep_df["week_var"].str[1:].astype(int)
+    deep_df["label_as_int"] = deep_df["label"].str[1:].astype(int)
 
     fig, (shal_ax, deep_ax) = plt.subplots(
         2,
@@ -160,12 +160,12 @@ def main() -> int:
 
     plot(
         shal_ax,
-        shal_df[shal_df["week_val"] <= 20],
+        shal_df[shal_df["label_as_int"] <= 20],
         args.esacci_lakes_variable
     )
     plot(
         deep_ax,
-        deep_df[deep_df["week_val"] <= 20],
+        deep_df[deep_df["label_as_int"] <= 20],
         args.esacci_lakes_variable
     )
 

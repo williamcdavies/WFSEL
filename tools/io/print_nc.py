@@ -16,7 +16,7 @@ import xarray as xr
 # Local Application/Library Specific Imports
 from lib.io.vars import (
     RETURN_SUCCESS,
-    RETURN_FAILURE,
+    RETURN_FAILURE
 )
 
 
