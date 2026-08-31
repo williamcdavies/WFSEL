@@ -8,15 +8,18 @@ Written by William Chuter-Davies
 import sys
 
 from argparse import ArgumentParser
-from pathlib import Path
+from pathlib  import Path
 
 # Related Third-party Imports
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import seaborn as sns
+import numpy             as np
+import pandas            as pd
+import seaborn           as sns
 
-from pygam import LinearGAM, s
+from pygam import (
+    LinearGAM, 
+    s
+)
 
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.utils.argparse import (
@@ -25,19 +28,17 @@ from lib.esacci_lakes.utils.argparse import (
     add_argument_local_data_dir_path,
     add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path,
     argument_local_data_dir_path_exists,
-    argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists,
+    argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists
 )
-from lib.esacci_lakes.utils.pandas import (
-    read_esacci_lakes_counts_of_distinct_start_days_csv,
-)
-from lib.esacci_lakes.vars import (
+from lib.esacci_lakes.utils.pandas   import read_esacci_lakes_counts_of_distinct_start_days_csv
+from lib.esacci_lakes.vars           import (
     COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND,
     COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND,
-    ESACCI_LAKES_VARIABLES,
+    ESACCI_LAKES_VARIABLES
 )
-from lib.io.vars import (
+from lib.io.vars                     import (
     RETURN_FAILURE,
-    RETURN_SUCCESS,
+    RETURN_SUCCESS
 )
 
 PROG = "view_all_low_smoke_years_and_one_high_smoke_year.py"
@@ -48,8 +49,8 @@ def fit(
     esacci_lakes_variable: str,
 ) -> LinearGAM:
     df_nonan = df.dropna(subset=[f"{esacci_lakes_variable}_mean"])
-    X = df_nonan["index"].values
-    y = df_nonan[f"{esacci_lakes_variable}_mean"].values
+    X        = df_nonan["index"].values
+    y        = df_nonan[f"{esacci_lakes_variable}_mean"].values
 
     return LinearGAM(s(0)).fit(X, y)  # type: ignore
 
@@ -62,15 +63,7 @@ def to_dfs(
 
     for local_data_dir_path in local_data_dir_paths:
         local_data_csv_paths = sorted(local_data_dir_path.glob("*.csv"))
-        local_data = [
-            (
-                pd.read_csv(
-                    local_data_csv_path,
-                    index_col="id",
-                ).loc[esacci_lakes_id]
-            )
-            for local_data_csv_path in local_data_csv_paths
-        ]
+        local_data           = [pd.read_csv(local_data_csv_path, index_col="id").loc[esacci_lakes_id] for local_data_csv_path in local_data_csv_paths]
 
         dfs.append(pd.DataFrame(local_data).reset_index(drop=True))
 
@@ -99,59 +92,50 @@ def main() -> int:
     # ==================================================================================================
     if not argument_local_data_dir_path_exists(
         args.local_data_dir_path,
-        loud=True,
+        loud=True
     ):
         return RETURN_FAILURE
 
     if not argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
         args.esacci_lakes_counts_of_distinct_start_days_csv_path,
-        loud=True,
+        loud=True
     ):
         return RETURN_FAILURE
     # ==================================================================================================
 
     # Program logic
     # ==================================================================================================
-    esacci_lakes_counts_of_distinct_start_days_df = (
-        read_esacci_lakes_counts_of_distinct_start_days_csv(
-            args.esacci_lakes_counts_of_distinct_start_days_csv_path,
-        )
-    )
-    low_smoke_years = [
-        year
-        for (year, count_of_smoke_days) in (
-            esacci_lakes_counts_of_distinct_start_days_df.loc[
-                args.esacci_lakes_id
-            ].items()
-        )
-        if count_of_smoke_days <= COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND
-    ]
-    high_smoke_year = esacci_lakes_counts_of_distinct_start_days_df.loc[
-        args.esacci_lakes_id
-    ].idxmax()
+    esacci_lakes_counts_of_distinct_start_days_df = read_esacci_lakes_counts_of_distinct_start_days_csv(args.esacci_lakes_counts_of_distinct_start_days_csv_path)
 
-    low_smoke_year_dataframes = [
+    low_smoke_years = [
+        year 
+        for (year, count_of_smoke_days) 
+        in esacci_lakes_counts_of_distinct_start_days_df.loc[args.esacci_lakes_id].items() if count_of_smoke_days <= COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND]
+    high_smoke_year = esacci_lakes_counts_of_distinct_start_days_df.loc[args.esacci_lakes_id].idxmax()
+
+    low_smoke_year_dataframes  = [
         dataframe[[f"{args.esacci_lakes_variable}_mean"]].reset_index()
-        for dataframe in to_dfs(
+        for dataframe 
+        in to_dfs(
             [Path(args.local_data_dir_path / f"{year}") for year in low_smoke_years],
-            args.esacci_lakes_id,
+            args.esacci_lakes_id
         )
     ]
     high_smoke_year_dataframes = [
         dataframe[[f"{args.esacci_lakes_variable}_mean"]].reset_index()
         for dataframe in to_dfs(
             [Path(args.local_data_dir_path / f"{year}") for year in [high_smoke_year]],
-            args.esacci_lakes_id,
+            args.esacci_lakes_id
         )
     ]
 
     low_smoke_years_dataframe = pd.concat(
         low_smoke_year_dataframes,
-        ignore_index=True,
+        ignore_index=True
     )
     high_smoke_years_dataframe = pd.concat(
         high_smoke_year_dataframes,
-        ignore_index=True,
+        ignore_index=True
     )
 
     # low_smoke_years_dataframe[f"{args.esacci_lakes_variable}_mean"] = (
@@ -165,7 +149,7 @@ def main() -> int:
     #     )
     # )
 
-    low_smoke_years_gam = fit(low_smoke_years_dataframe, args.esacci_lakes_variable)
+    low_smoke_years_gam  = fit(low_smoke_years_dataframe, args.esacci_lakes_variable)
     high_smoke_years_gam = fit(high_smoke_years_dataframe, args.esacci_lakes_variable)
 
     _, ax = plt.subplots()
@@ -177,21 +161,19 @@ def main() -> int:
         ax=ax,
         alpha=0.25,
         edgecolor="none",
-        color="grey",
+        color="grey"
     )
-    low_smoke_years_nonan = low_smoke_years_dataframe.dropna(
-        subset=[f"{args.esacci_lakes_variable}_mean"]
-    )
+    low_smoke_years_nonan = low_smoke_years_dataframe.dropna(subset=[f"{args.esacci_lakes_variable}_mean"])
     low_smoke_years_X = np.linspace(
         low_smoke_years_nonan["index"].min(),
         low_smoke_years_nonan["index"].max(),
-        300,
+        300
     )
     ax.plot(
         low_smoke_years_X,
         low_smoke_years_gam.predict(low_smoke_years_X),
         color="grey",
-        label=f"Low smoke years: {low_smoke_years}",
+        label=f"Low smoke years: {low_smoke_years}"
     )
 
     sns.scatterplot(
@@ -201,40 +183,38 @@ def main() -> int:
         ax=ax,
         alpha=0.25,
         edgecolor="none",
-        color="orange",
+        color="orange"
     )
-    high_smoke_years_nonan = high_smoke_years_dataframe.dropna(
-        subset=[f"{args.esacci_lakes_variable}_mean"]
-    )
-    high_smoke_years_X = np.linspace(
+    high_smoke_years_nonan = high_smoke_years_dataframe.dropna(subset=[f"{args.esacci_lakes_variable}_mean"])
+    high_smoke_years_X     = np.linspace(
         high_smoke_years_nonan["index"].min(),
         high_smoke_years_nonan["index"].max(),
-        300,
+        300
     )
     ax.plot(
         high_smoke_years_X,
         high_smoke_years_gam.predict(high_smoke_years_X),
         color="orange",
-        label=f"High smoke year: {high_smoke_year}",
+        label=f"High smoke year: {high_smoke_year}"
     )
 
     ax.set_xlabel(
         "Day",
-        fontsize=14,
+        fontsize=14
     )
     ax.set_ylabel(
         f"{ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].long_name} ({ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].units})",
-        fontsize=14,
+        fontsize=14
     )
     ax.grid(
         True,
-        alpha=0.25,
+        alpha=0.25
     )
     ax.legend()
 
     plt.title(
         f"_ ({args.esacci_lakes_id}): Mean {args.esacci_lakes_variable} Measurements",
-        fontsize=18,
+        fontsize=18
     )
     plt.show()
 

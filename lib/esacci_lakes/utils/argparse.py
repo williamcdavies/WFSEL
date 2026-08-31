@@ -61,7 +61,7 @@ def argument_local_data_dir_path_exists(
 
     if loud:
         print(
-            f"""error: argument local_data_dir_path: no such file or directory: {local_data_dir_path}""",
+            f"""error: argument local_data_dir_path: no such file or directory: {local_data_dir_path}"""
         )
 
     return False
@@ -118,7 +118,7 @@ def argument_esacci_lakes_average_depths_csv_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_average_depths_csv_path: no such file or directory: {esacci_lakes_average_depths_csv_path}""",
+            f"""error: argument esacci_lakes_average_depths_csv_path: no such file or directory: {esacci_lakes_average_depths_csv_path}"""
         )
 
     return False
@@ -172,7 +172,7 @@ def argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_counts_of_distinct_start_days_csv_path: no such file or directory: {esacci_lakes_counts_of_distinct_start_days_csv_path}""",
+            f"""error: argument esacci_lakes_counts_of_distinct_start_days_csv_path: no such file or directory: {esacci_lakes_counts_of_distinct_start_days_csv_path}"""
         )
 
     return False
@@ -223,7 +223,7 @@ def argument_esacci_lakes_hylak_ids_csv_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_hylak_ids_csv_path: no such file or directory: {esacci_lakes_hylak_ids_csv_path}""",
+            f"""error: argument esacci_lakes_hylak_ids_csv_path: no such file or directory: {esacci_lakes_hylak_ids_csv_path}"""
         )
 
     return False
@@ -324,7 +324,7 @@ def argument_esacci_lakes_metadata_csv_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_metadata_csv_path: no such file or directory: {esacci_lakes_metadata_csv_path}""",
+            f"""error: argument esacci_lakes_metadata_csv_path: no such file or directory: {esacci_lakes_metadata_csv_path}"""
         )
 
     return False
@@ -376,7 +376,7 @@ def argument_esacci_lakes_static_lake_mask_nc_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_static_lake_mask_nc_path: no such file or directory: {esacci_lakes_static_lake_mask_nc_path}""",
+            f"""error: argument esacci_lakes_static_lake_mask_nc_path: no such file or directory: {esacci_lakes_static_lake_mask_nc_path}"""
         )
 
     return False
@@ -428,7 +428,7 @@ def argument_esacci_lakes_merged_product_dir_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_merged_product_dir_path: no such file or directory: {esacci_lakes_merged_product_dir_path}""",
+            f"""error: argument esacci_lakes_merged_product_dir_path: no such file or directory: {esacci_lakes_merged_product_dir_path}"""
         )
 
     return False
@@ -480,7 +480,7 @@ def argument_esacci_lakes_merged_product_nc_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_merged_product_nc_path: no such file or directory: {esacci_lakes_merged_product_nc_path}""",
+            f"""error: argument esacci_lakes_merged_product_nc_path: no such file or directory: {esacci_lakes_merged_product_nc_path}"""
         )
 
     return False

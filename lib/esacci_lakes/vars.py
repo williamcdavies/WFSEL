@@ -8,7 +8,7 @@ Written by William Chuter-Davies
 """
 
 # Related Third-party Imports
-from psycopg import sql
+import psycopg.sql
 
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.objects import ESACCILakesVariable
@@ -23,7 +23,7 @@ AVERAGE_DEPTH_UPPER_BOUND = 50
 # ==================================================================================================
 COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND = 7
 COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND = 42
-COUNT_OF_DISTINCT_START_DAYS_QUERY = sql.SQL("""
+COUNT_OF_DISTINCT_START_DAYS_QUERY       = psycopg.sql.SQL("""
 WITH xref AS (
     SELECT l.geom
     FROM esacci_lakes AS l

@@ -8,10 +8,10 @@ Written by William Chuter-Davies
 import sys
 
 from argparse import ArgumentParser
-from pathlib import Path
+from pathlib  import Path
 
 # Related Third-party Imports
-import pandas as pd
+import pandas            as pd
 import matplotlib.axes
 import matplotlib.pyplot as plt
 
@@ -19,16 +19,16 @@ import matplotlib.pyplot as plt
 from lib.esacci_lakes.utils.argparse import (
     add_argument_esacci_lakes_variable,
     add_argument_esacci_lakes_average_depths_csv_path,
-    argument_esacci_lakes_average_depths_csv_path_exists,
+    argument_esacci_lakes_average_depths_csv_path_exists
 )
 from lib.esacci_lakes.vars import (
     AVERAGE_DEPTH_LOWER_BOUND,
     AVERAGE_DEPTH_UPPER_BOUND,
-    ESACCI_LAKES_VARIABLES,
+    ESACCI_LAKES_VARIABLES
 )
 from lib.io.vars import (
     RETURN_FAILURE,
-    RETURN_SUCCESS,
+    RETURN_SUCCESS
 )
 
 PROG = "view_esacci_lakes_variable_relative_to_smoke_season.py"
@@ -40,36 +40,27 @@ def plot(
     esacci_lakes_variable: str,
 ) -> None:
     medians = []
-    week_vals = list(
-        range(
-            df["week_val"].min(),
-            df["week_val"].max() + 1,
-        )
-    )
+    labels  = list(range(df["week_val"].min(), df["week_val"].max() + 1))
 
-    for week_val in week_vals:
-        values = df.loc[
-            df["week_val"] == week_val,
-            esacci_lakes_variable,
-        ]
-
+    for label in labels:
+        values = df.loc[df["week_val"] == label, esacci_lakes_variable]
         medians.append(values.median())
 
         ax.scatter(
-            [week_val] * len(values),
+            [label] * len(values),
             values,
             alpha=0.25,
             edgecolors="none",
-            color="black",
+            color="black"
         )
 
     ax.plot(
-        week_vals,
+        labels,
         medians,
         color="blue",
-        marker="o",
+        marker="o"
     )
-    ax.set_xticks(week_vals)
+    ax.set_xticks(labels)
     ax.tick_params(labelbottom=True)
     ax.set_ylim(-30, 30)
     ax.set_xlabel("Week relative to start of smoke season")
@@ -93,14 +84,14 @@ def main() -> int:
     parser = ArgumentParser(
         prog=PROG,
         usage="%(prog)s [options]",
-        description="""""",
+        description=""""""
     )
 
     # Positional arguments
     parser.add_argument(
         "input_csv_path",
         type=Path,
-        help="""""",
+        help=""""""
     )
     add_argument_esacci_lakes_variable(parser)
     add_argument_esacci_lakes_average_depths_csv_path(parser)
@@ -112,14 +103,14 @@ def main() -> int:
     # ==================================================================================================
     if not args.input_csv_path.exists():
         print(
-            f"""error: argument input_csv_path: no such file or directory: {args.input_csv_path}""",
+            f"""error: argument input_csv_path: no such file or directory: {args.input_csv_path}"""
         )
 
         return RETURN_FAILURE
 
     if not argument_esacci_lakes_average_depths_csv_path_exists(
         args.esacci_lakes_average_depths_csv_path,
-        loud=True,
+        loud=True
     ):
         return RETURN_FAILURE
     # ==================================================================================================
@@ -130,7 +121,7 @@ def main() -> int:
         pd.read_csv(args.input_csv_path),
         pd.read_csv(args.esacci_lakes_average_depths_csv_path),
         on="esacci_lakes_id",
-        validate="one_to_one",
+        validate="one_to_one"
     )
 
     shal_df = (
@@ -138,7 +129,7 @@ def main() -> int:
         .melt(
             ["esacci_lakes_id", "depth_avg"],
             var_name="week_var",
-            value_name=args.esacci_lakes_variable,
+            value_name=args.esacci_lakes_variable
         )
         .drop(columns=["depth_avg"])
         .dropna(subset=args.esacci_lakes_variable)
@@ -150,7 +141,7 @@ def main() -> int:
         .melt(
             ["esacci_lakes_id", "depth_avg"],
             var_name="week_var",
-            value_name=args.esacci_lakes_variable,
+            value_name=args.esacci_lakes_variable
         )
         .drop(columns=["depth_avg"])
         .dropna(subset=args.esacci_lakes_variable)
@@ -161,18 +152,18 @@ def main() -> int:
         2,
         1,
         sharex=True,
-        sharey=True,
+        sharey=True
     )
 
     plot(
         shal_ax,
         shal_df[shal_df["week_val"] <= 20],
-        args.esacci_lakes_variable,
+        args.esacci_lakes_variable
     )
     plot(
         deep_ax,
         deep_df[deep_df["week_val"] <= 20],
-        args.esacci_lakes_variable,
+        args.esacci_lakes_variable
     )
 
     fig.tight_layout()

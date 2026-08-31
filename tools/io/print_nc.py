@@ -8,7 +8,7 @@ Written by William Chuter-Davies
 import sys
 
 from argparse import ArgumentParser
-from pathlib import Path
+from pathlib  import Path
 
 # Related Third-party Imports
 import xarray as xr
@@ -26,14 +26,14 @@ def main() -> int:
     parser = ArgumentParser(
         prog="print_nc.py",
         usage="%(prog)s [options]",
-        description="""Prints netCDF file metadata to `sys.stdout`.""",
+        description="""Prints netCDF file metadata to `sys.stdout`."""
     )
 
     # Positional arguments
     parser.add_argument(
         "nc_path",
         type=Path,
-        help=f"""path to netCDF file""",
+        help=f"""path to netCDF file"""
     )
 
     args = parser.parse_args()
@@ -43,7 +43,7 @@ def main() -> int:
     # ==================================================================================================
     if not args.nc_path.exists():
         print(
-            f"""error: argument nc_path: no such file or directory: {args.nc_path}""",
+            f"""error: argument nc_path: no such file or directory: {args.nc_path}"""
         )
 
         return RETURN_FAILURE
