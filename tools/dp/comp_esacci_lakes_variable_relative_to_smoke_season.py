@@ -29,21 +29,21 @@ from lib.esacci_lakes.utils.argparse import (
     argument_esacci_lakes_metadata_csv_path_exists,
     argument_esacci_lakes_average_depths_csv_path_exists,
     argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists,
-    argument_local_data_dir_path_exists,
+    argument_local_data_dir_path_exists
 )
 from lib.esacci_lakes.utils.pandas   import (
     read_esacci_lakes_metadata_csv,
     read_esacci_lakes_average_depths_csv,
-    read_esacci_lakes_counts_of_distinct_start_days_csv,
+    read_esacci_lakes_counts_of_distinct_start_days_csv
 )
 from lib.esacci_lakes.vars           import (
     COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND,
     COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND,
-    COUNT_OF_DISTINCT_START_DAYS_QUERY,
+    COUNT_OF_DISTINCT_START_DAYS_QUERY
 )
 from lib.io.vars                     import (
     RETURN_FAILURE,
-    RETURN_SUCCESS,
+    RETURN_SUCCESS
 )
 
 PROG                     = "comp_esacci_lakes_variable_relative_to_smoke_season.py"
@@ -294,12 +294,12 @@ def main() -> int:
             low_smoke_year_records.append(low_smoke_year_record)
 
     high_smoke_year_df = pd.DataFrame(high_smoke_year_records)
-    low_smoke_year_df  = pd.DataFrame(low_smoke_year_records)
-
     high_smoke_year_df.to_csv(
         f"high_smoke_year_{args.esacci_lakes_variable}_normalised.csv",
         index=False,
     )
+
+    low_smoke_year_df = pd.DataFrame(low_smoke_year_records)
     low_smoke_year_df.to_csv(
         f"low_smoke_year_{args.esacci_lakes_variable}_normalised.csv",
         index=False,

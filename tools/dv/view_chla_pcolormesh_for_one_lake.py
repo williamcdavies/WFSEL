@@ -86,16 +86,16 @@ def main() -> int:
     esacci_lakes_metadata    = esacci_lakes_metadata_df.loc[args.esacci_lakes_id]
 
     with xr.open_dataset(args.esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_ds:
-        geo_bounding_box                        = get_geo_bounding_box(
+        geo_bounding_box = get_geo_bounding_box(
             esacci_lakes_metadata,
             esacci_lakes_static_lake_mask_ds,
         )
+
         esacci_lakes_static_lake_mask_ds_window = sel(
             esacci_lakes_static_lake_mask_ds,
             geo_bounding_box,
         )
-
-        esacci_lakes_static_lake_mask = esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"] == esacci_lakes_metadata.Index
+        esacci_lakes_static_lake_mask           = esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"] == esacci_lakes_metadata.Index
         assert isinstance(esacci_lakes_static_lake_mask, xr.DataArray)
 
         for i, esacci_lakes_products_merged_nc_path in enumerate(tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob("**/*.nc")))):

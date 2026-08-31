@@ -111,15 +111,15 @@ def main() -> int:
             esacci_lakes_metadata_df.itertuples(),
             total=len(esacci_lakes_metadata_df)
         ):
-            geo_bounding_box                        = get_geo_bounding_box(
+            geo_bounding_box = get_geo_bounding_box(
                 row,
                 esacci_lakes_static_lake_mask_ds
             )
+
             esacci_lakes_static_lake_mask_ds_window = sel(
                 esacci_lakes_static_lake_mask_ds,
                 geo_bounding_box
             )
-
             esacci_lakes_static_lake_mask = esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"] == row.Index
             assert isinstance(esacci_lakes_static_lake_mask, xr.DataArray)
 

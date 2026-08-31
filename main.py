@@ -83,7 +83,8 @@ def main() -> int:
 
     # Program logic
     # ==================================================================================================
-    records                  = []
+    records = []
+
     esacci_lakes_metadata_df = read_esacci_lakes_metadata_csv(args.esacci_lakes_metadata_csv_path)
 
     with (
@@ -94,24 +95,25 @@ def main() -> int:
             esacci_lakes_metadata_df.itertuples(),
             total=len(esacci_lakes_metadata_df)
         ):
-            record                                  = {"esacci_lakes_id": row.Index}
-            geo_bounding_box                        = get_geo_bounding_box(
+            record = {"esacci_lakes_id": row.Index}
+
+            geo_bounding_box = get_geo_bounding_box(
                 row,
                 esacci_lakes_static_lake_mask_ds
             )
+
             esacci_lakes_static_lake_mask_ds_window = sel(
                 esacci_lakes_static_lake_mask_ds,
                 geo_bounding_box
             )
+            esacci_lakes_static_lake_mask_a         = esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"] == row.Index
+            assert isinstance(esacci_lakes_static_lake_mask_a, xr.DataArray)
+
             esacci_lakes_merged_product_ds_window   = sel(
                 esacci_lakes_merged_product_ds,
                 geo_bounding_box
             )
-
-            esacci_lakes_static_lake_mask_a = esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"] == row.Index
-            assert isinstance(esacci_lakes_static_lake_mask_a, xr.DataArray)
-
-            esacci_lakes_static_lake_mask_b = esacci_lakes_merged_product_ds_window["lake_surface_water_temperature"] >= 277.15
+            esacci_lakes_static_lake_mask_b         = esacci_lakes_merged_product_ds_window["lake_surface_water_temperature"] >= 277.15
             assert isinstance(esacci_lakes_static_lake_mask_b, xr.DataArray)
 
             for esacci_lakes_variable in ESACCI_LAKES_VARIABLES:

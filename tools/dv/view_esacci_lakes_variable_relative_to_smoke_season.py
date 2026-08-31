@@ -39,27 +39,30 @@ def plot(
     df: pd.DataFrame,
     esacci_lakes_variable: str,
 ) -> None:
-    medians = []
     labels  = list(range(df["week_val"].min(), df["week_val"].max() + 1))
+    medians = []
 
     for label in labels:
-        values = df.loc[df["week_val"] == label, esacci_lakes_variable]
-        medians.append(values.median())
-
+        y = df.loc[df["week_val"] == label, esacci_lakes_variable]
+        x = [label] * len(y)
+        
         ax.scatter(
-            [label] * len(values),
-            values,
+            x=x,
+            y=y,
             alpha=0.25,
             edgecolors="none",
             color="black"
         )
 
+        medians.append(y.median())
+
     ax.plot(
-        labels,
-        medians,
+        x=labels,
+        y=medians,
         color="blue",
         marker="o"
     )
+
     ax.set_xticks(labels)
     ax.tick_params(labelbottom=True)
     ax.set_ylim(-30, 30)
@@ -124,7 +127,7 @@ def main() -> int:
         validate="one_to_one"
     )
 
-    shal_df = (
+    shal_df             = (
         df[df["depth_avg"] <= AVERAGE_DEPTH_LOWER_BOUND]
         .melt(
             ["esacci_lakes_id", "depth_avg"],
@@ -136,7 +139,7 @@ def main() -> int:
     )
     shal_df["week_val"] = shal_df["week_var"].str[1:].astype(int)
 
-    deep_df = (
+    deep_df             = (
         df[df["depth_avg"] >= AVERAGE_DEPTH_UPPER_BOUND]
         .melt(
             ["esacci_lakes_id", "depth_avg"],
