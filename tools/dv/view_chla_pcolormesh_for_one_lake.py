@@ -5,14 +5,14 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-import argparse
-import pathlib
 import sys
+
+from argparse import ArgumentParser
+from pathlib import Path
 
 # Related Third-party Imports
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import pandas as pd
 import xarray as xr
 
 from tqdm import tqdm
@@ -47,10 +47,10 @@ PROG = "view_chla_pcolormesh_for_one_lake.py"
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = argparse.ArgumentParser(
-        prog=f"{PROG}",
+    parser = ArgumentParser(
+        prog=PROG,
         usage="%(prog)s [options]",
-        description="""Produces a chla pcolormesh andchla_uncertainty pcolormesh visualisation for one lake""",
+        description="""Produces a chla pcolormesh and chla_uncertainty pcolormesh visualisation for one lake""",
     )
 
     # Positional arguments
@@ -85,12 +85,13 @@ def main() -> int:
 
     # Program logic
     # ==================================================================================================
-    frames_dir_path = pathlib.Path(f"data/{PROG}/{args.esacci_lakes_id}/frames")
+    frames_dir_path = Path(f"data/{PROG}/{args.esacci_lakes_id}/frames")
     frames_dir_path.mkdir(parents=True, exist_ok=True)
 
-    esacci_lakes_metadata = read_esacci_lakes_metadata_csv(
+    esacci_lakes_metadata_csv_df = read_esacci_lakes_metadata_csv(
         args.esacci_lakes_metadata_csv_path
     )
+    esacci_lakes_metadata = esacci_lakes_metadata_csv_df.loc[args.esacci_lakes_id]
 
     with xr.open_dataset(
         args.esacci_lakes_static_lake_mask_nc_path,
@@ -99,18 +100,13 @@ def main() -> int:
             esacci_lakes_metadata,
             esacci_lakes_static_lake_mask_ds,
         )
-
         esacci_lakes_static_lake_mask_ds_window = sel(
             esacci_lakes_static_lake_mask_ds,
             geo_bounding_box,
         )
 
         for i, esacci_lakes_products_merged_nc_path in enumerate(
-            tqdm(
-                sorted(
-                    args.esacci_lakes_merged_product_dir_path.glob("**/*.nc"),
-                ),
-            ),
+            tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob("**/*.nc")))
         ):
             with xr.open_dataset(
                 esacci_lakes_products_merged_nc_path,
@@ -120,28 +116,30 @@ def main() -> int:
                     geo_bounding_box,
                 )
 
-                esacci_lakes_nans = (
-                    esacci_lakes_products_merged_ds_window["chla"].isnull()
-                    & esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
-                    == esacci_lakes_metadata.index
+                esacci_lakes_nans = esacci_lakes_products_merged_ds_window[
+                    "chla"
+                ].isnull() & (
+                    esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
+                    == esacci_lakes_metadata.Index
                 )
                 esacci_lakes_vals = esacci_lakes_products_merged_ds_window[
                     "chla"
                 ].where(
                     esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
-                    == esacci_lakes_metadata.index
+                    == esacci_lakes_metadata.Index
                 )
 
-                esacci_lakes_uncertainty_nans = (
-                    esacci_lakes_products_merged_ds_window["chla_uncertainty"].isnull()
-                    & esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
-                    == esacci_lakes_metadata.index
+                esacci_lakes_uncertainty_nans = esacci_lakes_products_merged_ds_window[
+                    "chla_uncertainty"
+                ].isnull() & (
+                    esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
+                    == esacci_lakes_metadata.Index
                 )
                 esacci_lakes_uncertainty_vals = esacci_lakes_products_merged_ds_window[
                     "chla_uncertainty"
                 ].where(
                     esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
-                    == esacci_lakes_metadata.index
+                    == esacci_lakes_metadata.Index
                 )
 
                 fig, (ax1, ax2) = plt.subplots(
@@ -179,7 +177,7 @@ def main() -> int:
                     cbar_kwargs={"extend": "neither"},
                 )
 
-                frame_png_path = frames_dir_path / pathlib.Path(f"frame_{i:03d}.png")
+                frame_png_path = frames_dir_path / Path(f"frame_{i:03d}.png")
                 fig.savefig(frame_png_path, dpi=300)
 
                 plt.close(fig)

@@ -5,9 +5,10 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-import argparse
-import pathlib
 import sys
+
+from argparse import ArgumentParser
+from pathlib import Path
 
 # Related Third-party Imports
 import pandas as pd
@@ -52,12 +53,7 @@ def plot(
             esacci_lakes_variable,
         ]
 
-        medians.append(
-            df.loc[
-                df["week_val"] == week_val,
-                esacci_lakes_variable,
-            ].median()
-        )
+        medians.append(values.median())
 
         ax.scatter(
             [week_val] * len(values),
@@ -81,21 +77,21 @@ def plot(
     #     f"{ESACCI_LAKES_VARIABLES[esacci_lakes_variable].long_name} ({ESACCI_LAKES_VARIABLES[esacci_lakes_variable].units})",
     # )
     # ax.set_title(
-    #     f"Averaged weekly {ESACCI_LAKES_VARIABLES[esacci_lakes_variable].var_id} for lakes with an average depth <= {AVERAGE_DEPTH_LOWER_BOUND} meters",
+    #     f"Averaged weekly {esacci_lakes_variable} for lakes with an average depth <= {AVERAGE_DEPTH_LOWER_BOUND} meters",
     # )
     # ax.set_ylabel(
     #     f"{ESACCI_LAKES_VARIABLES[esacci_lakes_variable].long_name} Anomaly ({ESACCI_LAKES_VARIABLES[esacci_lakes_variable].units})",
     # )
     # ax.set_title(
-    #     f"Weekly {ESACCI_LAKES_VARIABLES[esacci_lakes_variable].var_id} change relative to pre-smoke-season baseline for lakes with an average depth <= {AVERAGE_DEPTH_LOWER_BOUND} meters",
+    #     f"Weekly {esacci_lakes_variable} change relative to pre-smoke-season baseline for lakes with an average depth <= {AVERAGE_DEPTH_LOWER_BOUND} meters",
     # )
 
 
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = argparse.ArgumentParser(
-        prog=f"{PROG}.py",
+    parser = ArgumentParser(
+        prog=PROG,
         usage="%(prog)s [options]",
         description="""""",
     )
@@ -103,7 +99,7 @@ def main() -> int:
     # Positional arguments
     parser.add_argument(
         "input_csv_path",
-        type=pathlib.Path,
+        type=Path,
         help="""""",
     )
     add_argument_esacci_lakes_variable(parser)
@@ -142,10 +138,10 @@ def main() -> int:
         .melt(
             ["esacci_lakes_id", "depth_avg"],
             var_name="week_var",
-            value_name=ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].var_id,
+            value_name=args.esacci_lakes_variable,
         )
         .drop(columns=["depth_avg"])
-        .dropna(subset=[ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].var_id])
+        .dropna(subset=args.esacci_lakes_variable)
     )
     shal_df["week_val"] = shal_df["week_var"].str[1:].astype(int)
 
@@ -154,10 +150,10 @@ def main() -> int:
         .melt(
             ["esacci_lakes_id", "depth_avg"],
             var_name="week_var",
-            value_name=ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].var_id,
+            value_name=args.esacci_lakes_variable,
         )
         .drop(columns=["depth_avg"])
-        .dropna(subset=[ESACCI_LAKES_VARIABLES[args.esacci_lakes_variable].var_id])
+        .dropna(subset=args.esacci_lakes_variable)
     )
     deep_df["week_val"] = deep_df["week_var"].str[1:].astype(int)
 

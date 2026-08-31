@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import psycopg
+import psycopg.sql
 
 from tqdm import tqdm
 
@@ -111,7 +112,7 @@ def main() -> int:
     # Argument parsing
     # ==================================================================================================
     parser = ArgumentParser(
-        prog=f"{PROG}.py",
+        prog=PROG,
         usage="%(prog)s [options]",
         description="""""",
     )
@@ -158,183 +159,188 @@ def main() -> int:
     high_smoke_year_records = []
     low_smoke_year_records = []
 
-    esacci_lakes_metadata_df = read_esacci_lakes_metadata_csv(
-        args.esacci_lakes_metadata_csv_path,
-    )
-    esacci_lakes_average_depths_df = read_esacci_lakes_average_depths_csv(
-        args.esacci_lakes_average_depths_csv_path,
-    )
+    esacci_lakes_metadata_df = (
+        read_esacci_lakes_metadata_csv(
+            args.esacci_lakes_metadata_csv_path
+        )
+    )  # fmt: skip
+    esacci_lakes_average_depths_df = (
+        read_esacci_lakes_average_depths_csv(
+            args.esacci_lakes_average_depths_csv_path
+        )
+    )  # fmt: skip
     esacci_lakes_counts_of_distinct_start_days_df = (
         read_esacci_lakes_counts_of_distinct_start_days_csv(
-            args.esacci_lakes_counts_of_distinct_start_days_csv_path,
+            args.esacci_lakes_counts_of_distinct_start_days_csv_path
         )
-    )
+    )  # fmt: skip
 
-    for esacci_lakes_id in tqdm(
-        esacci_lakes_metadata_df.index,
-    ):
-        esacci_lakes_average_depth = esacci_lakes_average_depths_df.loc[esacci_lakes_id]
-        assert isinstance(esacci_lakes_average_depth, pd.Series)
+    with psycopg.connect("dbname=spatial") as conn:
+        for esacci_lakes_id in tqdm(esacci_lakes_metadata_df.index):
+            esacci_lakes_average_depth = (
+                esacci_lakes_average_depths_df.loc[esacci_lakes_id]
+            )  # fmt: skip
+            assert isinstance(esacci_lakes_average_depth, pd.Series)
+            esacci_lakes_counts_of_distinct_start_days = (
+                esacci_lakes_counts_of_distinct_start_days_df.loc[esacci_lakes_id]
+            )  # fmt: skip
+            assert isinstance(esacci_lakes_counts_of_distinct_start_days, pd.Series)
 
-        esacci_lakes_counts_of_distinct_start_days = (
-            esacci_lakes_counts_of_distinct_start_days_df.loc[esacci_lakes_id]
-        )
-        assert isinstance(esacci_lakes_counts_of_distinct_start_days, pd.Series)
+            if pd.isna(esacci_lakes_average_depth.item()):
+                continue
 
-        if pd.isna(esacci_lakes_average_depth.item()):
-            continue
+            if (
+                max(esacci_lakes_counts_of_distinct_start_days)
+                < COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
+            ):
+                continue
 
-        if (
-            max(esacci_lakes_counts_of_distinct_start_days)
-            < COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
-        ):
-            continue
+            if (
+                min(esacci_lakes_counts_of_distinct_start_days)
+                > COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND
+            ):
+                continue
 
-        if (
-            min(esacci_lakes_counts_of_distinct_start_days)
-            > COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND
-        ):
-            continue
+            high_smoke_year_record = {"esacci_lakes_id": esacci_lakes_id}
+            high_smoke_year_esacci_lakes_variable_values = defaultdict(list)
+            high_smoke_year = f"{esacci_lakes_counts_of_distinct_start_days[esacci_lakes_counts_of_distinct_start_days >= COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND].index[-1]}"
 
-        high_smoke_year_record = {"esacci_lakes_id": esacci_lakes_id}
-        high_smoke_year_esacci_lakes_variable_values = defaultdict(list)
-        high_smoke_year = f"{esacci_lakes_counts_of_distinct_start_days[esacci_lakes_counts_of_distinct_start_days >= COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND].index[-1]}"
+            low_smoke_year_record = {"esacci_lakes_id": esacci_lakes_id}
+            low_smoke_year_esacci_lakes_variable_values = defaultdict(list)
+            low_smoke_year = f"{esacci_lakes_counts_of_distinct_start_days[esacci_lakes_counts_of_distinct_start_days <= COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND].index[-1]}"
 
-        low_smoke_year_record = {"esacci_lakes_id": esacci_lakes_id}
-        low_smoke_year_esacci_lakes_variable_values = defaultdict(list)
-        low_smoke_year = f"{esacci_lakes_counts_of_distinct_start_days[esacci_lakes_counts_of_distinct_start_days <= COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND].index[-1]}"
-
-        with psycopg.connect("dbname=spatial") as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     COUNT_OF_DISTINCT_START_DAYS_QUERY.format(
-                        id=esacci_lakes_id,
-                        year=high_smoke_year,
-                    )  # type: ignore
+                        table=psycopg.sql.Identifier(f"hms_smokes{high_smoke_year}")
+                    ),
+                    {"id": esacci_lakes_id},
                 )
 
                 esacci_lakes_distinct_start_days = pd.Series(
-                    [tuple[0] for tuple in cur.fetchall()]
+                    [record[0] for record in cur.fetchall()]
                 )
 
-        high_smoke_year_files = sorted(
-            Path(args.local_data_dir_path / high_smoke_year).glob("**/*.csv")
-        )
-        low_smoke_year_files = sorted(
-            Path(args.local_data_dir_path / low_smoke_year).glob("**/*.csv")
-        )
+            high_smoke_year_files = sorted(
+                Path(args.local_data_dir_path / high_smoke_year).glob("**/*.csv")
+            )
+            low_smoke_year_files = sorted(
+                Path(args.local_data_dir_path / low_smoke_year).glob("**/*.csv")
+            )
 
-        day_0 = -1
+            day_0 = -1
 
-        for i in range(
-            3,
-            len(esacci_lakes_distinct_start_days),
-        ):
-            if (
-                esacci_lakes_distinct_start_days[i]
-                < esacci_lakes_distinct_start_days[i - 3] + 7
-            ):
-                day_0 = esacci_lakes_distinct_start_days[i]
-
-                break
-
-        day_N = -1
-
-        for i in reversed(
-            range(
-                3,
+            for i in range(
+                NUMBER_OF_LOOKBACK_WEEKS,
                 len(esacci_lakes_distinct_start_days),
-            )
-        ):
-            if (
-                esacci_lakes_distinct_start_days[i]
-                < esacci_lakes_distinct_start_days[i - 3] + 7
             ):
-                day_N = esacci_lakes_distinct_start_days[i]
+                if (
+                    esacci_lakes_distinct_start_days[i]
+                    < esacci_lakes_distinct_start_days[i - NUMBER_OF_LOOKBACK_WEEKS]
+                    + NUMBER_OF_DAYS_IN_A_WEEK
+                ):
+                    day_0 = esacci_lakes_distinct_start_days[i]
 
-                break
+                    break
 
-        if day_0 == -1 or day_N == -1:
-            continue
+            day_N = -1
 
-        start = day_0 - NUMBER_OF_LOOKBACK_WEEKS * NUMBER_OF_DAYS_IN_A_WEEK
-        stop = comp_last_day_in_week(comp_week_index(day_N, day_0), day_0)
+            for i in reversed(
+                range(
+                    NUMBER_OF_LOOKBACK_WEEKS,
+                    len(esacci_lakes_distinct_start_days),
+                )
+            ):
+                if (
+                    esacci_lakes_distinct_start_days[i]
+                    < esacci_lakes_distinct_start_days[i - NUMBER_OF_LOOKBACK_WEEKS]
+                    + NUMBER_OF_DAYS_IN_A_WEEK
+                ):
+                    day_N = esacci_lakes_distinct_start_days[i]
 
-        if (
-            start < 1
-            or stop > len(high_smoke_year_files)
-            or stop > len(low_smoke_year_files)
-        ):
-            continue
+                    break
 
-        for day_n in range(
-            start,
-            stop + 1,
-        ):
-            high_smoke_year_df = pd.read_csv(
-                high_smoke_year_files[day_n - 1],
-                index_col="id",
-            )
-            high_smoke_year_esacci_lakes_variable_value = (
-                high_smoke_year_df[f"{args.esacci_lakes_variable}_mean"]
-                .loc[esacci_lakes_id]
-                .item()
-            )
+            if day_0 == -1 or day_N == -1:
+                continue
 
-            low_smoke_year_df = pd.read_csv(
-                low_smoke_year_files[day_n - 1],
-                index_col="id",
-            )
-            lo_esacci_lakes_variable_value = (
-                low_smoke_year_df[f"{args.esacci_lakes_variable}_mean"]
-                .loc[esacci_lakes_id]
-                .item()
-            )
+            start = day_0 - NUMBER_OF_LOOKBACK_WEEKS * NUMBER_OF_DAYS_IN_A_WEEK
+            stop = comp_last_day_in_week(comp_week_index(day_N, day_0), day_0)
 
-            week_idx = comp_week_index(day_n, day_0)
+            if (
+                start < 1
+                or stop > len(high_smoke_year_files)
+                or stop > len(low_smoke_year_files)
+            ):
+                continue
 
-            high_smoke_year_esacci_lakes_variable_values[week_idx].append(
-                high_smoke_year_esacci_lakes_variable_value
-            )
-            low_smoke_year_esacci_lakes_variable_values[week_idx].append(
-                lo_esacci_lakes_variable_value
-            )
+            for day_n in range(
+                start,
+                stop + 1,
+            ):
+                high_smoke_year_df = pd.read_csv(
+                    high_smoke_year_files[day_n - 1],
+                    index_col="id",
+                )
+                high_smoke_year_esacci_lakes_variable_value = (
+                    high_smoke_year_df[f"{args.esacci_lakes_variable}_mean"]
+                    .loc[esacci_lakes_id]
+                    .item()
+                )
 
-        for i, l in high_smoke_year_esacci_lakes_variable_values.items():
-            high_smoke_year_record[f"w{i}"] = np.nanmean(l)
+                low_smoke_year_df = pd.read_csv(
+                    low_smoke_year_files[day_n - 1],
+                    index_col="id",
+                )
+                low_smoke_year_esacci_lakes_variable_value = (
+                    low_smoke_year_df[f"{args.esacci_lakes_variable}_mean"]
+                    .loc[esacci_lakes_id]
+                    .item()
+                )
 
-        for i, l in low_smoke_year_esacci_lakes_variable_values.items():
-            low_smoke_year_record[f"w{i}"] = np.nanmean(l)
+                week_idx = comp_week_index(day_n, day_0)
 
-        for i in set(high_smoke_year_esacci_lakes_variable_values) | set(
-            low_smoke_year_esacci_lakes_variable_values
-        ):
-            key = f"w{i}"
-            high_smoke_year_val = high_smoke_year_record.get(key, np.nan)
-            low_smoke_year_val = low_smoke_year_record.get(key, np.nan)
+                high_smoke_year_esacci_lakes_variable_values[week_idx].append(
+                    high_smoke_year_esacci_lakes_variable_value
+                )
+                low_smoke_year_esacci_lakes_variable_values[week_idx].append(
+                    low_smoke_year_esacci_lakes_variable_value
+                )
 
-            if pd.isna(high_smoke_year_val) or pd.isna(low_smoke_year_val):
-                high_smoke_year_record[key] = np.nan
-                low_smoke_year_record[key] = np.nan
+            for i, l in high_smoke_year_esacci_lakes_variable_values.items():
+                high_smoke_year_record[f"w{i}"] = np.nanmean(l)
 
-        # --- normalisation block: comment out to run unnormalised ---
-        high_smoke_year_normal = np.nanmean([high_smoke_year_record.get("w-1")])  # type: ignore
-        low_smoke_year_normal = np.nanmean([low_smoke_year_record.get("w-1")])  # type: ignore
+            for i, l in low_smoke_year_esacci_lakes_variable_values.items():
+                low_smoke_year_record[f"w{i}"] = np.nanmean(l)
 
-        if pd.isna(high_smoke_year_normal) or pd.isna(low_smoke_year_normal):
-            continue
+            for i in set(high_smoke_year_esacci_lakes_variable_values) | set(
+                low_smoke_year_esacci_lakes_variable_values
+            ):
+                key = f"w{i}"
+                high_smoke_year_val = high_smoke_year_record.get(key, np.nan)
+                low_smoke_year_val = low_smoke_year_record.get(key, np.nan)
 
-        for key in high_smoke_year_record:
-            if key != "esacci_lakes_id":
-                high_smoke_year_record[key] -= high_smoke_year_normal
+                if pd.isna(high_smoke_year_val) or pd.isna(low_smoke_year_val):
+                    high_smoke_year_record[key] = np.nan
+                    low_smoke_year_record[key] = np.nan
 
-        for key in low_smoke_year_record:
-            if key != "esacci_lakes_id":
-                low_smoke_year_record[key] -= low_smoke_year_normal
-        # --- end normalisation block ---
+            # --- normalisation block: comment out to run unnormalised ---
+            high_smoke_year_normal = np.nanmean([high_smoke_year_record.get("w-1")])  # type: ignore
+            low_smoke_year_normal = np.nanmean([low_smoke_year_record.get("w-1")])  # type: ignore
 
-        high_smoke_year_records.append(high_smoke_year_record)
-        low_smoke_year_records.append(low_smoke_year_record)
+            if pd.isna(high_smoke_year_normal) or pd.isna(low_smoke_year_normal):
+                continue
+
+            for key in high_smoke_year_record:
+                if key != "esacci_lakes_id":
+                    high_smoke_year_record[key] -= high_smoke_year_normal
+
+            for key in low_smoke_year_record:
+                if key != "esacci_lakes_id":
+                    low_smoke_year_record[key] -= low_smoke_year_normal
+            # --- end normalisation block ---
+
+            high_smoke_year_records.append(high_smoke_year_record)
+            low_smoke_year_records.append(low_smoke_year_record)
 
     high_smoke_year_df = pd.DataFrame(high_smoke_year_records)
     low_smoke_year_df = pd.DataFrame(low_smoke_year_records)

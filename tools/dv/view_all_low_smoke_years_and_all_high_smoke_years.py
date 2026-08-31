@@ -5,9 +5,10 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-import argparse
-import pathlib
 import sys
+
+from argparse import ArgumentParser
+from pathlib import Path
 
 # Related Third-party Imports
 import matplotlib.pyplot as plt
@@ -54,7 +55,7 @@ def fit(
 
 
 def to_dfs(
-    local_data_dir_paths: list[pathlib.Path],
+    local_data_dir_paths: list[Path],
     esacci_lakes_id: int,
 ) -> list[pd.DataFrame]:
     dfs = []
@@ -79,10 +80,10 @@ def to_dfs(
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = argparse.ArgumentParser(
-        prog=f"{PROG}",
+    parser = ArgumentParser(
+        prog=PROG,
         usage="%(prog)s [options]",
-        description="""Produces a time-series visualisation of a Lakes ECV for a single lake. Lake-smoke years whose "count of smokedays" is greater than or equal to `COUNT_OF_SMOKE_DAYS_UPPER_BOUND` are considered "high smoke years". Lake-smoke years whose "count of smoke days" is less than or equal to `COUNT_OF_SMOKE_DAYS_LOWER_BOUND` are considered "low smoke years".""",
+        description="""Produces a time-series visualisation of a Lakes ECV for a single lake. Lake-smoke years whose "count of smokedays" is greater than or equal to `COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND` are considered "high smoke years". Lake-smoke years whose "count of smoke days" is less than or equal to `COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND` are considered "low smoke years".""",
     )
 
     # Positional arguments
@@ -103,7 +104,7 @@ def main() -> int:
         return RETURN_FAILURE
 
     if not argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
-        args.esacci_lakes_counts_of_smoke_days_csv_path,
+        args.esacci_lakes_counts_of_distinct_start_days_csv_path,
         loud=True,
     ):
         return RETURN_FAILURE
@@ -138,20 +139,14 @@ def main() -> int:
     low_smoke_year_dataframes = [
         dataframe[[f"{args.esacci_lakes_variable}_mean"]].reset_index()
         for dataframe in to_dfs(
-            [
-                pathlib.Path(args.local_data_dir_path / f"{year}")
-                for year in low_smoke_years
-            ],
+            [Path(args.local_data_dir_path / f"{year}") for year in low_smoke_years],
             args.esacci_lakes_id,
         )
     ]
     high_smoke_year_dataframes = [
         dataframe[[f"{args.esacci_lakes_variable}_mean"]].reset_index()
         for dataframe in to_dfs(
-            [
-                pathlib.Path(args.local_data_dir_path / f"{year}")
-                for year in high_smoke_years
-            ],
+            [Path(args.local_data_dir_path / f"{year}") for year in high_smoke_years],
             args.esacci_lakes_id,
         )
     ]
@@ -165,16 +160,16 @@ def main() -> int:
         ignore_index=True,
     )
 
-    low_smoke_years_dataframe[f"{args.esacci_lakes_variable}_mean"] = (
-        low_smoke_years_dataframe[f"{args.esacci_lakes_variable}_mean"].apply(
-            lambda x: x - 273.15
-        )
-    )
-    high_smoke_years_dataframe[f"{args.esacci_lakes_variable}_mean"] = (
-        high_smoke_years_dataframe[f"{args.esacci_lakes_variable}_mean"].apply(
-            lambda x: x - 273.15
-        )
-    )
+    # low_smoke_years_dataframe[f"{args.esacci_lakes_variable}_mean"] = (
+    #     low_smoke_years_dataframe[f"{args.esacci_lakes_variable}_mean"].apply(
+    #         lambda x: x - 273.15
+    #     )
+    # )
+    # high_smoke_years_dataframe[f"{args.esacci_lakes_variable}_mean"] = (
+    #     high_smoke_years_dataframe[f"{args.esacci_lakes_variable}_mean"].apply(
+    #         lambda x: x - 273.15
+    #     )
+    # )
 
     low_smoke_years_gam = fit(low_smoke_years_dataframe, args.esacci_lakes_variable)
     high_smoke_years_gam = fit(high_smoke_years_dataframe, args.esacci_lakes_variable)

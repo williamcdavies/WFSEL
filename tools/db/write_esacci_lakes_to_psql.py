@@ -79,14 +79,14 @@ def main() -> int:
     # Argument parsing
     # ==================================================================================================
     parser = ArgumentParser(
-        prog=f"{PROG}.py",
+        prog=PROG,
         usage="%(prog)s [options]",
         description="""Writes ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0 metadata and geometries to psql for use with PostGIS.""",
     )
 
     # Positional arguments
-    add_argument_esacci_lakes_static_lake_mask_nc_path(parser)
     add_argument_esacci_lakes_metadata_csv_path(parser)
+    add_argument_esacci_lakes_static_lake_mask_nc_path(parser)
 
     args = parser.parse_args()
     # ==================================================================================================
@@ -109,7 +109,7 @@ def main() -> int:
     # Program logic
     # ==================================================================================================
     esacci_lakes_metadata_df = read_esacci_lakes_metadata_csv(
-        args.esacci_lakes_metadata_csv_path,
+        args.esacci_lakes_metadata_csv_path
     )
 
     with (
@@ -120,9 +120,7 @@ def main() -> int:
     ):
         for row in tqdm(
             esacci_lakes_metadata_df.itertuples(),
-            total=len(
-                esacci_lakes_metadata_df,
-            ),
+            total=len(esacci_lakes_metadata_df),
         ):
             geo_bounding_box = get_geo_bounding_box(
                 row,
@@ -157,23 +155,23 @@ def main() -> int:
                         geom
                     ) VALUES
                     (
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
-                        %s, 
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
                         ST_GEOMFROMWKB(%s, 4326)
                     )
                     """
@@ -201,7 +199,7 @@ def main() -> int:
                         psycopg.Binary(
                             to_wkb(
                                 esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
-                                == row.index  # type: ignore
+                                == row.Index  # type: ignore
                             )
                         ),
                     ),

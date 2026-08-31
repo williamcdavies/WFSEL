@@ -11,6 +11,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 # Related Third-party Imports
+import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -49,9 +50,9 @@ def main() -> int:
     # Argument parsing
     # ==================================================================================================
     parser = ArgumentParser(
-        prog=f"{PROG}",
+        prog=PROG,
         usage="%(prog)s [options]",
-        description="""Produces a .csv file containing the mean for each Lakes ECVs in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']` for each lake within the candidate set given a infinite or finite buffer, ESA Lakes_cci v3.0 dataset, lakescci_v2.1_metadata.csv, and an output destination.""",
+        description="""Produces a .csv file containing the mean for each Lakes ECVs in `['chla', 'tsm', 'acdom440', 'Kd490', 'KdPAR', 'phycocyanin', 'lake_surface_water_temperature', 'lake_surface_water_extent']` for each lake within the candidate set given a infinite buffer, ESA Lakes_cci v3.0 dataset, lakescci_v2.1_metadata.csv, and an output destination.""",
     )
 
     # Positional arguments
@@ -92,7 +93,7 @@ def main() -> int:
     # ==================================================================================================
     records = []
     esacci_lakes_metadata_df = read_esacci_lakes_metadata_csv(
-        args.esacci_lakes_metadata_csv_path,
+        args.esacci_lakes_metadata_csv_path
     )
 
     with (
@@ -122,13 +123,23 @@ def main() -> int:
                 geo_bounding_box,
             )
 
+            esacci_lakes_static_lake_mask_a = (
+                esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
+                == row.Index
+            ) # fmt: skip
+            assert isinstance(esacci_lakes_static_lake_mask_a, xr.DataArray)
+
+            esacci_lakes_static_lake_mask_b = (
+                esacci_lakes_merged_product_ds_window["lake_surface_water_temperature"]
+                >= 277.15
+            ) # fmt: skip
+            assert isinstance(esacci_lakes_static_lake_mask_b, xr.DataArray)
+
             for esacci_lakes_variable in ESACCI_LAKES_VARIABLES:
                 record[f"{esacci_lakes_variable}_mean"] = (
                     esacci_lakes_merged_product_ds_window[esacci_lakes_variable]
-                    .where(
-                        esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
-                        == row.index
-                    )
+                    .where(esacci_lakes_static_lake_mask_a)
+                    .where(esacci_lakes_static_lake_mask_b)
                     .mean(
                         dim=[
                             "time",
@@ -139,6 +150,19 @@ def main() -> int:
                     )
                     .item()
                 )
+
+            numer = (
+                (esacci_lakes_static_lake_mask_a & esacci_lakes_static_lake_mask_b)
+                .sum()
+                .item()
+            ) # fmt: skip
+            denom = (
+                esacci_lakes_static_lake_mask_a
+                .sum()
+                .item()
+            ) # fmt: skip
+
+            record["coverage"] = 100 * (numer / denom) if denom > 0 else np.nan
 
             records.append(record)
 
