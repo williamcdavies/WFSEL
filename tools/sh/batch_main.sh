@@ -18,21 +18,21 @@ fi
 # Read first argument into `path`
 path="${1}"
 
-# Read basename of `path` into `outdir`
-outdir="$(basename "${path}")"
+# Read basename of `path` into `output_dir`
+output_dir="$(basename "${path}")"
 
 # Ensure output directory exists
-mkdir -p "data/main.py/buffer_inf/${outdir}"
+mkdir -p "data/main.py/${output_dir}"
 
 # Run `main.py` on each netcdf file in <path>, skipping macOS AppleDouble shadow files
 find "${path}" -type f -name "*.nc" ! -name "._*" -exec sh -c '
     ncfilename="$1"
     ncbasename=$(basename "${ncfilename}" .nc)
-    outdir="$2"
+    output_dir="$2"
 
     python main.py \
         data/lakescci_v2.1.0_metadata_filtered.csv \
         data/ESA_CCI_static_lake_mask.nc \
         "${ncfilename}" \
-        "data/main.py/buffer_inf/${outdir}/${ncbasename}.csv"
-' _ {} "${outdir}" \;
+        "data/main.py/${output_dir}/${ncbasename}.csv"
+' _ {} "${output_dir}" \;

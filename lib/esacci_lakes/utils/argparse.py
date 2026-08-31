@@ -1,8 +1,8 @@
 r"""
-utils.py
+argparse.py
 
 Description:
-   Provides definitions for esacci_lakes-utility functions.
+   Provides definitions for esacci_lakes-utility argparse functions.
 
 Written by William Chuter-Davies
 """
@@ -11,15 +11,11 @@ Written by William Chuter-Davies
 from argparse import ArgumentParser
 from pathlib import Path
 
-# Related Third-party Imports
-import pandas as pd
-import xarray as xr
-
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.vars import ESACCI_LAKES_VARIABLES
 
 
-# Argparse functions (main.py)
+# main.py functions
 # ==================================================================================================
 def add_argument_local_data_dir_path(
     parser: ArgumentParser,
@@ -65,7 +61,7 @@ def argument_local_data_dir_path_exists(
 
     if loud:
         print(
-            f"""error: argument local_data_dir_path: no such file or directory: {local_data_dir_path}"""
+            f"""error: argument local_data_dir_path: no such file or directory: {local_data_dir_path}""",
         )
 
     return False
@@ -74,7 +70,7 @@ def argument_local_data_dir_path_exists(
 # ==================================================================================================
 
 
-# Argparse functions (SQL)
+# SQL functions
 # ==================================================================================================
 def add_argument_esacci_lakes_average_depths_csv_path(
     parser: ArgumentParser,
@@ -122,7 +118,7 @@ def argument_esacci_lakes_average_depths_csv_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_average_depths_csv_path: no such file or directory: {esacci_lakes_average_depths_csv_path}"""
+            f"""error: argument esacci_lakes_average_depths_csv_path: no such file or directory: {esacci_lakes_average_depths_csv_path}""",
         )
 
     return False
@@ -176,7 +172,7 @@ def argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_counts_of_distinct_start_days_csv_path: no such file or directory: {esacci_lakes_counts_of_distinct_start_days_csv_path}"""
+            f"""error: argument esacci_lakes_counts_of_distinct_start_days_csv_path: no such file or directory: {esacci_lakes_counts_of_distinct_start_days_csv_path}""",
         )
 
     return False
@@ -227,7 +223,7 @@ def argument_esacci_lakes_hylak_ids_csv_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_hylak_ids_csv_path: no such file or directory: {esacci_lakes_hylak_ids_csv_path}"""
+            f"""error: argument esacci_lakes_hylak_ids_csv_path: no such file or directory: {esacci_lakes_hylak_ids_csv_path}""",
         )
 
     return False
@@ -236,7 +232,7 @@ def argument_esacci_lakes_hylak_ids_csv_path_exists(
 # ==================================================================================================
 
 
-# Argparse functions (ESA CCI Lakes)
+# ESA CCI Lakes functions
 # ==================================================================================================
 def add_argument_esacci_lakes_id(
     parser: ArgumentParser,
@@ -277,7 +273,9 @@ def add_argument_esacci_lakes_variable(
     Argument `esacci_lakes_variable` is of type str
     """
     parser.add_argument(
-        "esacci_lakes_variable", type=str, help=f"""one of {ESACCI_LAKES_VARIABLES}"""
+        "esacci_lakes_variable",
+        type=str,
+        help=f"""one of {ESACCI_LAKES_VARIABLES}""",
     )
 
 
@@ -326,7 +324,7 @@ def argument_esacci_lakes_metadata_csv_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_metadata_csv_path: no such file or directory: {esacci_lakes_metadata_csv_path}"""
+            f"""error: argument esacci_lakes_metadata_csv_path: no such file or directory: {esacci_lakes_metadata_csv_path}""",
         )
 
     return False
@@ -378,7 +376,7 @@ def argument_esacci_lakes_static_lake_mask_nc_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_static_lake_mask_nc_path: no such file or directory: {esacci_lakes_static_lake_mask_nc_path}"""
+            f"""error: argument esacci_lakes_static_lake_mask_nc_path: no such file or directory: {esacci_lakes_static_lake_mask_nc_path}""",
         )
 
     return False
@@ -430,7 +428,7 @@ def argument_esacci_lakes_merged_product_dir_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_merged_product_dir_path: no such file or directory: {esacci_lakes_merged_product_dir_path}"""
+            f"""error: argument esacci_lakes_merged_product_dir_path: no such file or directory: {esacci_lakes_merged_product_dir_path}""",
         )
 
     return False
@@ -482,47 +480,10 @@ def argument_esacci_lakes_merged_product_nc_path_exists(
 
     if loud:
         print(
-            f"""error: argument esacci_lakes_merged_product_nc_path: no such file or directory: {esacci_lakes_merged_product_nc_path}"""
+            f"""error: argument esacci_lakes_merged_product_nc_path: no such file or directory: {esacci_lakes_merged_product_nc_path}""",
         )
 
     return False
 
 
 # ==================================================================================================
-
-
-# Geo functions
-# ==================================================================================================
-def bounding_box(
-    esacci_lakes_id: int,
-    esacci_lakes_metadata_df: pd.DataFrame,
-    esacci_lakes_static_lake_mask_ds: xr.Dataset,
-) -> tuple[float, float, float, float]:
-    row = esacci_lakes_metadata_df.loc[esacci_lakes_id]
-
-    lat_max_box = (
-        esacci_lakes_static_lake_mask_ds["lat"]
-        .sel(lat=row.lat_max_box, method="nearest")
-        .item()
-    )
-    assert isinstance(lat_max_box, float)
-    lat_min_box = (
-        esacci_lakes_static_lake_mask_ds["lat"]
-        .sel(lat=row.lat_min_box, method="nearest")
-        .item()
-    )
-    assert isinstance(lat_min_box, float)
-    lon_max_box = (
-        esacci_lakes_static_lake_mask_ds["lon"]
-        .sel(lon=row.lon_max_box, method="nearest")
-        .item()
-    )
-    assert isinstance(lon_max_box, float)
-    lon_min_box = (
-        esacci_lakes_static_lake_mask_ds["lon"]
-        .sel(lon=row.lon_min_box, method="nearest")
-        .item()
-    )
-    assert isinstance(lon_min_box, float)
-
-    return lat_max_box, lat_min_box, lon_max_box, lon_min_box

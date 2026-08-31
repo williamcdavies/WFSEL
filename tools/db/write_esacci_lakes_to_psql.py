@@ -10,24 +10,69 @@ import sys
 from argparse import ArgumentParser
 
 # Related Third-party Imports
+import numpy as np
 import psycopg
+import rasterio.features
+import rasterio.transform
+import shapely.ops
 import xarray as xr
 
 from tqdm import tqdm
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils import (
+from lib.esacci_lakes.utils.argparse import (
     add_argument_esacci_lakes_metadata_csv_path,
     add_argument_esacci_lakes_static_lake_mask_nc_path,
     argument_esacci_lakes_metadata_csv_path_exists,
     argument_esacci_lakes_static_lake_mask_nc_path_exists,
-    bounding_box,
-    wkb,
+)
+from lib.esacci_lakes.utils.geo import (
+    get_geo_bounding_box,
+)
+from lib.esacci_lakes.utils.pandas import (
     read_esacci_lakes_metadata_csv,
 )
-from lib.io.vars import RETURN_FAILURE, RETURN_SUCCESS
+from lib.geo.utils import (
+    sel,
+)
+from lib.io.vars import (
+    RETURN_FAILURE,
+    RETURN_SUCCESS,
+)
 
 PROG = "write_esacci_lakes_to_psql.py"
+
+
+def to_wkb(
+    esacci_lakes_static_lake_mask: xr.DataArray,
+) -> bytes:
+    lons = esacci_lakes_static_lake_mask["lon"].values
+    lats = esacci_lakes_static_lake_mask["lat"].values
+
+    mask = np.flipud(esacci_lakes_static_lake_mask.values)
+    transform = rasterio.transform.from_bounds(
+        west=lons.min(),
+        south=lats.min(),
+        east=lons.max(),
+        north=lats.max(),
+        width=len(lons),
+        height=len(lats),
+    )
+
+    shapes = rasterio.features.shapes(
+        mask.astype(np.uint8),
+        mask=mask,
+        transform=transform,
+    )
+
+    geometry = shapely.ops.unary_union(
+        [shapely.geometry.shape(polygon) for polygon, _ in shapes]
+    )
+
+    if isinstance(geometry, shapely.geometry.Polygon):
+        geometry = shapely.geometry.MultiPolygon([geometry])
+
+    return shapely.to_wkb(geometry)
 
 
 def main() -> int:
@@ -49,12 +94,14 @@ def main() -> int:
     # Argument validation
     # ==================================================================================================
     if not argument_esacci_lakes_metadata_csv_path_exists(
-        args.esacci_lakes_metadata_csv_path, loud=True
+        args.esacci_lakes_metadata_csv_path,
+        loud=True,
     ):
         return RETURN_FAILURE
 
     if not argument_esacci_lakes_static_lake_mask_nc_path_exists(
-        args.esacci_lakes_static_lake_mask_nc_path, loud=True
+        args.esacci_lakes_static_lake_mask_nc_path,
+        loud=True,
     ):
         return RETURN_FAILURE
     # ==================================================================================================
@@ -62,34 +109,32 @@ def main() -> int:
     # Program logic
     # ==================================================================================================
     esacci_lakes_metadata_df = read_esacci_lakes_metadata_csv(
-        args.esacci_lakes_metadata_csv_path
+        args.esacci_lakes_metadata_csv_path,
     )
 
     with (
         xr.open_dataset(
-            args.esacci_lakes_static_lake_mask_nc_path
+            args.esacci_lakes_static_lake_mask_nc_path,
         ) as esacci_lakes_static_lake_mask_ds,
         psycopg.connect("dbname=spatial") as conn,
     ):
         for row in tqdm(
-            esacci_lakes_metadata_df.itertuples(), total=len(esacci_lakes_metadata_df)
+            esacci_lakes_metadata_df.itertuples(),
+            total=len(
+                esacci_lakes_metadata_df,
+            ),
         ):
-            lat_max_box, lat_min_box, lon_max_box, lon_min_box = bounding_box(
-                row, esacci_lakes_static_lake_mask_ds
+            geo_bounding_box = get_geo_bounding_box(
+                row,
+                esacci_lakes_static_lake_mask_ds,
             )
-
-            esacci_lakes_static_lake_mask = (
-                esacci_lakes_static_lake_mask_ds["CCI_lakeid"].sel(
-                    lat=slice(lat_min_box, lat_max_box),
-                    lon=slice(lon_min_box, lon_max_box),
-                )
-                == row.Index
+            esacci_lakes_static_lake_mask_ds_window = sel(
+                esacci_lakes_static_lake_mask_ds,
+                geo_bounding_box,
             )
-            assert isinstance(esacci_lakes_static_lake_mask, xr.DataArray)
 
             with conn.cursor() as cur:
-                cur.execute(
-                    """
+                query = f"""
                     INSERT INTO esacci_lakes
                     (
                         id,
@@ -130,8 +175,12 @@ def main() -> int:
                         %s, 
                         %s, 
                         ST_GEOMFROMWKB(%s, 4326)
-                    )""",
-                    (
+                    )
+                    """
+
+                cur.execute(
+                    query,
+                    params=(
                         row.Index,
                         row.short_name,
                         row.name,
@@ -149,7 +198,12 @@ def main() -> int:
                         row.lic_data,
                         row.lwlr_data,
                         row.type,
-                        psycopg.Binary(wkb(esacci_lakes_static_lake_mask)),
+                        psycopg.Binary(
+                            to_wkb(
+                                esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
+                                == row.index  # type: ignore
+                            )
+                        ),
                     ),
                 )
 

@@ -1,8 +1,8 @@
-r'''
+r"""
 objects.py
 
-Description: 
+Description:
    Provide definitions for io-utility classes.
 
 Written by William Chuter-Davies
-'''
+"""

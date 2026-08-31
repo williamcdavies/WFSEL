@@ -17,18 +17,30 @@ import xarray as xr
 from tqdm import tqdm
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils import (
+from lib.esacci_lakes.utils.argparse import (
     add_argument_esacci_lakes_metadata_csv_path,
     add_argument_esacci_lakes_static_lake_mask_nc_path,
     add_argument_esacci_lakes_merged_product_nc_path,
     argument_esacci_lakes_metadata_csv_path_exists,
     argument_esacci_lakes_static_lake_mask_nc_path_exists,
     argument_esacci_lakes_merged_product_nc_path_exists,
-    bounding_box,
+)
+from lib.esacci_lakes.utils.geo import (
+    get_geo_bounding_box,
+)
+from lib.esacci_lakes.utils.pandas import (
     read_esacci_lakes_metadata_csv,
 )
-from lib.esacci_lakes.vars import ESACCI_LAKES_VARIABLES
-from lib.io.vars import RETURN_SUCCESS, RETURN_FAILURE
+from lib.esacci_lakes.vars import (
+    ESACCI_LAKES_VARIABLES,
+)
+from lib.geo.utils import (
+    sel,
+)
+from lib.io.vars import (
+    RETURN_SUCCESS,
+    RETURN_FAILURE,
+)
 
 PROG = "main.py"
 
@@ -49,7 +61,7 @@ def main() -> int:
     parser.add_argument(
         "output_csv_path",
         type=Path,
-        help=f"""path to destination csv file""",
+        help=f"""path to output csv file""",
     )
 
     args = parser.parse_args()
@@ -58,17 +70,20 @@ def main() -> int:
     # Argument validation
     # ==================================================================================================
     if not argument_esacci_lakes_metadata_csv_path_exists(
-        args.esacci_lakes_metadata_csv_path, loud=True
+        args.esacci_lakes_metadata_csv_path,
+        loud=True,
     ):
         return RETURN_FAILURE
 
     if not argument_esacci_lakes_static_lake_mask_nc_path_exists(
-        args.esacci_lakes_static_lake_mask_nc_path, loud=True
+        args.esacci_lakes_static_lake_mask_nc_path,
+        loud=True,
     ):
         return RETURN_FAILURE
 
     if not argument_esacci_lakes_merged_product_nc_path_exists(
-        args.esacci_lakes_merged_product_nc_path, loud=True
+        args.esacci_lakes_merged_product_nc_path,
+        loud=True,
     ):
         return RETURN_FAILURE
     # ==================================================================================================
@@ -76,43 +91,52 @@ def main() -> int:
     # Program logic
     # ==================================================================================================
     records = []
-
     esacci_lakes_metadata_df = read_esacci_lakes_metadata_csv(
-        args.esacci_lakes_metadata_csv_path
+        args.esacci_lakes_metadata_csv_path,
     )
 
     with (
         xr.open_dataset(
-            args.esacci_lakes_static_lake_mask_nc_path
+            args.esacci_lakes_static_lake_mask_nc_path,
         ) as esacci_lakes_static_lake_mask_ds,
         xr.open_dataset(
-            args.esacci_lakes_merged_product_nc_path
+            args.esacci_lakes_merged_product_nc_path,
         ) as esacci_lakes_merged_product_ds,
     ):
         for row in tqdm(
-            esacci_lakes_metadata_df.itertuples(), total=len(esacci_lakes_metadata_df)
+            esacci_lakes_metadata_df.itertuples(),
+            total=len(esacci_lakes_metadata_df),
         ):
             record = {"esacci_lakes_id": row.Index}
 
-            lat_max_box, lat_min_box, lon_max_box, lon_min_box = bounding_box(
-                row, esacci_lakes_static_lake_mask_ds
+            geo_bounding_box = get_geo_bounding_box(
+                row,
+                esacci_lakes_static_lake_mask_ds,
             )
-
-            esacci_lakes_static_lake_mask = esacci_lakes_static_lake_mask_ds.sel(
-                lat=slice(lat_min_box, lat_max_box),
-                lon=slice(lon_min_box, lon_max_box),
+            esacci_lakes_static_lake_mask_ds_window = sel(
+                esacci_lakes_static_lake_mask_ds,
+                geo_bounding_box,
             )
-            
-            esacci_lakes_merged_product = esacci_lakes_merged_product_ds.sel(
-                lat=slice(lat_min_box, lat_max_box),
-                lon=slice(lon_min_box, lon_max_box),
+            esacci_lakes_merged_product_ds_window = sel(
+                esacci_lakes_merged_product_ds,
+                geo_bounding_box,
             )
 
             for esacci_lakes_variable in ESACCI_LAKES_VARIABLES:
                 record[f"{esacci_lakes_variable}_mean"] = (
-                    esacci_lakes_merged_product[esacci_lakes_variable]
-                    .where(esacci_lakes_static_lake_mask["CCI_lakeid"] == row.Index)
-                    .mean(dim=["time", "lat", "lon"], skipna=True)
+                    esacci_lakes_merged_product_ds_window[esacci_lakes_variable]
+                    .where(
+                        esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"]
+                        == row.index
+                    )
+                    .mean(
+                        dim=[
+                            "time",
+                            "lat",
+                            "lon",
+                        ],
+                        skipna=True,
+                    )
                     .item()
                 )
 
@@ -120,7 +144,10 @@ def main() -> int:
 
     output_df = pd.DataFrame(records)
 
-    output_df.to_csv(args.output_csv_path, index=False)
+    output_df.to_csv(
+        args.output_csv_path,
+        index=False,
+    )
 
     return RETURN_SUCCESS
     # ==================================================================================================
