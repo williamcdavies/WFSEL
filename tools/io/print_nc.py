@@ -5,9 +5,9 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
+import argparse
 import sys
 
-from argparse import ArgumentParser
 from pathlib  import Path
 
 # Related Third-party Imports
@@ -19,12 +19,14 @@ from lib.io.vars import (
     RETURN_FAILURE
 )
 
+PROG = "print_nc.py"
+
 
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = ArgumentParser(
-        prog="print_nc.py",
+    parser = argparse.ArgumentParser(
+        prog=PROG,
         usage="%(prog)s [options]",
         description="""Prints netCDF file metadata to `sys.stdout`."""
     )
@@ -33,6 +35,7 @@ def main() -> int:
     parser.add_argument(
         "nc_path",
         type=Path,
+        required=True,
         help=f"""path to netCDF file"""
     )
 
@@ -42,9 +45,7 @@ def main() -> int:
     # Argument validation
     # ==================================================================================================
     if not args.nc_path.exists():
-        print(
-            f"""error: argument nc_path: no such file or directory: {args.nc_path}"""
-        )
+        print(f"""error: argument nc_path: no such file or directory: {args.nc_path}""")
 
         return RETURN_FAILURE
     # ==================================================================================================
