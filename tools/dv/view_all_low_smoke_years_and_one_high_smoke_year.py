@@ -57,7 +57,7 @@ def fit(
 
 def to_dfs(
     local_data_sub_dir_paths: list[Path],
-    esacci_lakes_id: int
+    esacci_lakes_id:          int
 ) -> list[pd.DataFrame]:
     dfs = []
 

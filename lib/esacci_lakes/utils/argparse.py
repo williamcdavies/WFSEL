@@ -42,7 +42,7 @@ def add_argument_local_data_dir_path(
 def argument_local_data_dir_path_exists(
     local_data_dir_path: Path,
     *,
-    loud: bool = False
+    loud:                bool = False
 ) -> bool:
     """
     Returns true if `local_data_dir_path` exists, returns false
@@ -99,7 +99,7 @@ def add_argument_esacci_lakes_average_depths_csv_path(
 def argument_esacci_lakes_average_depths_csv_path_exists(
     esacci_lakes_average_depths_csv_path: Path,
     *,
-    loud: bool = False
+    loud:                                 bool = False
 ) -> bool:
     """
     Returns true if `esacci_lakes_average_depths_csv_path` exists,
@@ -151,7 +151,7 @@ def add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path(
 def argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
     esacci_lakes_counts_of_distinct_start_days_csv_path: Path,
     *,
-    loud: bool = False
+    loud:                                                bool = False
 ) -> bool:
     """
     Returns true if
@@ -204,7 +204,7 @@ def add_argument_esacci_lakes_hylak_ids_csv_path(
 def argument_esacci_lakes_hylak_ids_csv_path_exists(
     esacci_lakes_hylak_ids_csv_path: Path,
     *,
-    loud: bool = False
+    loud:                            bool = False
 ) -> bool:
     """
     Returns true if `esacci_lakes_hylak_ids_csv_path` exists, returns
@@ -305,7 +305,7 @@ def add_argument_esacci_lakes_metadata_csv_path(
 def argument_esacci_lakes_metadata_csv_path_exists(
     esacci_lakes_metadata_csv_path: Path,
     *,
-    loud: bool = False
+    loud:                           bool = False
 ) -> bool:
     """
     Returns true if `esacci_lakes_metadata_csv_path` exists, returns
@@ -357,7 +357,7 @@ def add_argument_esacci_lakes_static_lake_mask_nc_path(
 def argument_esacci_lakes_static_lake_mask_nc_path_exists(
     esacci_lakes_static_lake_mask_nc_path: Path,
     *,
-    loud: bool = False
+    loud:                                  bool = False
 ) -> bool:
     """
     Returns true if `esacci_lakes_static_lake_mask_nc_path` exists,
@@ -409,7 +409,7 @@ def add_argument_esacci_lakes_merged_product_dir_path(
 def argument_esacci_lakes_merged_product_dir_path_exists(
     esacci_lakes_merged_product_dir_path: Path,
     *,
-    loud: bool = False
+    loud:                                 bool = False
 ) -> bool:
     """
     Returns true if `esacci_lakes_merged_product_dir_path` exists,
@@ -461,7 +461,7 @@ def add_argument_esacci_lakes_merged_product_nc_path(
 def argument_esacci_lakes_merged_product_nc_path_exists(
     esacci_lakes_merged_product_nc_path: Path,
     *,
-    loud: bool = False
+    loud:                                bool = False
 ) -> bool:
     """
     Returns true if `esacci_lakes_merged_product_nc_path` exists,

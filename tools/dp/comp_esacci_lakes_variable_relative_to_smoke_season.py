@@ -52,7 +52,7 @@ NUMBER_OF_LOOKBACK_WEEKS = 3
 
 
 def comp_week_index(
-    day: int,
+    day:    int,
     anchor: int
 ) -> int:
     """
@@ -72,7 +72,7 @@ def comp_week_index(
 
 def comp_first_day_in_week(
     week_idx: int,
-    anchor: int
+    anchor:   int
 ) -> int:
     """
     Returns the first julian day in a week given an arbitrary week index
@@ -91,7 +91,7 @@ def comp_first_day_in_week(
 
 def comp_last_day_in_week(
     week_idx: int,
-    anchor: int
+    anchor:   int
 ) -> int:
     """
     Returns the last julian day in a week given an arbitrary week index
@@ -164,7 +164,10 @@ def main() -> int:
     esacci_lakes_counts_of_distinct_start_days_df = read_esacci_lakes_counts_of_distinct_start_days_csv(args.esacci_lakes_counts_of_distinct_start_days_csv_path)
 
     with psycopg.connect("dbname=spatial") as conn:
-        for esacci_lakes_id in tqdm(esacci_lakes_metadata_df.index):
+        for esacci_lakes_id in tqdm(
+            esacci_lakes_metadata_df.index,
+            disable=not sys.stderr.isatty()
+        ):
             esacci_lakes_average_depth = esacci_lakes_average_depths_df.loc[esacci_lakes_id]
             assert isinstance(esacci_lakes_average_depth, pd.Series)
 

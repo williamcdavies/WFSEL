@@ -45,7 +45,7 @@ PROG = "view_all_low_smoke_years_and_all_high_smoke_years.py"
 
 
 def fit(
-    df: pd.DataFrame,
+    df:                    pd.DataFrame,
     esacci_lakes_variable: str
 ) -> LinearGAM:
     df_nonan = df.dropna(subset=[f"{esacci_lakes_variable}_mean"])
@@ -57,7 +57,7 @@ def fit(
 
 def to_dfs(
     local_data_sub_dir_paths: list[Path],
-    esacci_lakes_id: int
+    esacci_lakes_id:          int
 ) -> list[pd.DataFrame]:
     dfs = []
 

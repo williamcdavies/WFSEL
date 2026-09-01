@@ -17,6 +17,6 @@ class ESACCILakesVariable:
     Dataclass object for representing an ESA CCI Lakes variable.
     """
 
-    var_id: str
+    var_id:    str
     long_name: str
-    units: str
+    units:     str

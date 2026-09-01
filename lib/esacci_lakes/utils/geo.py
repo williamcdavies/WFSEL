@@ -18,7 +18,7 @@ from lib.geo.objects import GeoBoundingBox
 
 
 def get_geo_bounding_box(
-    esacci_lakes_metadata: Any,
+    esacci_lakes_metadata:            Any,
     esacci_lakes_static_lake_mask_ds: xr.Dataset
 ) -> GeoBoundingBox:
     return GeoBoundingBox(

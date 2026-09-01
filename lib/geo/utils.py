@@ -15,7 +15,7 @@ from lib.geo.objects import GeoBoundingBox
 
 
 def sel(
-    ds: xr.Dataset,
+    ds:               xr.Dataset,
     geo_bounding_box: GeoBoundingBox
 ) -> xr.Dataset:
     return ds.sel(

@@ -98,7 +98,12 @@ def main() -> int:
         esacci_lakes_static_lake_mask           = esacci_lakes_static_lake_mask_ds_window["CCI_lakeid"] == esacci_lakes_metadata.Index
         assert isinstance(esacci_lakes_static_lake_mask, xr.DataArray)
 
-        for i, esacci_lakes_products_merged_nc_path in enumerate(tqdm(sorted(args.esacci_lakes_merged_product_dir_path.glob("**/*.nc")))):
+        for i, esacci_lakes_products_merged_nc_path in enumerate(
+            tqdm(
+                sorted(args.esacci_lakes_merged_product_dir_path.glob("**/*.nc")),
+                disable=not sys.stderr.isatty()
+            )
+        ):
             with xr.open_dataset(esacci_lakes_products_merged_nc_path) as esacci_lakes_products_merged_ds:
                 esacci_lakes_products_merged_ds_window = sel(
                     esacci_lakes_products_merged_ds,
