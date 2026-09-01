@@ -93,7 +93,8 @@ def main() -> int:
     ):
         for row in tqdm(
             esacci_lakes_metadata_df.itertuples(),
-            total=len(esacci_lakes_metadata_df)
+            total=len(esacci_lakes_metadata_df), 
+            disable=not sys.stderr.isatty()
         ):
             record = {"esacci_lakes_id": row.Index}
 
