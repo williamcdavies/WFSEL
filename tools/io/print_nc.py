@@ -8,7 +8,7 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from pathlib  import Path
+from pathlib import Path
 
 # Related Third-party Imports
 import xarray as xr

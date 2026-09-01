@@ -5,10 +5,10 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
+import argparse
 import sys
 
-from argparse import ArgumentParser
-from pathlib  import Path
+from pathlib import Path
 
 # Related Third-party Imports
 import geopandas as gpd
@@ -19,12 +19,14 @@ from lib.io.vars import (
     RETURN_FAILURE
 )
 
+PROG = "print_shp.py"
+
 
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = ArgumentParser(
-        prog="print_shp.py",
+    parser = argparse.ArgumentParser(
+        prog=PROG,
         usage="%(prog)s [options]",
         description="""Prints Shapefile file metadata to `sys.stdout`."""
     )
@@ -33,6 +35,7 @@ def main() -> int:
     parser.add_argument(
         "shp_path",
         type=Path,
+        required=True,
         help=f"""path to Shapefile file"""
     )
 
@@ -42,18 +45,14 @@ def main() -> int:
     # Argument validation
     # ==================================================================================================
     if not args.shp_path.exists():
-        print(
-            f"""error: argument shp_path: no such file or directory: {args.shp_path}"""
-        )
+        print(f"""error: argument shp_path: no such file or directory: {args.shp_path}""")
 
         return RETURN_FAILURE
     # ==================================================================================================
 
     # Program logic
     # ==================================================================================================
-    gdf = gpd.read_file(args.shp_path)
-
-    print(gdf)
+    print(gpd.read_file(args.shp_path))
 
     return RETURN_SUCCESS
     # ==================================================================================================
