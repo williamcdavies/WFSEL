@@ -42,7 +42,7 @@ def get_gdf_from_postgis(
     Internal `geopandas.read_postgis` call assumes geom_col="geom".
     """
     return gpd.read_postgis(
-        query, 
+        query,
         connection
     )
 
@@ -96,20 +96,20 @@ def main() -> int:
     target_lakes_gdf  = gpd.sjoin(
         lakes_gdf,
         target_states_gdf,
-        how="inner", 
+        how="inner",
         predicate="within"
     )
 
     fig, ax = plt.subplots()
 
     states_gdf.plot(
-        ax=ax, 
-        facecolor="#FFFFFF", 
+        ax=ax,
+        facecolor="#FFFFFF",
         edgecolor="#000000"
     )
     target_states_gdf.plot(
-        ax=ax, 
-        facecolor="#A9C8E9", 
+        ax=ax,
+        facecolor="#A9C8E9",
         edgecolor="#000000"
     )
     target_lakes_gdf.plot(
