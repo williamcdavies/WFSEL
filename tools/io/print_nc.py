@@ -44,29 +44,29 @@ def add_argument_nc_path(
     parser.add_argument(
         "nc_path",
         type=Path,
-        help=f"""path to netCDF file"""
+        help=f"""path to a netCDF file"""
     )
 
 
 def argument_nc_path_exists(
     nc_path: Path,
     *,
-    loud: bool = False
-):
+    loud:    bool = False
+) -> bool:
     """
-    Validates args.nc_path.
+    Validates `args.nc_path`.
 
     Parameters
     ----------
     nc_path : :class:`pathlib.Path`
         The argument `nc_path`
 
+    loud : bool
+        If `True`, prints an error message to stdout. default=False
+
     Returns
     -------
     `True` if `nc_path` exists. Returns `False` otherwise.
-
-    loud : bool
-        If `True`, prints an error message to stdout. default=False
     """
     if nc_path.exists():
         return True
@@ -114,7 +114,8 @@ def arguments_are_valid(
     return True
 
 
-def main() -> int:
+def main(
+) -> int:
     """
     Orchestration layer.
 
