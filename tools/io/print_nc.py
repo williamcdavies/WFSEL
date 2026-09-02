@@ -102,7 +102,7 @@ def arguments_are_valid(
     args: argparse.Namespace
 ) -> bool:
     """
-    Validates args.
+    Validates `args`.
 
     Returns
     -------

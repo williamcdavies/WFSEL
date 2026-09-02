@@ -114,7 +114,8 @@ def arguments_are_valid(
     return True
 
 
-def main() -> int:
+def main(
+) -> int:
     """
     Orchestration layer.
 
