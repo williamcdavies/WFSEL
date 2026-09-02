@@ -22,9 +22,70 @@ from lib.io.vars import (
 PROG = "print_nc.py"
 
 
-def main() -> int:
-    # Argument parsing
-    # ==================================================================================================
+def add_argument_nc_path(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `nc_path` argument to a :class:`ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `nc_path` is of type :class:`Path`
+    """
+    parser.add_argument(
+        "nc_path",
+        type=Path,
+        help=f"""path to netCDF file"""
+    )
+
+
+def argument_nc_path_exists(
+    nc_path: Path,
+    *,
+    loud: bool = False
+):
+    """
+    Validates args.nc_path.
+
+    Parameters
+    ----------
+    nc_path : :class:`pathlib.Path`
+        The argument `nc_path`
+
+    Returns
+    -------
+    `True` if `nc_path` exists. Returns `False` otherwise.
+
+    loud : bool
+        If `True`, prints an error message to stdout. default=False
+    """
+    if nc_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument nc_path: no such file or directory: {nc_path}""")
+
+    return False
+
+
+def build_parser(
+) -> argparse.ArgumentParser:
+    """
+    Builds a :class:`ArgumentParser`.
+
+    Returns
+    -------
+    A :class:`ArgumentParser`.
+    """
     parser = argparse.ArgumentParser(
         prog=PROG,
         usage="%(prog)s [options]",
@@ -32,31 +93,44 @@ def main() -> int:
     )
 
     # Positional arguments
-    parser.add_argument(
-        "nc_path",
-        type=Path,
-        required=True,
-        help=f"""path to netCDF file"""
-    )
+    add_argument_nc_path(parser)
 
-    args = parser.parse_args()
-    # ==================================================================================================
+    return parser
 
-    # Argument validation
-    # ==================================================================================================
-    if not args.nc_path.exists():
-        print(f"""error: argument nc_path: no such file or directory: {args.nc_path}""")
 
+def arguments_are_valid(
+    args: argparse.Namespace
+) -> bool:
+    """
+    Validates args.
+
+    Returns
+    -------
+    `True` if all arguments are successfully validated. `False` otherwise.
+    """
+    if not argument_nc_path_exists(args.nc_path, loud=True): 
+        return False
+
+    return True
+
+
+def main() -> int:
+    """
+    Orchestration layer.
+
+    Returns
+    -------
+    0 if program completes successfully. 1 otherwise.
+    """
+    args = build_parser().parse_args()
+
+    if not arguments_are_valid(args): 
         return RETURN_FAILURE
-    # ==================================================================================================
 
-    # Program logic
-    # ==================================================================================================
     with xr.open_dataset(args.nc_path) as ds:
         print(ds)
 
     return RETURN_SUCCESS
-    # ==================================================================================================
 
 
 if __name__ == "__main__":
