@@ -219,7 +219,7 @@ def filter_gdf_by_stusps(
 
 
 def plot_states_gdf(
-    ax:         plt.Axes, 
+    ax:         plt.Axes, # type: ignore
     states_gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -245,7 +245,7 @@ def plot_states_gdf(
 
 
 def plot_target_states_gdf(
-    ax:                plt.Axes, 
+    ax:                plt.Axes, # type: ignore
     target_states_gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -271,7 +271,7 @@ def plot_target_states_gdf(
 
 
 def plot_target_lakes_gdf(
-    ax:               plt.Axes, 
+    ax:               plt.Axes, # type: ignore
     target_lakes_gdf: gpd.GeoDataFrame
 ) -> None:
     """

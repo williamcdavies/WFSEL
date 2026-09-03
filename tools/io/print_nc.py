@@ -39,12 +39,12 @@ def add_argument_nc_path(
 
     Notes
     -----
-    Argument `nc_path` is of type :class:`Path`
+    Argument `nc_path` is of type :class:`Path`.
     """
     parser.add_argument(
         "nc_path",
         type=Path,
-        help=f"""path to a netCDF file"""
+        help=f"""path to some netCDF file"""
     )
 
 
@@ -54,7 +54,7 @@ def argument_nc_path_exists(
     loud:    bool = False
 ) -> bool:
     """
-    Validates `args.nc_path`.
+    Validates `nc_path`.
 
     Parameters
     ----------
@@ -66,7 +66,7 @@ def argument_nc_path_exists(
 
     Returns
     -------
-    `True` if `nc_path` exists. Returns `False` otherwise.
+    `True` if `nc_path` exists. `False` otherwise.
     """
     if nc_path.exists():
         return True
@@ -106,7 +106,8 @@ def arguments_are_valid(
 
     Returns
     -------
-    `True` if all arguments are successfully validated. `False` otherwise.
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
     """
     if not argument_nc_path_exists(args.nc_path, loud=True): 
         return False

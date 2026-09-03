@@ -39,12 +39,12 @@ def add_argument_shp_path(
 
     Notes
     -----
-    Argument `shp_path` is of type :class:`Path`
+    Argument `shp_path` is of type :class:`Path`.
     """
     parser.add_argument(
         "shp_path",
         type=Path,
-        help=f"""path to a Shapefile file"""
+        help=f"""path to some Shapefile file"""
     )
 
 
@@ -54,7 +54,7 @@ def argument_shp_path_exists(
     loud:     bool = False
 ) -> bool:
     """
-    Validates `args.shp_path`.
+    Validates `shp_path`.
 
     Parameters
     ----------
@@ -106,7 +106,8 @@ def arguments_are_valid(
 
     Returns
     -------
-    `True` if all arguments are successfully validated. `False` otherwise.
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
     """
     if not argument_shp_path_exists(args.shp_path, loud=True): 
         return False
