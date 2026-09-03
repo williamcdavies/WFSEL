@@ -1,14 +1,15 @@
 r"""
-argparse.py
+io.py
 
 Description:
-   Provides definitions for esacci_lakes-utility argparse functions.
+   Provides definitions for esacci_lakes-utility io functions.
 
 Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-from argparse import ArgumentParser
+import argparse
+
 from pathlib import Path
 
 # Local Application/Library Specific Imports
@@ -18,19 +19,23 @@ from lib.esacci_lakes.vars import ESACCI_LAKES_VARIABLES
 # main.py functions
 # ==================================================================================================
 def add_argument_local_data_dir_path(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `local_data_dir_path` argument to a :class:`ArgumentParser`.
+    Adds a `local_data_dir_path` argument to a :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
-    Argument `local_data_dir_path` is of type :class:`Path`
+    Argument `local_data_dir_path` is of type :class:`Path`.
     """
     parser.add_argument(
         "local_data_dir_path",
@@ -45,24 +50,25 @@ def argument_local_data_dir_path_exists(
     loud:                bool = False
 ) -> bool:
     """
-    Returns true if `local_data_dir_path` exists, returns false
-    otherwise.
+    Validates `local_data_dir_path`.
 
     Parameters
     ----------
     local_data_dir_path : :class:`Path`
-       The argument `local_data_dir_path`
+        The argument `local_data_dir_path`
 
     loud : bool
-       If true, prints an error message to stdout. default=False
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `local_data_dir_path` exists. `False` otherwise.
     """
     if local_data_dir_path.exists():
         return True
 
     if loud:
-        print(
-            f"""error: argument local_data_dir_path: no such file or directory: {local_data_dir_path}"""
-        )
+        print(f"""error: argument local_data_dir_path: no such file or directory: {local_data_dir_path}""")
 
     return False
 
@@ -73,21 +79,25 @@ def argument_local_data_dir_path_exists(
 # SQL functions
 # ==================================================================================================
 def add_argument_esacci_lakes_average_depths_csv_path(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `esacci_lakes_average_depths_csv_path` argument to a
+    Adds a `esacci_lakes_average_depths_csv_path` argument to a
     :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
     Argument `esacci_lakes_average_depths_csv_path` is of type
-    :class:`Path`
+    :class:`Path`.
     """
     parser.add_argument(
         "esacci_lakes_average_depths_csv_path",
@@ -102,44 +112,50 @@ def argument_esacci_lakes_average_depths_csv_path_exists(
     loud:                                 bool = False
 ) -> bool:
     """
-    Returns true if `esacci_lakes_average_depths_csv_path` exists,
-    returns false otherwise.
+    Validates `esacci_lakes_average_depths_csv_path`.
 
     Parameters
     ----------
     esacci_lakes_average_depths_csv_path : :class:`Path`
-       The argument `esacci_lakes_average_depths_csv_path`
+        The argument `esacci_lakes_average_depths_csv_path`
 
     loud : bool
-       If true, prints an error message to stdout. default=False
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `esacci_lakes_average_depths_csv_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_average_depths_csv_path.exists():
         return True
 
     if loud:
-        print(
-            f"""error: argument esacci_lakes_average_depths_csv_path: no such file or directory: {esacci_lakes_average_depths_csv_path}"""
-        )
+        print(f"""error: argument esacci_lakes_average_depths_csv_path: no such file or directory: {esacci_lakes_average_depths_csv_path}""")
 
     return False
 
 
 def add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `esacci_lakes_counts_of_distinct_start_days_csv_path`
+    Adds a `esacci_lakes_counts_of_distinct_start_days_csv_path`
     argument to a :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
     Argument `esacci_lakes_counts_of_distinct_start_days_csv_path` is of
-    type :class:`Path`
+    type :class:`Path`.
     """
     parser.add_argument(
         "esacci_lakes_counts_of_distinct_start_days_csv_path",
@@ -154,45 +170,50 @@ def argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
     loud:                                                bool = False
 ) -> bool:
     """
-    Returns true if
-    `esacci_lakes_counts_of_distinct_start_days_csv_path` exists,
-    returns false otherwise.
+    Validates `esacci_lakes_counts_of_distinct_start_days_csv_path`.
 
     Parameters
     ----------
     esacci_lakes_counts_of_distinct_start_days_csv_path : :class:`Path`
-       The argument
-       `esacci_lakes_counts_of_distinct_start_days_csv_path`
+        The argument
+        `esacci_lakes_counts_of_distinct_start_days_csv_path`
 
     loud : bool
-       If true, prints an error message to stdout. default=False
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `esacci_lakes_counts_of_distinct_start_days_csv_path`
+    exists. `False` otherwise.
     """
     if esacci_lakes_counts_of_distinct_start_days_csv_path.exists():
         return True
 
     if loud:
-        print(
-            f"""error: argument esacci_lakes_counts_of_distinct_start_days_csv_path: no such file or directory: {esacci_lakes_counts_of_distinct_start_days_csv_path}"""
-        )
+        print(f"""error: argument esacci_lakes_counts_of_distinct_start_days_csv_path: no such file or directory: {esacci_lakes_counts_of_distinct_start_days_csv_path}""")
 
     return False
 
 
 def add_argument_esacci_lakes_hylak_ids_csv_path(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `esacci_lakes_hylak_ids_csv_path` argument to a
+    Adds a `esacci_lakes_hylak_ids_csv_path` argument to a
     :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
-    Argument `esacci_lakes_hylak_ids_csv_path` is of type :class:`Path`
+    Argument `esacci_lakes_hylak_ids_csv_path` is of type :class:`Path`.
     """
     parser.add_argument(
         "esacci_lakes_hylak_ids_csv_path",
@@ -207,24 +228,26 @@ def argument_esacci_lakes_hylak_ids_csv_path_exists(
     loud:                            bool = False
 ) -> bool:
     """
-    Returns true if `esacci_lakes_hylak_ids_csv_path` exists, returns
-    false otherwise.
+    Validates `esacci_lakes_hylak_ids_csv_path`.
 
     Parameters
     ----------
     esacci_lakes_hylak_ids_csv_path : :class:`Path`
-       The argument `esacci_lakes_hylak_ids_csv_path`
+        The argument `esacci_lakes_hylak_ids_csv_path`
 
     loud : bool
-       If true, prints an error message to stdout. default=False
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `esacci_lakes_hylak_ids_csv_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_hylak_ids_csv_path.exists():
         return True
 
     if loud:
-        print(
-            f"""error: argument esacci_lakes_hylak_ids_csv_path: no such file or directory: {esacci_lakes_hylak_ids_csv_path}"""
-        )
+        print(f"""error: argument esacci_lakes_hylak_ids_csv_path: no such file or directory: {esacci_lakes_hylak_ids_csv_path}""")
 
     return False
 
@@ -235,19 +258,23 @@ def argument_esacci_lakes_hylak_ids_csv_path_exists(
 # ESA CCI Lakes functions
 # ==================================================================================================
 def add_argument_esacci_lakes_id(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `esacci_lakes_id` argument to a :class:`ArgumentParser`.
+    Adds a `esacci_lakes_id` argument to a :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
-    Argument `esacci_lakes_id` is of type int
+    Argument `esacci_lakes_id` is of type :class:`int`.
     """
     parser.add_argument(
         "esacci_lakes_id",
@@ -257,20 +284,24 @@ def add_argument_esacci_lakes_id(
 
 
 def add_argument_esacci_lakes_variable(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `esacci_lakes_variable` argument to a
+    Adds a `esacci_lakes_variable` argument to a
     :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
-    Argument `esacci_lakes_variable` is of type str
+    Argument `esacci_lakes_variable` is of type :class:`str`.
     """
     parser.add_argument(
         "esacci_lakes_variable",
@@ -279,21 +310,55 @@ def add_argument_esacci_lakes_variable(
     )
 
 
+def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(
+    esacci_lakes_variable: str,
+    *,
+    loud:                  bool = False
+) -> bool:
+    """
+    Validates `esacci_lakes_variable`.
+
+    Parameters
+    ----------
+    esacci_lakes_variable : :class:`str`
+        The argument `esacci_lakes_variable`
+
+    loud : bool
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `esacci_lakes_variable` is in `ESACCI_LAKES_VARIABLES`.
+    `False` otherwise.
+    """
+    if esacci_lakes_variable in ESACCI_LAKES_VARIABLES:
+        return True
+
+    if loud:
+        print(f"""error: argument esacci_lakes_variable: not in `ESACCI_LAKES_VARIABLES`: {esacci_lakes_variable}""")
+
+    return False
+
+
 def add_argument_esacci_lakes_metadata_csv_path(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `esacci_lakes_metadata_csv_path` argument to a
+    Adds a `esacci_lakes_metadata_csv_path` argument to a
     :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
-    Argument `esacci_lakes_metadata_csv_path` is of type :class:`Path`
+    Argument `esacci_lakes_metadata_csv_path` is of type :class:`Path`.
     """
     parser.add_argument(
         "esacci_lakes_metadata_csv_path",
@@ -308,44 +373,50 @@ def argument_esacci_lakes_metadata_csv_path_exists(
     loud:                           bool = False
 ) -> bool:
     """
-    Returns true if `esacci_lakes_metadata_csv_path` exists, returns
-    false otherwise.
+    Validates `esacci_lakes_metadata_csv_path`.
 
     Parameters
     ----------
     esacci_lakes_metadata_csv_path : :class:`Path`
-       The argument `esacci_lakes_metadata_csv_path`
+        The argument `esacci_lakes_metadata_csv_path`
 
     loud : bool
-       If true, prints an error message to stdout. default=False
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `esacci_lakes_metadata_csv_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_metadata_csv_path.exists():
         return True
 
     if loud:
-        print(
-            f"""error: argument esacci_lakes_metadata_csv_path: no such file or directory: {esacci_lakes_metadata_csv_path}"""
-        )
+        print(f"""error: argument esacci_lakes_metadata_csv_path: no such file or directory: {esacci_lakes_metadata_csv_path}""")
 
     return False
 
 
 def add_argument_esacci_lakes_static_lake_mask_nc_path(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `esacci_lakes_static_lake_mask_nc_path` argument to a
+    Adds a `esacci_lakes_static_lake_mask_nc_path` argument to a
     :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
     Argument `esacci_lakes_static_lake_mask_nc_path` is of type
-    :class:`Path`
+    :class:`Path`.
     """
     parser.add_argument(
         "esacci_lakes_static_lake_mask_nc_path",
@@ -360,44 +431,50 @@ def argument_esacci_lakes_static_lake_mask_nc_path_exists(
     loud:                                  bool = False
 ) -> bool:
     """
-    Returns true if `esacci_lakes_static_lake_mask_nc_path` exists,
-    returns false otherwise.
+    Validates `esacci_lakes_static_lake_mask_nc_path`.
 
     Parameters
     ----------
     esacci_lakes_static_lake_mask_nc_path : :class:`Path`
-       The argument `esacci_lakes_static_lake_mask_nc_path`
+        The argument `esacci_lakes_static_lake_mask_nc_path`
 
     loud : bool
-       If true, prints an error message to stdout. default=False
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `esacci_lakes_static_lake_mask_nc_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_static_lake_mask_nc_path.exists():
         return True
 
     if loud:
-        print(
-            f"""error: argument esacci_lakes_static_lake_mask_nc_path: no such file or directory: {esacci_lakes_static_lake_mask_nc_path}"""
-        )
+        print(f"""error: argument esacci_lakes_static_lake_mask_nc_path: no such file or directory: {esacci_lakes_static_lake_mask_nc_path}""")
 
     return False
 
 
 def add_argument_esacci_lakes_merged_product_dir_path(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `esacci_lakes_merged_product_dir_path` argument to a
+    Adds a `esacci_lakes_merged_product_dir_path` argument to a
     :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
     Argument `esacci_lakes_merged_product_dir_path` is of type
-    :class:`Path`
+    :class:`Path`.
     """
     parser.add_argument(
         "esacci_lakes_merged_product_dir_path",
@@ -412,44 +489,50 @@ def argument_esacci_lakes_merged_product_dir_path_exists(
     loud:                                 bool = False
 ) -> bool:
     """
-    Returns true if `esacci_lakes_merged_product_dir_path` exists,
-    returns false otherwise.
+    Validates `esacci_lakes_merged_product_dir_path`.
 
     Parameters
     ----------
     esacci_lakes_merged_product_dir_path : :class:`Path`
-       The argument `esacci_lakes_merged_product_dir_path`
+        The argument `esacci_lakes_merged_product_dir_path`
 
     loud : bool
-       If true, prints an error message to stdout. default=False
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `esacci_lakes_merged_product_dir_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_merged_product_dir_path.exists():
         return True
 
     if loud:
-        print(
-            f"""error: argument esacci_lakes_merged_product_dir_path: no such file or directory: {esacci_lakes_merged_product_dir_path}"""
-        )
+        print(f"""error: argument esacci_lakes_merged_product_dir_path: no such file or directory: {esacci_lakes_merged_product_dir_path}""")
 
     return False
 
 
 def add_argument_esacci_lakes_merged_product_nc_path(
-    parser: ArgumentParser
+    parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds an `esacci_lakes_merged_product_nc_path` argument to a
+    Adds a `esacci_lakes_merged_product_nc_path` argument to a
     :class:`ArgumentParser`.
 
     Parameters
     ----------
     parser : :class:`ArgumentParser`
-       The parser
+        The parser
+
+    Returns
+    -------
+    None
 
     Notes
     -----
     Argument `esacci_lakes_merged_product_nc_path` is of type
-    :class:`Path`
+    :class:`Path`.
     """
     parser.add_argument(
         "esacci_lakes_merged_product_nc_path",
@@ -464,24 +547,26 @@ def argument_esacci_lakes_merged_product_nc_path_exists(
     loud:                                bool = False
 ) -> bool:
     """
-    Returns true if `esacci_lakes_merged_product_nc_path` exists,
-    returns false otherwise.
+    Validates `esacci_lakes_merged_product_nc_path`.
 
     Parameters
     ----------
     esacci_lakes_merged_product_nc_path : :class:`Path`
-       The argument `esacci_lakes_merged_product_nc_path`
+        The argument `esacci_lakes_merged_product_nc_path`
 
     loud : bool
-       If true, prints an error message to stdout. default=False
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `esacci_lakes_merged_product_nc_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_merged_product_nc_path.exists():
         return True
 
     if loud:
-        print(
-            f"""error: argument esacci_lakes_merged_product_nc_path: no such file or directory: {esacci_lakes_merged_product_nc_path}"""
-        )
+        print(f"""error: argument esacci_lakes_merged_product_nc_path: no such file or directory: {esacci_lakes_merged_product_nc_path}""")
 
     return False
 
