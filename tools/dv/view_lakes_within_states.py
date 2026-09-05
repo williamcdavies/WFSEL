@@ -14,18 +14,12 @@ import matplotlib.pyplot as plt
 import sqlalchemy
 
 # Local Application/Library Specific Imports
-from lib.geo.vars   import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
-from lib.geo.utils  import (
-    get_gdf_from_postgis,
-    join_gdfs_on_within
-)
-from lib.io.vars    import (
+from lib.db.utils  import get_gdf_from_postgis
+from lib.geo.utils import join_gdfs_on_within
+from lib.geo.vars  import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
+from lib.io.vars   import (
     RETURN_FAILURE,
     RETURN_SUCCESS
-)
-from lib.plot.utils import (
-    set_ax_lims_to_gdf_total_bounds,
-    set_ax_ticks_to_empty_lists
 )
 
 PROG = "view_lakes_within_states.py"
@@ -55,7 +49,7 @@ def add_argument_stusps(
         nargs="+",
         type=str,
         required=True,
-        help="""list of two-letter state and possession abbreviations as defined in Mailing Standards of the United States Postal Service Publication 28 - Postal Addressing Standards"""
+        help="""one or more of two-letter state and possession abbreviations as defined in Mailing Standards of the United States Postal Service Publication 28 - Postal Addressing Standards"""
     )
 
 
@@ -296,6 +290,38 @@ def plot_target_lakes_gdf(
     )
 
 
+def set_ax_xlim_to_gdf_total_bounds(
+    ax:  plt.Axes, # type: ignore
+    gdf: gpd.GeoDataFrame
+) -> None:
+    ax.set_xlim(
+        gdf.total_bounds[0] - 1, # minx
+        gdf.total_bounds[2] + 1  # maxx
+    )
+
+
+def set_ax_ylim_to_gdf_total_bounds(
+    ax:  plt.Axes, # type: ignore
+    gdf: gpd.GeoDataFrame
+) -> None:
+    ax.set_ylim(
+        gdf.total_bounds[1] - 1, # miny
+        gdf.total_bounds[3] + 1  # maxy
+    )
+
+
+def set_ax_xticks_to_empty_list(
+    ax:  plt.Axes, # type: ignore
+) -> None:
+    ax.set_xticks([])
+
+
+def set_ax_yticks_to_empty_list(
+    ax:  plt.Axes, # type: ignore
+) -> None:
+    ax.set_yticks([])
+
+
 def main(
 ) -> int:
     """
@@ -342,12 +368,16 @@ def main(
         target_lakes_gdf
     )
 
-    ax.set_aspect("equal")
-    set_ax_lims_to_gdf_total_bounds(
-        ax, 
+    set_ax_xlim_to_gdf_total_bounds(
+        ax,
         target_states_gdf
     )
-    set_ax_ticks_to_empty_lists(ax)
+    set_ax_ylim_to_gdf_total_bounds(
+        ax,
+        target_states_gdf
+    )
+    set_ax_xticks_to_empty_list(ax)
+    set_ax_yticks_to_empty_list(ax)
 
     plt.tight_layout()
     plt.show()
