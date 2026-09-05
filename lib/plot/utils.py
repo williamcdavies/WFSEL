@@ -8,6 +8,8 @@ Written by William Chuter-Davies
 """
 
 # Related Third-party Imports
+import geopandas as gpd
+
 from matplotlib import pyplot as plt
 
 
@@ -67,3 +69,35 @@ def set_ax_title(
     None
     """
     ax.set_title(title)
+
+
+def set_ax_xlim_to_gdf_total_bounds(
+    ax:  plt.Axes, # type: ignore
+    gdf: gpd.GeoDataFrame
+) -> None:
+    ax.set_xlim(
+        gdf.total_bounds[0] - 1, # minx
+        gdf.total_bounds[2] + 1  # maxx
+    )
+
+
+def set_ax_ylim_to_gdf_total_bounds(
+    ax:  plt.Axes, # type: ignore
+    gdf: gpd.GeoDataFrame
+) -> None:
+    ax.set_ylim(
+        gdf.total_bounds[1] - 1, # miny
+        gdf.total_bounds[3] + 1  # maxy
+    )
+
+
+def set_ax_xticks_to_empty_list(
+    ax:  plt.Axes, # type: ignore
+) -> None:
+    ax.set_xticks([])
+
+
+def set_ax_yticks_to_empty_list(
+    ax:  plt.Axes, # type: ignore
+) -> None:
+    ax.set_yticks([])
