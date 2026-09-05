@@ -8,59 +8,62 @@ Written by William Chuter-Davies
 """
 
 # Related Third-party Imports
-import geopandas         as gpd
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 
 
-def set_ax_lims_to_gdf_total_bounds(
-    ax:     plt.Axes,
-    gdf:    gpd.GeoDataFrame,
-    *,
-    buffer: float = 1
+def set_ax_xscale_to_lin(
+    ax: plt.Axes # type: ignore
 ) -> None:
     """
-    Sets `ax`'s x/y limits to `gdf`'s total bounds, padded by `buffer`.
+    Sets `ax`'s x-axis to a lin scale.
 
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to set limits on
-
-    gdf : :class:`geopandas.GeoDataFrame`
-        The :class:`geopandas.GeoDataFrame`
-
-    buffer : float
-        Unit padding added to each side of total bounds. default=1
+        The axes to set the scale on
 
     Returns
     -------
     None
     """
-    (
-        minx, 
-        miny, 
-        maxx, 
-        maxy
-    ) = gdf.total_bounds
-
-    ax.set_xlim(minx - buffer, maxx + buffer)
-    ax.set_ylim(miny - buffer, maxy + buffer)
+    ax.set_xscale("lin")
 
 
-def set_ax_ticks_to_empty_lists(
-    ax: plt.Axes
+def set_ax_xscale_to_log(
+    ax: plt.Axes # type: ignore
 ) -> None:
     """
-    Clears `ax`'s x/y ticks.
+    Sets `ax`'s x-axis to a log scale.
 
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to clear ticks on
+        The axes to set the scale on
 
     Returns
     -------
     None
     """
-    ax.set_xticks([])
-    ax.set_yticks([])
+    ax.set_xscale("log")
+
+
+def set_ax_title(
+    ax:    plt.Axes, # type: ignore
+    title: str
+) -> None:
+    """
+    Sets `ax`'s title to `title`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes to set the title on
+
+    title : :class:`str`
+        The title
+
+    Returns
+    -------
+    None
+    """
+    ax.set_title(title)

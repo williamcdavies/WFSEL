@@ -44,7 +44,7 @@ def add_argument_shp_path(
     parser.add_argument(
         "shp_path",
         type=Path,
-        help=f"""path to some Shapefile file"""
+        help="""path to some Shapefile file"""
     )
 
 

@@ -48,14 +48,14 @@ def add_argument_stusps(
 
     Notes
     -----
-    Argument `stusps` is of type :class:`str`.
+    Argument `stusps` is of type list[str].
     """
     parser.add_argument(
         "--stusps",
         nargs="+",
         type=str,
         required=True,
-        help="list of two-letter state and possession abbreviations as defined in Mailing Standards of the United States Postal Service Publication 28 - Postal Addressing Standards"
+        help="""list of two-letter state and possession abbreviations as defined in Mailing Standards of the United States Postal Service Publication 28 - Postal Addressing Standards"""
     )
 
 
@@ -69,7 +69,7 @@ def argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
 
     Parameters
     ----------
-    stusps : :class:`str`
+    stusps : list[str]
         The argument `stusps`
 
     loud : bool
@@ -83,7 +83,7 @@ def argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
     for element in stusps:
         if element not in TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS:
             if loud:
-                print(f"error: argument stusps: element not in {TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS}: {element}")
+                print(f"""error: argument stusps: element not in `TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS`: {element}""")
 
             return False
 
@@ -136,7 +136,7 @@ def get_lakes_gdf(
 
     Parameters
     ----------
-    connection : :class:`sqlachemy.Connection`
+    connection : :class:`sqlalchemy.Connection`
         The connection
 
     Returns
@@ -167,7 +167,7 @@ def get_states_gdf(
 
     Parameters
     ----------
-    connection : :class:`sqlachemy.Connection`
+    connection : :class:`sqlalchemy.Connection`
         The connection
 
     Returns
@@ -298,6 +298,13 @@ def plot_target_lakes_gdf(
 
 def main(
 ) -> int:
+    """
+    Orchestration layer.
+
+    Returns
+    -------
+    0 if program completes successfully. 1 otherwise.
+    """
     args = build_parser().parse_args()
 
     if not arguments_are_valid(args): 

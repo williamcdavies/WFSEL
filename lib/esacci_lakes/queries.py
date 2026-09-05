@@ -12,15 +12,18 @@ from psycopg import sql
 
 COUNT_OF_DISTINCT_START_DAYS_QUERY = sql.SQL("""
 WITH xref AS (
-    SELECT l.geom
+    SELECT 
+        l.geom AS "geom"
     FROM esacci_lakes AS l
     WHERE l.id = %(id)s
 )
 
-SELECT DISTINCT ON (s.start_day) s.start_day AS "day"
+SELECT DISTINCT ON (s.start_day) 
+    s.start_day AS "day"
 FROM {table} AS s
 JOIN xref AS x
-    ON ST_INTERSECTS(s.geom, x.geom)
+    ON 
+        ST_INTERSECTS(s.geom, x.geom)
 WHERE s.density > 1
 ORDER BY s.start_day
 """)

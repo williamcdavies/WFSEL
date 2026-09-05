@@ -58,3 +58,26 @@ ESACCI_LAKES_VARIABLES = {
         "km2"
     )
 }
+
+HYLAK_FIELDS = [
+    "lake_name",
+    "country",
+    "continent",
+    "poly_src",
+    "lake_type",
+    "grand_id",
+    "lake_area_m2",
+    "shore_len_m",
+    "shore_dev",
+    "vol_total_m3",
+    "vol_res_m3",
+    "vol_src",
+    "depth_avg_m",
+    "dis_avg_m3_per_s",
+    "res_time_days",
+    "elevation_m",
+    "slope_100_m_per_km",
+    "wshd_area_m2",
+    "pour_long",
+    "pour_lat"
+]

@@ -44,7 +44,7 @@ def add_argument_nc_path(
     parser.add_argument(
         "nc_path",
         type=Path,
-        help=f"""path to some netCDF file"""
+        help="""path to some netCDF file"""
     )
 
 

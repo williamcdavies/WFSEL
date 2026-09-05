@@ -50,44 +50,13 @@ def sel(
     )
 
 
-def get_gdf_from_postgis(
-    query:      str,
-    connection: sqlalchemy.Connection
-) -> gpd.GeoDataFrame:
-    """
-    Get a :class:`geopandas.GeoDataFrame` from a query and a
-    :class:`sqlalchemy.Connection`.
-
-    Parameters
-    ----------
-    query : :class:`str`
-        The query
-
-    connection : :class:`sqlalchemy.Connection`
-        The connection
-
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-
-    Notes
-    -----
-    Internal `geopandas.read_postgis` call assumes geom_col="geom".
-    """
-    return gpd.read_postgis(
-        query,
-        connection
-    )
-
-
 def join_gdfs_on_within(
     left_gdf:  gpd.GeoDataFrame,
     right_gdf: gpd.GeoDataFrame
 ) -> gpd.GeoDataFrame:
     """
-    Returns a :class:`geopandas.GeoDataFrame` of `left_gdf` joined with
-    `right_gdf` where each `left_gdf` geometry is within a corresponding
-    `right_gdf` geometry.
+    Joins a `left_gdf` with a `right_gdf` where each `left_gdf` geometry
+    is within a corresponding `right_gdf` geometry.
 
     Parameters
     ----------

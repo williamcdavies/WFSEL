@@ -17,13 +17,13 @@ import xarray as xr
 from lib.geo.objects import GeoBoundingBox
 
 
-def get_geo_bounding_box(
+def get_geo_bounding_box_from_static_lake_mask(
     esacci_lakes_metadata:            Any,
     esacci_lakes_static_lake_mask_ds: xr.Dataset
 ) -> GeoBoundingBox:
     """
-    Returns a geographic bounding box from ESA CCI Lakes metadata and an
-    ESA CCI Lakes stataic lake mask.
+    Get a geographic bounding box from ESA CCI Lakes metadata and an ESA
+    CCI Lakes static lake mask.
 
     Parameters
     ----------

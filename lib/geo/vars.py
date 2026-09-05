@@ -1,5 +1,5 @@
 r"""
-utils.py
+vars.py
 
 Description:
    Provides definitions for geo-utility variables.
