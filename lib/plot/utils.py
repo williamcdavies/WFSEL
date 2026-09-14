@@ -31,7 +31,19 @@ def set_ax_xlim_to_gdf_total_bounds(
     Returns
     -------
     None
+
+    Raises
+    ------
+    ValueError
+        If `gdf` is empty.
+
+    Notes
+    -----
+    Assumes `gdf` is non-empty.
     """
+    if gdf.empty:
+        raise ValueError("expected `gdf` to be non-empty")
+
     ax.set_xlim(
         gdf.total_bounds[0] - 1, # minx
         gdf.total_bounds[2] + 1  # maxx
@@ -56,7 +68,19 @@ def set_ax_ylim_to_gdf_total_bounds(
     Returns
     -------
     None
+
+    Raises
+    ------
+    ValueError
+        If `gdf` is empty.
+
+    Notes
+    -----
+    Assumes `gdf` is non-empty.
     """
+    if gdf.empty:
+        raise ValueError("expected `gdf` to be non-empty")
+
     ax.set_ylim(
         gdf.total_bounds[1] - 1, # miny
         gdf.total_bounds[3] + 1  # maxy
@@ -100,7 +124,7 @@ def set_ax_xscale_to_log(
 
 
 def set_ax_xticks_to_empty_list(
-    ax:  plt.Axes, # type: ignore
+    ax: plt.Axes # type: ignore
 ) -> None:
     """
     Clears `ax`'s x-axis ticks.
@@ -118,7 +142,7 @@ def set_ax_xticks_to_empty_list(
 
 
 def set_ax_yticks_to_empty_list(
-    ax:  plt.Axes, # type: ignore
+    ax: plt.Axes # type: ignore
 ) -> None:
     """
     Clears `ax`'s y-axis ticks.
@@ -134,8 +158,10 @@ def set_ax_yticks_to_empty_list(
     """
     ax.set_yticks([])
 
+
 def force_ax_xtick_visibility(
     ax: plt.Axes, # type: ignore
+    *,
     on: bool = True
 ) -> None:
     """
@@ -159,6 +185,7 @@ def force_ax_xtick_visibility(
 
 def force_ax_ytick_visibility(
     ax: plt.Axes, # type: ignore
+    *,
     on: bool = True
 ) -> None:
     """

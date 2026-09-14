@@ -18,7 +18,7 @@ WITH xref AS (
     WHERE l.id = %(id)s
 )
 
-SELECT DISTINCT ON (s.start_day) 
+SELECT DISTINCT ON (s.start_day)
     s.start_day AS "day"
 FROM {table} AS s
 JOIN xref AS x

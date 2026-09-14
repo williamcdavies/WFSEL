@@ -169,8 +169,8 @@ HYLAK_FIELDS = {
         "elevation_m",
         "Elevation",
         "m",
-        None,
-        None
+        100,
+        500
     ),
     "slope_100_m_per_km": HylakField(
         "slope_100_m_per_km",
@@ -197,7 +197,7 @@ HYLAK_FIELDS = {
         "pour_lat",
         "Pour Point Latitude",
         "degrees",
-        None,
-        None
+        20,
+        40
     )
 }

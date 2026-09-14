@@ -1,5 +1,5 @@
 r"""
-tabular.py
+math.py
 
 Description:
    Provides definitions for esacci_lakes-utility math functions.
@@ -42,7 +42,7 @@ def merge_dfs_on_esacci_lakes_id(
     of both `left_df` and `right_df`. Merge is validated as one-to-one.
     """
     if (   
-           left_df.index.name  != "esacci_lakes_id" 
+        left_df.index.name != "esacci_lakes_id" 
         or right_df.index.name != "esacci_lakes_id"
     ):
         raise ValueError("expected \"esacci_lakes_id\" as the index name of both `left_df` and `right_df`")

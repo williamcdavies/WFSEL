@@ -31,12 +31,27 @@ def get_geo_bounding_box_from_static_lake_mask(
         The ESA CCI Lakes metadata
 
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
-        The ESA CCI Lakes stataic lake mask
+        The ESA CCI Lakes static lake mask
 
     Returns
     -------
     A :class:`GeoBoundingBox`.
+
+    Raises
+    ------
+    AttributeError
+        If `esacci_lakes_metadata` does not have `lat_max_box`,
+        `lat_min_box`, `lon_max_box`, and `lon_min_box` attributes.
+
+    Notes
+    -----
+    Assumes `esacci_lakes_metadata` has `lat_max_box`, `lat_min_box`,
+    `lon_max_box`, and `lon_min_box` attributes.
     """
+    for attribute in ("lat_max_box", "lat_min_box", "lon_max_box", "lon_min_box"):
+        if not hasattr(esacci_lakes_metadata, attribute):
+            raise AttributeError(f"expected `esacci_lakes_metadata` to have a \"{attribute}\" attribute")
+
     return GeoBoundingBox(
         esacci_lakes_static_lake_mask_ds["lat"]
         .sel(

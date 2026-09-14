@@ -223,7 +223,7 @@ def add_argument_hylak_field(
     parser.add_argument(
         "hylak_field",
         type=str,
-        help=f"""one of {HYLAK_FIELDS.keys()}"""
+        help=f"""one of {", ".join(HYLAK_FIELDS)}"""
     )
 
 
@@ -251,7 +251,7 @@ def argument_hylak_field_is_in_hylak_fields(
         return True
 
     if loud:
-        print(f"""error: argument hylak_field: not in {HYLAK_FIELDS.keys()}: {hylak_field}""")
+        print(f"""error: argument hylak_field: not in {", ".join(HYLAK_FIELDS)}: {hylak_field}""")
 
     return False
 
@@ -310,7 +310,7 @@ def add_argument_esacci_lakes_variable(
     parser.add_argument(
         "esacci_lakes_variable",
         type=str,
-        help=f"""one of {ESACCI_LAKES_VARIABLES.keys()}"""
+        help=f"""one of {", ".join(ESACCI_LAKES_VARIABLES)}"""
     )
 
 
@@ -339,7 +339,7 @@ def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(
         return True
 
     if loud:
-        print(f"""error: argument esacci_lakes_variable: not in {ESACCI_LAKES_VARIABLES.keys()}: {esacci_lakes_variable}""")
+        print(f"""error: argument esacci_lakes_variable: not in {", ".join(ESACCI_LAKES_VARIABLES)}: {esacci_lakes_variable}""")
 
     return False
 
@@ -578,6 +578,34 @@ def argument_esacci_lakes_merged_product_nc_path_exists(
 # ==================================================================================================
 
 
+# CSV functions
+# ==================================================================================================
+def read_local_data_csv(
+    local_data_csv_path: Path
+) -> pd.DataFrame:
+    """
+    Reads `local_data_csv_path` into a :class:`pandas.DataFrame`.
+
+    Parameters
+    ----------
+    local_data_csv_path : :class:`pathlib.Path`
+        The path to a local data csv file
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+
+    Notes
+    -----
+    Internal `pandas.read_csv` call assumes "esacci_lakes_id" is an
+    existing column in the csv file at `local_data_csv_path`.
+    """
+    return pd.read_csv(
+        local_data_csv_path,
+        index_col="esacci_lakes_id"
+    )
+
+
 def read_esacci_lakes_metadata_csv(
     esacci_lakes_metadata_csv_path: Path
 ) -> pd.DataFrame:
@@ -595,6 +623,11 @@ def read_esacci_lakes_metadata_csv(
     Returns
     -------
     A :class:`pandas.DataFrame`.
+
+    Notes
+    -----
+    Internal `pandas.read_csv` call assumes "id" is an existing column
+    in the csv file at `esacci_lakes_metadata_csv_path`.
     """
     return pd.read_csv(
         esacci_lakes_metadata_csv_path,
@@ -620,6 +653,12 @@ def read_esacci_lakes_counts_of_distinct_start_days_csv(
     Returns
     -------
     A :class:`pandas.DataFrame`.
+
+    Notes
+    -----
+    Internal `pandas.read_csv` call assumes "esacci_lakes_id" is an
+    existing column in the csv file at
+    `esacci_lakes_counts_of_distinct_start_days_csv_path`.
     """
     return pd.read_csv(
         esacci_lakes_counts_of_distinct_start_days_csv_path,
@@ -643,8 +682,17 @@ def read_esacci_lakes_hylak_fields_csv(
     Returns
     -------
     A :class:`pandas.DataFrame`.
+
+    Notes
+    -----
+    Internal `pandas.read_csv` call assumes "esacci_lakes_id" is an
+    existing column in the csv file at
+    `esacci_lakes_hylak_fields_csv_path`.
     """
     return pd.read_csv(
         esacci_lakes_hylak_fields_csv_path,
         index_col="esacci_lakes_id"
     )
+
+
+# ==================================================================================================

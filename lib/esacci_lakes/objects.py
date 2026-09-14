@@ -21,7 +21,7 @@ class ESACCILakesVariable:
     var_id : :class:`str`
         Variable name, or key, as it appears in the ESA Lakes Climate
         Change Initiative (Lakes_cci): Lake products, Version 3.0
-        Product User Guide 
+        Product User Guide
 
     long_name : :class:`str`
         Variable long name
