@@ -22,6 +22,8 @@ from lib.io.vars import (
 PROG = "print_nc.py"
 
 
+# Argument functions
+# ==================================================================================================
 def add_argument_nc_path(
     parser: argparse.ArgumentParser
 ) -> None:
@@ -78,16 +80,22 @@ def argument_nc_path_exists(
 
 
 def build_parser(
+    prog: str
 ) -> argparse.ArgumentParser:
     """
     Builds a :class:`ArgumentParser`.
+
+    Parameters
+    ----------
+    prog : :class:`str`
+        The program name
 
     Returns
     -------
     A :class:`ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
-        prog=PROG,
+        prog=prog,
         usage="%(prog)s [options]",
         description="""Prints netCDF file metadata to `sys.stdout`."""
     )
@@ -118,22 +126,44 @@ def arguments_are_valid(
     return True
 
 
+# ==================================================================================================
+
+
+# Print functions
+# ==================================================================================================
+def print_nc(
+    nc_path: Path
+) -> None:
+    """
+    Prints a netCDF file's metadata to `sys.stdout`.
+
+    Parameters
+    ----------
+    nc_path : :class:`pathlib.Path`
+        The path to some netCDF file
+
+    Returns
+    -------
+    None
+    """
+    with xr.open_dataset(nc_path) as ds:
+        print(ds)
+
+
+# ==================================================================================================
+
+
 def main(
 ) -> int:
     """
     Orchestration layer.
-
-    Returns
-    -------
-    0 if program completes successfully. 1 otherwise.
     """
-    args = build_parser().parse_args()
+    args = build_parser(PROG).parse_args()
 
     if not arguments_are_valid(args): 
         return RETURN_FAILURE
 
-    with xr.open_dataset(args.nc_path) as ds:
-        print(ds)
+    print_nc(args.nc_path)
 
     return RETURN_SUCCESS
 
