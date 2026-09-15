@@ -25,7 +25,8 @@ from lib.plot.utils import (
     set_ax_xlim_to_gdf_total_bounds,
     set_ax_ylim_to_gdf_total_bounds,
     set_ax_xticks_to_empty_list,
-    set_ax_yticks_to_empty_list
+    set_ax_yticks_to_empty_list,
+    save_figure
 )
 
 PROG = "view_map_of_hylak_lakes_within_us_states.py"
@@ -394,7 +395,7 @@ def main(
         args.stusps
     )
 
-    _, ax = plt.subplots()
+    fig, ax = plt.subplots()
 
     plot_on_ax(
         ax,
@@ -408,9 +409,11 @@ def main(
         target_states_gdf
     )
 
-    plt.tight_layout()
-    plt.show()
-    
+    save_figure(
+        fig,
+        PROG
+    )
+
     return RETURN_SUCCESS
 
 
