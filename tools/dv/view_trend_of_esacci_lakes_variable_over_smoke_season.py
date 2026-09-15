@@ -8,8 +8,7 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from datetime import datetime
-from pathlib import Path
+from pathlib  import Path
 
 # Related Third-party Imports
 import matplotlib.pyplot as plt
@@ -36,7 +35,10 @@ from lib.io.vars                 import (
     RETURN_SUCCESS
 )
 from lib.math.utils              import filter_df_by_column_bounds
-from lib.plot.utils              import force_ax_xtick_visibility
+from lib.plot.utils              import (
+    force_ax_xtick_visibility,
+    save_figure
+)
 
 PROG            = "view_trend_of_esacci_lakes_variable_over_smoke_season.py"
 REPRESENTATIONS = [
@@ -948,11 +950,11 @@ def main(
         hylak_fields_df
     )
 
-    upper_high_lakes_df = get_upper_bounds_lakes_df(
+    upper_high_lakes_df  = get_upper_bounds_lakes_df(
         variable_over_high_smoke_season_hylak_fields_df,
         args.hylak_field
     )
-    upper_low_lakes_df  = get_upper_bounds_lakes_df(
+    upper_low_lakes_df   = get_upper_bounds_lakes_df(
         variable_over_low_smoke_season_hylak_fields_df,
         args.hylak_field
     )
@@ -964,23 +966,27 @@ def main(
         variable_over_low_smoke_season_hylak_fields_df,
         args.hylak_field
     )
-    lower_high_lakes_df = get_lower_bounds_lakes_df(
+    lower_high_lakes_df  = get_lower_bounds_lakes_df(
         variable_over_high_smoke_season_hylak_fields_df,
         args.hylak_field
     )
-    lower_low_lakes_df  = get_lower_bounds_lakes_df(
+    lower_low_lakes_df   = get_lower_bounds_lakes_df(
         variable_over_low_smoke_season_hylak_fields_df,
         args.hylak_field
     )
 
-    _, (upper_bounds_lakes_ax, middle_bounds_lakes_ax, lower_bounds_lakes_ax) = plt.subplots(
+    fig, (
+        upper_bounds_lakes_ax,
+        middle_bounds_lakes_ax,
+        lower_bounds_lakes_ax
+    ) = plt.subplots(
         nrows=3,
         ncols=1,
         sharex=True,
         sharey=True,
         figsize=(12.8, 14.4)
     )
-    plt.subplots_adjust(hspace=0.3)
+    plt.subplots_adjust(hspace=0.25)
 
     plot_on_upper_bounds_lakes_ax(
         upper_bounds_lakes_ax,
@@ -1021,8 +1027,10 @@ def main(
     middle_bounds_lakes_ax.legend()
     lower_bounds_lakes_ax.legend()
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    plt.savefig(f"{PROG}_{timestamp}.png", dpi=300, bbox_inches="tight")
+    save_figure(
+        fig,
+        PROG
+    )
 
     return RETURN_SUCCESS
 
