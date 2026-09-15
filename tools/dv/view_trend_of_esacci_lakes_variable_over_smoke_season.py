@@ -380,6 +380,45 @@ def convert_lakes_df_units_from_kelvin_to_celsius(
     return lakes_df - 273.15
 
 
+def get_lakes_df_week_number_ser_pairs(
+    lakes_df: pd.DataFrame
+) -> list[tuple[int, pd.Series]]:
+    """
+    Returns `lakes_df`'s week columns as (week number,
+    :class:`pandas.Series`) pairs, restricted to week numbers in
+    [-3, 20].
+
+    Parameters
+    ----------
+    lakes_df : :class:`pandas.DataFrame`
+        The :class:`pandas.DataFrame`
+
+    Returns
+    -------
+    A list of (week number, :class:`pandas.Series`) pairs.
+
+    Notes
+    -----
+    Internal `pandas.DataFrame.filter` call assumes `lakes_df` has one
+    or more columns named "w_{n}", where `n` is a week number.
+    """
+    prefix = "w_"
+    pairs  = []
+
+    for label_, ser in lakes_df.filter(like=prefix).items():
+        n = int(label_.removeprefix(prefix)) # type: ignore
+
+        if (
+            n < -3
+            or n > 20
+        ):
+            continue
+
+        pairs.append((n, ser))
+
+    return pairs
+
+
 def get_lower_bounds_lakes_df(
     df:          pd.DataFrame,
     hylak_field: str
@@ -512,13 +551,12 @@ def get_upper_bounds_lakes_df(
     return drop_hylak_field_columns_from_df(filtered_df)
 
 
-def get_lakes_df_pairs(
+def get_medians_lakes_ser(
     lakes_df: pd.DataFrame
-) -> list[tuple[int, pd.Series]]:
+) -> pd.Series:
     """
-    Returns `lakes_df`'s week columns as (week number,
-    :class:`pandas.Series`) pairs, restricted to week numbers in
-    [-3, 20].
+    Returns `lakes_df`'s week columns' medians, indexed by week
+    number.
 
     Parameters
     ----------
@@ -527,28 +565,15 @@ def get_lakes_df_pairs(
 
     Returns
     -------
-    A list of (week number, :class:`pandas.Series`) pairs.
-
-    Notes
-    -----
-    Internal `pandas.DataFrame.filter` call assumes `lakes_df` has one
-    or more columns named "w_{n}", where `n` is a week number.
+    A :class:`pandas.Series` indexed by week number.
     """
-    prefix = "w_"
-    pairs  = []
-
-    for label_, ser in lakes_df.filter(like=prefix).items():
-        n = int(label_.removeprefix(prefix)) # type: ignore
-
-        if (
-            n < -3
-            or n > 20
-        ):
-            continue
-
-        pairs.append((n, ser))
-
-    return pairs
+    return pd.Series(
+        {
+            n: ser.median()
+            for n, ser
+            in get_lakes_df_week_number_ser_pairs(lakes_df)
+        }
+    )
 
 
 # ==================================================================================================
@@ -583,7 +608,7 @@ def plot_lakes_df_scatterplot(
     -------
     None
     """
-    for n, ser in get_lakes_df_pairs(lakes_df):
+    for n, ser in get_lakes_df_week_number_ser_pairs(lakes_df):
         ax.scatter(
             x=[n] * len(ser),
             y=ser,
@@ -595,21 +620,22 @@ def plot_lakes_df_scatterplot(
 
 
 def plot_lakes_df_lineplot(
-    ax:       plt.Axes, # type: ignore
-    lakes_df: pd.DataFrame,
-    color:    str,
-    label:    str | None = None
+    ax:         plt.Axes, # type: ignore
+    median_ser: pd.Series,
+    color:      str,
+    label:      str | None = None
 ) -> None:
     """
-    Plots a line of `lakes_df`'s week columns' medians onto `ax`.
+    Plots a line of `median_ser`'s values onto `ax`.
 
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
         The axes to plot onto
 
-    lakes_df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+    median_ser : :class:`pandas.Series`
+        A :class:`pandas.Series` of weekly medians, indexed by week
+        number, as returned by `get_esacci_lakes_medians_ser`
 
     color : :class:`str`
         The line color
@@ -621,16 +647,9 @@ def plot_lakes_df_lineplot(
     -------
     None
     """
-    x = []
-    y = []
-
-    for n, ser in get_lakes_df_pairs(lakes_df):
-        x.append(n)
-        y.append(ser.median())
-
     ax.plot(
-        x,
-        y,
+        median_ser.index,
+        median_ser,
         label=label,
         color=color,
         marker="o"
@@ -638,12 +657,15 @@ def plot_lakes_df_lineplot(
 
 
 def plot_on_upper_bounds_lakes_ax(
-    upper_bounds_lakes_ax: plt.Axes, # type: ignore
-    upper_high_lakes_df:   pd.DataFrame,
-    upper_low_lakes_df:    pd.DataFrame
+    upper_bounds_lakes_ax:  plt.Axes, # type: ignore
+    upper_high_lakes_df:    pd.DataFrame,
+    upper_low_lakes_df:     pd.DataFrame,
+    upper_high_medians_ser: pd.Series,
+    upper_low_medians_ser:  pd.Series
 ) -> None:
     """
-    Plots `upper_high_lakes_df` and `upper_low_lakes_df` onto
+    Plots `upper_high_lakes_df`, `upper_low_lakes_df`,
+    `upper_high_medians_ser`, and `upper_low_medians_ser` onto
     `upper_bounds_lakes_ax`.
 
     Parameters
@@ -657,6 +679,14 @@ def plot_on_upper_bounds_lakes_ax(
     upper_low_lakes_df : :class:`pandas.DataFrame`
         Upper-bounds-depth lakes during a low smoke season
 
+    upper_high_medians_ser : :class:`pandas.Series`
+        `upper_high_lakes_df`'s weekly medians, as returned by
+        `get_esacci_lakes_medians_ser`
+
+    upper_low_medians_ser : :class:`pandas.Series`
+        `upper_low_lakes_df`'s weekly medians, as returned by
+        `get_esacci_lakes_medians_ser`
+
     Returns
     -------
     None
@@ -668,7 +698,7 @@ def plot_on_upper_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         upper_bounds_lakes_ax,
-        upper_high_lakes_df,
+        upper_high_medians_ser,
         color="#FF0000",
         label="High Smoke Season (Median)"
     )
@@ -680,19 +710,22 @@ def plot_on_upper_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         upper_bounds_lakes_ax,
-        upper_low_lakes_df,
+        upper_low_medians_ser,
         color="#0000FF",
         label="Low Smoke Season (Median)"
     )
 
 
 def plot_on_middle_bounds_lakes_ax(
-    middle_bounds_lakes_ax: plt.Axes, # type: ignore
-    middle_high_lakes_df:   pd.DataFrame,
-    middle_low_lakes_df:    pd.DataFrame
+    middle_bounds_lakes_ax:  plt.Axes, # type: ignore
+    middle_high_lakes_df:    pd.DataFrame,
+    middle_low_lakes_df:     pd.DataFrame,
+    middle_high_medians_ser: pd.Series,
+    middle_low_medians_ser:  pd.Series
 ) -> None:
     """
-    Plots `middle_high_lakes_df` and `middle_low_lakes_df` onto
+    Plots `middle_high_lakes_df`, `middle_low_lakes_df`,
+    `middle_high_medians_ser`, and `middle_low_medians_ser` onto
     `middle_bounds_lakes_ax`.
 
     Parameters
@@ -706,6 +739,14 @@ def plot_on_middle_bounds_lakes_ax(
     middle_low_lakes_df : :class:`pandas.DataFrame`
         Middle-bounds-depth lakes during a low smoke season
 
+    middle_high_medians_ser : :class:`pandas.Series`
+        `middle_high_lakes_df`'s weekly medians, as returned by
+        `get_esacci_lakes_medians_ser`
+
+    middle_low_medians_ser : :class:`pandas.Series`
+        `middle_low_lakes_df`'s weekly medians, as returned by
+        `get_esacci_lakes_medians_ser`
+
     Returns
     -------
     None
@@ -717,7 +758,7 @@ def plot_on_middle_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         middle_bounds_lakes_ax,
-        middle_high_lakes_df,
+        middle_high_medians_ser,
         color="#FF0000",
         label="High Smoke Season (Median)"
     )
@@ -729,19 +770,22 @@ def plot_on_middle_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         middle_bounds_lakes_ax,
-        middle_low_lakes_df,
+        middle_low_medians_ser,
         color="#0000FF",
         label="Low Smoke Season (Median)"
     )
 
 
 def plot_on_lower_bounds_lakes_ax(
-    lower_bounds_lakes_ax: plt.Axes, # type: ignore
-    lower_high_lakes_df:   pd.DataFrame,
-    lower_low_lakes_df:    pd.DataFrame
+    lower_bounds_lakes_ax:  plt.Axes, # type: ignore
+    lower_high_lakes_df:    pd.DataFrame,
+    lower_low_lakes_df:     pd.DataFrame,
+    lower_high_medians_ser: pd.Series,
+    lower_low_medians_ser:  pd.Series
 ) -> None:
     """
-    Plots `lower_high_lakes_df` and `lower_low_lakes_df` onto
+    Plots `lower_high_lakes_df`, `lower_low_lakes_df`,
+    `lower_high_medians_ser`, and `lower_low_medians_ser` onto
     `lower_bounds_lakes_ax`.
 
     Parameters
@@ -755,6 +799,14 @@ def plot_on_lower_bounds_lakes_ax(
     lower_low_lakes_df : :class:`pandas.DataFrame`
         Lower-bounds-depth lakes during a low smoke season
 
+    lower_high_medians_ser : :class:`pandas.Series`
+        `lower_high_lakes_df`'s weekly medians, as returned by
+        `get_esacci_lakes_medians_ser`
+
+    lower_low_medians_ser : :class:`pandas.Series`
+        `lower_low_lakes_df`'s weekly medians, as returned by
+        `get_esacci_lakes_medians_ser`
+
     Returns
     -------
     None
@@ -766,7 +818,7 @@ def plot_on_lower_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         lower_bounds_lakes_ax,
-        lower_high_lakes_df,
+        lower_high_medians_ser,
         color="#FF0000",
         label="High Smoke Season (Median)"
     )
@@ -778,7 +830,7 @@ def plot_on_lower_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         lower_bounds_lakes_ax,
-        lower_low_lakes_df,
+        lower_low_medians_ser,
         color="#0000FF",
         label="Low Smoke Season (Median)"
     )
@@ -982,6 +1034,13 @@ def main(
         args.hylak_field
     )
 
+    upper_high_medians_lakes_ser  = get_medians_lakes_ser(upper_high_lakes_df)
+    upper_low_medians_lakes_ser   = get_medians_lakes_ser(upper_low_lakes_df)
+    middle_high_medians_lakes_ser = get_medians_lakes_ser(middle_high_lakes_df)
+    middle_low_medians_lakes_ser  = get_medians_lakes_ser(middle_low_lakes_df)
+    lower_high_medians_lakes_ser  = get_medians_lakes_ser(lower_high_lakes_df)
+    lower_low_medians_lakes_ser   = get_medians_lakes_ser(lower_low_lakes_df)
+
     fig, (
         upper_bounds_lakes_ax,
         middle_bounds_lakes_ax,
@@ -999,16 +1058,22 @@ def main(
         upper_bounds_lakes_ax,
         upper_high_lakes_df,
         upper_low_lakes_df,
+        upper_high_medians_lakes_ser,
+        upper_low_medians_lakes_ser,
     )
     plot_on_middle_bounds_lakes_ax(
         middle_bounds_lakes_ax,
         middle_high_lakes_df,
-        middle_low_lakes_df
+        middle_low_lakes_df,
+        middle_high_medians_lakes_ser,
+        middle_low_medians_lakes_ser
     )
     plot_on_lower_bounds_lakes_ax(
         lower_bounds_lakes_ax,
         lower_high_lakes_df,
-        lower_low_lakes_df
+        lower_low_lakes_df,
+        lower_high_medians_lakes_ser,
+        lower_low_medians_lakes_ser
     )
 
     set_upper_bounds_lakes_ax_properties(
