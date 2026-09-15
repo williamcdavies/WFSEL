@@ -60,6 +60,16 @@ ESACCI_LAKES_VARIABLES = {
 }
 
 HYLAK_FIELDS = {
+    "hylak_id": HylakField(
+        "hylak_id",
+        "HydroLAKES ID",
+        "",
+        "",
+        None,
+        None,
+        None,
+        None
+    ),
     "lake_name": HylakField(
         "lake_name",
         "Lake Name",
