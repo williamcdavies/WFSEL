@@ -214,6 +214,21 @@ def save_figure(
     figure: plt.Figure, # type: ignore
     prog:   str
 ) -> None:
+    """
+    Saves `figure` to a PNG file named "{prog}_{timestamp}.png".
+
+    Parameters
+    ----------
+    figure : :class:`matplotlib.figure.Figure`
+        The figure to save
+
+    prog : :class:`str`
+        The program name
+
+    Returns
+    -------
+    None
+    """
     timestamp = datetime.now().strftime("%y%j_%H%M%S%f")
 
     figure.savefig(
