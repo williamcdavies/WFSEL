@@ -9,6 +9,7 @@ Written by William Chuter-Davies
 
 # Standard Library Imports
 from datetime import datetime
+from pathlib  import Path
 
 # Related Third-party Imports
 import geopandas as gpd
@@ -215,7 +216,7 @@ def save_figure(
     prog:   str
 ) -> None:
     """
-    Saves `figure` to a PNG file named "{prog}_{timestamp}.png".
+    Saves `figure` to `data/dv/{prog}/`.
 
     Parameters
     ----------
@@ -230,9 +231,15 @@ def save_figure(
     None
     """
     timestamp = datetime.now().strftime("%y%j_%H%M%S%f")
+    fdir      = Path(f"data/dv/{prog}")
+
+    fdir.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
     figure.savefig(
-        f"{prog}_{timestamp}.png",
+        f"{fdir}/{timestamp}.png",
         dpi=300,
         bbox_inches="tight"
     )

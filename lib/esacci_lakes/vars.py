@@ -195,8 +195,8 @@ HYLAK_FIELDS = {
         "Average Discharge",
         "m3.s",
         "m3.s",
-        None,
-        None,
+        1e0,
+        1e0,
         None,
         None
     ),
@@ -205,8 +205,8 @@ HYLAK_FIELDS = {
         "Residence Time",
         "days",
         "days",
-        None,
-        None,
+        1e0,
+        1e0,
         None,
         None
     ),
@@ -225,8 +225,8 @@ HYLAK_FIELDS = {
         "Shoreline Slope",
         "m.km",
         "m.km",
-        None,
-        None,
+        1e0,
+        1e0,
         None,
         None
     ),
@@ -245,8 +245,8 @@ HYLAK_FIELDS = {
         "Pour Point Longitude",
         "degrees",
         "degrees",
-        None,
-        None,
+        1e0,
+        1e0,
         None,
         None
     ),
@@ -255,9 +255,9 @@ HYLAK_FIELDS = {
         "Pour Point Latitude",
         "degrees",
         "degrees",
-        None,
-        None,
-        20,
-        40
+        1e0,
+        1e0,
+        35,
+        50
     )
 }
