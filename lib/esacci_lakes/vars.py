@@ -64,6 +64,9 @@ HYLAK_FIELDS = {
         "lake_name",
         "Lake Name",
         "",
+        "",
+        None,
+        None,
         None,
         None
     ),
@@ -71,6 +74,9 @@ HYLAK_FIELDS = {
         "country",
         "Country",
         "",
+        "",
+        None,
+        None,
         None,
         None
     ),
@@ -78,6 +84,9 @@ HYLAK_FIELDS = {
         "continent",
         "Continent",
         "",
+        "",
+        None,
+        None,
         None,
         None
     ),
@@ -85,6 +94,9 @@ HYLAK_FIELDS = {
         "poly_src",
         "Polygon Source",
         "",
+        "",
+        None,
+        None,
         None,
         None
     ),
@@ -92,6 +104,9 @@ HYLAK_FIELDS = {
         "lake_type",
         "Lake Type",
         "",
+        "",
+        None,
+        None,
         None,
         None
     ),
@@ -99,6 +114,9 @@ HYLAK_FIELDS = {
         "grand_id",
         "GRanD Reservoir ID",
         "",
+        "",
+        None,
+        None,
         None,
         None
     ),
@@ -106,13 +124,19 @@ HYLAK_FIELDS = {
         "lake_area_m2",
         "Lake Area",
         "m2",
-        50e6,
+        "km2",
+        1e0,
+        1e6,
+        100e6,
         500e6
     ),
     "shore_len_m": HylakField(
         "shore_len_m",
         "Shoreline Length",
-        "m-1",
+        "m1",
+        "m1",
+        1e0,
+        1e0,
         None,
         None
     ),
@@ -120,6 +144,9 @@ HYLAK_FIELDS = {
         "shore_dev",
         "Shoreline Development",
         "",
+        "",
+        None,
+        None,
         None,
         None
     ),
@@ -127,6 +154,9 @@ HYLAK_FIELDS = {
         "vol_total_m3",
         "Total Lake Volume",
         "m3",
+        "km3",
+        1e0,
+        1e9,
         0.5e9,
         5e9
     ),
@@ -134,6 +164,9 @@ HYLAK_FIELDS = {
         "vol_res_m3",
         "Reservoir Volume",
         "m3",
+        "m3",
+        1e0,
+        1e0,
         None,
         None
     ),
@@ -141,6 +174,9 @@ HYLAK_FIELDS = {
         "vol_src",
         "Volume Source",
         "",
+        "",
+        None,
+        None,
         None,
         None
     ),
@@ -148,6 +184,9 @@ HYLAK_FIELDS = {
         "depth_avg_m",
         "Average Depth",
         "m",
+        "m",
+        1e0,
+        1e0,
         5,
         20
     ),
@@ -155,6 +194,9 @@ HYLAK_FIELDS = {
         "dis_avg_m3_per_s",
         "Average Discharge",
         "m3.s",
+        "m3.s",
+        None,
+        None,
         None,
         None
     ),
@@ -162,6 +204,9 @@ HYLAK_FIELDS = {
         "res_time_days",
         "Residence Time",
         "days",
+        "days",
+        None,
+        None,
         None,
         None
     ),
@@ -169,6 +214,9 @@ HYLAK_FIELDS = {
         "elevation_m",
         "Elevation",
         "m",
+        "m",
+        1e0,
+        1e0,
         100,
         500
     ),
@@ -176,6 +224,9 @@ HYLAK_FIELDS = {
         "slope_100_m_per_km",
         "Shoreline Slope",
         "m.km",
+        "m.km",
+        None,
+        None,
         None,
         None
     ),
@@ -183,6 +234,9 @@ HYLAK_FIELDS = {
         "wshd_area_m2",
         "Watershed Area",
         "m2",
+        "m2",
+        1e0,
+        1e0,
         None,
         None
     ),
@@ -190,6 +244,9 @@ HYLAK_FIELDS = {
         "pour_long",
         "Pour Point Longitude",
         "degrees",
+        "degrees",
+        None,
+        None,
         None,
         None
     ),
@@ -197,6 +254,9 @@ HYLAK_FIELDS = {
         "pour_lat",
         "Pour Point Latitude",
         "degrees",
+        "degrees",
+        None,
+        None,
         20,
         40
     )

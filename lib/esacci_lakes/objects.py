@@ -51,6 +51,15 @@ class HylakField:
     units : :class:`str`
         Field units
 
+    display_units : :class:`str`
+        Units to display `lower_bound`/`upper_bound` in.
+
+    scale : float | None
+        The scale of `units` relative to 1.
+
+    display_scale : float | None
+        The scale of 'display_units' relative to 1.
+
     lower_bound : float | None
         Lower bound used to filter lakes by this field. `None` if no
         lower bound applies.
@@ -59,8 +68,11 @@ class HylakField:
         Upper bound used to filter lakes by this field. `None` if no
         upper bound applies.
     """
-    field_id:    str
-    long_name:   str
-    units:       str
-    lower_bound: float | None
-    upper_bound: float | None
+    field_id:      str
+    long_name:     str
+    units:         str
+    display_units: str
+    scale:         float | None
+    display_scale: float | None
+    lower_bound:   float | None
+    upper_bound:   float | None

@@ -229,8 +229,7 @@ def sort_df_columns_numerically(
     df: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Returns `df` with its columns sorted numerically, by the number(s)
-    embedded in each column name.
+    Returns `df` with its columns sorted numerically.
 
     Parameters
     ----------
@@ -240,12 +239,6 @@ def sort_df_columns_numerically(
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Notes
-    -----
-    Column names are sorted by the numeric value(s) extracted from
-    them (e.g. "w_-3" sorts before "w_2"). Columns with no embedded
-    number sort first.
     """
     def key(
         column: str
