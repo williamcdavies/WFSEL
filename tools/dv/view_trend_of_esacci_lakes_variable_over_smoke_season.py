@@ -25,7 +25,10 @@ from lib.esacci_lakes.utils.io   import (
     argument_esacci_lakes_hylak_fields_csv_path_exists,
     read_esacci_lakes_hylak_fields_csv
 )
-from lib.esacci_lakes.utils.math import merge_dfs_on_esacci_lakes_id
+from lib.esacci_lakes.utils.math import (
+    merge_dfs_on_esacci_lakes_id,
+    drop_hylak_field_columns_from_df
+)
 from lib.esacci_lakes.vars       import (
     ESACCI_LAKES_VARIABLES,
     HYLAK_FIELDS
@@ -42,7 +45,7 @@ from lib.plot.utils              import (
 
 PROG            = "view_trend_of_esacci_lakes_variable_over_smoke_season.py"
 REPRESENTATIONS = [
-    "absolute",
+    "none",
     "anomaly"
 ]
 
@@ -235,10 +238,10 @@ def add_argument_representation(
     """
     parser.add_argument(
         "--representation",
-        default="anomaly",
+        default="none",
         type=str,
         choices=REPRESENTATIONS,
-        help="""the representation of the input data. default=anomaly"""
+        help="""the representation of the input data. default=none"""
     )
 
 
@@ -267,7 +270,7 @@ def argument_representation_is_in_representations(
         return True
 
     if loud:
-        print(f"""error: argument representation: invalid choice: {representation!r} (choose from {REPRESENTATIONS})""")
+        print(f"""error: argument representation: not in {REPRESENTATIONS}: {representation}""")
 
     return False
 
@@ -359,8 +362,6 @@ def arguments_are_valid(
 
 # Lake data functions
 # ==================================================================================================
-KELVIN_TO_CELSIUS_OFFSET = -273.15
-
 def convert_lakes_df_units_from_kelvin_to_celsius(
     lakes_df: pd.DataFrame
 ) -> pd.DataFrame:
@@ -385,7 +386,7 @@ def get_lower_bounds_lakes_df(
 ) -> pd.DataFrame:
     """
     Returns `df` filtered to lakes at or below `hylak_field`'s lower
-    bound.
+    bound, with all `HYLAK_FIELDS` columns dropped.
 
     Parameters
     ----------
@@ -412,12 +413,14 @@ def get_lower_bounds_lakes_df(
     if HYLAK_FIELDS[hylak_field].lower_bound is None:
         raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `lower_bound`")
 
-    return filter_df_by_column_bounds(
+    filtered_df = filter_df_by_column_bounds(
         df=df,
         column=hylak_field,
         lower=None,
         upper=HYLAK_FIELDS[hylak_field].lower_bound
     )
+
+    return drop_hylak_field_columns_from_df(filtered_df)
 
 
 def get_middle_bounds_lakes_df(
@@ -426,7 +429,7 @@ def get_middle_bounds_lakes_df(
 ) -> pd.DataFrame:
     """
     Returns `df` filtered to lakes between `hylak_field`'s lower and
-    upper bounds.
+    upper bounds, with all `HYLAK_FIELDS` columns dropped.
 
     Parameters
     ----------
@@ -456,12 +459,14 @@ def get_middle_bounds_lakes_df(
     if HYLAK_FIELDS[hylak_field].upper_bound is None:
         raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `upper_bound`")
 
-    return filter_df_by_column_bounds(
+    filtered_df = filter_df_by_column_bounds(
         df=df,
         column=hylak_field,
         lower=HYLAK_FIELDS[hylak_field].lower_bound,
         upper=HYLAK_FIELDS[hylak_field].upper_bound
     )
+
+    return drop_hylak_field_columns_from_df(filtered_df)
 
 
 def get_upper_bounds_lakes_df(
@@ -470,7 +475,7 @@ def get_upper_bounds_lakes_df(
 ) -> pd.DataFrame:
     """
     Returns `df` filtered to lakes at or above `hylak_field`'s upper
-    bound.
+    bound, with all `HYLAK_FIELDS` columns dropped.
 
     Parameters
     ----------
@@ -497,12 +502,14 @@ def get_upper_bounds_lakes_df(
     if HYLAK_FIELDS[hylak_field].upper_bound is None:
         raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `upper_bound`")
 
-    return filter_df_by_column_bounds(
+    filtered_df = filter_df_by_column_bounds(
         df=df,
         column=hylak_field,
         lower=HYLAK_FIELDS[hylak_field].upper_bound,
         upper=None
     )
+
+    return drop_hylak_field_columns_from_df(filtered_df)
 
 
 def get_lakes_df_pairs(
@@ -935,7 +942,7 @@ def main(
     hylak_fields_df                    = read_esacci_lakes_hylak_fields_csv(args.esacci_lakes_hylak_fields_csv_path)
 
     if (
-        args.representation == "absolute"
+        args.representation == "none"
         and args.esacci_lakes_variable == "lake_surface_water_temperature"
     ):
         variable_over_high_smoke_season_df = convert_lakes_df_units_from_kelvin_to_celsius(variable_over_high_smoke_season_df)
