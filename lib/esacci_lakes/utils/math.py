@@ -10,6 +10,35 @@ Written by William Chuter-Davies
 # Related Third-party Imports
 import pandas as pd
 
+# Local Application/Library Specific Imports
+from lib.esacci_lakes.vars import HYLAK_FIELDS
+
+
+def drop_hylak_field_columns_from_df(
+    df: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Returns `df` with all `HYLAK_FIELDS` columns dropped.
+
+    Parameters
+    ----------
+    df : :class:`pandas.DataFrame`
+        The :class:`pandas.DataFrame`
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+
+    Notes
+    -----
+    Columns in `HYLAK_FIELDS` that are not present in `df` are
+    silently ignored.
+    """
+    return df.drop(
+        columns=list(HYLAK_FIELDS),
+        errors="ignore"
+    )
+
 
 def merge_dfs_on_esacci_lakes_id(
     left_df:  pd.DataFrame,
@@ -54,3 +83,4 @@ def merge_dfs_on_esacci_lakes_id(
         right_index=True,
         validate="one_to_one"
     )
+    
