@@ -1,5 +1,5 @@
 r"""
-view_map_of_lakes_within_us_states.py
+view_map_of_hylak_lakes_within_us_states.py
 
 Written by William Chuter-Davies
 """
@@ -28,7 +28,7 @@ from lib.plot.utils import (
     set_ax_yticks_to_empty_list
 )
 
-PROG = "view_map_of_lakes_within_us_states.py"
+PROG = "view_map_of_hylak_lakes_within_us_states.py"
 
 
 def add_argument_stusps(
@@ -91,18 +91,12 @@ def argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
 
 
 def build_parser(
+    prog: str
 ) -> argparse.ArgumentParser:
-    """
-    Builds a :class:`ArgumentParser`.
-
-    Returns
-    -------
-    A :class:`ArgumentParser`.
-    """
     parser = argparse.ArgumentParser(
         prog=PROG,
         usage="%(prog)s [options]",
-        description="""Produces a map visualisation of all HydroLAKES lakes within a set of U.S. states."""
+        description="""Produces a map visualisation of all lakes in spatial.hylak_points (Same lakes as provided by HYDROLakes v1.0) within a set of U.S. states."""
     )
 
     # Optional arguments
@@ -377,12 +371,8 @@ def main(
 ) -> int:
     """
     Orchestration layer.
-
-    Returns
-    -------
-    0 if program completes successfully. 1 otherwise.
     """
-    args = build_parser().parse_args()
+    args = build_parser(PROG).parse_args()
 
     if not arguments_are_valid(args): 
         return RETURN_FAILURE
