@@ -5,31 +5,30 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
+import argparse
 import sys
-
-from argparse import ArgumentParser
 
 # Related Third-party Imports
 import numpy              as np
 import psycopg
-import psycopg.sql
 import rasterio.features
 import rasterio.transform
 import shapely.geometry
 import shapely.ops
 import xarray             as xr
 
-from tqdm import tqdm
+from psycopg import sql
+from tqdm    import tqdm
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils.argparse import (
+from lib.esacci_lakes.utils.io import (
     add_argument_esacci_lakes_metadata_csv_path,
     add_argument_esacci_lakes_static_lake_mask_nc_path,
     argument_esacci_lakes_metadata_csv_path_exists,
     argument_esacci_lakes_static_lake_mask_nc_path_exists
 )
-from lib.esacci_lakes.utils.geo      import get_geo_bounding_box
-from lib.esacci_lakes.utils.pandas   import read_esacci_lakes_metadata_csv
+from lib.esacci_lakes.utils.geo  import get_geo_bounding_box_from_static_lake_mask
+from lib.esacci_lakes.utils.math import read_esacci_lakes_metadata_csv
 from lib.geo.utils                   import sel
 from lib.io.vars                     import (
     RETURN_FAILURE,
@@ -75,7 +74,7 @@ def to_wkb(
 def main() -> int:
     # Argument parsing
     # ==================================================================================================
-    parser = ArgumentParser(
+    parser = argparse.ArgumentParser(
         prog=PROG,
         usage="%(prog)s [options]",
         description="""Writes ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0 metadata and geometries to psql for use with PostGIS."""
@@ -116,7 +115,7 @@ def main() -> int:
             total=len(esacci_lakes_metadata_df),
             disable=not sys.stderr.isatty()
         ):
-            geo_bounding_box = get_geo_bounding_box(
+            geo_bounding_box = get_geo_bounding_box_from_static_lake_mask(
                 row,
                 esacci_lakes_static_lake_mask_ds
             )
@@ -129,7 +128,7 @@ def main() -> int:
             assert isinstance(esacci_lakes_static_lake_mask, xr.DataArray)
 
             with conn.cursor() as cur:
-                query = psycopg.sql.SQL("""
+                query = sql.SQL("""
                     INSERT INTO esacci_lakes
                     (
                         id,
