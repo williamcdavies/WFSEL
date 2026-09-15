@@ -7,6 +7,9 @@ Description:
 Written by William Chuter-Davies
 """
 
+# Standard Library Imports
+from datetime import datetime
+
 # Related Third-party Imports
 import geopandas as gpd
 
@@ -205,3 +208,16 @@ def force_ax_ytick_visibility(
     None
     """
     ax.tick_params(labelleft=on)
+
+
+def save_figure(
+    figure: plt.Figure, # type: ignore
+    prog:   str
+) -> None:
+    timestamp = datetime.now().strftime("%y%j_%H%M%S%f")
+
+    figure.savefig(
+        f"{prog}_{timestamp}.png",
+        dpi=300,
+        bbox_inches="tight"
+    )
