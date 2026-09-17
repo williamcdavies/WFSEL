@@ -7,7 +7,7 @@ Description:
 Written by William Chuter-Davies
 """
 
-SPACES = [
+SCALES = [
     "lin",
     "log"
 ]
