@@ -8,16 +8,16 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from collections import defaultdict
-from pathlib     import Path
+from collections               import defaultdict
+from pathlib                   import Path
 
 # Related Third-party Imports
-import numpy   as np
-import pandas  as pd
+import numpy                   as np
+import pandas                  as pd
 import psycopg
 
-from psycopg import sql
-from tqdm    import tqdm
+from psycopg                   import sql
+from tqdm                      import tqdm
 
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.utils.io import (
