@@ -240,7 +240,7 @@ def sort_df_columns_numerically(
     -------
     A :class:`pandas.DataFrame`.
     """
-    def key(
+    def _key(
         column: str
     ) -> tuple[float, ...]:
         matches = re.findall(
@@ -255,7 +255,7 @@ def sort_df_columns_numerically(
 
     columns = sorted(
         df.columns,
-        key=key
+        key=_key
     )
 
     return df.reindex(columns=columns)
