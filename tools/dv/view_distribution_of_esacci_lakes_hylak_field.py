@@ -33,7 +33,7 @@ from lib.math.utils            import (
     get_ser_from_df,
     get_quantiles_from_ser
 )
-from lib.math.vars             import SPACES
+from lib.math.vars             import SCALES
 from lib.plot.utils            import (
     set_ax_xscale_to_lin,
     set_ax_xscale_to_log,
@@ -46,11 +46,11 @@ TIME = datetime.now()
 
 # Argument functions
 # ==================================================================================================
-def add_argument_space(
+def add_argument_scale(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `space` argument to a :class:`ArgumentParser`.
+    Adds a `scale` argument to a :class:`ArgumentParser`.
 
     Parameters
     ----------
@@ -63,41 +63,41 @@ def add_argument_space(
 
     Notes
     -----
-    Argument `space` is of type :class:`str`.
+    Argument `scale` is of type :class:`str`.
     """
     parser.add_argument(
-        "--space",
+        "-s", "--scale",
         type=str,
         required=True,
-        help=f"""one of {SPACES}"""
+        help=f"""one of {SCALES}"""
     )
 
 
-def argument_space_is_in_spaces(
-    space: str,
+def argument_scale_is_in_scales(
+    scale: str,
     *,
     loud:   bool = False
 ) -> bool:
     """
-    Validates `space`.
+    Validates `scale`.
 
     Parameters
     ----------
-    space : :class:`str`
-        The argument `space`
+    scale : :class:`str`
+        The argument `scale`
 
     loud : bool
         If `True`, prints an error message to stdout. default=False
 
     Returns
     -------
-    `True` if `space` is in `SPACES`. `False` otherwise.
+    `True` if `scale` is in `SCALES`. `False` otherwise.
     """
-    if space in SPACES:
+    if scale in SCALES:
         return True
 
     if loud:
-        print(f"""error: argument space: not in {SPACES}: {space}""")
+        print(f"""error: argument scale: not in {SCALES}: {scale}""")
 
     return False
 
@@ -116,7 +116,7 @@ def build_parser(
     add_argument_esacci_lakes_hylak_fields_csv_path(parser)
 
     # Optinal arguments
-    add_argument_space(parser)
+    add_argument_scale(parser)
 
     return parser
 
@@ -140,6 +140,12 @@ def arguments_are_valid(
 
     if not argument_esacci_lakes_hylak_fields_csv_path_exists(
         args.esacci_lakes_hylak_fields_csv_path,
+        loud=True
+    ):
+        return False
+
+    if not argument_scale_is_in_scales(
+        args.scale,
         loud=True
     ):
         return False
@@ -440,11 +446,11 @@ def main(
         gridspec_kw={"height_ratios": [3, 1]}
     )
 
-    if args.space == "log":
+    if args.scale == "log":
         plot_hylak_field_histogram = plot_ser_histogram_log
         set_ax_xscale              = set_ax_xscale_to_log
         title                      = f"""Log Distribution of {HYLAK_FIELDS[args.hylak_field].long_name}"""
-    elif args.space == "lin":
+    elif args.scale == "lin":
         plot_hylak_field_histogram = plot_ser_histogram_lin
         set_ax_xscale              = set_ax_xscale_to_lin
         title                      = f"""Lin Distribution of {HYLAK_FIELDS[args.hylak_field].long_name}"""
