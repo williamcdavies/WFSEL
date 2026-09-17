@@ -213,10 +213,11 @@ def force_ax_ytick_visibility(
 
 def save_figure(
     figure: plt.Figure, # type: ignore
-    prog:   str
+    prog:   str,
+    time:   datetime
 ) -> None:
     """
-    Saves `figure` to `data/dv/{prog}/`.
+    Saves `figure` to `data/dv/{prog}/`, named by `time`.
 
     Parameters
     ----------
@@ -226,12 +227,15 @@ def save_figure(
     prog : :class:`str`
         The program name
 
+    time : :class:`datetime.datetime`
+        The time to name the file with
+
     Returns
     -------
     None
     """
-    timestamp = datetime.now().strftime("%y%j_%H%M%S%f")
-    fdir      = Path(f"data/dv/{prog}")
+    fdir  = Path(f"data/dv/{prog}")
+    fname = time.strftime("%y_%j_%H_%M_%S_%f")
 
     fdir.mkdir(
         parents=True,
@@ -239,7 +243,7 @@ def save_figure(
     )
 
     figure.savefig(
-        f"{fdir}/{timestamp}.png",
+        fdir / fname,
         dpi=300,
         bbox_inches="tight"
     )
