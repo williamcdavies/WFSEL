@@ -1,5 +1,5 @@
 r"""
-view_distribution_of_hylak_field.py
+view_distribution_of_esacci_lakes_hylak_field.py
 
 Written by William Chuter-Davies
 """
@@ -8,12 +8,13 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from typing import Callable
+from datetime                  import datetime
+from typing                    import Callable
 
 # Related Third-party Imports
-import matplotlib.pyplot as plt
-import numpy             as np
-import pandas            as pd
+import matplotlib.pyplot       as plt
+import numpy                   as np
+import pandas                  as pd
 
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.utils.io import (
@@ -35,12 +36,16 @@ from lib.math.utils            import (
 from lib.math.vars             import SPACES
 from lib.plot.utils            import (
     set_ax_xscale_to_lin,
-    set_ax_xscale_to_log
+    set_ax_xscale_to_log,
+    save_figure
 )
 
-PROG = "view_distribution_of_hylak_field.py"
+PROG = "view_distribution_of_esacci_lakes_hylak_field.py"
+TIME = datetime.now()
 
 
+# Argument functions
+# ==================================================================================================
 def add_argument_space(
     parser: argparse.ArgumentParser
 ) -> None:
@@ -98,14 +103,8 @@ def argument_space_is_in_spaces(
 
 
 def build_parser(
+    prog: str
 ) -> argparse.ArgumentParser:
-    """
-    Builds a :class:`ArgumentParser`.
-
-    Returns
-    -------
-    A :class:`ArgumentParser`.
-    """
     parser = argparse.ArgumentParser(
         prog=PROG,
         usage="%(prog)s [options]",
@@ -148,6 +147,11 @@ def arguments_are_valid(
     return True
 
 
+# ==================================================================================================
+
+
+# Plot functions
+# ==================================================================================================
 def plot_ser_histogram_lin(
     ax:  plt.Axes, # type: ignore
     ser: pd.Series
@@ -402,16 +406,15 @@ def set_box_ax_properties(
     set_ax_xscale(box_ax)
 
 
+# ==================================================================================================
+
+
 def main(
 ) -> int:
     """
     Orchestration layer.
-
-    Returns
-    -------
-    0 if program completes successfully. 1 otherwise.
     """
-    args = build_parser().parse_args()
+    args = build_parser(PROG).parse_args()
 
     if not arguments_are_valid(args): 
         return RETURN_FAILURE
@@ -472,8 +475,12 @@ def main(
     fig.suptitle(title)
 
     hist_ax.legend()
-    plt.tight_layout()
-    plt.show()
+
+    save_figure(
+        fig,
+        PROG,
+        TIME
+    )
 
     return RETURN_SUCCESS
 

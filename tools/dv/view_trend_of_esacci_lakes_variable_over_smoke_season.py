@@ -362,7 +362,7 @@ def arguments_are_valid(
 # ==================================================================================================
 
 
-# Lake data functions
+# Data functions
 # ==================================================================================================
 def convert_lakes_df_units_from_kelvin_to_celsius(
     lakes_df: pd.DataFrame

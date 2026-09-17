@@ -8,20 +8,23 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
+from datetime           import datetime
+from pathlib            import Path
+
 # Related Third-party Imports
 import geopandas         as gpd
 import matplotlib.pyplot as plt
 import sqlalchemy
 
 # Local Application/Library Specific Imports
-from lib.db.utils  import get_gdf_from_postgis
-from lib.geo.utils import join_gdfs_on_within
-from lib.geo.vars  import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
-from lib.io.vars   import (
+from lib.db.utils        import get_gdf_from_postgis
+from lib.geo.utils       import join_gdfs_on_within
+from lib.geo.vars        import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
+from lib.io.vars         import (
     RETURN_FAILURE,
     RETURN_SUCCESS
 )
-from lib.plot.utils import (
+from lib.plot.utils      import (
     set_ax_xlim_to_gdf_total_bounds,
     set_ax_ylim_to_gdf_total_bounds,
     set_ax_xticks_to_empty_list,
@@ -30,8 +33,11 @@ from lib.plot.utils import (
 )
 
 PROG = "view_map_of_hylak_lakes_within_us_states.py"
+TIME = datetime.now()
 
 
+# Argument functions
+# ==================================================================================================
 def add_argument_stusps(
     parser: argparse.ArgumentParser
 ) -> None:
@@ -126,6 +132,11 @@ def arguments_are_valid(
     return True
 
 
+# ==================================================================================================
+
+
+# Data functions
+# ==================================================================================================
 def get_lakes_gdf(
     connection: sqlalchemy.Connection
 ) -> gpd.GeoDataFrame:
@@ -216,6 +227,11 @@ def filter_gdf_by_stusps(
     return gdf[gdf["stusps"].isin(stusps)]
 
 
+# ==================================================================================================
+
+
+# Plot functions
+# ==================================================================================================
 def plot_states_gdf(
     ax:         plt.Axes, # type: ignore
     states_gdf: gpd.GeoDataFrame
@@ -368,6 +384,9 @@ def set_ax_properties(
     set_ax_yticks_to_empty_list(ax)
 
 
+# ==================================================================================================
+
+
 def main(
 ) -> int:
     """
@@ -411,7 +430,8 @@ def main(
 
     save_figure(
         fig,
-        PROG
+        PROG,
+        TIME
     )
 
     return RETURN_SUCCESS
