@@ -44,11 +44,11 @@ from lib.plot.utils              import (
     save_figure
 )
 
-PROG            = "view_trend_of_esacci_lakes_variable_over_smoke_season.py"
-TIME            = datetime.now()
-REPRESENTATIONS = [
-    "none",
-    "anomaly"
+PROG  = "view_trend_of_esacci_lakes_variable_over_smoke_season.py"
+TIME  = datetime.now()
+FORMS = [
+    "Absolute",
+    "Anomaly"
 ]
 
 
@@ -219,11 +219,11 @@ def read_esacci_lakes_variable_over_low_smoke_season_csv(
     )
 
 
-def add_argument_representation(
+def add_argument_form(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `representation` argument to a :class:`ArgumentParser`.
+    Adds a `form` argument to a :class:`ArgumentParser`.
 
     Parameters
     ----------
@@ -236,43 +236,42 @@ def add_argument_representation(
 
     Notes
     -----
-    Argument `representation` is of type :class:`str`.
+    Argument `form` is of type :class:`str`.
     """
     parser.add_argument(
-        "--representation",
-        default="none",
+        "-f", "--form",
+        default="Absolute",
         type=str,
-        choices=REPRESENTATIONS,
-        help="""the representation of the input data. default=none"""
+        choices=FORMS,
+        help="""the form of the input data. default=Absolute"""
     )
 
 
-def argument_representation_is_in_representations(
-    representation: str,
+def argument_form_is_in_forms(
+    form: str,
     *,
-    loud:           bool = False
+    loud: bool = False
 ) -> bool:
     """
-    Validates `representation`.
+    Validates `form`.
 
     Parameters
     ----------
-    representation : :class:`str`
-        The argument `representation`
+    form : :class:`str`
+        The argument `form`
 
     loud : bool
         If `True`, prints an error message to stdout. default=False
 
     Returns
     -------
-    `True` if `representation` is in `REPRESENTATIONS`. `False`
-    otherwise.
+    `True` if `form` is in `FORMS`. `False` otherwise.
     """
-    if representation in REPRESENTATIONS:
+    if form in FORMS:
         return True
 
     if loud:
-        print(f"""error: argument representation: not in {REPRESENTATIONS}: {representation}""")
+        print(f"""error: argument form: not in {FORMS}: {form}""")
 
     return False
 
@@ -304,7 +303,9 @@ def build_parser(
     add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(parser)
     add_argument_hylak_field(parser)
     add_argument_esacci_lakes_hylak_fields_csv_path(parser)
-    add_argument_representation(parser)
+
+    # Optional arguments
+    add_argument_form(parser)
 
     return parser
 
@@ -350,8 +351,8 @@ def arguments_are_valid(
     ):
         return False
 
-    if not argument_representation_is_in_representations(
-        args.representation,
+    if not argument_form_is_in_forms(
+        args.form,
         loud=True
     ):
         return False
@@ -640,38 +641,22 @@ def get_lakes_medians_df(
 
 # Write functions
 # ==================================================================================================
-def write_lakes_medians_df_to_csv(
-    medians_df: pd.DataFrame,
-    prog:       str,
-    time:       datetime
+def write_df_to_csv(
+    df:   pd.DataFrame,
+    prog: str,
+    time: datetime,
+    *,
+    suffix: str = ""
 ) -> None:
-    """
-    Writes `medians_df` to `data/dv/{prog}/`, named by `time`.
-
-    Parameters
-    ----------
-    medians_df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`, as returned by `get_lakes_medians_df`
-
-    prog : :class:`str`
-        The program name
-
-    time : :class:`datetime.datetime`
-        The time to name the file with
-
-    Returns
-    -------
-    None
-    """
     fdir  = Path(f"data/dv/{prog}")
-    fname = time.strftime("%y_%j_%H_%M_%S_%f_medians.csv")
+    fname = f"{time.strftime('%y_%j_%H_%M_%S')}_{suffix}.csv" if suffix else f"{time.strftime('%y_%j_%H_%M_%S')}.csv"
 
     fdir.mkdir(
         parents=True,
         exist_ok=True
     )
 
-    medians_df.to_csv(fdir / fname)
+    df.to_csv(fdir / fname)
 
 
 # ==================================================================================================
@@ -938,7 +923,7 @@ def set_upper_bounds_lakes_ax_properties(
     upper_bounds_lakes_ax: plt.Axes, # type: ignore
     esacci_lakes_variable: str,
     hylak_field:           str,
-    representation:        str
+    form:                  str
 ) -> None:
     """
     Sets `upper_bounds_lakes_ax`'s properties, including its title,
@@ -956,8 +941,8 @@ def set_upper_bounds_lakes_ax_properties(
     hylak_field : :class:`str`
         The HydroLAKES field id
 
-    representation : :class:`str`
-        The representation of the input data. One of `REPRESENTATIONS`
+    form : :class:`str`
+        The form of the input data. One of `FORMS`
 
     Returns
     -------
@@ -970,11 +955,11 @@ def set_upper_bounds_lakes_ax_properties(
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
     hylak_field_upper_bound         = HYLAK_FIELDS[hylak_field].upper_bound
     hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale # type: ignore
-    representation_qualifier        = " Anomaly" if representation == "anomaly" else ""
+    form_qualifier        = "" if form == "Absolute" else f" {form}"
 
-    upper_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{representation_qualifier} for lakes with {hylak_field_long_name} >= {hylak_field_upper_bound_display:g} {hylak_field_display_units}""")
+    upper_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} >= {hylak_field_upper_bound_display:g} {hylak_field_display_units}""")
     upper_bounds_lakes_ax.set_xlabel("Week relative to start of smoke season")
-    upper_bounds_lakes_ax.set_ylabel(f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){representation_qualifier}""")
+    upper_bounds_lakes_ax.set_ylabel(f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""")
     upper_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
     force_ax_xtick_visibility(upper_bounds_lakes_ax)
@@ -984,7 +969,7 @@ def set_middle_bounds_lakes_ax_properties(
     middle_bounds_lakes_ax: plt.Axes, # type: ignore
     esacci_lakes_variable:  str,
     hylak_field:            str,
-    representation:         str
+    form:                   str
 ) -> None:
     """
     Sets `middle_bounds_lakes_ax`'s properties, including its title,
@@ -1002,8 +987,8 @@ def set_middle_bounds_lakes_ax_properties(
     hylak_field : :class:`str`
         The HydroLAKES field id
 
-    representation : :class:`str`
-        The representation of the input data. One of `REPRESENTATIONS`
+    form : :class:`str`
+        The form of the input data. One of `FORMS`
 
     Returns
     -------
@@ -1018,11 +1003,11 @@ def set_middle_bounds_lakes_ax_properties(
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
     hylak_field_lower_bound_display = hylak_field_lower_bound / hylak_field_display_scale # type: ignore
     hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale # type: ignore
-    representation_qualifier        = " Anomaly" if representation == "anomaly" else ""
+    form_qualifier        = "" if form == "Absolute" else f" {form}"
 
-    middle_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{representation_qualifier} for lakes with {hylak_field_long_name} between {hylak_field_lower_bound_display:g} {hylak_field_display_units} and {hylak_field_upper_bound_display:g} {hylak_field_display_units}""")
+    middle_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} between {hylak_field_lower_bound_display:g} {hylak_field_display_units} and {hylak_field_upper_bound_display:g} {hylak_field_display_units}""")
     middle_bounds_lakes_ax.set_xlabel("Week relative to start of smoke season")
-    middle_bounds_lakes_ax.set_ylabel(f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){representation_qualifier}""")
+    middle_bounds_lakes_ax.set_ylabel(f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""")
     middle_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
     force_ax_xtick_visibility(middle_bounds_lakes_ax)
@@ -1032,7 +1017,7 @@ def set_lower_bounds_lakes_ax_properties(
     lower_bounds_lakes_ax: plt.Axes, # type: ignore
     esacci_lakes_variable: str,
     hylak_field:           str,
-    representation:        str
+    form:                  str
 ) -> None:
     """
     Sets `lower_bounds_lakes_ax`'s properties, including its title,
@@ -1050,8 +1035,8 @@ def set_lower_bounds_lakes_ax_properties(
     hylak_field : :class:`str`
         The HydroLAKES field id
 
-    representation : :class:`str`
-        The representation of the input data. One of `REPRESENTATIONS`
+    form : :class:`str`
+        The form of the input data. One of `FORMS`
 
     Returns
     -------
@@ -1064,11 +1049,11 @@ def set_lower_bounds_lakes_ax_properties(
     hylak_field_display_units       = HYLAK_FIELDS[hylak_field].display_units or HYLAK_FIELDS[hylak_field].units
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
     hylak_field_lower_bound_display = hylak_field_lower_bound / hylak_field_display_scale # type: ignore
-    representation_qualifier        = " Anomaly" if representation == "anomaly" else ""
+    form_qualifier        = "" if form == "Absolute" else f" {form}"
 
-    lower_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{representation_qualifier} for lakes with {hylak_field_long_name} <= {hylak_field_lower_bound_display:g} {hylak_field_display_units}""")
+    lower_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} <= {hylak_field_lower_bound_display:g} {hylak_field_display_units}""")
     lower_bounds_lakes_ax.set_xlabel("Week relative to start of smoke season")
-    lower_bounds_lakes_ax.set_ylabel(f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){representation_qualifier}""")
+    lower_bounds_lakes_ax.set_ylabel(f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""")
     lower_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
     force_ax_xtick_visibility(lower_bounds_lakes_ax)
@@ -1092,7 +1077,7 @@ def main(
     hylak_fields_df                    = read_esacci_lakes_hylak_fields_csv(args.esacci_lakes_hylak_fields_csv_path)
 
     if (
-        args.representation == "none"
+        args.form == "Absolute"
         and args.esacci_lakes_variable == "lake_surface_water_temperature"
     ):
         variable_over_high_smoke_season_df = convert_lakes_df_units_from_kelvin_to_celsius(variable_over_high_smoke_season_df)
@@ -1148,12 +1133,6 @@ def main(
         lower_low_lakes_medians_ser=lower_low_lakes_medians_ser
     )
 
-    write_lakes_medians_df_to_csv(
-        lakes_medians_df,
-        PROG,
-        TIME
-    )
-
     fig, (
         upper_bounds_lakes_ax,
         middle_bounds_lakes_ax,
@@ -1193,19 +1172,19 @@ def main(
         upper_bounds_lakes_ax,
         args.esacci_lakes_variable,
         args.hylak_field,
-        args.representation
+        args.form
     )
     set_middle_bounds_lakes_ax_properties(
         middle_bounds_lakes_ax,
         args.esacci_lakes_variable,
         args.hylak_field,
-        args.representation
+        args.form
     )
     set_lower_bounds_lakes_ax_properties(
         lower_bounds_lakes_ax,
         args.esacci_lakes_variable,
         args.hylak_field,
-        args.representation
+        args.form
     )
 
     upper_bounds_lakes_ax.legend()
@@ -1216,6 +1195,49 @@ def main(
         fig,
         PROG,
         TIME
+    )
+
+    write_df_to_csv(
+        upper_high_lakes_df,
+        PROG,
+        TIME,
+        suffix="upper_high"
+    )
+    write_df_to_csv(
+        upper_low_lakes_df,
+        PROG,
+        TIME,
+        suffix="upper_low"
+    )
+    write_df_to_csv(
+        middle_high_lakes_df,
+        PROG,
+        TIME,
+        suffix="middle_high"
+    )
+    write_df_to_csv(
+        middle_low_lakes_df,
+        PROG,
+        TIME,
+        suffix="middle_low"
+    )
+    write_df_to_csv(
+        lower_high_lakes_df,
+        PROG,
+        TIME,
+        suffix="lower_high"
+    )
+    write_df_to_csv(
+        lower_low_lakes_df,
+        PROG,
+        TIME,
+        suffix="lower_low"
+    )
+    write_df_to_csv(
+        lakes_medians_df,
+        PROG,
+        TIME,
+        suffix="medians"
     )
 
     return RETURN_SUCCESS
