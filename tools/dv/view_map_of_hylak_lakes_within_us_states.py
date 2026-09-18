@@ -9,7 +9,6 @@ import argparse
 import sys
 
 from datetime            import datetime
-from pathlib             import Path
 
 # Related Third-party Imports
 import geopandas         as gpd
@@ -59,10 +58,10 @@ def add_argument_stusps(
     """
     parser.add_argument(
         "--stusps",
-        nargs="+",
-        type=str,
-        required=True,
-        help="""one or more of two-letter state and possession abbreviations as defined in Mailing Standards of the United States Postal Service Publication 28 - Postal Addressing Standards"""
+        nargs    = "+",
+        type     = str,
+        required = True,
+        help     = """one or more of two-letter state and possession abbreviations as defined in Mailing Standards of the United States Postal Service Publication 28 - Postal Addressing Standards"""
     )
 
 
@@ -100,10 +99,22 @@ def argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
 def build_parser(
     prog: str
 ) -> argparse.ArgumentParser:
+    """
+    Builds a :class:`ArgumentParser`.
+
+    Parameters
+    ----------
+    prog : :class:`str`
+        The program name
+
+    Returns
+    -------
+    A :class:`ArgumentParser`.
+    """
     parser = argparse.ArgumentParser(
-        prog=PROG,
-        usage="%(prog)s [options]",
-        description="""Produces a map visualisation of all lakes in spatial.hylak_points (Same lakes as provided by HYDROLakes v1.0) within a set of U.S. states."""
+        prog        = PROG,
+        usage       = "%(prog)s [options]",
+        description = """Produces a map visualisation of all lakes in spatial.hylak_points (Same lakes as provided by HYDROLakes v1.0) within a set of U.S. states."""
     )
 
     # Optional arguments
@@ -125,7 +136,7 @@ def arguments_are_valid(
     """
     if not argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
         args.stusps,
-        loud=True
+        loud = True
     ):
         return False
 
@@ -252,9 +263,9 @@ def plot_states_gdf(
     None
     """
     states_gdf.plot(
-        ax=ax,
-        facecolor="#FFFFFF",
-        edgecolor="#000000"
+        ax        = ax,
+        facecolor = "#FFFFFF",
+        edgecolor = "#000000"
     )
 
 
@@ -278,9 +289,9 @@ def plot_target_states_gdf(
     None
     """
     target_states_gdf.plot(
-        ax=ax,
-        facecolor="#A9C8E9",
-        edgecolor="#000000"
+        ax        = ax,
+        facecolor = "#A9C8E9",
+        edgecolor = "#000000"
     )
 
 
@@ -304,14 +315,15 @@ def plot_target_lakes_gdf(
     None
     """
     target_lakes_gdf.plot(
-        ax=ax,
-        color="#000000",
-        markersize=2
+        ax         = ax,
+        color      = "#000000",
+        markersize = 2
     )
 
 
 def plot_on_ax(
     ax:                plt.Axes, # type: ignore
+    *,
     states_gdf:        gpd.GeoDataFrame,
     target_states_gdf: gpd.GeoDataFrame,
     target_lakes_gdf:  gpd.GeoDataFrame
@@ -354,6 +366,7 @@ def plot_on_ax(
 
 def set_ax_properties(
     ax:                plt.Axes, # type: ignore
+    *,
     target_states_gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -418,14 +431,14 @@ def main(
 
     plot_on_ax(
         ax,
-        states_gdf,
-        target_states_gdf,
-        target_lakes_gdf
+        states_gdf        = states_gdf,
+        target_states_gdf = target_states_gdf,
+        target_lakes_gdf  = target_lakes_gdf
     )
     
     set_ax_properties(
         ax,
-        target_states_gdf
+        target_states_gdf = target_states_gdf
     )
 
     save_figure(

@@ -14,6 +14,36 @@ import re
 import pandas as pd
 
 
+def normalise_df(
+    df:     pd.DataFrame,
+    column: str
+) -> pd.DataFrame:
+    """
+    Returns `df` with every column subtracted by `column`.
+
+    Parameters
+    ----------
+    df : :class:`pandas.DataFrame`
+        The :class:`pandas.DataFrame`
+
+    column : :class:`str`
+        The column to subtract from every column, row-wise
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+
+    Notes
+    -----
+    Internal `pandas.DataFrame.sub` call assumes `column` is an
+    existing column in `df`.
+    """
+    return df.sub(
+        df[column],
+        axis = 0
+    )
+
+
 def drop_column_from_df(
     df:     pd.DataFrame,
     column: str
@@ -33,7 +63,7 @@ def drop_column_from_df(
     -------
     A :class:`pandas.DataFrame`.
     """
-    return df.drop(columns=[column])
+    return df.drop(columns = [column])
 
 
 def filter_df_by_column_bounds(
@@ -81,7 +111,7 @@ def filter_df_by_column_bounds(
 
 
 def intersect_dfs_by_columns(
-    left_df: pd.DataFrame,
+    left_df:  pd.DataFrame,
     right_df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
@@ -107,7 +137,7 @@ def intersect_dfs_by_columns(
 
 
 def intersect_dfs_by_rows(
-    left_df: pd.DataFrame,
+    left_df:  pd.DataFrame,
     right_df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
@@ -177,36 +207,6 @@ def intersect_dfs_by_cells(
     return left_df.where(combined_mask), right_df.where(combined_mask)
 
 
-def normalise_df(
-    df:     pd.DataFrame,
-    column: str
-) -> pd.DataFrame:
-    """
-    Returns `df` with every column subtracted by `column`.
-
-    Parameters
-    ----------
-    df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
-
-    column : :class:`str`
-        The column to subtract from every column, row-wise
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-
-    Notes
-    -----
-    Internal `pandas.DataFrame.sub` call assumes `column` is an
-    existing column in `df`.
-    """
-    return df.sub(
-        df[column],
-        axis=0
-    )
-
-
 def sort_df_columns_alphabetically(
     df: pd.DataFrame
 ) -> pd.DataFrame:
@@ -222,7 +222,7 @@ def sort_df_columns_alphabetically(
     -------
     A :class:`pandas.DataFrame`.
     """
-    return df.sort_index(axis='columns')
+    return df.sort_index(axis = 'columns')
 
 
 def sort_df_columns_numerically(
@@ -255,10 +255,10 @@ def sort_df_columns_numerically(
 
     columns = sorted(
         df.columns,
-        key=_key
+        key = _key
     )
 
-    return df.reindex(columns=columns)
+    return df.reindex(columns = columns)
 
 
 def get_ser_from_df(

@@ -17,7 +17,7 @@ import xarray as xr
 from lib.geo.objects import GeoBoundingBox
 
 
-def get_geo_bounding_box_from_static_lake_mask(
+def get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
     esacci_lakes_metadata:            Any,
     esacci_lakes_static_lake_mask_ds: xr.Dataset
 ) -> GeoBoundingBox:
@@ -55,26 +55,26 @@ def get_geo_bounding_box_from_static_lake_mask(
     return GeoBoundingBox(
         esacci_lakes_static_lake_mask_ds["lat"]
         .sel(
-            lat=esacci_lakes_metadata.lat_max_box,
-            method="nearest"
+            lat    = esacci_lakes_metadata.lat_max_box,
+            method = "nearest"
         )
         .item(),
         esacci_lakes_static_lake_mask_ds["lat"]
         .sel(
-            lat=esacci_lakes_metadata.lat_min_box,
-            method="nearest"
+            lat    = esacci_lakes_metadata.lat_min_box,
+            method = "nearest"
         )
         .item(),
         esacci_lakes_static_lake_mask_ds["lon"]
         .sel(
-            lon=esacci_lakes_metadata.lon_max_box,
-            method="nearest"
+            lon    = esacci_lakes_metadata.lon_max_box,
+            method = "nearest"
         )
         .item(),
         esacci_lakes_static_lake_mask_ds["lon"]
         .sel(
-            lon=esacci_lakes_metadata.lon_min_box,
-            method="nearest"
+            lon    = esacci_lakes_metadata.lon_min_box,
+            method = "nearest"
         )
         .item()
     )

@@ -45,8 +45,8 @@ def add_argument_nc_path(
     """
     parser.add_argument(
         "nc_path",
-        type=Path,
-        help="""path to some netCDF file"""
+        type = Path,
+        help = """path to some netCDF file"""
     )
 
 
@@ -95,9 +95,9 @@ def build_parser(
     A :class:`ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
-        prog=prog,
-        usage="%(prog)s [options]",
-        description="""Prints netCDF file metadata to `sys.stdout`."""
+        prog        = prog,
+        usage       = "%(prog)s [options]",
+        description = """Prints netCDF file metadata to `sys.stdout`."""
     )
 
     # Positional arguments
@@ -119,7 +119,7 @@ def arguments_are_valid(
     """
     if not argument_nc_path_exists(
         args.nc_path,
-        loud=True
+        loud = True
     ):
         return False
 

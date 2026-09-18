@@ -106,7 +106,7 @@ def set_ax_xscale_to_lin(
     -------
     None
     """
-    ax.set_xscale("lin")
+    ax.set_xscale("linear")
 
 
 def set_ax_xscale_to_log(
@@ -238,12 +238,12 @@ def save_figure(
     fname = time.strftime("%y_%j_%H_%M_%S_%f")
 
     fdir.mkdir(
-        parents=True,
-        exist_ok=True
+        parents  = True,
+        exist_ok = True
     )
 
     figure.savefig(
         fdir / fname,
-        dpi=300,
-        bbox_inches="tight"
+        dpi         = 300,
+        bbox_inches = "tight"
     )

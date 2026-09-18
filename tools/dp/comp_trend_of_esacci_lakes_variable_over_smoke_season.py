@@ -34,10 +34,10 @@ from lib.esacci_lakes.utils.io import (
     read_esacci_lakes_counts_of_distinct_start_days_csv
 )
 from lib.math.utils            import (
+    normalise_df,
     filter_df_by_column_bounds,
     intersect_dfs_by_columns,
     intersect_dfs_by_cells,
-    normalise_df,
     sort_df_columns_numerically
 )
 from lib.esacci_lakes.vars     import (
@@ -76,9 +76,9 @@ def build_parser(
     A :class:`ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
-        prog=prog,
-        usage="%(prog)s [options]",
-        description=""""""
+        prog        = prog,
+        usage       = "%(prog)s [options]",
+        description = """"""
     )
 
     # Positional arguments
@@ -103,25 +103,25 @@ def arguments_are_valid(
     """
     if not argument_esacci_lakes_variable_is_in_esacci_lakes_variables(
         args.esacci_lakes_variable,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_local_data_dir_path_exists(
         args.local_data_dir_path,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_esacci_lakes_metadata_csv_path_exists(
         args.esacci_lakes_metadata_csv_path,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
         args.esacci_lakes_counts_of_distinct_start_days_csv_path,
-        loud=True
+        loud = True
     ):
         return False
 
@@ -137,8 +137,8 @@ def get_esacci_lakes_most_recent_smoke_year(
     esacci_lakes_id:                               int,
     esacci_lakes_counts_of_distinct_start_days_df: pd.DataFrame,
     *,
-    lower_bound: float | None = None,
-    upper_bound: float | None = None
+    lower_bound:                                   float | None = None,
+    upper_bound:                                   float | None = None
 ) -> str | None:
     """
     Returns `esacci_lakes_id`'s most recent year whose count of distinct
@@ -196,8 +196,8 @@ def get_esacci_lakes_most_recent_smoke_years_ser(
     esacci_lakes_metadata_df:                      pd.DataFrame,
     esacci_lakes_counts_of_distinct_start_days_df: pd.DataFrame,
     *,
-    lower_bound: float | None = None,
-    upper_bound: float | None = None
+    lower_bound:                                   float | None = None,
+    upper_bound:                                   float | None = None
 ) -> pd.Series:
     """
     Returns a :class:`pandas.Series` of each lake's most recent year
@@ -229,8 +229,8 @@ def get_esacci_lakes_most_recent_smoke_years_ser(
             id_: get_esacci_lakes_most_recent_smoke_year(
                 id_,
                 esacci_lakes_counts_of_distinct_start_days_df,
-                lower_bound=lower_bound,
-                upper_bound=upper_bound
+                lower_bound = lower_bound,
+                upper_bound = upper_bound
             )
             for id_
             in esacci_lakes_metadata_df.index
@@ -262,7 +262,7 @@ def get_esacci_lakes_most_recent_high_smoke_years_ser(
     return get_esacci_lakes_most_recent_smoke_years_ser(
         esacci_lakes_metadata_df,
         esacci_lakes_counts_of_distinct_start_days_df,
-        lower_bound=COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
+        lower_bound = COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
     )
 
 
@@ -290,7 +290,7 @@ def get_esacci_lakes_most_recent_low_smoke_years_ser(
     return get_esacci_lakes_most_recent_smoke_years_ser(
         esacci_lakes_metadata_df,
         esacci_lakes_counts_of_distinct_start_days_df,
-        upper_bound=COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND
+        upper_bound = COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND
     )
 
 
@@ -300,7 +300,8 @@ def get_esacci_lakes_most_recent_low_smoke_years_ser(
 # Smoke season functions
 # ==================================================================================================
 def get_esacci_lakes_distinct_start_days_ser(
-    cur:             psycopg.Cursor,
+    cursor:          psycopg.Cursor,
+    *,
     esacci_lakes_id: int,
     year:            str
 ) -> pd.Series:
@@ -310,7 +311,7 @@ def get_esacci_lakes_distinct_start_days_ser(
 
     Parameters
     ----------
-    cur : :class:`psycopg.Cursor`
+    cursor : :class:`psycopg.Cursor`
         The cursor
 
     esacci_lakes_id : int
@@ -330,7 +331,7 @@ def get_esacci_lakes_distinct_start_days_ser(
     """
     query = COUNT_OF_DISTINCT_START_DAYS_QUERY.format(table=sql.Identifier(f"hms_smokes{year}"))
 
-    cur.execute(
+    cursor.execute(
         query,
         params={
             "id": esacci_lakes_id
@@ -341,23 +342,23 @@ def get_esacci_lakes_distinct_start_days_ser(
         [
             record[0]
             for record
-            in cur.fetchall()
+            in cursor.fetchall()
         ]
     )
 
 
 def get_period_idx(
-    day:                        int,
+    day_i:                      int,
     day_0:                      int,
     number_of_days_in_a_period: int
 ) -> int:
     """
-    Returns the index of the period containing `day`, relative to
+    Returns the index of the period containing `day_i`, relative to
     `day_0`.
 
     Parameters
     ----------
-    day : int
+    day_i : int
         The day to find the period index for
 
     day_0 : int
@@ -370,7 +371,7 @@ def get_period_idx(
     -------
     The period index.
     """
-    return (day - day_0) // number_of_days_in_a_period
+    return (day_i - day_0) // number_of_days_in_a_period
 
 
 def get_first_day_of_smoke_season(
@@ -495,7 +496,8 @@ def get_last_day_of_interest(
 
 
 def get_esacci_lakes_smoke_season_ranges_df(
-    conn:                         psycopg.Connection,
+    connection:                   psycopg.Connection,
+    *,
     esacci_lakes_metadata_df:     pd.DataFrame,
     esacci_lakes_smoke_years_ser: pd.Series
 ) -> pd.DataFrame:
@@ -505,7 +507,7 @@ def get_esacci_lakes_smoke_season_ranges_df(
 
     Parameters
     ----------
-    conn : :class:`psycopg.Connection`
+    connection : :class:`psycopg.Connection`
         The connection
 
     esacci_lakes_metadata_df : :class:`pandas.DataFrame`
@@ -537,11 +539,11 @@ def get_esacci_lakes_smoke_season_ranges_df(
             day_of_smoke_season_0 = -1
             day_of_smoke_season_n = -1
         else:
-            with conn.cursor() as cur:
+            with connection.cursor() as cur:
                 distinct_start_days_ser = get_esacci_lakes_distinct_start_days_ser(
                     cur,
-                    id_,
-                    smoke_year
+                    esacci_lakes_id = id_,
+                    year            = smoke_year
                 )
 
             day_of_smoke_season_0 = get_first_day_of_smoke_season(distinct_start_days_ser)
@@ -608,7 +610,7 @@ def get_esacci_lakes_interest_ranges_df(
                 NUMBER_OF_DAYS_IN_A_PERIOD
             )
 
-        record                       = {"esacci_lakes_id": id_}
+        record                      = {"esacci_lakes_id": id_}
         record["day_of_interest_0"] = day_of_interest_0
         record["day_of_interest_n"] = day_of_interest_n
 
@@ -664,6 +666,7 @@ def get_local_data_csv_paths_by_year(
 def get_esacci_lakes_variable_values_by_period_idx(
     esacci_lakes_id:            int,
     esacci_lakes_variable:      str,
+    *,
     local_data_csv_paths:       list[Path],
     day_of_interest_0:          int,
     day_of_interest_n:          int,
@@ -731,7 +734,7 @@ def get_esacci_lakes_variable_values_by_period_idx(
         local_data_df = filter_df_by_column_bounds(
             local_data_df,
             "coverage",
-            lower=50
+            lower = 50
         )
 
         if esacci_lakes_id in local_data_df.index:
@@ -770,6 +773,7 @@ def get_esacci_lakes_variable_mean_by_period_idx(
 def get_esacci_lakes_variable_means_ser(
     esacci_lakes_id:        int,
     esacci_lakes_variable:  str,
+    *,
     most_recent_smoke_year: str,
     day_of_interest_0:      int,
     day_of_interest_n:      int,
@@ -813,10 +817,10 @@ def get_esacci_lakes_variable_means_ser(
     variable_values_by_period_idx = get_esacci_lakes_variable_values_by_period_idx(
         esacci_lakes_id,
         esacci_lakes_variable,
-        local_data_csv_paths,
-        day_of_interest_0,
-        day_of_interest_n,
-        NUMBER_OF_DAYS_IN_A_PERIOD
+        local_data_csv_paths       = local_data_csv_paths,
+        day_of_interest_0          = day_of_interest_0,
+        day_of_interest_n          = day_of_interest_n,
+        number_of_days_in_a_period = NUMBER_OF_DAYS_IN_A_PERIOD
     )
     variable_mean_by_period_idx = get_esacci_lakes_variable_mean_by_period_idx(variable_values_by_period_idx)
 
@@ -832,6 +836,7 @@ def get_esacci_lakes_variable_means_ser(
 def get_esacci_lakes_variable_over_smoke_season_df(
     esacci_lakes_metadata_df:                 pd.DataFrame,
     esacci_lakes_variable:                    str,
+    *,
     esacci_lakes_most_recent_smoke_years_ser: pd.Series,
     esacci_lakes_interest_ranges_df:          pd.DataFrame,
     local_data_dir_path:                      Path
@@ -843,7 +848,7 @@ def get_esacci_lakes_variable_over_smoke_season_df(
     Parameters
     ----------
     esacci_lakes_metadata_df : :class:`pandas.DataFrame`
-            The :class:`pandas.DataFrame`
+        The :class:`pandas.DataFrame`
 
     esacci_lakes_variable : :class:`str`
         The ESA CCI Lakes variable id
@@ -886,10 +891,10 @@ def get_esacci_lakes_variable_over_smoke_season_df(
             variable_means_ser = get_esacci_lakes_variable_means_ser(
                 id_,
                 esacci_lakes_variable,
-                most_recent_smoke_year,
-                day_of_interest_0,
-                day_of_interest_n,
-                local_data_dir_path
+                most_recent_smoke_year = most_recent_smoke_year,
+                day_of_interest_0      = day_of_interest_0,
+                day_of_interest_n      = day_of_interest_n,
+                local_data_dir_path    = local_data_dir_path
             )
         else:
             variable_means_ser = pd.Series(dtype=float)
@@ -904,6 +909,7 @@ def get_esacci_lakes_variable_over_smoke_season_df(
 def get_esacci_lakes_variable_over_high_smoke_season_df(
     esacci_lakes_metadata_df:                      pd.DataFrame,
     esacci_lakes_variable:                         str,
+    *,
     esacci_lakes_most_recent_high_smoke_years_ser: pd.Series,
     esacci_lakes_interest_ranges_df:               pd.DataFrame,
     local_data_dir_path:                           Path
@@ -939,15 +945,16 @@ def get_esacci_lakes_variable_over_high_smoke_season_df(
     return get_esacci_lakes_variable_over_smoke_season_df(
         esacci_lakes_metadata_df,
         esacci_lakes_variable,
-        esacci_lakes_most_recent_high_smoke_years_ser,
-        esacci_lakes_interest_ranges_df,
-        local_data_dir_path
+        esacci_lakes_most_recent_smoke_years_ser = esacci_lakes_most_recent_high_smoke_years_ser,
+        esacci_lakes_interest_ranges_df          = esacci_lakes_interest_ranges_df,
+        local_data_dir_path                      = local_data_dir_path
     )
 
 
 def get_esacci_lakes_variable_over_low_smoke_season_df(
     esacci_lakes_metadata_df:                     pd.DataFrame,
     esacci_lakes_variable:                        str,
+    *,
     esacci_lakes_most_recent_low_smoke_years_ser: pd.Series,
     esacci_lakes_interest_ranges_df:              pd.DataFrame,
     local_data_dir_path:                          Path
@@ -983,9 +990,9 @@ def get_esacci_lakes_variable_over_low_smoke_season_df(
     return get_esacci_lakes_variable_over_smoke_season_df(
         esacci_lakes_metadata_df,
         esacci_lakes_variable,
-        esacci_lakes_most_recent_low_smoke_years_ser,
-        esacci_lakes_interest_ranges_df,
-        local_data_dir_path
+        esacci_lakes_most_recent_smoke_years_ser = esacci_lakes_most_recent_low_smoke_years_ser,
+        esacci_lakes_interest_ranges_df          = esacci_lakes_interest_ranges_df,
+        local_data_dir_path                      = local_data_dir_path
     )
 
 
@@ -997,6 +1004,7 @@ def get_esacci_lakes_variable_over_low_smoke_season_df(
 def write_esacci_lakes_variable_over_smoke_season_df_to_csv(
     esacci_lakes_variable_over_smoke_season_df: pd.DataFrame,
     esacci_lakes_variable:                      str,
+    *,
     class_:                                     str
 ) -> None:
     """
@@ -1044,7 +1052,7 @@ def write_esacci_lakes_variable_over_high_smoke_season_df_to_csv(
     write_esacci_lakes_variable_over_smoke_season_df_to_csv(
         esacci_lakes_variable_over_high_smoke_season_df,
         esacci_lakes_variable,
-        "high"
+        class_ = "high"
     )
 
 
@@ -1071,13 +1079,14 @@ def write_esacci_lakes_variable_over_low_smoke_season_df_to_csv(
     write_esacci_lakes_variable_over_smoke_season_df_to_csv(
         esacci_lakes_variable_over_low_smoke_season_df,
         esacci_lakes_variable,
-        "low"
+        class_ = "low"
     )
 
 
 def write_esacci_lakes_variable_anomaly_over_smoke_season_df_to_csv(
     esacci_lakes_variable_anomaly_over_smoke_season_df: pd.DataFrame,
     esacci_lakes_variable:                              str,
+    *,
     class_:                                             str
 ) -> None:
     """
@@ -1126,7 +1135,7 @@ def write_esacci_lakes_variable_anomaly_over_high_smoke_season_df_to_csv(
     write_esacci_lakes_variable_anomaly_over_smoke_season_df_to_csv(
         esacci_lakes_variable_anomaly_over_high_smoke_season_df,
         esacci_lakes_variable,
-        "high"
+        class_ = "high"
     )
 
 
@@ -1153,7 +1162,7 @@ def write_esacci_lakes_variable_anomaly_over_low_smoke_season_df_to_csv(
     write_esacci_lakes_variable_anomaly_over_smoke_season_df_to_csv(
         esacci_lakes_variable_anomaly_over_low_smoke_season_df,
         esacci_lakes_variable,
-        "low"
+        class_ = "low"
     )
 
 
@@ -1185,8 +1194,8 @@ def main(
     with psycopg.connect("dbname=spatial") as conn:
         smoke_season_ranges_df = get_esacci_lakes_smoke_season_ranges_df(
             conn,
-            metadata_df,
-            most_recent_high_smoke_years_ser
+            esacci_lakes_metadata_df     = metadata_df,
+            esacci_lakes_smoke_years_ser = most_recent_high_smoke_years_ser
         )
 
     interest_ranges_df = get_esacci_lakes_interest_ranges_df(
@@ -1197,16 +1206,16 @@ def main(
     variable_over_high_smoke_season_df = get_esacci_lakes_variable_over_high_smoke_season_df(
         metadata_df,
         args.esacci_lakes_variable,
-        most_recent_high_smoke_years_ser,
-        interest_ranges_df,
-        args.local_data_dir_path
+        esacci_lakes_most_recent_high_smoke_years_ser = most_recent_high_smoke_years_ser,
+        esacci_lakes_interest_ranges_df               = interest_ranges_df,
+        local_data_dir_path                           = args.local_data_dir_path
     )
     variable_over_low_smoke_season_df  = get_esacci_lakes_variable_over_low_smoke_season_df(
         metadata_df,
         args.esacci_lakes_variable,
-        most_recent_low_smoke_years_ser,
-        interest_ranges_df,
-        args.local_data_dir_path
+        esacci_lakes_most_recent_low_smoke_years_ser = most_recent_low_smoke_years_ser,
+        esacci_lakes_interest_ranges_df              = interest_ranges_df,
+        local_data_dir_path                          = args.local_data_dir_path
     )
 
     variable_over_high_smoke_season_df = sort_df_columns_numerically(variable_over_high_smoke_season_df)

@@ -8,6 +8,6 @@ Written by William Chuter-Davies
 """
 
 SCALES = [
-    "lin",
-    "log"
+    "Lin",
+    "Log"
 ]

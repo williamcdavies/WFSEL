@@ -9,7 +9,6 @@ Written by William Chuter-Davies
 
 # Related Third-party Imports
 import geopandas  as gpd
-import sqlalchemy
 import xarray     as xr
 
 # Local Application/Library Specific Imports
@@ -39,11 +38,11 @@ def sel(
     A :class:`xarray.Dataset`.
     """
     return ds.sel(
-        lat=slice(
+        lat = slice(
             geo_bounding_box.lat_min,
             geo_bounding_box.lat_max
         ),
-        lon=slice(
+        lon = slice(
             geo_bounding_box.lon_min,
             geo_bounding_box.lon_max
         )
@@ -71,7 +70,7 @@ def join_gdfs_on_within(
     A :class:`geopandas.GeoDataFrame`.
     """
     return gpd.sjoin(
-        left_df=left_gdf,
-        right_df=right_gdf,
-        predicate="within"
+        left_df   = left_gdf,
+        right_df  = right_gdf,
+        predicate = "within"
     )

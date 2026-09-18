@@ -27,8 +27,8 @@ from lib.esacci_lakes.utils.io   import (
     read_esacci_lakes_hylak_fields_csv
 )
 from lib.esacci_lakes.utils.math import (
-    merge_dfs_on_esacci_lakes_id,
-    drop_hylak_field_columns_from_df
+    drop_hylak_field_columns_from_df,
+    merge_dfs_on_esacci_lakes_id
 )
 from lib.esacci_lakes.vars       import (
     ESACCI_LAKES_VARIABLES,
@@ -77,8 +77,8 @@ def add_argument_esacci_lakes_variable_over_high_smoke_season_csv_path(
     """
     parser.add_argument(
         "esacci_lakes_variable_over_high_smoke_season_csv_path",
-        type=Path,
-        help="""path to some csv file produced by comp_esacci_lakes_variable_over_smoke_season.py"""
+        type = Path,
+        help = """path to some csv file produced by comp_esacci_lakes_variable_over_smoke_season.py"""
     )
 
 
@@ -133,7 +133,7 @@ def read_esacci_lakes_variable_over_high_smoke_season_csv(
     """
     return pd.read_csv(
         esacci_lakes_variable_over_high_smoke_season_csv_path,
-        index_col="esacci_lakes_id"
+        index_col = "esacci_lakes_id"
     )
 
 
@@ -160,8 +160,8 @@ def add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(
     """
     parser.add_argument(
         "esacci_lakes_variable_over_low_smoke_season_csv_path",
-        type=Path,
-        help="""path to some csv file produced by comp_esacci_lakes_variable_over_smoke_season.py"""
+        type = Path,
+        help = """path to some csv file produced by comp_esacci_lakes_variable_over_smoke_season.py"""
     )
 
 
@@ -215,7 +215,7 @@ def read_esacci_lakes_variable_over_low_smoke_season_csv(
     """
     return pd.read_csv(
         esacci_lakes_variable_over_low_smoke_season_csv_path,
-        index_col="esacci_lakes_id"
+        index_col = "esacci_lakes_id"
     )
 
 
@@ -240,10 +240,10 @@ def add_argument_form(
     """
     parser.add_argument(
         "-f", "--form",
-        default="Absolute",
-        type=str,
-        choices=FORMS,
-        help="""the form of the input data. default=Absolute"""
+        default = "Absolute",
+        type    = str,
+        choices = FORMS,
+        help    = """the form of the input data. default=Absolute"""
     )
 
 
@@ -292,9 +292,9 @@ def build_parser(
     A :class:`ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
-        prog=prog,
-        usage="%(prog)s [options]",
-        description=""""""
+        prog        = prog,
+        usage       = "%(prog)s [options]",
+        description = """"""
     )
 
     # Positional arguments
@@ -323,37 +323,37 @@ def arguments_are_valid(
     """
     if not argument_esacci_lakes_variable_is_in_esacci_lakes_variables(
         args.esacci_lakes_variable,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_esacci_lakes_variable_over_high_smoke_season_csv_path_exists(
         args.esacci_lakes_variable_over_high_smoke_season_csv_path,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_esacci_lakes_variable_over_low_smoke_season_csv_path_exists(
         args.esacci_lakes_variable_over_low_smoke_season_csv_path,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_hylak_field_is_in_hylak_fields(
         args.hylak_field,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_esacci_lakes_hylak_fields_csv_path_exists(
         args.esacci_lakes_hylak_fields_csv_path,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_form_is_in_forms(
         args.form,
-        loud=True
+        loud = True
     ):
         return False
 
@@ -456,10 +456,10 @@ def get_lower_bounds_lakes_df(
         raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `lower_bound`")
 
     filtered_df = filter_df_by_column_bounds(
-        df=df,
-        column=hylak_field,
-        lower=None,
-        upper=HYLAK_FIELDS[hylak_field].lower_bound
+        df     = df,
+        column = hylak_field,
+        lower  = None,
+        upper  = HYLAK_FIELDS[hylak_field].lower_bound
     )
 
     return drop_hylak_field_columns_from_df(filtered_df)
@@ -502,10 +502,10 @@ def get_middle_bounds_lakes_df(
         raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `upper_bound`")
 
     filtered_df = filter_df_by_column_bounds(
-        df=df,
-        column=hylak_field,
-        lower=HYLAK_FIELDS[hylak_field].lower_bound,
-        upper=HYLAK_FIELDS[hylak_field].upper_bound
+        df     = df,
+        column = hylak_field,
+        lower  = HYLAK_FIELDS[hylak_field].lower_bound,
+        upper  = HYLAK_FIELDS[hylak_field].upper_bound
     )
 
     return drop_hylak_field_columns_from_df(filtered_df)
@@ -545,10 +545,10 @@ def get_upper_bounds_lakes_df(
         raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `upper_bound`")
 
     filtered_df = filter_df_by_column_bounds(
-        df=df,
-        column=hylak_field,
-        lower=HYLAK_FIELDS[hylak_field].upper_bound,
-        upper=None
+        df     = df,
+        column = hylak_field,
+        lower  = HYLAK_FIELDS[hylak_field].upper_bound,
+        upper  = None
     )
 
     return drop_hylak_field_columns_from_df(filtered_df)
@@ -587,6 +587,7 @@ def get_lakes_medians_ser(
 def plot_lakes_df_scatterplot(
     ax:       plt.Axes, # type: ignore
     lakes_df: pd.DataFrame,
+    *,
     color:    str,
     label:    str | None = None
 ) -> None:
@@ -613,18 +614,19 @@ def plot_lakes_df_scatterplot(
     """
     for n, ser in get_lakes_df_week_number_ser_pairs(lakes_df):
         ax.scatter(
-            x=[n] * len(ser),
-            y=ser,
-            label=label,
-            color=color,
-            edgecolors="none",
-            alpha=0.1
+            x          = [n] * len(ser),
+            y          = ser,
+            label      = label,
+            color      = color,
+            edgecolors = "none",
+            alpha      = 0.1
         )
 
 
 def plot_lakes_df_lineplot(
     ax:         plt.Axes, # type: ignore
     median_ser: pd.Series,
+    *,
     color:      str,
     label:      str | None = None
 ) -> None:
@@ -638,7 +640,7 @@ def plot_lakes_df_lineplot(
 
     median_ser : :class:`pandas.Series`
         A :class:`pandas.Series` of weekly medians, indexed by week
-        number, as returned by `get_esacci_lakes_medians_ser`
+        number, as returned by `get_lakes_medians_ser`
 
     color : :class:`str`
         The line color
@@ -653,23 +655,24 @@ def plot_lakes_df_lineplot(
     ax.plot(
         median_ser.index,
         median_ser,
-        label=label,
-        color=color,
-        marker="o"
+        label  = label,
+        color  = color,
+        marker = "o"
     )
 
 
 def plot_on_upper_bounds_lakes_ax(
-    upper_bounds_lakes_ax:  plt.Axes, # type: ignore
-    upper_high_lakes_df:    pd.DataFrame,
-    upper_low_lakes_df:     pd.DataFrame,
+    upper_bounds_lakes_ax:        plt.Axes, # type: ignore
+    *,
+    upper_high_lakes_df:          pd.DataFrame,
+    upper_low_lakes_df:           pd.DataFrame,
     upper_high_lakes_medians_ser: pd.Series,
     upper_low_lakes_medians_ser:  pd.Series
 ) -> None:
     """
     Plots `upper_high_lakes_df`, `upper_low_lakes_df`,
-    `upper_high_lakes_medians_ser`, and `upper_low_lakes_medians_ser` onto
-    `upper_bounds_lakes_ax`.
+    `upper_high_lakes_medians_ser`, and `upper_low_lakes_medians_ser`
+    onto `upper_bounds_lakes_ax`.
 
     Parameters
     ----------
@@ -684,11 +687,11 @@ def plot_on_upper_bounds_lakes_ax(
 
     upper_high_lakes_medians_ser : :class:`pandas.Series`
         `upper_high_lakes_df`'s weekly medians, as returned by
-        `get_esacci_lakes_medians_ser`
+        `get_lakes_medians_ser`
 
     upper_low_lakes_medians_ser : :class:`pandas.Series`
         `upper_low_lakes_df`'s weekly medians, as returned by
-        `get_esacci_lakes_medians_ser`
+        `get_lakes_medians_ser`
 
     Returns
     -------
@@ -697,39 +700,40 @@ def plot_on_upper_bounds_lakes_ax(
     plot_lakes_df_scatterplot(
         upper_bounds_lakes_ax,
         upper_high_lakes_df,
-        color="#FF0000"
+        color = "#FF0000"
     )
     plot_lakes_df_lineplot(
         upper_bounds_lakes_ax,
         upper_high_lakes_medians_ser,
-        color="#FF0000",
-        label="High Smoke Season (Median)"
+        color = "#FF0000",
+        label = "High Smoke Season (Median)"
     )
 
     plot_lakes_df_scatterplot(
         upper_bounds_lakes_ax,
         upper_low_lakes_df,
-        color="#0000FF"
+        color = "#0000FF"
     )
     plot_lakes_df_lineplot(
         upper_bounds_lakes_ax,
         upper_low_lakes_medians_ser,
-        color="#0000FF",
-        label="Low Smoke Season (Median)"
+        color = "#0000FF",
+        label = "Low Smoke Season (Median)"
     )
 
 
 def plot_on_middle_bounds_lakes_ax(
-    middle_bounds_lakes_ax:  plt.Axes, # type: ignore
-    middle_high_lakes_df:    pd.DataFrame,
-    middle_low_lakes_df:     pd.DataFrame,
+    middle_bounds_lakes_ax:        plt.Axes, # type: ignore
+    *,
+    middle_high_lakes_df:          pd.DataFrame,
+    middle_low_lakes_df:           pd.DataFrame,
     middle_high_lakes_medians_ser: pd.Series,
     middle_low_lakes_medians_ser:  pd.Series
 ) -> None:
     """
     Plots `middle_high_lakes_df`, `middle_low_lakes_df`,
-    `middle_high_lakes_medians_ser`, and `middle_low_lakes_medians_ser` onto
-    `middle_bounds_lakes_ax`.
+    `middle_high_lakes_medians_ser`, and `middle_low_lakes_medians_ser`
+    onto `middle_bounds_lakes_ax`.
 
     Parameters
     ----------
@@ -744,11 +748,11 @@ def plot_on_middle_bounds_lakes_ax(
 
     middle_high_lakes_medians_ser : :class:`pandas.Series`
         `middle_high_lakes_df`'s weekly medians, as returned by
-        `get_esacci_lakes_medians_ser`
+        `get_lakes_medians_ser`
 
     middle_low_lakes_medians_ser : :class:`pandas.Series`
         `middle_low_lakes_df`'s weekly medians, as returned by
-        `get_esacci_lakes_medians_ser`
+        `get_lakes_medians_ser`
 
     Returns
     -------
@@ -757,39 +761,40 @@ def plot_on_middle_bounds_lakes_ax(
     plot_lakes_df_scatterplot(
         middle_bounds_lakes_ax,
         middle_high_lakes_df,
-        color="#FF0000"
+        color = "#FF0000"
     )
     plot_lakes_df_lineplot(
         middle_bounds_lakes_ax,
         middle_high_lakes_medians_ser,
-        color="#FF0000",
-        label="High Smoke Season (Median)"
+        color = "#FF0000",
+        label = "High Smoke Season (Median)"
     )
 
     plot_lakes_df_scatterplot(
         middle_bounds_lakes_ax,
         middle_low_lakes_df,
-        color="#0000FF"
+        color = "#0000FF"
     )
     plot_lakes_df_lineplot(
         middle_bounds_lakes_ax,
         middle_low_lakes_medians_ser,
-        color="#0000FF",
-        label="Low Smoke Season (Median)"
+        color = "#0000FF",
+        label = "Low Smoke Season (Median)"
     )
 
 
 def plot_on_lower_bounds_lakes_ax(
-    lower_bounds_lakes_ax:  plt.Axes, # type: ignore
-    lower_high_lakes_df:    pd.DataFrame,
-    lower_low_lakes_df:     pd.DataFrame,
+    lower_bounds_lakes_ax:        plt.Axes, # type: ignore
+    *,
+    lower_high_lakes_df:          pd.DataFrame,
+    lower_low_lakes_df:           pd.DataFrame,
     lower_high_lakes_medians_ser: pd.Series,
     lower_low_lakes_medians_ser:  pd.Series
 ) -> None:
     """
     Plots `lower_high_lakes_df`, `lower_low_lakes_df`,
-    `lower_high_lakes_medians_ser`, and `lower_low_lakes_medians_ser` onto
-    `lower_bounds_lakes_ax`.
+    `lower_high_lakes_medians_ser`, and `lower_low_lakes_medians_ser`
+    onto `lower_bounds_lakes_ax`.
 
     Parameters
     ----------
@@ -804,11 +809,11 @@ def plot_on_lower_bounds_lakes_ax(
 
     lower_high_lakes_medians_ser : :class:`pandas.Series`
         `lower_high_lakes_df`'s weekly medians, as returned by
-        `get_esacci_lakes_medians_ser`
+        `get_lakes_medians_ser`
 
     lower_low_lakes_medians_ser : :class:`pandas.Series`
         `lower_low_lakes_df`'s weekly medians, as returned by
-        `get_esacci_lakes_medians_ser`
+        `get_lakes_medians_ser`
 
     Returns
     -------
@@ -817,30 +822,31 @@ def plot_on_lower_bounds_lakes_ax(
     plot_lakes_df_scatterplot(
         lower_bounds_lakes_ax,
         lower_high_lakes_df,
-        color="#FF0000"
+        color = "#FF0000"
     )
     plot_lakes_df_lineplot(
         lower_bounds_lakes_ax,
         lower_high_lakes_medians_ser,
         color="#FF0000",
-        label="High Smoke Season (Median)"
+        label = "High Smoke Season (Median)"
     )
 
     plot_lakes_df_scatterplot(
         lower_bounds_lakes_ax,
         lower_low_lakes_df,
-        color="#0000FF"
+        color = "#0000FF"
     )
     plot_lakes_df_lineplot(
         lower_bounds_lakes_ax,
         lower_low_lakes_medians_ser,
-        color="#0000FF",
-        label="Low Smoke Season (Median)"
+        color = "#0000FF",
+        label = "Low Smoke Season (Median)"
     )
 
 
 def set_upper_bounds_lakes_ax_properties(
     upper_bounds_lakes_ax: plt.Axes, # type: ignore
+    *,
     esacci_lakes_variable: str,
     hylak_field:           str,
     form:                  str
@@ -875,7 +881,7 @@ def set_upper_bounds_lakes_ax_properties(
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
     hylak_field_upper_bound         = HYLAK_FIELDS[hylak_field].upper_bound
     hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale # type: ignore
-    form_qualifier        = "" if form == "Absolute" else f" {form}"
+    form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     upper_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} >= {hylak_field_upper_bound_display:g} {hylak_field_display_units}""")
     upper_bounds_lakes_ax.set_xlabel("Week relative to start of smoke season")
@@ -887,6 +893,7 @@ def set_upper_bounds_lakes_ax_properties(
 
 def set_middle_bounds_lakes_ax_properties(
     middle_bounds_lakes_ax: plt.Axes, # type: ignore
+    *,
     esacci_lakes_variable:  str,
     hylak_field:            str,
     form:                   str
@@ -923,7 +930,7 @@ def set_middle_bounds_lakes_ax_properties(
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
     hylak_field_lower_bound_display = hylak_field_lower_bound / hylak_field_display_scale # type: ignore
     hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale # type: ignore
-    form_qualifier        = "" if form == "Absolute" else f" {form}"
+    form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     middle_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} between {hylak_field_lower_bound_display:g} {hylak_field_display_units} and {hylak_field_upper_bound_display:g} {hylak_field_display_units}""")
     middle_bounds_lakes_ax.set_xlabel("Week relative to start of smoke season")
@@ -935,6 +942,7 @@ def set_middle_bounds_lakes_ax_properties(
 
 def set_lower_bounds_lakes_ax_properties(
     lower_bounds_lakes_ax: plt.Axes, # type: ignore
+    *,
     esacci_lakes_variable: str,
     hylak_field:           str,
     form:                  str
@@ -969,7 +977,7 @@ def set_lower_bounds_lakes_ax_properties(
     hylak_field_display_units       = HYLAK_FIELDS[hylak_field].display_units or HYLAK_FIELDS[hylak_field].units
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
     hylak_field_lower_bound_display = hylak_field_lower_bound / hylak_field_display_scale # type: ignore
-    form_qualifier        = "" if form == "Absolute" else f" {form}"
+    form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     lower_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} <= {hylak_field_lower_bound_display:g} {hylak_field_display_units}""")
     lower_bounds_lakes_ax.set_xlabel("Week relative to start of smoke season")
@@ -1049,53 +1057,53 @@ def main(
         middle_bounds_lakes_ax,
         lower_bounds_lakes_ax
     ) = plt.subplots(
-        nrows=3,
-        ncols=1,
-        sharex=True,
-        sharey=True,
-        figsize=(12.8, 14.4)
+        nrows   = 3,
+        ncols   = 1,
+        sharex  = True,
+        sharey  = True,
+        figsize = (12.8, 14.4)
     )
     plt.subplots_adjust(hspace=0.25)
 
     plot_on_upper_bounds_lakes_ax(
         upper_bounds_lakes_ax,
-        upper_high_lakes_df,
-        upper_low_lakes_df,
-        upper_high_lakes_medians_ser,
-        upper_low_lakes_medians_ser,
+        upper_high_lakes_df          = upper_high_lakes_df,
+        upper_low_lakes_df           = upper_low_lakes_df,
+        upper_high_lakes_medians_ser = upper_high_lakes_medians_ser,
+        upper_low_lakes_medians_ser  = upper_low_lakes_medians_ser,
     )
     plot_on_middle_bounds_lakes_ax(
         middle_bounds_lakes_ax,
-        middle_high_lakes_df,
-        middle_low_lakes_df,
-        middle_high_lakes_medians_ser,
-        middle_low_lakes_medians_ser
+        middle_high_lakes_df          = middle_high_lakes_df,
+        middle_low_lakes_df           = middle_low_lakes_df,
+        middle_high_lakes_medians_ser = middle_high_lakes_medians_ser,
+        middle_low_lakes_medians_ser  = middle_low_lakes_medians_ser
     )
     plot_on_lower_bounds_lakes_ax(
         lower_bounds_lakes_ax,
-        lower_high_lakes_df,
-        lower_low_lakes_df,
-        lower_high_lakes_medians_ser,
-        lower_low_lakes_medians_ser
+        lower_high_lakes_df          = lower_high_lakes_df,
+        lower_low_lakes_df           = lower_low_lakes_df,
+        lower_high_lakes_medians_ser = lower_high_lakes_medians_ser,
+        lower_low_lakes_medians_ser  = lower_low_lakes_medians_ser
     )
 
     set_upper_bounds_lakes_ax_properties(
         upper_bounds_lakes_ax,
-        args.esacci_lakes_variable,
-        args.hylak_field,
-        args.form
+        esacci_lakes_variable = args.esacci_lakes_variable,
+        hylak_field           = args.hylak_field,
+        form                  = args.form
     )
     set_middle_bounds_lakes_ax_properties(
         middle_bounds_lakes_ax,
-        args.esacci_lakes_variable,
-        args.hylak_field,
-        args.form
+        esacci_lakes_variable = args.esacci_lakes_variable,
+        hylak_field           = args.hylak_field,
+        form                  = args.form
     )
     set_lower_bounds_lakes_ax_properties(
         lower_bounds_lakes_ax,
-        args.esacci_lakes_variable,
-        args.hylak_field,
-        args.form
+        esacci_lakes_variable = args.esacci_lakes_variable,
+        hylak_field           = args.hylak_field,
+        form                  = args.form
     )
 
     upper_bounds_lakes_ax.legend()

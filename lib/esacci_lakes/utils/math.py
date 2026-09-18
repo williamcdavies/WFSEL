@@ -77,10 +77,10 @@ def merge_dfs_on_esacci_lakes_id(
         raise ValueError("expected \"esacci_lakes_id\" as the index name of both `left_df` and `right_df`")
 
     return pd.merge(
-        left=left_df,
-        right=right_df,
-        left_index=True,
-        right_index=True,
-        validate="one_to_one"
+        left        = left_df,
+        right       = right_df,
+        left_index  = True,
+        right_index = True,
+        validate    = "one_to_one"
     )
     

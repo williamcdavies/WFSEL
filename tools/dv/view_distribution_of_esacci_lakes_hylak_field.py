@@ -9,7 +9,6 @@ import argparse
 import sys
 
 from datetime                  import datetime
-from typing                    import Callable
 
 # Related Third-party Imports
 import matplotlib.pyplot       as plt
@@ -67,9 +66,9 @@ def add_argument_scale(
     """
     parser.add_argument(
         "-s", "--scale",
-        type=str,
-        required=True,
-        help=f"""one of {SCALES}"""
+        type     = str,
+        required = True,
+        help     = f"""one of {SCALES}"""
     )
 
 
@@ -105,10 +104,22 @@ def argument_scale_is_in_scales(
 def build_parser(
     prog: str
 ) -> argparse.ArgumentParser:
+    """
+    Builds a :class:`ArgumentParser`.
+
+    Parameters
+    ----------
+    prog : :class:`str`
+        The program name
+
+    Returns
+    -------
+    A :class:`ArgumentParser`.
+    """
     parser = argparse.ArgumentParser(
-        prog=PROG,
-        usage="%(prog)s [options]",
-        description="""Produces a distribution visualisation of a HydroLAKES field of all lakes in spatial.esacci_lakes (Same lakes as provided by ESA Lakes Climate Change Initiative (esacci_lakes): Lake products, Version 3.0)"""
+        prog        = PROG,
+        usage       = "%(prog)s [options]",
+        description = """Produces a distribution visualisation of a HydroLAKES field of all lakes in spatial.esacci_lakes (Same lakes as provided by ESA Lakes Climate Change Initiative (esacci_lakes): Lake products, Version 3.0)"""
     )
 
     # Positional arguments
@@ -134,19 +145,19 @@ def arguments_are_valid(
     """
     if not argument_hylak_field_is_in_hylak_fields(
         args.hylak_field,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_esacci_lakes_hylak_fields_csv_path_exists(
         args.esacci_lakes_hylak_fields_csv_path,
-        loud=True
+        loud = True
     ):
         return False
 
     if not argument_scale_is_in_scales(
         args.scale,
-        loud=True
+        loud = True
     ):
         return False
 
@@ -181,10 +192,10 @@ def plot_ser_histogram_lin(
     bins = 30
 
     ax.hist(
-        x=ser,
-        bins=bins,
-        facecolor="#FFFFFF",
-        edgecolor="#000000"
+        x         = ser,
+        bins      = bins,
+        facecolor = "#FFFFFF",
+        edgecolor = "#000000"
     )
 
 
@@ -215,10 +226,10 @@ def plot_ser_histogram_log(
     )
 
     ax.hist(
-        x=ser,
-        bins=bins,
-        facecolor="#FFFFFF",
-        edgecolor="#000000"
+        x         = ser,
+        bins      = bins,
+        facecolor = "#FFFFFF",
+        edgecolor = "#000000"
     )
 
 
@@ -242,14 +253,15 @@ def plot_ser_boxplot(
     None
     """
     ax.boxplot(
-        x=ser.dropna(),
-        orientation="horizontal"
+        x           = ser.dropna(),
+        orientation = "horizontal"
     )
 
 
 def plot_quantile_lines(
     ax:        plt.Axes, # type: ignore
     quantiles: list[float],
+    *,
     labels:    list[str]
 ) -> None:
     """
@@ -274,22 +286,23 @@ def plot_quantile_lines(
 
     for i, (quantile, label) in enumerate(zip(quantiles, labels)):
         ax.axvline(
-            x=quantile,
-            color=cmap(i),
-            linestyle=":",
-            label=f"""{label}: {quantile:.3e}"""
+            x         = quantile,
+            color     = cmap(i),
+            linestyle = ":",
+            label     = f"""{label}: {quantile:.3e}"""
         )
 
 
 def plot_on_hist_ax(
     hist_ax:               plt.Axes, # type: ignore
+    *,
     hylak_field_ser:       pd.Series,
     hylak_field_quantiles: list[float],
-    plot_ser_histogram:    Callable[[plt.Axes, pd.Series], None] # type: ignore
+    scale:                 str
 ) -> None:
     """
-    Plots a histogram (via `plot_ser_histogram`) and quantile lines of
-    `hylak_field_ser` onto `hist_ax`.
+    Plots a histogram and quantile lines of `hylak_field_ser` onto
+    `hist_ax`, using `scale`.
 
     Parameters
     ----------
@@ -302,22 +315,30 @@ def plot_on_hist_ax(
     hylak_field_quantiles : list[float]
         The quantile values to draw lines at
 
-    plot_ser_histogram : Callable[[:class:`matplotlib.axes.Axes`, :class:`pandas.Series`], None]
-        The histogram-plotting function to use, e.g.
-        `plot_ser_histogram_log` or `plot_ser_histogram_lin`
+    scale : :class:`str`
+        One of "Lin" or "Log"
 
     Returns
     -------
     None
     """
-    plot_ser_histogram(
-        hist_ax,
-        hylak_field_ser
-    )
+    if scale == "Lin":
+        plot_ser_histogram_lin(
+            hist_ax,
+            hylak_field_ser
+        )
+    elif scale == "Log":
+        plot_ser_histogram_log(
+            hist_ax,
+            hylak_field_ser
+        )
+    else:
+        raise ValueError(f"expected `scale` to be one of {SCALES}: {scale}")
+    
     plot_quantile_lines(
         hist_ax,
         hylak_field_quantiles,
-        [
+        labels = [
             "Q1",
             "Q2",
             "Q3"
@@ -327,6 +348,7 @@ def plot_on_hist_ax(
 
 def plot_on_box_ax(
     box_ax:                plt.Axes, # type: ignore
+    *,
     hylak_field_ser:       pd.Series,
     hylak_field_quantiles: list[float]
 ) -> None:
@@ -356,7 +378,7 @@ def plot_on_box_ax(
     plot_quantile_lines(
         box_ax,
         hylak_field_quantiles,
-        [
+        labels = [
             "Q1",
             "Q2",
             "Q3"
@@ -365,51 +387,86 @@ def plot_on_box_ax(
 
 
 def set_hist_ax_properties(
-    hist_ax:       plt.Axes, # type: ignore
-    set_ax_xscale: Callable[[plt.Axes], None] # type: ignore
+    hist_ax: plt.Axes, # type: ignore
+    *,
+    scale:   str
 ) -> None:
     """
-    Sets `hist_ax`'s properties, including its x-axis scale (via
-    `set_ax_xscale`).
+    Sets `hist_ax`'s x-axis scale to `scale`.
 
     Parameters
     ----------
     hist_ax : :class:`matplotlib.axes.Axes`
         The axes to set properties on
 
-    set_ax_xscale : Callable[[:class:`matplotlib.axes.Axes`], None]
-        The scale-setting function to use, e.g. `set_ax_xscale_to_log`
-        or `set_ax_xscale_to_lin`
+    scale : :class:`str`
+        One of "Lin" or "Log"
 
     Returns
     -------
     None
     """
-    set_ax_xscale(hist_ax)
+    if scale == "Lin":
+        set_ax_xscale_to_lin(hist_ax)
+    elif scale == "Log":
+        set_ax_xscale_to_log(hist_ax)
+    else:
+        raise ValueError(f"expected `scale` to be one of {SCALES}: {scale}")
 
 
 def set_box_ax_properties(
-    box_ax:        plt.Axes, # type: ignore
-    set_ax_xscale: Callable[[plt.Axes], None] # type: ignore
+    box_ax: plt.Axes, # type: ignore
+    *,
+    scale:  str
 ) -> None:
     """
-    Sets `box_ax`'s properties, including its x-axis scale (via
-    `set_ax_xscale`).
+    Sets `box_ax`'s x-axis scale to `scale`.
 
     Parameters
     ----------
     box_ax : :class:`matplotlib.axes.Axes`
         The axes to set properties on
 
-    set_ax_xscale : Callable[[:class:`matplotlib.axes.Axes`], None]
-        The scale-setting function to use, e.g. `set_ax_xscale_to_log`
-        or `set_ax_xscale_to_lin`
+    scale : :class:`str`
+        One of "Lin" or "Log"
 
     Returns
     -------
     None
     """
-    set_ax_xscale(box_ax)
+    if scale == "Lin":
+        set_ax_xscale_to_lin(box_ax)
+    elif scale == "Log":
+        set_ax_xscale_to_log(box_ax)
+    else:
+        raise ValueError(f"expected `scale` to be one of {SCALES}: {scale}")
+
+
+def set_fig_properties(
+    fig:         plt.Figure, # type: ignore
+    *,
+    hylak_field: str,
+    scale:       str
+) -> None:
+    """
+    Sets `fig`'s title from `hylak_field` and `scale`.
+
+    Parameters
+    ----------
+    fig : :class:`matplotlib.figure.Figure`
+        The figure to set properties on
+
+    hylak_field : :class:`str`
+        The HydroLAKES field id
+
+    scale : :class:`str`
+        One of "Lin" or "Log"
+
+    Returns
+    -------
+    None
+    """
+    fig.suptitle(f"""{scale} Distribution of {HYLAK_FIELDS[hylak_field].long_name}""")
 
 
 # ==================================================================================================
@@ -422,19 +479,19 @@ def main(
     """
     args = build_parser(PROG).parse_args()
 
-    if not arguments_are_valid(args): 
+    if not arguments_are_valid(args):
         return RETURN_FAILURE
 
     hylak_fields_df       = read_esacci_lakes_hylak_fields_csv(args.esacci_lakes_hylak_fields_csv_path)
     hylak_field_ser       = get_ser_from_df(
-        hylak_fields_df, 
+        hylak_fields_df,
         args.hylak_field
     )
     hylak_field_quantiles = get_quantiles_from_ser(
-        hylak_field_ser, 
+        hylak_field_ser,
         [
-            0.25, 
-            0.5, 
+            0.25,
+            0.5,
             0.75
         ]
     )
@@ -446,39 +503,32 @@ def main(
         gridspec_kw={"height_ratios": [3, 1]}
     )
 
-    if args.scale == "log":
-        plot_hylak_field_histogram = plot_ser_histogram_log
-        set_ax_xscale              = set_ax_xscale_to_log
-        title                      = f"""Log Distribution of {HYLAK_FIELDS[args.hylak_field].long_name}"""
-    elif args.scale == "lin":
-        plot_hylak_field_histogram = plot_ser_histogram_lin
-        set_ax_xscale              = set_ax_xscale_to_lin
-        title                      = f"""Lin Distribution of {HYLAK_FIELDS[args.hylak_field].long_name}"""
-    else:
-        return RETURN_FAILURE
-
     plot_on_hist_ax(
         hist_ax,
-        hylak_field_ser,
-        hylak_field_quantiles,
-        plot_hylak_field_histogram
+        hylak_field_ser       = hylak_field_ser,
+        hylak_field_quantiles = hylak_field_quantiles,
+        scale                 = args.scale
     )
     plot_on_box_ax(
         box_ax,
-        hylak_field_ser,
-        hylak_field_quantiles
+        hylak_field_ser       = hylak_field_ser,
+        hylak_field_quantiles = hylak_field_quantiles
     )
 
     set_hist_ax_properties(
         hist_ax,
-        set_ax_xscale
+        scale = args.scale
     )
     set_box_ax_properties(
         box_ax,
-        set_ax_xscale
+        scale = args.scale
     )
 
-    fig.suptitle(title)
+    set_fig_properties(
+        fig,
+        hylak_field = args.hylak_field,
+        scale       = args.scale
+    )
 
     hist_ax.legend()
 

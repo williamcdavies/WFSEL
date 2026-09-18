@@ -45,8 +45,8 @@ def add_argument_shp_path(
     """
     parser.add_argument(
         "shp_path",
-        type=Path,
-        help="""path to some Shapefile file"""
+        type = Path,
+        help = """path to some Shapefile file"""
     )
 
 
@@ -95,9 +95,9 @@ def build_parser(
     A :class:`ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
-        prog=prog,
-        usage="%(prog)s [options]",
-        description="""Prints Shapefile file metadata to `sys.stdout`."""
+        prog        = prog,
+        usage       = "%(prog)s [options]",
+        description = """Prints Shapefile file metadata to `sys.stdout`."""
     )
 
     # Positional arguments
@@ -119,7 +119,7 @@ def arguments_are_valid(
     """
     if not argument_shp_path_exists(
         args.shp_path,
-        loud=True
+        loud = True
     ):
         return False
 
