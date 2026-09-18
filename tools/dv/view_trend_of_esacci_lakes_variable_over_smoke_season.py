@@ -579,86 +579,6 @@ def get_lakes_medians_ser(
     )
 
 
-def get_lakes_medians_df(
-    *,
-    upper_high_lakes_medians_ser:  pd.Series,
-    upper_low_lakes_medians_ser:   pd.Series,
-    middle_high_lakes_medians_ser: pd.Series,
-    middle_low_lakes_medians_ser:  pd.Series,
-    lower_high_lakes_medians_ser:  pd.Series,
-    lower_low_lakes_medians_ser:   pd.Series
-) -> pd.DataFrame:
-    """
-    Returns a :class:`pandas.DataFrame` combining each medians
-    :class:`pandas.Series` into a column, indexed by week number.
-
-    Parameters
-    ----------
-    upper_high_lakes_medians_ser : :class:`pandas.Series`
-        Upper-bounds-depth lakes' weekly medians during a high smoke
-        season, as returned by `get_medians_lakes_ser`
-
-    upper_low_lakes_medians_ser : :class:`pandas.Series`
-        Upper-bounds-depth lakes' weekly medians during a low smoke
-        season, as returned by `get_medians_lakes_ser`
-
-    middle_high_lakes_medians_ser : :class:`pandas.Series`
-        Middle-bounds-depth lakes' weekly medians during a high smoke
-        season, as returned by `get_medians_lakes_ser`
-
-    middle_low_lakes_medians_ser : :class:`pandas.Series`
-        Middle-bounds-depth lakes' weekly medians during a low smoke
-        season, as returned by `get_medians_lakes_ser`
-
-    lower_high_lakes_medians_ser : :class:`pandas.Series`
-        Lower-bounds-depth lakes' weekly medians during a high smoke
-        season, as returned by `get_medians_lakes_ser`
-
-    lower_low_lakes_medians_ser : :class:`pandas.Series`
-        Lower-bounds-depth lakes' weekly medians during a low smoke
-        season, as returned by `get_medians_lakes_ser`
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame` indexed by "week_number", with columns
-    "upper_high", "upper_low", "middle_high", "middle_low",
-    "lower_high", and "lower_low".
-    """
-    return pd.DataFrame(
-        {
-            "upper_high":  upper_high_lakes_medians_ser,
-            "upper_low":   upper_low_lakes_medians_ser,
-            "middle_high": middle_high_lakes_medians_ser,
-            "middle_low":  middle_low_lakes_medians_ser,
-            "lower_high":  lower_high_lakes_medians_ser,
-            "lower_low":   lower_low_lakes_medians_ser
-        }
-    ).rename_axis("week_number")
-
-
-# ==================================================================================================
-
-
-# Write functions
-# ==================================================================================================
-def write_df_to_csv(
-    df:   pd.DataFrame,
-    prog: str,
-    time: datetime,
-    *,
-    suffix: str = ""
-) -> None:
-    fdir  = Path(f"data/dv/{prog}")
-    fname = f"{time.strftime('%y_%j_%H_%M_%S')}_{suffix}.csv" if suffix else f"{time.strftime('%y_%j_%H_%M_%S')}.csv"
-
-    fdir.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
-    df.to_csv(fdir / fname)
-
-
 # ==================================================================================================
 
 
@@ -1124,15 +1044,6 @@ def main(
     lower_high_lakes_medians_ser  = get_lakes_medians_ser(lower_high_lakes_df)
     lower_low_lakes_medians_ser   = get_lakes_medians_ser(lower_low_lakes_df)
 
-    lakes_medians_df = get_lakes_medians_df(
-        upper_high_lakes_medians_ser=upper_high_lakes_medians_ser,
-        upper_low_lakes_medians_ser=upper_low_lakes_medians_ser,
-        middle_high_lakes_medians_ser=middle_high_lakes_medians_ser,
-        middle_low_lakes_medians_ser=middle_low_lakes_medians_ser,
-        lower_high_lakes_medians_ser=lower_high_lakes_medians_ser,
-        lower_low_lakes_medians_ser=lower_low_lakes_medians_ser
-    )
-
     fig, (
         upper_bounds_lakes_ax,
         middle_bounds_lakes_ax,
@@ -1195,49 +1106,6 @@ def main(
         fig,
         PROG,
         TIME
-    )
-
-    write_df_to_csv(
-        upper_high_lakes_df,
-        PROG,
-        TIME,
-        suffix="upper_high"
-    )
-    write_df_to_csv(
-        upper_low_lakes_df,
-        PROG,
-        TIME,
-        suffix="upper_low"
-    )
-    write_df_to_csv(
-        middle_high_lakes_df,
-        PROG,
-        TIME,
-        suffix="middle_high"
-    )
-    write_df_to_csv(
-        middle_low_lakes_df,
-        PROG,
-        TIME,
-        suffix="middle_low"
-    )
-    write_df_to_csv(
-        lower_high_lakes_df,
-        PROG,
-        TIME,
-        suffix="lower_high"
-    )
-    write_df_to_csv(
-        lower_low_lakes_df,
-        PROG,
-        TIME,
-        suffix="lower_low"
-    )
-    write_df_to_csv(
-        lakes_medians_df,
-        PROG,
-        TIME,
-        suffix="medians"
     )
 
     return RETURN_SUCCESS
