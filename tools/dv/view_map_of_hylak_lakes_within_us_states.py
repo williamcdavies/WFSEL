@@ -8,8 +8,8 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from datetime           import datetime
-from pathlib            import Path
+from datetime            import datetime
+from pathlib             import Path
 
 # Related Third-party Imports
 import geopandas         as gpd
@@ -137,37 +137,6 @@ def arguments_are_valid(
 
 # Data functions
 # ==================================================================================================
-def get_lakes_gdf(
-    connection: sqlalchemy.Connection
-) -> gpd.GeoDataFrame:
-    """
-    Returns a :class:`geopandas.GeoDataFrame` of all lakes.
-
-    Parameters
-    ----------
-    connection : :class:`sqlalchemy.Connection`
-        The connection
-
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-
-    Notes
-    -----
-    Internal `geopandas.read_postgis` call assumes "lakes_points" is an
-    existing table and that "id" and "geom" are existing columns in
-    "lakes_points".
-    """
-    query = """
-        SELECT
-            l.id,
-            l.geom
-        FROM lakes_points AS l
-        """
-
-    return get_gdf_from_postgis(query, connection)
-
-
 def get_states_gdf(
     connection: sqlalchemy.Connection
 ) -> gpd.GeoDataFrame:
@@ -194,6 +163,37 @@ def get_states_gdf(
             s.stusps,
             s.geom
         FROM states AS s
+        """
+
+    return get_gdf_from_postgis(query, connection)
+
+
+def get_lakes_gdf(
+    connection: sqlalchemy.Connection
+) -> gpd.GeoDataFrame:
+    """
+    Returns a :class:`geopandas.GeoDataFrame` of all lakes.
+
+    Parameters
+    ----------
+    connection : :class:`sqlalchemy.Connection`
+        The connection
+
+    Returns
+    -------
+    A :class:`geopandas.GeoDataFrame`.
+
+    Notes
+    -----
+    Internal `geopandas.read_postgis` call assumes "lakes_points" is an
+    existing table and that "id" and "geom" are existing columns in
+    "lakes_points".
+    """
+    query = """
+        SELECT
+            l.id,
+            l.geom
+        FROM lakes_points AS l
         """
 
     return get_gdf_from_postgis(query, connection)
@@ -402,15 +402,15 @@ def main(
         lakes_gdf  = get_lakes_gdf(connection)
 
     lakes_states_gdf  = join_gdfs_on_within(
-        lakes_gdf, 
+        lakes_gdf,
         states_gdf
     )
     target_states_gdf = filter_gdf_by_stusps(
-        states_gdf, 
+        states_gdf,
         args.stusps
     )
     target_lakes_gdf  = filter_gdf_by_stusps(
-        lakes_states_gdf, 
+        lakes_states_gdf,
         args.stusps
     )
 
