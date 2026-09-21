@@ -52,7 +52,7 @@ class HylakField:
         Field units
 
     display_units : :class:`str`
-        Units to display `lower_bound`/`upper_bound` in.
+       Display units.
 
     scale : float | None
         The scale of `units` relative to 1.
