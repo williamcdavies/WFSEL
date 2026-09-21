@@ -8,12 +8,12 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from typing                     import Any
-from pathlib                    import Path
+from typing   import Any
+from pathlib  import Path
 
 # Related Third-party Imports
-import pandas                   as pd
-import xarray                   as xr
+import pandas as pd
+import xarray as xr
 
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.utils.geo import get_geo_bounding_box_from_esacci_lakes_static_lake_mask
@@ -108,9 +108,8 @@ def arguments_are_valid(
 # Data functions
 # ==================================================================================================
 def get_esacci_lakes_id_mask(
-    esacci_lakes_static_lake_mask_ds: xr.Dataset,
-    *,
-    esacci_lakes_id:                  int
+    esacci_lakes_id:                  int,
+    esacci_lakes_static_lake_mask_ds: xr.Dataset
 ) -> xr.DataArray:
     """
     Returns a boolean mask of `esacci_lakes_static_lake_mask_ds`'s
@@ -118,11 +117,11 @@ def get_esacci_lakes_id_mask(
 
     Parameters
     ----------
-    esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
-        The windowed static lake mask
-
     esacci_lakes_id : int
         The ESA CCI Lakes id
+
+    esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
+        The static lake mask dataset
 
     Returns
     -------
@@ -132,9 +131,8 @@ def get_esacci_lakes_id_mask(
 
 
 def get_esacci_lakes_cover_class_mask(
-    esacci_lakes_merged_product_ds: xr.Dataset,
-    *,
-    esacci_lakes_cover_class:       int
+    esacci_lakes_cover_class:       int,
+    esacci_lakes_merged_product_ds: xr.Dataset
 ) -> xr.DataArray:
     """
     Returns a boolean mask of `esacci_lakes_merged_product_ds`'s
@@ -142,13 +140,13 @@ def get_esacci_lakes_cover_class_mask(
 
     Parameters
     ----------
-    esacci_lakes_merged_product_ds : :class:`xarray.Dataset`
-        The windowed merged product
-
     esacci_lakes_cover_class : int
         One of `ESACCI_LAKES_COVER_CLASS_WATER`,
         `ESACCI_LAKES_COVER_CLASS_ICE`, or
         `ESACCI_LAKES_COVER_CLASS_CLOUD`
+
+    esacci_lakes_merged_product_ds : :class:`xarray.Dataset`
+        The merged product
 
     Returns
     -------
@@ -158,7 +156,7 @@ def get_esacci_lakes_cover_class_mask(
 
 
 def get_esacci_lakes_variable_mean(
-    esacci_lakes_variable:          str,
+    esacci_lakes_variable: str,
     *,
     esacci_lakes_merged_product_ds: xr.Dataset
 ) -> float:
@@ -189,7 +187,7 @@ def get_esacci_lakes_variable_mean(
 
 
 def get_esacci_lakes_variable_coverage(
-    esacci_lakes_variable:          str,
+    esacci_lakes_variable: str,
     *,
     esacci_lakes_merged_product_ds: xr.Dataset,
     esacci_lakes_mask:              xr.DataArray
@@ -214,8 +212,17 @@ def get_esacci_lakes_variable_coverage(
     -------
     A :class:`float`.
     """
-    num = esacci_lakes_merged_product_ds[esacci_lakes_variable].notnull().sum().item()
-    den = esacci_lakes_mask.sum().item()
+    num = (
+        esacci_lakes_merged_product_ds[esacci_lakes_variable]
+        .notnull()
+        .sum()
+        .item()
+    )
+    den = (
+        esacci_lakes_mask
+        .sum()
+        .item()
+    )
 
     return num / den
 
@@ -273,12 +280,12 @@ def get_esacci_lakes_merged_product_record(
     )
 
     id_mask  = get_esacci_lakes_id_mask(
-        static_lake_mask_ds_window,
-        esacci_lakes_id = esacci_lakes_id
+        esacci_lakes_id,
+        static_lake_mask_ds_window
     )
     ice_mask = get_esacci_lakes_cover_class_mask(
-        merged_product_ds_window,
-        esacci_lakes_cover_class = ESACCI_LAKES_COVER_CLASS_ICE
+        ESACCI_LAKES_COVER_CLASS_ICE,
+        merged_product_ds_window
     )
 
     masked_merged_product_ds_window = mask(
@@ -343,38 +350,6 @@ def get_esacci_lakes_merged_product_df(
     return pd.DataFrame(records).set_index("esacci_lakes_id")
 
 
-def get_fdir_from_esacci_lakes_merged_product_nc_path(
-    esacci_lakes_merged_product_nc_path: Path
-) -> Path:
-    """
-    Returns the output file directory for
-    `esacci_lakes_merged_product_nc_path`.
-
-    Parameters
-    ----------
-    esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
-        The path to some ESA CCI Lakes merged product netCDF file
-
-    Returns
-    -------
-    A :class:`pathlib.Path`.
-
-    Notes
-    -----
-    Assumes `esacci_lakes_merged_product_nc_path`'s stem follows the
-    "ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0" naming
-    convention.
-    """
-    stem       = esacci_lakes_merged_product_nc_path.stem
-    substrings = stem.split('-')
-    datestring = substrings[5]
-
-    y = datestring[0:4]
-    m = datestring[4:6]
-
-    return Path (f"data/main.py/18-08-25/{y}/{m}")
-
-
 def get_fname_from_esacci_lakes_merged_product_nc_path(
     esacci_lakes_merged_product_nc_path: Path
 ) -> str:
@@ -401,11 +376,10 @@ def get_fname_from_esacci_lakes_merged_product_nc_path(
 
 # Write functions
 # ==================================================================================================
-def write_esacci_lakes_merged_product_df(
+def write_esacci_lakes_merged_product_df_to_csv(
     esacci_lakes_merged_product_df: pd.DataFrame,
     *,
-    fdir:                           Path,
-    fname:                          str
+    fname: str
 ) -> None:
     """
     Writes `esacci_lakes_merged_product_df` to `fdir / fname`.
@@ -426,7 +400,7 @@ def write_esacci_lakes_merged_product_df(
     -------
     None
     """
-    esacci_lakes_merged_product_df.to_csv(fdir / fname)
+    esacci_lakes_merged_product_df.to_csv(fname)
 
 
 # ==================================================================================================
@@ -454,12 +428,10 @@ def main(
             merged_product_ds
         )
 
-    fdir  = get_fdir_from_esacci_lakes_merged_product_nc_path(args.esacci_lakes_merged_product_nc_path)
     fname = get_fname_from_esacci_lakes_merged_product_nc_path(args.esacci_lakes_merged_product_nc_path)
 
-    write_esacci_lakes_merged_product_df(
+    write_esacci_lakes_merged_product_df_to_csv(
         merged_product_df,
-        fdir  = fdir,
         fname = fname
     )
 
