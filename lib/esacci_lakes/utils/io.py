@@ -699,7 +699,7 @@ def get_esacci_lakes_merged_product_nc_paths(
     esacci_lakes_merged_product_dir_path: Path,
 ) -> list[Path]:
     """
-    Returns a list of all ESA CCI Lakes merged product netCDF file paths
+    Returns each of ESA CCI Lakes merged product netCDF file path
     in `esacci_lakes_merged_product_dir_path`.
 
     Parameters
