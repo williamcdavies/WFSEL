@@ -2,7 +2,7 @@ r"""
 utils.py
 
 Description:
-   Provides definitions for plot-utility functions.
+    Provides definitions for plot-utility functions.
 
 Written by William Chuter-Davies
 """
@@ -30,7 +30,7 @@ def set_ax_xlim_to_gdf_total_bounds(
         The axes to set limits on
 
     gdf : :class:`geopandas.GeoDataFrame`
-        The :class:`geopandas.GeoDataFrame`
+        The geodataframe
 
     Returns
     -------
@@ -40,10 +40,6 @@ def set_ax_xlim_to_gdf_total_bounds(
     ------
     ValueError
         If `gdf` is empty.
-
-    Notes
-    -----
-    Assumes `gdf` is non-empty.
     """
     if gdf.empty:
         raise ValueError("expected `gdf` to be non-empty")
@@ -67,7 +63,7 @@ def set_ax_ylim_to_gdf_total_bounds(
         The axes to set limits on
 
     gdf : :class:`geopandas.GeoDataFrame`
-        The :class:`geopandas.GeoDataFrame`
+        The geodataframe
 
     Returns
     -------
@@ -77,10 +73,6 @@ def set_ax_ylim_to_gdf_total_bounds(
     ------
     ValueError
         If `gdf` is empty.
-
-    Notes
-    -----
-    Assumes `gdf` is non-empty.
     """
     if gdf.empty:
         raise ValueError("expected `gdf` to be non-empty")
@@ -95,7 +87,7 @@ def set_ax_xscale_to_lin(
     ax: plt.Axes # type: ignore
 ) -> None:
     """
-    Sets `ax`'s x-axis to a lin scale.
+    Sets `ax`'s x-axis to a linear scale.
 
     Parameters
     ----------
@@ -174,17 +166,17 @@ def force_ax_xtick_visibility(
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to set x-tick label visibility on
+        The axes to set x-axis tick label visibility on
 
-    on : bool
-        If `True`, shows `ax`'s x-tick labels. If `False`, hides them.
+    on : :class:`bool`
+        If `True`, shows `ax`'s x-axis tick labels. If `False`, hides them.
         default=True
 
     Returns
     -------
     None
     """
-    ax.tick_params(labelbottom=on)
+    ax.tick_params(labelbottom = on)
 
 
 def force_ax_ytick_visibility(
@@ -198,17 +190,17 @@ def force_ax_ytick_visibility(
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to set y-tick label visibility on
+        The axes to set y-axis tick label visibility on
 
-    on : bool
-        If `True`, shows `ax`'s y-tick labels. If `False`, hides them.
+    on : :class:`bool`
+        If `True`, shows `ax`'s y-axis tick labels. If `False`, hides them.
         default=True
 
     Returns
     -------
     None
     """
-    ax.tick_params(labelleft=on)
+    ax.tick_params(labelleft = on)
 
 
 def save_figure(
@@ -228,7 +220,7 @@ def save_figure(
         The program name
 
     time : :class:`datetime.datetime`
-        The time to name the file with
+        The program time
 
     Returns
     -------
