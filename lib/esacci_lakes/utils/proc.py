@@ -1,8 +1,8 @@
 r"""
-io.py
+proc.py
 
 Description:
-   Provides definitions for esacci_lakes-utility io functions.
+    Provides definitions for esacci_lakes-utility proc functions.
 
 Written by William Chuter-Davies
 """
@@ -28,11 +28,12 @@ def add_argument_local_data_dir_path(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `local_data_dir_path` argument to a :class:`ArgumentParser`.
+    Adds a `local_data_dir_path` argument to a
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -41,7 +42,7 @@ def add_argument_local_data_dir_path(
 
     Notes
     -----
-    Argument `local_data_dir_path` is of type :class:`Path`.
+    Argument `local_data_dir_path` is of type :class:`pathlib.Path`.
     """
     parser.add_argument(
         "local_data_dir_path",
@@ -53,17 +54,17 @@ def add_argument_local_data_dir_path(
 def argument_local_data_dir_path_exists(
     local_data_dir_path: Path,
     *,
-    loud:                bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `local_data_dir_path`.
 
     Parameters
     ----------
-    local_data_dir_path : :class:`Path`
+    local_data_dir_path : :class:`pathlib.Path`
         The argument `local_data_dir_path`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -93,11 +94,6 @@ def read_local_data_csv(
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Notes
-    -----
-    Internal `pandas.read_csv` call assumes "esacci_lakes_id" is an
-    existing column in the csv file at `local_data_csv_path`.
     """
     return pd.read_csv(
         local_data_csv_path,
@@ -115,11 +111,11 @@ def add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path(
 ) -> None:
     """
     Adds a `esacci_lakes_counts_of_distinct_start_days_csv_path`
-    argument to a :class:`ArgumentParser`.
+    argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -129,7 +125,7 @@ def add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path(
     Notes
     -----
     Argument `esacci_lakes_counts_of_distinct_start_days_csv_path` is of
-    type :class:`Path`.
+    type :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_counts_of_distinct_start_days_csv_path",
@@ -143,11 +139,11 @@ def add_argument_esacci_lakes_hylak_fields_csv_path(
 ) -> None:
     """
     Adds a `esacci_lakes_hylak_fields_csv_path` argument to a
-    :class:`ArgumentParser`.
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -157,7 +153,7 @@ def add_argument_esacci_lakes_hylak_fields_csv_path(
     Notes
     -----
     Argument `esacci_lakes_hylak_fields_csv_path` is of type
-    :class:`Path`.
+    :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_hylak_fields_csv_path",
@@ -169,18 +165,18 @@ def add_argument_esacci_lakes_hylak_fields_csv_path(
 def argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
     esacci_lakes_counts_of_distinct_start_days_csv_path: Path,
     *,
-    loud:                                                bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `esacci_lakes_counts_of_distinct_start_days_csv_path`.
 
     Parameters
     ----------
-    esacci_lakes_counts_of_distinct_start_days_csv_path : :class:`Path`
+    esacci_lakes_counts_of_distinct_start_days_csv_path : :class:`pathlib.Path`
         The argument
         `esacci_lakes_counts_of_distinct_start_days_csv_path`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -200,17 +196,17 @@ def argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
 def argument_esacci_lakes_hylak_fields_csv_path_exists(
     esacci_lakes_hylak_fields_csv_path: Path,
     *,
-    loud:                               bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `esacci_lakes_hylak_fields_csv_path`.
 
     Parameters
     ----------
-    esacci_lakes_hylak_fields_csv_path : :class:`Path`
+    esacci_lakes_hylak_fields_csv_path : :class:`pathlib.Path`
         The argument `esacci_lakes_hylak_fields_csv_path`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -243,12 +239,6 @@ def read_esacci_lakes_hylak_fields_csv(
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Notes
-    -----
-    Internal `pandas.read_csv` call assumes "esacci_lakes_id" is an
-    existing column in the csv file at
-    `esacci_lakes_hylak_fields_csv_path`.
     """
     return pd.read_csv(
         esacci_lakes_hylak_fields_csv_path,
@@ -273,12 +263,6 @@ def read_esacci_lakes_counts_of_distinct_start_days_csv(
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Notes
-    -----
-    Internal `pandas.read_csv` call assumes "esacci_lakes_id" is an
-    existing column in the csv file at
-    `esacci_lakes_counts_of_distinct_start_days_csv_path`.
     """
     return pd.read_csv(
         esacci_lakes_counts_of_distinct_start_days_csv_path,
@@ -295,11 +279,11 @@ def add_argument_hylak_field(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `hylak_field` argument to a :class:`ArgumentParser`.
+    Adds a `hylak_field` argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -320,7 +304,7 @@ def add_argument_hylak_field(
 def argument_hylak_field_is_in_hylak_fields(
     hylak_field: str,
     *,
-    loud:        bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `hylak_field`.
@@ -330,7 +314,7 @@ def argument_hylak_field_is_in_hylak_fields(
     hylak_field : :class:`str`
         The argument `hylak_field`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -355,11 +339,12 @@ def add_argument_esacci_lakes_id(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `esacci_lakes_id` argument to a :class:`ArgumentParser`.
+    Adds a `esacci_lakes_id` argument to a
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -382,11 +367,11 @@ def add_argument_esacci_lakes_variable(
 ) -> None:
     """
     Adds a `esacci_lakes_variable` argument to a
-    :class:`ArgumentParser`.
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -409,11 +394,11 @@ def add_argument_esacci_lakes_metadata_csv_path(
 ) -> None:
     """
     Adds a `esacci_lakes_metadata_csv_path` argument to a
-    :class:`ArgumentParser`.
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -422,7 +407,8 @@ def add_argument_esacci_lakes_metadata_csv_path(
 
     Notes
     -----
-    Argument `esacci_lakes_metadata_csv_path` is of type :class:`Path`.
+    Argument `esacci_lakes_metadata_csv_path` is of type
+    :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_metadata_csv_path",
@@ -436,11 +422,11 @@ def add_argument_esacci_lakes_static_lake_mask_nc_path(
 ) -> None:
     """
     Adds a `esacci_lakes_static_lake_mask_nc_path` argument to a
-    :class:`ArgumentParser`.
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -450,7 +436,7 @@ def add_argument_esacci_lakes_static_lake_mask_nc_path(
     Notes
     -----
     Argument `esacci_lakes_static_lake_mask_nc_path` is of type
-    :class:`Path`.
+    :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_static_lake_mask_nc_path",
@@ -464,11 +450,11 @@ def add_argument_esacci_lakes_merged_product_dir_path(
 ) -> None:
     """
     Adds a `esacci_lakes_merged_product_dir_path` argument to a
-    :class:`ArgumentParser`.
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -478,7 +464,7 @@ def add_argument_esacci_lakes_merged_product_dir_path(
     Notes
     -----
     Argument `esacci_lakes_merged_product_dir_path` is of type
-    :class:`Path`.
+    :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_merged_product_dir_path",
@@ -492,11 +478,11 @@ def add_argument_esacci_lakes_merged_product_nc_path(
 ) -> None:
     """
     Adds a `esacci_lakes_merged_product_nc_path` argument to a
-    :class:`ArgumentParser`.
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -506,7 +492,7 @@ def add_argument_esacci_lakes_merged_product_nc_path(
     Notes
     -----
     Argument `esacci_lakes_merged_product_nc_path` is of type
-    :class:`Path`.
+    :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_merged_product_nc_path",
@@ -518,7 +504,7 @@ def add_argument_esacci_lakes_merged_product_nc_path(
 def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(
     esacci_lakes_variable: str,
     *,
-    loud:                  bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `esacci_lakes_variable`.
@@ -528,7 +514,7 @@ def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(
     esacci_lakes_variable : :class:`str`
         The argument `esacci_lakes_variable`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -548,17 +534,17 @@ def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(
 def argument_esacci_lakes_metadata_csv_path_exists(
     esacci_lakes_metadata_csv_path: Path,
     *,
-    loud:                           bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `esacci_lakes_metadata_csv_path`.
 
     Parameters
     ----------
-    esacci_lakes_metadata_csv_path : :class:`Path`
+    esacci_lakes_metadata_csv_path : :class:`pathlib.Path`
         The argument `esacci_lakes_metadata_csv_path`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -578,17 +564,17 @@ def argument_esacci_lakes_metadata_csv_path_exists(
 def argument_esacci_lakes_static_lake_mask_nc_path_exists(
     esacci_lakes_static_lake_mask_nc_path: Path,
     *,
-    loud:                                  bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `esacci_lakes_static_lake_mask_nc_path`.
 
     Parameters
     ----------
-    esacci_lakes_static_lake_mask_nc_path : :class:`Path`
+    esacci_lakes_static_lake_mask_nc_path : :class:`pathlib.Path`
         The argument `esacci_lakes_static_lake_mask_nc_path`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -608,17 +594,17 @@ def argument_esacci_lakes_static_lake_mask_nc_path_exists(
 def argument_esacci_lakes_merged_product_dir_path_exists(
     esacci_lakes_merged_product_dir_path: Path,
     *,
-    loud:                                 bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `esacci_lakes_merged_product_dir_path`.
 
     Parameters
     ----------
-    esacci_lakes_merged_product_dir_path : :class:`Path`
+    esacci_lakes_merged_product_dir_path : :class:`pathlib.Path`
         The argument `esacci_lakes_merged_product_dir_path`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -638,17 +624,17 @@ def argument_esacci_lakes_merged_product_dir_path_exists(
 def argument_esacci_lakes_merged_product_nc_path_exists(
     esacci_lakes_merged_product_nc_path: Path,
     *,
-    loud:                                bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `esacci_lakes_merged_product_nc_path`.
 
     Parameters
     ----------
-    esacci_lakes_merged_product_nc_path : :class:`Path`
+    esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
         The argument `esacci_lakes_merged_product_nc_path`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -682,11 +668,6 @@ def read_esacci_lakes_metadata_csv(
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Notes
-    -----
-    Internal `pandas.read_csv` call assumes "id" is an existing column
-    in the csv file at `esacci_lakes_metadata_csv_path`.
     """
     return pd.read_csv(
         esacci_lakes_metadata_csv_path,
@@ -696,11 +677,11 @@ def read_esacci_lakes_metadata_csv(
 
 
 def get_esacci_lakes_merged_product_nc_paths(
-    esacci_lakes_merged_product_dir_path: Path,
+    esacci_lakes_merged_product_dir_path: Path
 ) -> list[Path]:
     """
-    Returns each of ESA CCI Lakes merged product netCDF file path
-    in `esacci_lakes_merged_product_dir_path`.
+    Returns each ESA CCI Lakes merged product netCDF file's path in
+    `esacci_lakes_merged_product_dir_path`.
 
     Parameters
     ----------

@@ -2,10 +2,14 @@ r"""
 utils.py
 
 Description:
-   Provides definitions for geo-utility functions.
+    Provides definitions for geo-utility functions.
 
 Written by William Chuter-Davies
 """
+
+# Standard Library Imports
+from functools import reduce
+from operator  import and_
 
 # Related Third-party Imports
 import geopandas  as gpd
@@ -15,23 +19,20 @@ import xarray     as xr
 from lib.geo.objects import GeoBoundingBox
 
 
-def sel(
+def select_ds_by_geo_bounding_box(
     ds:               xr.Dataset,
     geo_bounding_box: GeoBoundingBox
 ) -> xr.Dataset:
     """
-    Selects a window from an :class:`xarray.Dataset` whose bounds is
-    defined by :class:`GeoBoundingBox.lat_min`,
-    :class:`GeoBoundingBox.lat_max`, :class:`GeoBoundingBox.lon_min`,
-    and :class:`GeoBoundingBox.lon_max`.
+    Selects the window of `ds` within `geo_bounding_box`.
 
     Parameters
     ----------
     ds : :class:`xarray.Dataset`
-        The :class:`xarray.Dataset`
+        The dataset
 
-    geo_bounding_box : :class:`GeoBoundingBox`
-        The :class:`GeoBoundingBox`
+    geo_bounding_box : :class:`lib.geo.objects.GeoBoundingBox`
+        The bounding box
 
     Returns
     -------
@@ -49,21 +50,53 @@ def sel(
     )
 
 
+def mask_ds_by_combined_masks(
+    ds:    xr.Dataset,
+    masks: list[xr.DataArray]
+) -> xr.Dataset:
+    """
+    Returns `ds` masked by the elementwise `&` of `masks`.
+
+    Parameters
+    ----------
+    ds : :class:`xarray.Dataset`
+        The dataset
+
+    masks : list[:class:`xarray.DataArray`]
+        The masks
+
+    Returns
+    -------
+    A :class:`xarray.Dataset`.
+
+    Raises
+    ------
+    ValueError
+        If `masks` is empty.
+    """
+    if not masks:
+        raise ValueError("expected `masks` to be non-empty")
+
+    mask = reduce(and_, masks)
+
+    return ds.where(mask)
+
+
 def join_gdfs_on_within(
     left_gdf:  gpd.GeoDataFrame,
     right_gdf: gpd.GeoDataFrame
 ) -> gpd.GeoDataFrame:
     """
-    Joins a `left_gdf` with a `right_gdf` where each `left_gdf` geometry
-    is within a corresponding `right_gdf` geometry.
+    Joins `left_gdf` to `right_gdf` where `left_gdf` geometries fall
+    within `right_gdf` geometries.
 
     Parameters
     ----------
     left_gdf : :class:`geopandas.GeoDataFrame`
-        The left :class:`geopandas.GeoDataFrame`
+        The left dataframe
 
     right_gdf : :class:`geopandas.GeoDataFrame`
-        The right :class:`geopandas.GeoDataFrame`
+        The right dataframe
 
     Returns
     -------

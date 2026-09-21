@@ -2,7 +2,7 @@ r"""
 objects.py
 
 Description:
-   Provides definitions for geo-utility classes.
+    Provides definitions for geo-utility classes.
 
 Written by William Chuter-Davies
 """
@@ -19,16 +19,16 @@ class GeoBoundingBox:
     Parameters
     ----------
     lat_max : :class:`float`
-        Northernmost latitudal measurement
+        The northernmost latitudinal measurement
 
     lat_min : :class:`float`
-        Southernmost latitudal measurement
+        The southernmost latitudinal measurement
 
     lon_max : :class:`float`
-        Easternmost longitudal measurement
+        The easternmost longitudinal measurement
 
     lon_min : :class:`float`
-        Westernmost longitudal measurement
+        The westernmost longitudinal measurement
     """
     lat_max: float
     lat_min: float

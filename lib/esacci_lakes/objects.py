@@ -2,7 +2,7 @@ r"""
 objects.py
 
 Description:
-   Provides definitions for esacci_lakes-utility classes.
+    Provides definitions for esacci_lakes-utility classes.
 
 Written by William Chuter-Davies
 """
@@ -19,15 +19,15 @@ class ESACCILakesVariable:
     Parameters
     ----------
     var_id : :class:`str`
-        Variable name, or key, as it appears in the ESA Lakes Climate
-        Change Initiative (Lakes_cci): Lake products, Version 3.0
-        Product User Guide
+        The variable name, or key, as it appears in the ESA Lakes
+        Climate Change Initiative (Lakes_cci): Lake products, Version
+        3.0 Product User Guide
 
     long_name : :class:`str`
-        Variable long name
+        The variable long name
 
     units : :class:`str`
-        Variable units
+        The variable units
     """
     var_id:    str
     long_name: str
@@ -42,31 +42,31 @@ class HylakField:
     Parameters
     ----------
     field_id : :class:`str`
-        Field name, or key, as it appears in the HydroLAKES v1.0
+        The field name, or key, as it appears in the HydroLAKES v1.0
         technical documentation
 
     long_name : :class:`str`
-        Field long name
+        The field long name
 
     units : :class:`str`
-        Field units
+        The field units
 
     display_units : :class:`str`
-       Display units.
+        The display units
 
-    scale : float | None
-        The scale of `units` relative to 1.
+    scale : :class:`float` | `None`
+        The scale of `units` relative to 1
 
-    display_scale : float | None
-        The scale of 'display_units' relative to 1.
+    display_scale : :class:`float` | `None`
+        The scale of `display_units` relative to 1
 
-    lower_bound : float | None
-        Lower bound used to filter lakes by this field. `None` if no
-        lower bound applies.
+    lower_bound : :class:`float` | `None`
+        The lower bound used to filter lakes by this field. `None` if
+        no lower bound applies
 
-    upper_bound : float | None
-        Upper bound used to filter lakes by this field. `None` if no
-        upper bound applies.
+    upper_bound : :class:`float` | `None`
+        The upper bound used to filter lakes by this field. `None` if
+        no upper bound applies
     """
     field_id:      str
     long_name:     str

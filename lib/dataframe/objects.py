@@ -2,7 +2,7 @@ r"""
 objects.py
 
 Description:
-   Provides definitions for math-utility classes.
+    Provides definitions for dataframe-utility classes.
 
 Written by William Chuter-Davies
 """

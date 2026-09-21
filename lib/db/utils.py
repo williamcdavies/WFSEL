@@ -2,7 +2,7 @@ r"""
 utils.py
 
 Description:
-   Provides definitions for db-utility functions.
+    Provides definitions for db-utility functions.
 
 Written by William Chuter-Davies
 """
@@ -18,7 +18,7 @@ def get_df_from_postgis(
     connection: sqlalchemy.Connection
 ) -> pd.DataFrame:
     """
-    Get a :class:`pandas.DataFrame` from a query and a :class:`sqlalchemy.Connection`.
+    Returns a :class:`pandas.DataFrame` from `query` and `connection`.
 
     Parameters
     ----------
@@ -40,8 +40,8 @@ def get_gdf_from_postgis(
     connection: sqlalchemy.Connection
 ) -> gpd.GeoDataFrame:
     """
-    Get a :class:`geopandas.GeoDataFrame` from a query and a
-    :class:`sqlalchemy.Connection`.
+    Returns a :class:`geopandas.GeoDataFrame` from `query` and
+    `connection`.
 
     Parameters
     ----------
@@ -54,10 +54,6 @@ def get_gdf_from_postgis(
     Returns
     -------
     A :class:`geopandas.GeoDataFrame`.
-
-    Notes
-    -----
-    Internal `geopandas.read_postgis` call assumes geom_col="geom".
     """
     return gpd.read_postgis(
         query,

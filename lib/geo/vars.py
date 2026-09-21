@@ -2,7 +2,7 @@ r"""
 vars.py
 
 Description:
-   Provides definitions for geo-utility variables.
+    Provides definitions for geo-utility variables.
 
 Written by William Chuter-Davies
 """

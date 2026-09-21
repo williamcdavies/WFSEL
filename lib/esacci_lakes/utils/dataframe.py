@@ -1,8 +1,8 @@
 r"""
-math.py
+fataframe.py
 
 Description:
-   Provides definitions for esacci_lakes-utility math functions.
+    Provides definitions for esacci_lakes-utility dataframe functions.
 
 Written by William Chuter-Davies
 """
@@ -23,20 +23,15 @@ def drop_hylak_field_columns_from_df(
     Parameters
     ----------
     df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Notes
-    -----
-    Columns in `HYLAK_FIELDS` that are not present in `df` are
-    silently ignored.
     """
     return df.drop(
-        columns=list(HYLAK_FIELDS),
-        errors="ignore"
+        columns = list(HYLAK_FIELDS),
+        errors  = "ignore"
     )
 
 
@@ -50,10 +45,10 @@ def merge_dfs_on_esacci_lakes_id(
     Parameters
     ----------
     left_df : :class:`pandas.DataFrame`
-        The left :class:`pandas.DataFrame`
+        The left dataframe
 
     right_df : :class:`pandas.DataFrame`
-        The right :class:`pandas.DataFrame`
+        The right dataframe
 
     Returns
     -------
@@ -64,17 +59,12 @@ def merge_dfs_on_esacci_lakes_id(
     ValueError
         If `left_df.index.name` or `right_df.index.name` is not
         "esacci_lakes_id".
-
-    Notes
-    -----
-    Internal `pandas.merge` call assumes "esacci_lakes_id" is the index
-    of both `left_df` and `right_df`. Merge is validated as one-to-one.
     """
-    if (   
-        left_df.index.name != "esacci_lakes_id" 
+    if (
+        left_df.index.name != "esacci_lakes_id"
         or right_df.index.name != "esacci_lakes_id"
     ):
-        raise ValueError("expected \"esacci_lakes_id\" as the index name of both `left_df` and `right_df`")
+        raise ValueError("expected `esacci_lakes_id` as the index name of both `left_df` and `right_df`")
 
     return pd.merge(
         left        = left_df,

@@ -2,7 +2,7 @@ r"""
 utils.py
 
 Description:
-   Provides definitions for time-utility functions.
+    Provides definitions for time-utility functions.
 
 Written by William Chuter-Davies
 """
@@ -14,7 +14,7 @@ from datetime import datetime
 def get_program_time(
 ) -> str:
     """
-    Returns the program's time
+    Returns the program's time.
 
     Returns
     -------

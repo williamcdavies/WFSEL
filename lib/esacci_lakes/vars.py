@@ -2,7 +2,7 @@ r"""
 vars.py
 
 Description:
-   Provides definitions for esacci_lakes-utility variables.
+    Provides definitions for esacci_lakes-utility variables.
 
 Written by William Chuter-Davies
 """

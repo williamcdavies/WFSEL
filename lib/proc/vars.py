@@ -2,7 +2,7 @@ r"""
 vars.py
 
 Description:
-   Provides definitions for io-utility variables.
+    Provides definitions for proc-utility variables.
 
 Written by William Chuter-Davies
 """

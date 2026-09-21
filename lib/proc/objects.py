@@ -2,7 +2,7 @@ r"""
 objects.py
 
 Description:
-   Provides definitions for io-utility classes.
+    Provides definitions for proc-utility classes.
 
 Written by William Chuter-Davies
 """
@@ -19,16 +19,16 @@ class CompletedProcessLog:
     Parameters
     ----------
     args : :class:`list`
-        `subprocess.run.args`
+        The command and arguments passed to `subprocess.run`
 
     returncode : :class:`int`
-        `subprocess.run.returncode`
+        The exit code returned by `subprocess.run`
 
     stdout : :class:`str`
-        `subprocess.run.stdout`
+        The captured standard output from `subprocess.run`
 
     stderr : :class:`str`
-        `subprocess.run.stderr`
+        The captured standard error from `subprocess.run`
     """
     args:       list
     returncode: int

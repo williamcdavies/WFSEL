@@ -2,13 +2,10 @@ r"""
 geo.py
 
 Description:
-   Provides definitions for esacci_lakes-utility geo functions.
+    Provides definitions for esacci_lakes-utility geo functions.
 
 Written by William Chuter-Davies
 """
-
-# Standard Library Imports
-from typing import Any
 
 # Related Third-party Imports
 import xarray as xr
@@ -18,29 +15,29 @@ from lib.geo.objects import GeoBoundingBox
 
 
 def get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
-    lat_max_box:                       float,
-    lat_min_box:                       float,
-    lon_max_box:                       float,
-    lon_min_box:                       float,
-    esacci_lakes_static_lake_mask_ds:  xr.Dataset
+    lat_max_box:                      float,
+    lat_min_box:                      float,
+    lon_max_box:                      float,
+    lon_min_box:                      float,
+    esacci_lakes_static_lake_mask_ds: xr.Dataset
 ) -> GeoBoundingBox:
     """
-    Get a geographic bounding box from `lat_max_box`, `lat_min_box`,
+    Returns a geographic bounding box from `lat_max_box`, `lat_min_box`,
     `lon_max_box`, `lon_min_box`, and an ESA CCI Lakes static lake
     mask.
 
     Parameters
     ----------
-    lat_max_box : float
+    lat_max_box : :class:`float`
         The northernmost latitude of the bounding box
 
-    lat_min_box : float
+    lat_min_box : :class:`float`
         The southernmost latitude of the bounding box
 
-    lon_max_box : float
+    lon_max_box : :class:`float`
         The easternmost longitude of the bounding box
 
-    lon_min_box : float
+    lon_min_box : :class:`float`
         The westernmost longitude of the bounding box
 
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
@@ -48,7 +45,7 @@ def get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
 
     Returns
     -------
-    A :class:`GeoBoundingBox`.
+    A :class:`lib.geo.objects.GeoBoundingBox`.
     """
     return GeoBoundingBox(
         esacci_lakes_static_lake_mask_ds["lat"]

@@ -2,7 +2,7 @@ r"""
 utils.py
 
 Description:
-   Provides definitions for math-utility functions.
+    Provides definitions for dataframe-utility functions.
 
 Written by William Chuter-Davies
 """
@@ -14,7 +14,7 @@ import re
 import pandas as pd
 
 
-def normalise_df(
+def subtract_column_from_df(
     df:     pd.DataFrame,
     column: str
 ) -> pd.DataFrame:
@@ -24,19 +24,14 @@ def normalise_df(
     Parameters
     ----------
     df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     column : :class:`str`
-        The column to subtract from every column, row-wise
+        The column
 
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Notes
-    -----
-    Internal `pandas.DataFrame.sub` call assumes `column` is an
-    existing column in `df`.
     """
     return df.sub(
         df[column],
@@ -54,10 +49,10 @@ def drop_column_from_df(
     Parameters
     ----------
     df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     column : :class:`str`
-        The column to drop
+        The column
 
     Returns
     -------
@@ -70,8 +65,8 @@ def filter_df_by_column_bounds(
     df:     pd.DataFrame,
     column: str,
     *,
-    lower:  float | None = None,
-    upper:  float | None = None
+    lower: float | None = None,
+    upper: float | None = None
 ) -> pd.DataFrame:
     """
     Filters `df` to rows whose `column` is within [`lower`, `upper`].
@@ -79,27 +74,22 @@ def filter_df_by_column_bounds(
     Parameters
     ----------
     df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     column : :class:`str`
-        The column to filter on
+        The column
 
-    lower : float | None
+    lower : :class:`float` | `None`
         Inclusive lower bound. If `None`, no lower bound is applied.
         default=None
 
-    upper : float | None
+    upper : :class:`float` | `None`
         Inclusive upper bound. If `None`, no upper bound is applied.
         default=None
 
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Notes
-    -----
-    Internal indexing call assumes `column` is an existing column in
-    `df`.
     """
     if lower is not None:
         df = df[df[column] >= lower]
@@ -115,21 +105,19 @@ def intersect_dfs_by_columns(
     right_df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Returns `left_df` and `right_df` restricted to their common
-    columns.
+    Returns `left_df` and `right_df` restricted to their shared columns.
 
     Parameters
     ----------
     left_df : :class:`pandas.DataFrame`
-        The left :class:`pandas.DataFrame`
+        The left dataframe
 
     right_df : :class:`pandas.DataFrame`
-        The right :class:`pandas.DataFrame`
+        The right dataframe
 
     Returns
     -------
-    A tuple of (`left_df`, `right_df`), each restricted to columns
-    present in both.
+    A tuple of (`left_df`, `right_df`).
     """
     columns = left_df.columns.intersection(right_df.columns)
 
@@ -141,20 +129,19 @@ def intersect_dfs_by_rows(
     right_df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Returns `left_df` and `right_df` restricted to their common rows.
+    Returns `left_df` and `right_df` restricted to their shared rows.
 
     Parameters
     ----------
     left_df : :class:`pandas.DataFrame`
-        The left :class:`pandas.DataFrame`
+        The left dataframe
 
     right_df : :class:`pandas.DataFrame`
-        The right :class:`pandas.DataFrame`
+        The right dataframe
 
     Returns
     -------
-    A tuple of (`left_df`, `right_df`), each restricted to rows (by
-    index) present in both.
+    A tuple of (`left_df`, `right_df`).
     """
     rows = left_df.index.intersection(right_df.index)
 
@@ -166,41 +153,34 @@ def intersect_dfs_by_cells(
     right_df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Returns `left_df` and `right_df` with each cell blanked (set to
-    `NaN`) wherever the corresponding cell is `NaN` in either.
+    Returns `left_df` and `right_df` with cells blanked wherever either is `NaN`.
 
     Parameters
     ----------
     left_df : :class:`pandas.DataFrame`
-        The left :class:`pandas.DataFrame`
+        The left dataframe
 
     right_df : :class:`pandas.DataFrame`
-        The right :class:`pandas.DataFrame`
+        The right dataframe
 
     Returns
     -------
-    A tuple of (`left_df`, `right_df`), cell-aligned so both share the
-    same pattern of missing values.
+    A tuple of (`left_df`, `right_df`).
 
     Raises
     ------
     ValueError
-        If `left_df` and `right_df` do not share identical shape,
-        columns, or index.
-
-    Notes
-    -----
-    Assumes `left_df` and `right_df` have identical shape, columns, and
-    index.
+        If `left_df` and `right_df` are not of similar shape, columns,
+        and index.
     """
     if left_df.shape != right_df.shape:
-        raise ValueError("expected `left_df` and `right_df` to have identical shape")
+        raise ValueError("expected `left_df` and `right_df` to be of similar shape")
 
     if not left_df.columns.equals(right_df.columns):
-        raise ValueError("expected `left_df` and `right_df` to have identical columns")
+        raise ValueError("expected `left_df` and `right_df` to be of similar columns")
 
     if not left_df.index.equals(right_df.index):
-        raise ValueError("expected `left_df` and `right_df` to have identical index")
+        raise ValueError("expected `left_df` and `right_df` to be of similar index")
 
     combined_mask = left_df.notna() & right_df.notna()
 
@@ -211,30 +191,30 @@ def sort_df_columns_alphabetically(
     df: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Returns `df` with its columns sorted alphabetically.
+    Returns `df` sorted alphabetically.
 
     Parameters
     ----------
     df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     Returns
     -------
     A :class:`pandas.DataFrame`.
     """
-    return df.sort_index(axis = 'columns')
+    return df.sort_index(axis = "columns")
 
 
 def sort_df_columns_numerically(
     df: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Returns `df` with its columns sorted numerically.
+    Returns `df` sorted numerically.
 
     Parameters
     ----------
     df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     Returns
     -------
@@ -244,14 +224,14 @@ def sort_df_columns_numerically(
         column: str
     ) -> tuple[float, ...]:
         matches = re.findall(
-            r'-?\d+',
+            r"-?\d+",
             column
         )
 
         if matches:
             return tuple(map(float, matches))
-        else:
-            return (float('-inf'),)
+
+        return (float("-inf"),)
 
     columns = sorted(
         df.columns,
@@ -266,15 +246,15 @@ def get_ser_from_df(
     column: str
 ) -> pd.Series:
     """
-    Get a `df`'s `column` as a :class:`pandas.Series`.
+    Returns `df`'s `column` as a :class:`pandas.Series`.
 
     Parameters
     ----------
     df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     column : :class:`str`
-        The column to return
+        The column
 
     Returns
     -------
@@ -288,25 +268,23 @@ def get_quantiles_from_ser(
     quantiles: list[float]
 ) -> list[float]:
     """
-    Get a `ser`'s values at each of `quantiles`.
+    Returns `ser`'s values at each of `quantiles`.
 
     Parameters
     ----------
     ser : :class:`pandas.Series`
-        The :class:`pandas.Series`
+        The series
 
-    quantiles : list[float]
-        The quantiles to compute, e.g. `[0.25, 0.5, 0.75]` for Q1, Q2,
-        and Q3
+    quantiles : :class:`list[float]`
+        The quantiles
 
     Returns
     -------
-    A list of computed quantile values, in the same order as
-    `quantiles`.
+    A list of quantiles.
     """
     return [
         ser.quantile(quantile)
-        for quantile 
+        for quantile
         in quantiles
     ]
 
@@ -315,25 +293,21 @@ def ser_is_strictly_positive(
     ser: pd.Series
 ) -> bool:
     """
-    Checks if every value in `ser` is greater than 0.
+    Returns `True` if every value in `ser` is greater than 0.
 
     Parameters
     ----------
     ser : :class:`pandas.Series`
-        The :class:`pandas.Series`
+        The series
 
     Returns
     -------
-    `True` if `ser.dropna().min() > 0`. `False` otherwise.
+    `True` if every value in `ser` is greater than 0. `False` otherwise.
 
     Raises
     ------
     ValueError
         If `ser` has no non-NaN values.
-
-    Notes
-    -----
-    Assumes `ser` has at least one non-NaN value.
     """
     ser = ser.dropna()
 
