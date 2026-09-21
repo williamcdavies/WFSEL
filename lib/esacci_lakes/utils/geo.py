@@ -18,17 +18,30 @@ from lib.geo.objects import GeoBoundingBox
 
 
 def get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
-    esacci_lakes_metadata:            Any,
-    esacci_lakes_static_lake_mask_ds: xr.Dataset
+    lat_max_box:                       float,
+    lat_min_box:                       float,
+    lon_max_box:                       float,
+    lon_min_box:                       float,
+    esacci_lakes_static_lake_mask_ds:  xr.Dataset
 ) -> GeoBoundingBox:
     """
-    Get a geographic bounding box from ESA CCI Lakes metadata and an ESA
-    CCI Lakes static lake mask.
+    Get a geographic bounding box from `lat_max_box`, `lat_min_box`,
+    `lon_max_box`, `lon_min_box`, and an ESA CCI Lakes static lake
+    mask.
 
     Parameters
     ----------
-    esacci_lakes_metadata : Any
-        The ESA CCI Lakes metadata
+    lat_max_box : float
+        The northernmost latitude of the bounding box
+
+    lat_min_box : float
+        The southernmost latitude of the bounding box
+
+    lon_max_box : float
+        The easternmost longitude of the bounding box
+
+    lon_min_box : float
+        The westernmost longitude of the bounding box
 
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
         The ESA CCI Lakes static lake mask
@@ -36,44 +49,29 @@ def get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
     Returns
     -------
     A :class:`GeoBoundingBox`.
-
-    Raises
-    ------
-    AttributeError
-        If `esacci_lakes_metadata` does not have `lat_max_box`,
-        `lat_min_box`, `lon_max_box`, and `lon_min_box` attributes.
-
-    Notes
-    -----
-    Assumes `esacci_lakes_metadata` has `lat_max_box`, `lat_min_box`,
-    `lon_max_box`, and `lon_min_box` attributes.
     """
-    for attribute in ("lat_max_box", "lat_min_box", "lon_max_box", "lon_min_box"):
-        if not hasattr(esacci_lakes_metadata, attribute):
-            raise AttributeError(f"expected `esacci_lakes_metadata` to have a \"{attribute}\" attribute")
-
     return GeoBoundingBox(
         esacci_lakes_static_lake_mask_ds["lat"]
         .sel(
-            lat    = esacci_lakes_metadata.lat_max_box,
+            lat    = lat_max_box,
             method = "nearest"
         )
         .item(),
         esacci_lakes_static_lake_mask_ds["lat"]
         .sel(
-            lat    = esacci_lakes_metadata.lat_min_box,
+            lat    = lat_min_box,
             method = "nearest"
         )
         .item(),
         esacci_lakes_static_lake_mask_ds["lon"]
         .sel(
-            lon    = esacci_lakes_metadata.lon_max_box,
+            lon    = lon_max_box,
             method = "nearest"
         )
         .item(),
         esacci_lakes_static_lake_mask_ds["lon"]
         .sel(
-            lon    = esacci_lakes_metadata.lon_min_box,
+            lon    = lon_min_box,
             method = "nearest"
         )
         .item()
