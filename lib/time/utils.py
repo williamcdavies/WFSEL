@@ -11,6 +11,18 @@ Written by William Chuter-Davies
 from datetime import datetime
 
 
+def get_program_time(
+) -> str:
+    """
+    Returns the program's time
+
+    Returns
+    -------
+    A :class:`str`.
+    """
+    return datetime.now().strftime("%y%j%H%M")
+
+
 def get_year_from_datetime(
     time: datetime
 ) -> str:
