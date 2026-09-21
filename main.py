@@ -390,7 +390,7 @@ def write_esacci_lakes_merged_product_df_to_csv(
         The :class:`pandas.DataFrame`
 
     fname : :class:`str`
-        The output file name to write as
+        The output file name
 
     Returns
     -------
