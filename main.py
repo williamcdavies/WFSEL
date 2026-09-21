@@ -382,16 +382,13 @@ def write_esacci_lakes_merged_product_df_to_csv(
     fname: str
 ) -> None:
     """
-    Writes `esacci_lakes_merged_product_df` to `fdir / fname`.
+    Writes `esacci_lakes_merged_product_df` to `fname`.
 
     Parameters
     ----------
     esacci_lakes_merged_product_df : :class:`pandas.DataFrame`
         The :class:`pandas.DataFrame`, as returned by
         `get_esacci_lakes_merged_product_df`
-
-    fdir : :class:`pathlib.Path`
-        The output file directory to write to
 
     fname : :class:`str`
         The output file name to write as
