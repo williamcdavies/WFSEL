@@ -350,7 +350,7 @@ def get_esacci_lakes_merged_product_df(
     return pd.DataFrame(records).set_index("esacci_lakes_id")
 
 
-def get_fname_from_esacci_lakes_merged_product_nc_path(
+def get_esacci_lakes_merged_product_fname(
     esacci_lakes_merged_product_nc_path: Path
 ) -> str:
     """
@@ -428,7 +428,7 @@ def main(
             merged_product_ds
         )
 
-    fname = get_fname_from_esacci_lakes_merged_product_nc_path(args.esacci_lakes_merged_product_nc_path)
+    fname = get_esacci_lakes_merged_product_fname(args.esacci_lakes_merged_product_nc_path)
 
     write_esacci_lakes_merged_product_df_to_csv(
         merged_product_df,
