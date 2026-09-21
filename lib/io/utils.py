@@ -37,15 +37,15 @@ def get_program_odir_path(
 
 
 def get_logstream(
-   program_odir_path: Path
+   odir_path: Path
 ) -> TextIO:
    """
    Opens a log file for appending.
 
    Parameters
    ----------
-   program_odir_path : :class:`pathlib.Path`
-      The programm's output directory path
+   odir_path : :class:`pathlib.Path`
+      The output directory path
 
    Returns
    -------
@@ -56,6 +56,6 @@ def get_logstream(
    The returned file object is a context manager.
    """
    return open(
-      program_odir_path / "log.txt",
+      odir_path / "log.txt",
       "a"
    )
