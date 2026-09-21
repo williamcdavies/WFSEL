@@ -28,11 +28,11 @@ def add_argument_shp_path(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `shp_path` argument to a :class:`ArgumentParser`.
+    Adds a `shp_path` argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -41,7 +41,7 @@ def add_argument_shp_path(
 
     Notes
     -----
-    Argument `shp_path` is of type :class:`Path`.
+    Argument `shp_path` is of type :class:`pathlib.Path`.
     """
     parser.add_argument(
         "shp_path",
@@ -83,7 +83,7 @@ def build_parser(
     prog: str
 ) -> argparse.ArgumentParser:
     """
-    Builds a :class:`ArgumentParser`.
+    Builds a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -92,7 +92,7 @@ def build_parser(
 
     Returns
     -------
-    A :class:`ArgumentParser`.
+    A :class:`argparse.ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
         prog        = prog,
