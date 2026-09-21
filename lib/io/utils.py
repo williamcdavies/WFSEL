@@ -8,21 +8,44 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-from datetime import datetime
-from pathlib import  Path
-from typing  import  TextIO
+from pathlib import Path
+from typing  import TextIO
+
+
+def get_program_odir_path(
+   prog: str,
+   time: str
+) -> Path:
+   """
+   Returns the program's output directory.
+
+   Parameters
+   ----------
+   prog : :class:`str`
+      The program name
+
+   time : :class:`str`
+      The program time
+
+   Returns
+   -------
+   A :class:`pathlib.Path`.
+   """
+   stem = prog.split(".")[0]
+   
+   return Path(f"{stem}_{time}")
 
 
 def get_logstream(
-   wdir: Path
+   wdir_path: Path
 ) -> TextIO:
    """
    Opens a log file for appending.
 
    Parameters
    ----------
-   wdir : :class:`pathlib.Path`
-      The write directory
+   wdir_path : :class:`pathlib.Path`
+      The write directory path
 
    Returns
    -------
@@ -32,9 +55,7 @@ def get_logstream(
    -----
    The returned file object is a context manager.
    """
-   timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-
    return open(
-      wdir / (timestamp + ".log"),
+      wdir_path / "log.txt",
       "a"
    )
