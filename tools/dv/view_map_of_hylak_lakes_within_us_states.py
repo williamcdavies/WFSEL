@@ -8,7 +8,7 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from datetime            import datetime
+from datetime import datetime
 
 # Related Third-party Imports
 import geopandas         as gpd
@@ -16,14 +16,14 @@ import matplotlib.pyplot as plt
 import sqlalchemy
 
 # Local Application/Library Specific Imports
-from lib.db.utils        import get_gdf_from_postgis
-from lib.geo.utils       import join_gdfs_on_within
-from lib.geo.vars        import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
-from lib.io.vars         import (
-    RETURN_FAILURE,
-    RETURN_SUCCESS
+from lib.db.utils  import get_gdf_from_postgis
+from lib.geo.utils import join_gdfs_on_within
+from lib.geo.vars  import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
+from lib.proc.vars import (
+    RETURN_SUCCESS,
+    RETURN_FAILURE
 )
-from lib.plot.utils      import (
+from lib.plot.utils import (
     set_ax_xlim_to_gdf_total_bounds,
     set_ax_ylim_to_gdf_total_bounds,
     set_ax_xticks_to_empty_list,
@@ -41,11 +41,11 @@ def add_argument_stusps(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `stusps` argument to a :class:`ArgumentParser`.
+    Adds a `stusps` argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -54,7 +54,7 @@ def add_argument_stusps(
 
     Notes
     -----
-    Argument `stusps` is of type list[str].
+    Argument `stusps` is of type :class:`list[str]`.
     """
     parser.add_argument(
         "--stusps",
@@ -68,17 +68,17 @@ def add_argument_stusps(
 def argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
     stusps: list[str],
     *,
-    loud:   bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `stusps`.
 
     Parameters
     ----------
-    stusps : list[str]
+    stusps : :class:`list[str]`
         The argument `stusps`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -100,7 +100,7 @@ def build_parser(
     prog: str
 ) -> argparse.ArgumentParser:
     """
-    Builds a :class:`ArgumentParser`.
+    Builds a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -109,10 +109,10 @@ def build_parser(
 
     Returns
     -------
-    A :class:`ArgumentParser`.
+    A :class:`argparse.ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
-        prog        = PROG,
+        prog        = prog,
         usage       = "%(prog)s [options]",
         description = """Produces a map visualisation of all lakes in spatial.hylak_points (Same lakes as provided by HYDROLakes v1.0) within a set of U.S. states."""
     )
@@ -162,12 +162,6 @@ def get_states_gdf(
     Returns
     -------
     A :class:`geopandas.GeoDataFrame`.
-
-    Notes
-    -----
-    Internal `geopandas.read_postgis` call assumes "states" is an
-    existing table and that "stusps" and "geom" are existing columns in
-    "states".
     """
     query = """
         SELECT
@@ -193,12 +187,6 @@ def get_lakes_gdf(
     Returns
     -------
     A :class:`geopandas.GeoDataFrame`.
-
-    Notes
-    -----
-    Internal `geopandas.read_postgis` call assumes "lakes_points" is an
-    existing table and that "id" and "geom" are existing columns in
-    "lakes_points".
     """
     query = """
         SELECT
@@ -215,25 +203,19 @@ def filter_gdf_by_stusps(
     stusps: list[str]
 ) -> gpd.GeoDataFrame:
     """
-    Filters a :class:`geopandas.GeoDataFrame` to rows whose `stusps`
-    column is in `stusps`.
+    Filters `gdf` to rows whose `stusps` column is in `stusps`.
 
     Parameters
     ----------
     gdf : :class:`geopandas.GeoDataFrame`
-        The :class:`geopandas.GeoDataFrame`
+        The geodataframe
 
-    stusps : list[str]
+    stusps : :class:`list[str]`
         The target list of two-letter state and possession abbreviations
 
     Returns
     -------
-    A :class:`geopandas.GeoDataFrame`.
-
-    Notes
-    -----
-    Internal indexing call assumes "stusps" is an existing column in
-    `gdf`.
+    A geodataframe
     """
     return gdf[gdf["stusps"].isin(stusps)]
 
@@ -329,8 +311,8 @@ def plot_on_ax(
     target_lakes_gdf:  gpd.GeoDataFrame
 ) -> None:
     """
-    Plots `states_gdf`, `target_states_gdf`, and `target_lakes_gdf`
-    onto `ax`.
+    Plots `states_gdf`, `target_states_gdf`, and `target_lakes_gdf` onto
+    `ax`.
 
     Parameters
     ----------
@@ -407,7 +389,7 @@ def main(
     """
     args = build_parser(PROG).parse_args()
 
-    if not arguments_are_valid(args): 
+    if not arguments_are_valid(args):
         return RETURN_FAILURE
 
     with sqlalchemy.create_engine("postgresql+psycopg://localhost/spatial").connect() as connection:
@@ -435,7 +417,7 @@ def main(
         target_states_gdf = target_states_gdf,
         target_lakes_gdf  = target_lakes_gdf
     )
-    
+
     set_ax_properties(
         ax,
         target_states_gdf = target_states_gdf
