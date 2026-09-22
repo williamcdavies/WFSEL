@@ -108,7 +108,7 @@ def add_argument_name(
     parser.add_argument(
         "-n", "--name",
         type    = str,
-        default = f"{PROG.replace('.', '_')}_{TIME}",
+        default = f"{PROG}_{TIME}",
         help    = """the output folder name"""
     )
 
