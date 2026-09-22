@@ -534,7 +534,8 @@ def main(
     save_figure(
         fig,
         PROG,
-        TIME
+        TIME,
+        "figure"
     )
 
     return RETURN_SUCCESS

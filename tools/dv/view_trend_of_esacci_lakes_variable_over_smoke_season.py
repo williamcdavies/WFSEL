@@ -960,6 +960,43 @@ def set_lower_bounds_lakes_ax_properties(
 # ==================================================================================================
 
 
+def write_lakes_df_to_csv(
+    lakes_df: pd.DataFrame,
+    prog:     str,
+    time:     str,
+    name:     str
+) -> None:
+    """
+    Writes `lakes_df` to `{prog}/`.
+
+    Parameters
+    ----------
+    lakes_df : :class:`pandas.DataFrame`
+        The dataframe
+
+    prog : :class:`str`
+        The program name
+
+    time : :class:`str`
+        The program time
+
+    name : :class:`str`
+        The output file name
+
+    Returns
+    -------
+    None
+    """
+    fdir = Path(f"data/{prog}_{time}")
+
+    fdir.mkdir(
+        parents  = True,
+        exist_ok = True
+    )
+
+    lakes_df.to_csv(fdir / (name + ".csv"))
+
+
 def main(
 ) -> int:
     """
@@ -1083,7 +1120,45 @@ def main(
     save_figure(
         fig,
         PROG,
-        TIME
+        TIME,
+        "figure"
+    )
+
+    write_lakes_df_to_csv(
+        upper_high_lakes_df,
+        PROG,
+        TIME,
+        "upper_high_lakes"
+    )
+    write_lakes_df_to_csv(
+        upper_low_lakes_df,
+        PROG,
+        TIME,
+        "upper_low_lakes"
+    )
+    write_lakes_df_to_csv(
+        middle_high_lakes_df,
+        PROG,
+        TIME,
+        "middle_high_lakes"
+    )
+    write_lakes_df_to_csv(
+        middle_low_lakes_df,
+        PROG,
+        TIME,
+        "middle_low_lakes"
+    )
+    write_lakes_df_to_csv(
+        lower_high_lakes_df,
+        PROG,
+        TIME,
+        "lower_high_lakes"
+    )
+    write_lakes_df_to_csv(
+        lower_low_lakes_df,
+        PROG,
+        TIME,
+        "lower_low_lakes"
     )
 
     return RETURN_SUCCESS
