@@ -17,16 +17,16 @@ import sqlalchemy
 from lib.db.utils   import get_gdf_from_postgis
 from lib.geo.utils  import join_gdfs_on_within
 from lib.geo.vars   import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
-from lib.proc.vars  import (
-    RETURN_SUCCESS,
-    RETURN_FAILURE
-)
 from lib.plot.utils import (
     set_ax_xlim_to_gdf_total_bounds,
     set_ax_ylim_to_gdf_total_bounds,
     set_ax_xticks_to_empty_list,
     set_ax_yticks_to_empty_list,
     save_figure
+)
+from lib.proc.vars  import (
+    RETURN_SUCCESS,
+    RETURN_FAILURE
 )
 from lib.time.utils import (
     get_program_time
