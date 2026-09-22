@@ -8,16 +8,16 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from typing   import Any
-from pathlib  import Path
+from typing  import Any
+from pathlib import Path
 
 # Related Third-party Imports
 import pandas as pd
 import xarray as xr
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils.geo import get_geo_bounding_box_from_esacci_lakes_static_lake_mask
-from lib.esacci_lakes.utils.io  import (
+from lib.esacci_lakes.utils.geo  import get_geo_bounding_box_from_esacci_lakes_static_lake_mask
+from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_metadata_csv_path,
     add_argument_esacci_lakes_static_lake_mask_nc_path,
     add_argument_esacci_lakes_merged_product_nc_path,
@@ -26,12 +26,12 @@ from lib.esacci_lakes.utils.io  import (
     argument_esacci_lakes_merged_product_nc_path_exists,
     read_esacci_lakes_metadata_csv
 )
-from lib.esacci_lakes.vars      import ESACCI_LAKES_COVER_CLASS_ICE
-from lib.geo.utils              import (
-    sel,
-    mask
+from lib.esacci_lakes.vars       import ESACCI_LAKES_COVER_CLASS_ICE
+from lib.geo.utils               import (
+    select_ds_by_geo_bounding_box,
+    mask_ds_by_combined_masks
 )
-from lib.io.vars                import (
+from lib.proc.vars               import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
@@ -45,7 +45,7 @@ def build_parser(
     prog: str
 ) -> argparse.ArgumentParser:
     """
-    Builds a :class:`ArgumentParser`.
+    Builds a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -54,7 +54,7 @@ def build_parser(
 
     Returns
     -------
-    A :class:`ArgumentParser`.
+    A :class:`argparse.ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
         prog        = prog,
@@ -117,7 +117,7 @@ def get_esacci_lakes_id_mask(
 
     Parameters
     ----------
-    esacci_lakes_id : int
+    esacci_lakes_id : :class:`int`
         The ESA CCI Lakes id
 
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
@@ -140,7 +140,7 @@ def get_esacci_lakes_cover_class_mask(
 
     Parameters
     ----------
-    esacci_lakes_cover_class : int
+    esacci_lakes_cover_class : :class:`int`
         One of `ESACCI_LAKES_COVER_CLASS_WATER`,
         `ESACCI_LAKES_COVER_CLASS_ICE`, or
         `ESACCI_LAKES_COVER_CLASS_CLOUD`
@@ -239,11 +239,11 @@ def get_esacci_lakes_merged_product_record(
 
     Parameters
     ----------
-    esacci_lakes_id : int
+    esacci_lakes_id : :class:`int`
         The ESA CCI Lakes id
 
     esacci_lakes_metadata_df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
         The ESA CCI Lakes static lake mask
@@ -253,7 +253,7 @@ def get_esacci_lakes_merged_product_record(
 
     Returns
     -------
-    A dict with keys "esacci_lakes_id",
+    A :class:`dict[str, int | float]` with keys "esacci_lakes_id",
     "lake_surface_water_temperature_mean", and
     "lake_surface_water_temperature_coverage".
     """
@@ -270,11 +270,11 @@ def get_esacci_lakes_merged_product_record(
         esacci_lakes_static_lake_mask_ds
     )
 
-    static_lake_mask_ds_window = sel(
+    static_lake_mask_ds_window = select_ds_by_geo_bounding_box(
         esacci_lakes_static_lake_mask_ds,
         geo_bounding_box
     )
-    merged_product_ds_window   = sel(
+    merged_product_ds_window   = select_ds_by_geo_bounding_box(
         esacci_lakes_merged_product_ds,
         geo_bounding_box
     )
@@ -288,7 +288,7 @@ def get_esacci_lakes_merged_product_record(
         merged_product_ds_window
     )
 
-    masked_merged_product_ds_window = mask(
+    masked_merged_product_ds_window = mask_ds_by_combined_masks(
         merged_product_ds_window,
         [
             id_mask,
@@ -296,11 +296,12 @@ def get_esacci_lakes_merged_product_record(
         ]
     )
 
-    record: dict[str, int | float]                    = {"esacci_lakes_id": esacci_lakes_id}
-    record["lake_surface_water_temperature_mean"]     = get_esacci_lakes_variable_mean(
+    record: dict[str, int | float]                = {"esacci_lakes_id": esacci_lakes_id}
+    record["lake_surface_water_temperature_mean"] = get_esacci_lakes_variable_mean(
         "lake_surface_water_temperature",
         esacci_lakes_merged_product_ds = masked_merged_product_ds_window
     )
+
     record["lake_surface_water_temperature_coverage"] = get_esacci_lakes_variable_coverage(
         "lake_surface_water_temperature",
         esacci_lakes_merged_product_ds = masked_merged_product_ds_window,
@@ -322,7 +323,7 @@ def get_esacci_lakes_merged_product_df(
     Parameters
     ----------
     esacci_lakes_metadata_df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
         The ESA CCI Lakes static lake mask
@@ -367,7 +368,7 @@ def get_esacci_lakes_merged_product_fname(
     A :class:`str`.
     """
     stem = esacci_lakes_merged_product_nc_path.stem
-    
+
     return f"{stem}.csv"
 
 
@@ -387,7 +388,7 @@ def write_esacci_lakes_merged_product_df_to_csv(
     Parameters
     ----------
     esacci_lakes_merged_product_df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     fname : :class:`str`
         The output file name
@@ -408,8 +409,8 @@ def main(
     Orchestration layer.
     """
     args = build_parser(PROG).parse_args()
-    
-    if not arguments_are_valid(args): 
+
+    if not arguments_are_valid(args):
         return RETURN_FAILURE
 
     metadata_df = read_esacci_lakes_metadata_csv(args.esacci_lakes_metadata_csv_path)
