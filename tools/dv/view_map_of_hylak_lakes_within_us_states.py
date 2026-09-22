@@ -28,9 +28,7 @@ from lib.proc.vars  import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
-from lib.time.utils import (
-    get_program_time
-)
+from lib.time.utils import get_program_time
 
 PROG = "view_map_of_hylak_lakes_within_us_states.py"
 TIME = get_program_time()

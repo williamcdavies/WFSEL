@@ -301,7 +301,6 @@ def get_esacci_lakes_merged_product_record(
         "lake_surface_water_temperature",
         esacci_lakes_merged_product_ds = masked_merged_product_ds_window
     )
-
     record["lake_surface_water_temperature_coverage"] = get_esacci_lakes_variable_coverage(
         "lake_surface_water_temperature",
         esacci_lakes_merged_product_ds = masked_merged_product_ds_window,
