@@ -8,39 +8,38 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from datetime                  import datetime
-
 # Related Third-party Imports
-import matplotlib.pyplot       as plt
-import numpy                   as np
-import pandas                  as pd
+import matplotlib.pyplot as plt
+import numpy             as np
+import pandas            as pd
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils.io import (
+from lib.dataframe.utils         import (
+    get_ser_from_df,
+    get_quantiles_from_ser
+)
+from lib.esacci_lakes.utils.proc import (
     add_argument_hylak_field,
     add_argument_esacci_lakes_hylak_fields_csv_path,
     argument_hylak_field_is_in_hylak_fields,
     argument_esacci_lakes_hylak_fields_csv_path_exists,
     read_esacci_lakes_hylak_fields_csv
 )
-from lib.esacci_lakes.vars     import HYLAK_FIELDS
-from lib.io.vars               import (
-    RETURN_SUCCESS,
-    RETURN_FAILURE
-)
-from lib.math.utils            import (
-    get_ser_from_df,
-    get_quantiles_from_ser
-)
-from lib.math.vars             import SCALES
-from lib.plot.utils            import (
+from lib.esacci_lakes.vars       import HYLAK_FIELDS
+from lib.plot.utils              import (
     set_ax_xscale_to_lin,
     set_ax_xscale_to_log,
     save_figure
 )
+from lib.plot.vars               import SCALES
+from lib.proc.vars               import (
+    RETURN_SUCCESS,
+    RETURN_FAILURE
+)
+from lib.time.utils              import get_program_time
 
 PROG = "view_distribution_of_esacci_lakes_hylak_field.py"
-TIME = datetime.now()
+TIME = get_program_time()
 
 
 # Argument functions
@@ -49,11 +48,11 @@ def add_argument_scale(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `scale` argument to a :class:`ArgumentParser`.
+    Adds a `scale` argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -75,7 +74,7 @@ def add_argument_scale(
 def argument_scale_is_in_scales(
     scale: str,
     *,
-    loud:   bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `scale`.
@@ -85,7 +84,7 @@ def argument_scale_is_in_scales(
     scale : :class:`str`
         The argument `scale`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -105,7 +104,7 @@ def build_parser(
     prog: str
 ) -> argparse.ArgumentParser:
     """
-    Builds a :class:`ArgumentParser`.
+    Builds a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -114,10 +113,10 @@ def build_parser(
 
     Returns
     -------
-    A :class:`ArgumentParser`.
+    A :class:`argparse.ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
-        prog        = PROG,
+        prog        = prog,
         usage       = "%(prog)s [options]",
         description = """Produces a distribution visualisation of a HydroLAKES field of all lakes in spatial.esacci_lakes (Same lakes as provided by ESA Lakes Climate Change Initiative (esacci_lakes): Lake products, Version 3.0)"""
     )
@@ -126,7 +125,7 @@ def build_parser(
     add_argument_hylak_field(parser)
     add_argument_esacci_lakes_hylak_fields_csv_path(parser)
 
-    # Optinal arguments
+    # Optional arguments
     add_argument_scale(parser)
 
     return parser
@@ -182,7 +181,7 @@ def plot_ser_histogram_lin(
         The axes to plot onto
 
     ser : :class:`pandas.Series`
-        The :class:`pandas.Series`
+        The series
 
     Returns
     -------
@@ -212,7 +211,7 @@ def plot_ser_histogram_log(
         The axes to plot onto
 
     ser : :class:`pandas.Series`
-        The :class:`pandas.Series`
+        The series
 
     Returns
     -------
@@ -246,7 +245,7 @@ def plot_ser_boxplot(
         The axes to plot onto
 
     ser : :class:`pandas.Series`
-        The :class:`pandas.Series`
+        The series
 
     Returns
     -------
@@ -262,7 +261,7 @@ def plot_quantile_lines(
     ax:        plt.Axes, # type: ignore
     quantiles: list[float],
     *,
-    labels:    list[str]
+    labels: list[str]
 ) -> None:
     """
     Plots vertical dotted lines on `ax` at each of `quantiles`.
@@ -272,10 +271,10 @@ def plot_quantile_lines(
     ax : :class:`matplotlib.axes.Axes`
         The axes to plot onto
 
-    quantiles : list[float]
+    quantiles : :class:`list[float]`
         The values to draw lines at
 
-    labels : list[str]
+    labels : :class:`list[str]`
         The label for each of `quantiles`
 
     Returns
@@ -294,7 +293,7 @@ def plot_quantile_lines(
 
 
 def plot_on_hist_ax(
-    hist_ax:               plt.Axes, # type: ignore
+    hist_ax: plt.Axes, # type: ignore
     *,
     hylak_field_ser:       pd.Series,
     hylak_field_quantiles: list[float],
@@ -310,9 +309,9 @@ def plot_on_hist_ax(
         The axes to plot onto
 
     hylak_field_ser : :class:`pandas.Series`
-        The :class:`pandas.Series`
+        The series
 
-    hylak_field_quantiles : list[float]
+    hylak_field_quantiles : :class:`list[float]`
         The quantile values to draw lines at
 
     scale : :class:`str`
@@ -347,7 +346,7 @@ def plot_on_hist_ax(
 
 
 def plot_on_box_ax(
-    box_ax:                plt.Axes, # type: ignore
+    box_ax: plt.Axes, # type: ignore
     *,
     hylak_field_ser:       pd.Series,
     hylak_field_quantiles: list[float]
@@ -362,9 +361,9 @@ def plot_on_box_ax(
         The axes to plot onto
 
     hylak_field_ser : :class:`pandas.Series`
-        The :class:`pandas.Series`
+        The series
 
-    hylak_field_quantiles : list[float]
+    hylak_field_quantiles : :class:`list[float]`
         The quantile values to draw lines at
 
     Returns
@@ -497,10 +496,10 @@ def main(
     )
 
     fig, (hist_ax, box_ax) = plt.subplots(
-        nrows=2,
-        ncols=1,
-        sharex=True,
-        gridspec_kw={"height_ratios": [3, 1]}
+        nrows       = 2,
+        ncols       = 1,
+        sharex      = True,
+        gridspec_kw = {"height_ratios": [3, 1]}
     )
 
     plot_on_hist_ax(
