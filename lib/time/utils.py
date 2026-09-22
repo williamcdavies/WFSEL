@@ -20,7 +20,7 @@ def get_program_time(
     -------
     A :class:`str`.
     """
-    return datetime.now().strftime("%y%j%H%M")
+    return datetime.now().strftime("%y%j%H%M%S%f")
 
 
 def get_year_from_datetime(

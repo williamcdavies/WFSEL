@@ -9,7 +9,6 @@ import argparse
 import sys
 
 from pathlib  import Path
-from datetime import datetime
 
 # Related Third-party Imports
 import matplotlib.pyplot as plt
