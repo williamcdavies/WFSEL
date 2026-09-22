@@ -31,23 +31,22 @@ from lib.esacci_lakes.utils.proc import (
     argument_esacci_lakes_merged_product_dir_path_exists,
     get_esacci_lakes_merged_product_nc_paths
 )
-from lib.proc.objects            import CompletedProcessLog
-from lib.proc.utils              import (
-    open_logstream,
-    get_program_odir_path
+from lib.proc.objects             import CompletedProcessLog
+from lib.proc.utils               import (
+    add_argument_output,
+    argument_output_is_a_directory,
+    open_logstream
 )
-from lib.proc.vars               import (
+from lib.proc.vars                import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
-from lib.time.utils              import (
-    get_program_time,
+from lib.time.utils               import (
     get_year_from_datetime,
     get_month_from_datetime
 )
 
 PROG = "main_parallel.py"
-TIME = get_program_time()
 
 
 # Argument functions
@@ -106,6 +105,9 @@ def build_parser(
     add_argument_esacci_lakes_merged_product_dir_path(parser)
     add_argument_workers(parser)
 
+    # Optional arguments
+    add_argument_output(parser)
+
     return parser
 
 
@@ -138,6 +140,12 @@ def arguments_are_valid(
     ):
         return False
 
+    if not argument_output_is_a_directory(
+        args.output,
+        loud = True
+    ):
+        return False
+
     return True
 
 
@@ -166,18 +174,18 @@ def get_esacci_lakes_merged_product_time(
     )
 
 
-def get_esacci_lakes_merged_product_cwd_path(
-    program_odir:                        Path,
+def get_esacci_lakes_merged_product_output_path(
+    output:                               Path,
     esacci_lakes_merged_product_nc_path: Path
 ) -> Path:
     """
-    Returns the current working directory path for
+    Returns the output file path for
     `esacci_lakes_merged_product_nc_path`.
 
     Parameters
     ----------
-    program_odir : :class:`pathlib.Path`
-        The program's output directory
+    output : :class:`pathlib.Path`
+        The output directory path
 
     esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
         The path to some ESA CCI Lakes merged product netCDF file
@@ -189,22 +197,23 @@ def get_esacci_lakes_merged_product_cwd_path(
     time  = get_esacci_lakes_merged_product_time(esacci_lakes_merged_product_nc_path)
     year  = get_year_from_datetime(time)
     month = get_month_from_datetime(time)
+    stem  = esacci_lakes_merged_product_nc_path.stem
 
-    return program_odir / "data" / year / month
+    return output / year / month / f"{stem}.csv"
 
 
-def get_esacci_lakes_merged_product_cwd_paths(
-    program_odir:                         Path,
+def get_esacci_lakes_merged_product_output_paths(
+    output:                               Path,
     esacci_lakes_merged_product_nc_paths: list[Path]
 ) -> list[Path]:
     """
-    Returns the current working directory paths for
+    Returns the output file paths for
     `esacci_lakes_merged_product_nc_paths`.
 
     Parameters
     ----------
-    program_odir : :class:`pathlib.Path`
-        The program's output directory
+    output : :class:`pathlib.Path`
+        The output directory path
 
     esacci_lakes_merged_product_nc_paths : list[:class:`pathlib.Path`]
         Paths to some ESA CCI Lakes merged product netCDF files
@@ -214,8 +223,8 @@ def get_esacci_lakes_merged_product_cwd_paths(
     A list of :class:`pathlib.Path`.
     """
     return [
-        get_esacci_lakes_merged_product_cwd_path(
-            program_odir,
+        get_esacci_lakes_merged_product_output_path(
+            output,
             esacci_lakes_merged_product_nc_path
         )
         for esacci_lakes_merged_product_nc_path
@@ -227,7 +236,7 @@ def main_py(
     esacci_lakes_metadata_csv_path:        Path,
     esacci_lakes_static_lake_mask_nc_path: Path,
     esacci_lakes_merged_product_nc_path:   Path,
-    cwd:                                   Path
+    output:                                Path
 ) -> CompletedProcessLog:
     """
     Runs a main.py subprocess and returns the completed process log.
@@ -250,12 +259,12 @@ def main_py(
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
         Lake products, Version 3.0
 
-    cwd : :class:`pathlib.Path`
-        The current working directory
+    output : :class:`pathlib.Path`
+        The output file path
 
     Returns
     -------
-    A :class:`lib.proc.objects.CompletedProcessLog`
+    A :class:`lib.proc.objects.CompletedProcessLog`.
     """
     completed_process = run(
         [
@@ -263,11 +272,11 @@ def main_py(
             "main.py",
             str(esacci_lakes_metadata_csv_path),
             str(esacci_lakes_static_lake_mask_nc_path),
-            str(esacci_lakes_merged_product_nc_path)
+            str(esacci_lakes_merged_product_nc_path),
+            "-o", str(output)
         ],
         capture_output = True,
-        text           = True,
-        cwd            = cwd
+        text           = True
     )
 
     return CompletedProcessLog(
@@ -284,7 +293,7 @@ def get_main_py_future(
     esacci_lakes_metadata_csv_path:        Path,
     esacci_lakes_static_lake_mask_nc_path: Path,
     esacci_lakes_merged_product_nc_path:   Path,
-    cwd:                                   Path
+    output:                                Path
 ) -> Future:
     """
     Submits a main.py subprocess and returns its future.
@@ -310,8 +319,8 @@ def get_main_py_future(
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
         Lake products, Version 3.0
 
-    cwd : :class:`pathlib.Path`
-        The current working directory
+    output : :class:`pathlib.Path`
+        The output file path
 
     Returns
     -------
@@ -322,7 +331,7 @@ def get_main_py_future(
         esacci_lakes_metadata_csv_path,
         esacci_lakes_static_lake_mask_nc_path,
         esacci_lakes_merged_product_nc_path,
-        cwd
+        output
     )
 
 
@@ -332,7 +341,7 @@ def get_main_py_futures(
     esacci_lakes_metadata_csv_path:        Path,
     esacci_lakes_static_lake_mask_nc_path: Path,
     esacci_lakes_merged_product_nc_paths:  list[Path],
-    cwds:                                  list[Path]
+    outputs:                               list[Path]
 ) -> list[Future]:
     """
     Submits a main.py subprocess for each of
@@ -359,8 +368,8 @@ def get_main_py_futures(
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
         Lake products, Version 3.0
 
-    cwds : list[:class:`pathlib.Path`]
-        The current working directories
+    outputs : list[:class:`pathlib.Path`]
+        The output file paths
 
     Returns
     -------
@@ -369,32 +378,27 @@ def get_main_py_futures(
     Raises
     ------
     ValueError
-        If `cwds` and `esacci_lakes_merged_product_nc_paths` are not of
-        similar length.
+        If `outputs` and `esacci_lakes_merged_product_nc_paths` are not
+        of similar length.
     """
-    if len(cwds) != len(esacci_lakes_merged_product_nc_paths):
-        raise ValueError("expected `cwds` and `esacci_lakes_merged_product_nc_paths` to be of similar length")
+    if len(outputs) != len(esacci_lakes_merged_product_nc_paths):
+        raise ValueError("expected `outputs` and `esacci_lakes_merged_product_nc_paths` to be of similar length")
 
     futures = []
 
     for (
         esacci_lakes_merged_product_nc_path,
-        cwd
+        output
     ) in zip(
         esacci_lakes_merged_product_nc_paths,
-        cwds
+        outputs
     ):
-        cwd.mkdir(
-            parents  = True,
-            exist_ok = True
-        )
-
         future = get_main_py_future(
             executor,
             esacci_lakes_metadata_csv_path        = esacci_lakes_metadata_csv_path,
             esacci_lakes_static_lake_mask_nc_path = esacci_lakes_static_lake_mask_nc_path,
             esacci_lakes_merged_product_nc_path   = esacci_lakes_merged_product_nc_path,
-            cwd                                   = cwd
+            output                                = output
         )
 
         futures.append(future)
@@ -412,7 +416,7 @@ def write_completed_process_log_to_logstream(
 
     Parameters
     ----------
-    completed_process_log : :class:`CompletedProcessLog`
+    completed_process_log : :class:`lib.proc.objects.CompletedProcessLog`
         The completed process log
 
     logstream : :class:`typing.TextIO`
@@ -441,32 +445,27 @@ def main(
     if not arguments_are_valid(args):
         return RETURN_FAILURE
 
-    program_odir_path = get_program_odir_path(
-        PROG,
-        TIME
-    )
-
-    program_odir_path.mkdir(
+    args.output.mkdir(
         parents  = True,
         exist_ok = True
     )
 
     merged_product_nc_paths = get_esacci_lakes_merged_product_nc_paths(args.esacci_lakes_merged_product_dir_path)
-    merged_product_cwds     = get_esacci_lakes_merged_product_cwd_paths(
-        program_odir_path,
+    merged_product_outputs  = get_esacci_lakes_merged_product_output_paths(
+        args.output,
         merged_product_nc_paths
     )
 
     with (
         ThreadPoolExecutor(max_workers = args.workers) as executor,
-        open_logstream(program_odir_path)              as logstream
+        open_logstream(args.output)                    as logstream
     ):
         futures = get_main_py_futures(
             executor,
             esacci_lakes_metadata_csv_path        = args.esacci_lakes_metadata_csv_path,
             esacci_lakes_static_lake_mask_nc_path = args.esacci_lakes_static_lake_mask_nc_path,
             esacci_lakes_merged_product_nc_paths  = merged_product_nc_paths,
-            cwds                                  = merged_product_cwds
+            outputs                               = merged_product_outputs
         )
 
         for future in tqdm(

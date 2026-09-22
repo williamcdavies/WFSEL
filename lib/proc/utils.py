@@ -102,14 +102,14 @@ def argument_output_is_a_directory(
 
 
 def open_logstream(
-    odir_path: Path
+    output: Path
 ) -> TextIO:
     """
     Opens a log file for appending.
 
     Parameters
     ----------
-    odir_path : :class:`pathlib.Path`
+    output : :class:`pathlib.Path`
         The output directory path
 
     Returns
@@ -121,6 +121,6 @@ def open_logstream(
     The returned file object is a context manager.
     """
     return open(
-        odir_path / "log.txt",
+        output / "log.txt",
         "a"
     )
