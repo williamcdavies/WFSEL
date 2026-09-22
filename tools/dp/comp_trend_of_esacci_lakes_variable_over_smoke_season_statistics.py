@@ -18,14 +18,16 @@ from scipy.stats import ttest_rel
 
 # Local Application/Library Specific Imports
 from lib.dataframe.utils import get_ser_from_df
+from lib.proc.utils      import (
+    add_argument_output,
+    argument_output_is_a_directory
+)
 from lib.proc.vars       import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
-from lib.time.utils      import get_program_time
 
 PROG                                            = "comp_trend_of_esacci_lakes_variable_over_smoke_season_statistics.py"
-TIME                                            = get_program_time()
 ALPHA                                           = 0.05
 MINIMUM_SAMPLE_SIZE_FOR_ONE_TAILED_PAIRED_TTEST = 5
 
@@ -83,33 +85,6 @@ def add_argument_low_lakes_csv_path(
         "low_lakes_csv_path",
         type = Path,
         help = """path to some low-smoke-season lakes csv file as produced by view_trend_of_esacci_lakes_variable_over_smoke_season.py"""
-    )
-
-
-def add_argument_name(
-    parser: argparse.ArgumentParser
-) -> None:
-    """
-    Adds a `name` argument to a :class:`argparse.ArgumentParser`.
-
-    Parameters
-    ----------
-    parser : :class:`argparse.ArgumentParser`
-        The parser
-
-    Returns
-    -------
-    None
-
-    Notes
-    -----
-    Argument `name` is of type :class:`str`. default=`{PROG}_{TIME}`.
-    """
-    parser.add_argument(
-        "-n", "--name",
-        type    = str,
-        default = f"{PROG}_{TIME}",
-        help    = """the output folder name"""
     )
 
 
@@ -197,7 +172,7 @@ def build_parser(
     add_argument_low_lakes_csv_path(parser)
 
     # Optional arguments
-    add_argument_name(parser)
+    add_argument_output(parser)
 
     return parser
 
@@ -221,6 +196,12 @@ def arguments_are_valid(
 
     if not argument_low_lakes_csv_path_exists(
         args.low_lakes_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_output_is_a_directory(
+        args.output,
         loud = True
     ):
         return False
@@ -729,60 +710,56 @@ def get_summary_df(
 # ==================================================================================================
 def write_results_df_to_csv(
     results_df: pd.DataFrame,
-    fdir_name:  str
+    output:     Path
 ) -> None:
     """
-    Writes `results_df` to `data/dp/{fdir_name}/`.
+    Writes `results_df` to `output`.
 
     Parameters
     ----------
     results_df : :class:`pandas.DataFrame`
         The dataframe
 
-    fdir_name : :class:`str`
-        The output folder name
+    output : :class:`pathlib.Path`
+        The output directory path
 
     Returns
     -------
     None
     """
-    fdir = Path(f"data/dp/{fdir_name}")
-
-    fdir.mkdir(
+    output.mkdir(
         parents  = True,
         exist_ok = True
     )
 
-    results_df.to_csv(fdir / "results.csv")
+    results_df.to_csv(output / "results.csv")
 
 
 def write_summary_df_to_csv(
     summary_df: pd.DataFrame,
-    fdir_name:  str
+    output:     Path
 ) -> None:
     """
-    Writes `summary_df` to `data/dp/{fdir_name}/`.
+    Writes `summary_df` to `output`.
 
     Parameters
     ----------
     summary_df : :class:`pandas.DataFrame`
         The dataframe
 
-    fdir_name : :class:`str`
-        The output folder name
+    output : :class:`pathlib.Path`
+        The output directory path
 
     Returns
     -------
     None
     """
-    fdir = Path(f"data/dp/{fdir_name}")
-
-    fdir.mkdir(
+    output.mkdir(
         parents  = True,
         exist_ok = True
     )
 
-    summary_df.to_csv(fdir / "summary.csv")
+    summary_df.to_csv(output / "summary.csv")
 
 
 # ==================================================================================================
@@ -850,12 +827,12 @@ def main(
 
     write_results_df_to_csv(
         results_df,
-        args.name
+        args.output
     )
 
     write_summary_df_to_csv(
         summary_df,
-        args.name
+        args.output
     )
 
     return RETURN_SUCCESS
