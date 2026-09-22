@@ -400,7 +400,7 @@ def get_lakes_df_week_number_ser_pairs(
     prefix = "w_"
     pairs  = []
 
-    for label_, ser in lakes_df.filter(like=prefix).items():
+    for label_, ser in lakes_df.filter(like = prefix).items():
         n = int(label_.removeprefix(prefix)) # type: ignore
 
         if (
@@ -986,7 +986,7 @@ def write_lakes_df_to_csv(
     -------
     None
     """
-    fdir = Path(f"data/{prog}_{time}")
+    fdir = Path(f"data/dv/{prog}_{time}")
 
     fdir.mkdir(
         parents  = True,
