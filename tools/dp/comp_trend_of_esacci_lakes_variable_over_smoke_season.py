@@ -45,6 +45,10 @@ from lib.esacci_lakes.vars       import (
     COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
 )
 from lib.esacci_lakes.queries    import COUNT_OF_DISTINCT_START_DAYS_QUERY
+from lib.proc.utils              import (
+    add_argument_output,
+    argument_output_is_a_directory
+)
 from lib.proc.vars               import (
     RETURN_FAILURE,
     RETURN_SUCCESS
@@ -87,6 +91,9 @@ def build_parser(
     add_argument_esacci_lakes_metadata_csv_path(parser)
     add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path(parser)
 
+    # Optional arguments
+    add_argument_output(parser)
+
     return parser
 
 
@@ -121,6 +128,12 @@ def arguments_are_valid(
 
     if not argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
         args.esacci_lakes_counts_of_distinct_start_days_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_output_is_a_directory(
+        args.output,
         loud = True
     ):
         return False
@@ -988,12 +1001,13 @@ def get_esacci_lakes_variable_over_low_smoke_season_df(
 def write_esacci_lakes_variable_over_smoke_season_df_to_csv(
     esacci_lakes_variable_over_smoke_season_df: pd.DataFrame,
     esacci_lakes_variable:                      str,
+    output:                                     Path,
     *,
     class_: str
 ) -> None:
     """
     Writes `esacci_lakes_variable_over_smoke_season_df` to a csv file
-    named "{class_}_smoke_season_{esacci_lakes_variable}.csv".
+    in `output`, named "{class_}_smoke_season_{esacci_lakes_variable}.csv".
 
     Parameters
     ----------
@@ -1003,6 +1017,9 @@ def write_esacci_lakes_variable_over_smoke_season_df_to_csv(
     esacci_lakes_variable : :class:`str`
         The ESA CCI Lakes variable id
 
+    output : :class:`pathlib.Path`
+        The output directory path
+
     class_ : :class:`str`
         One of "high" or "low"
 
@@ -1010,16 +1027,22 @@ def write_esacci_lakes_variable_over_smoke_season_df_to_csv(
     -------
     None
     """
-    esacci_lakes_variable_over_smoke_season_df.to_csv(f"""data/dp/{class_}_smoke_season_{esacci_lakes_variable}.csv""")
+    output.mkdir(
+        parents  = True,
+        exist_ok = True
+    )
+
+    esacci_lakes_variable_over_smoke_season_df.to_csv(output / f"""{class_}_smoke_season_{esacci_lakes_variable}.csv""")
 
 
 def write_esacci_lakes_variable_over_high_smoke_season_df_to_csv(
     esacci_lakes_variable_over_high_smoke_season_df: pd.DataFrame,
-    esacci_lakes_variable:                           str
+    esacci_lakes_variable:                           str,
+    output:                                          Path
 ) -> None:
     """
     Writes `esacci_lakes_variable_over_high_smoke_season_df` to a csv
-    file.
+    file in `output`.
 
     Parameters
     ----------
@@ -1029,6 +1052,9 @@ def write_esacci_lakes_variable_over_high_smoke_season_df_to_csv(
     esacci_lakes_variable : :class:`str`
         The ESA CCI Lakes variable id
 
+    output : :class:`pathlib.Path`
+        The output directory path
+
     Returns
     -------
     None
@@ -1036,17 +1062,19 @@ def write_esacci_lakes_variable_over_high_smoke_season_df_to_csv(
     write_esacci_lakes_variable_over_smoke_season_df_to_csv(
         esacci_lakes_variable_over_high_smoke_season_df,
         esacci_lakes_variable,
+        output,
         class_ = "high"
     )
 
 
 def write_esacci_lakes_variable_over_low_smoke_season_df_to_csv(
     esacci_lakes_variable_over_low_smoke_season_df: pd.DataFrame,
-    esacci_lakes_variable:                          str
+    esacci_lakes_variable:                          str,
+    output:                                         Path
 ) -> None:
     """
     Writes `esacci_lakes_variable_over_low_smoke_season_df` to a csv
-    file.
+    file in `output`.
 
     Parameters
     ----------
@@ -1056,6 +1084,9 @@ def write_esacci_lakes_variable_over_low_smoke_season_df_to_csv(
     esacci_lakes_variable : :class:`str`
         The ESA CCI Lakes variable id
 
+    output : :class:`pathlib.Path`
+        The output directory path
+
     Returns
     -------
     None
@@ -1063,6 +1094,7 @@ def write_esacci_lakes_variable_over_low_smoke_season_df_to_csv(
     write_esacci_lakes_variable_over_smoke_season_df_to_csv(
         esacci_lakes_variable_over_low_smoke_season_df,
         esacci_lakes_variable,
+        output,
         class_ = "low"
     )
 
@@ -1070,12 +1102,13 @@ def write_esacci_lakes_variable_over_low_smoke_season_df_to_csv(
 def write_esacci_lakes_variable_anomaly_over_smoke_season_df_to_csv(
     esacci_lakes_variable_anomaly_over_smoke_season_df: pd.DataFrame,
     esacci_lakes_variable:                              str,
+    output:                                             Path,
     *,
     class_: str
 ) -> None:
     """
-    Writes `esacci_lakes_variable_anomaly_over_smoke_season_df` to a csv
-    file named
+    Writes `esacci_lakes_variable_anomaly_over_smoke_season_df` to a
+    csv file in `output`, named
     "{class_}_smoke_season_{esacci_lakes_variable}_anomaly.csv".
 
     Parameters
@@ -1086,6 +1119,9 @@ def write_esacci_lakes_variable_anomaly_over_smoke_season_df_to_csv(
     esacci_lakes_variable : :class:`str`
         The ESA CCI Lakes variable id
 
+    output : :class:`pathlib.Path`
+        The output directory path
+
     class_ : :class:`str`
         One of "high" or "low"
 
@@ -1093,16 +1129,22 @@ def write_esacci_lakes_variable_anomaly_over_smoke_season_df_to_csv(
     -------
     None
     """
-    esacci_lakes_variable_anomaly_over_smoke_season_df.to_csv(f"""data/dp/{class_}_smoke_season_{esacci_lakes_variable}_anomaly.csv""")
+    output.mkdir(
+        parents  = True,
+        exist_ok = True
+    )
+
+    esacci_lakes_variable_anomaly_over_smoke_season_df.to_csv(output / f"""{class_}_smoke_season_{esacci_lakes_variable}_anomaly.csv""")
 
 
 def write_esacci_lakes_variable_anomaly_over_high_smoke_season_df_to_csv(
     esacci_lakes_variable_anomaly_over_high_smoke_season_df: pd.DataFrame,
-    esacci_lakes_variable:                                   str
+    esacci_lakes_variable:                                   str,
+    output:                                                  Path
 ) -> None:
     """
     Writes `esacci_lakes_variable_anomaly_over_high_smoke_season_df` to
-    a csv file.
+    a csv file in `output`.
 
     Parameters
     ----------
@@ -1112,6 +1154,9 @@ def write_esacci_lakes_variable_anomaly_over_high_smoke_season_df_to_csv(
     esacci_lakes_variable : :class:`str`
         The ESA CCI Lakes variable id
 
+    output : :class:`pathlib.Path`
+        The output directory path
+
     Returns
     -------
     None
@@ -1119,17 +1164,19 @@ def write_esacci_lakes_variable_anomaly_over_high_smoke_season_df_to_csv(
     write_esacci_lakes_variable_anomaly_over_smoke_season_df_to_csv(
         esacci_lakes_variable_anomaly_over_high_smoke_season_df,
         esacci_lakes_variable,
+        output,
         class_ = "high"
     )
 
 
 def write_esacci_lakes_variable_anomaly_over_low_smoke_season_df_to_csv(
     esacci_lakes_variable_anomaly_over_low_smoke_season_df: pd.DataFrame,
-    esacci_lakes_variable:                                  str
+    esacci_lakes_variable:                                  str,
+    output:                                                 Path
 ) -> None:
     """
-    Writes `esacci_lakes_variable_anomaly_over_low_smoke_season_df` to a
-    csv file.
+    Writes `esacci_lakes_variable_anomaly_over_low_smoke_season_df` to
+    a csv file in `output`.
 
     Parameters
     ----------
@@ -1139,6 +1186,9 @@ def write_esacci_lakes_variable_anomaly_over_low_smoke_season_df_to_csv(
     esacci_lakes_variable : :class:`str`
         The ESA CCI Lakes variable id
 
+    output : :class:`pathlib.Path`
+        The output directory path
+
     Returns
     -------
     None
@@ -1146,6 +1196,7 @@ def write_esacci_lakes_variable_anomaly_over_low_smoke_season_df_to_csv(
     write_esacci_lakes_variable_anomaly_over_smoke_season_df_to_csv(
         esacci_lakes_variable_anomaly_over_low_smoke_season_df,
         esacci_lakes_variable,
+        output,
         class_ = "low"
     )
 
@@ -1232,19 +1283,23 @@ def main(
 
     write_esacci_lakes_variable_over_high_smoke_season_df_to_csv(
         variable_over_high_smoke_season_df,
-        args.esacci_lakes_variable
+        args.esacci_lakes_variable,
+        args.output
     )
     write_esacci_lakes_variable_over_low_smoke_season_df_to_csv(
         variable_over_low_smoke_season_df,
-        args.esacci_lakes_variable
+        args.esacci_lakes_variable,
+        args.output
     )
     write_esacci_lakes_variable_anomaly_over_high_smoke_season_df_to_csv(
         variable_anomaly_over_high_smoke_season_df,
-        args.esacci_lakes_variable
+        args.esacci_lakes_variable,
+        args.output
     )
     write_esacci_lakes_variable_anomaly_over_low_smoke_season_df_to_csv(
         variable_anomaly_over_low_smoke_season_df,
-        args.esacci_lakes_variable
+        args.esacci_lakes_variable,
+        args.output
     )
 
     return RETURN_SUCCESS
