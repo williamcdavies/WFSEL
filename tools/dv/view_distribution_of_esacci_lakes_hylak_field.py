@@ -32,14 +32,16 @@ from lib.plot.utils              import (
     save_figure
 )
 from lib.plot.vars               import SCALES
+from lib.proc.utils              import (
+    add_argument_output,
+    argument_output_is_a_file
+)
 from lib.proc.vars               import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
-from lib.time.utils              import get_program_time
 
 PROG = "view_distribution_of_esacci_lakes_hylak_field.py"
-TIME = get_program_time()
 
 
 # Argument functions
@@ -127,6 +129,7 @@ def build_parser(
 
     # Optional arguments
     add_argument_scale(parser)
+    add_argument_output(parser)
 
     return parser
 
@@ -156,6 +159,12 @@ def arguments_are_valid(
 
     if not argument_scale_is_in_scales(
         args.scale,
+        loud = True
+    ):
+        return False
+
+    if not argument_output_is_a_file(
+        args.output,
         loud = True
     ):
         return False
@@ -533,9 +542,7 @@ def main(
 
     save_figure(
         fig,
-        PROG,
-        TIME,
-        "figure"
+        args.output
     )
 
     return RETURN_SUCCESS
