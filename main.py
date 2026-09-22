@@ -31,6 +31,10 @@ from lib.geo.utils               import (
     select_ds_by_geo_bounding_box,
     mask_ds_by_combined_masks
 )
+from lib.proc.utils              import (
+    add_argument_output,
+    argument_output_is_a_file
+)
 from lib.proc.vars               import (
     RETURN_SUCCESS,
     RETURN_FAILURE
@@ -67,6 +71,9 @@ def build_parser(
     add_argument_esacci_lakes_static_lake_mask_nc_path(parser)
     add_argument_esacci_lakes_merged_product_nc_path(parser)
 
+    # Optional arguments
+    add_argument_output(parser)
+
     return parser
 
 
@@ -95,6 +102,12 @@ def arguments_are_valid(
 
     if not argument_esacci_lakes_merged_product_nc_path_exists(
         args.esacci_lakes_merged_product_nc_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_output_is_a_file(
+        args.output,
         loud = True
     ):
         return False
@@ -232,7 +245,7 @@ def get_esacci_lakes_merged_product_record(
     esacci_lakes_metadata_df:         pd.DataFrame,
     esacci_lakes_static_lake_mask_ds: xr.Dataset,
     esacci_lakes_merged_product_ds:   xr.Dataset
-) -> dict[str, int | float]:
+) -> dict[str, Any]:
     """
     Returns a record of `esacci_lakes_id`'s lake surface skin
     temperature mean and lake surface skin temperature coverage.
@@ -253,7 +266,7 @@ def get_esacci_lakes_merged_product_record(
 
     Returns
     -------
-    A :class:`dict[str, int | float]` with keys "esacci_lakes_id",
+    A :class:`dict[str, Any]` with keys "esacci_lakes_id",
     "lake_surface_water_temperature_mean", and
     "lake_surface_water_temperature_coverage".
     """
@@ -296,8 +309,8 @@ def get_esacci_lakes_merged_product_record(
         ]
     )
 
-    record: dict[str, int | float]                = {"esacci_lakes_id": esacci_lakes_id}
-    record["lake_surface_water_temperature_mean"] = get_esacci_lakes_variable_mean(
+    record: dict[str, Any]                            = {"esacci_lakes_id": esacci_lakes_id}
+    record["lake_surface_water_temperature_mean"]     = get_esacci_lakes_variable_mean(
         "lake_surface_water_temperature",
         esacci_lakes_merged_product_ds = masked_merged_product_ds_window
     )
@@ -350,27 +363,6 @@ def get_esacci_lakes_merged_product_df(
     return pd.DataFrame(records).set_index("esacci_lakes_id")
 
 
-def get_esacci_lakes_merged_product_fname(
-    esacci_lakes_merged_product_nc_path: Path
-) -> str:
-    """
-    Returns the output file name for
-    `esacci_lakes_merged_product_nc_path`.
-
-    Parameters
-    ----------
-    esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
-        The path to some ESA CCI Lakes merged product netCDF file
-
-    Returns
-    -------
-    A :class:`str`.
-    """
-    stem = esacci_lakes_merged_product_nc_path.stem
-
-    return f"{stem}.csv"
-
-
 # ==================================================================================================
 
 
@@ -378,25 +370,29 @@ def get_esacci_lakes_merged_product_fname(
 # ==================================================================================================
 def write_esacci_lakes_merged_product_df_to_csv(
     esacci_lakes_merged_product_df: pd.DataFrame,
-    *,
-    fname: str
+    output:                         Path
 ) -> None:
     """
-    Writes `esacci_lakes_merged_product_df` to `fname`.
+    Writes `esacci_lakes_merged_product_df` to `output`.
 
     Parameters
     ----------
     esacci_lakes_merged_product_df : :class:`pandas.DataFrame`
         The dataframe
 
-    fname : :class:`str`
-        The output file name
+    output : :class:`pathlib.Path`
+        The output file path
 
     Returns
     -------
     None
     """
-    esacci_lakes_merged_product_df.to_csv(fname)
+    output.parent.mkdir(
+        parents  = True,
+        exist_ok = True
+    )
+
+    esacci_lakes_merged_product_df.to_csv(output)
 
 
 # ==================================================================================================
@@ -424,11 +420,9 @@ def main(
             merged_product_ds
         )
 
-    fname = get_esacci_lakes_merged_product_fname(args.esacci_lakes_merged_product_nc_path)
-
     write_esacci_lakes_merged_product_df_to_csv(
         merged_product_df,
-        fname = fname
+        args.output
     )
 
     return RETURN_SUCCESS
