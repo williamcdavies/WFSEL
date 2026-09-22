@@ -169,8 +169,8 @@ def force_ax_xtick_visibility(
         The axes to set x-axis tick label visibility on
 
     on : :class:`bool`
-        If `True`, shows `ax`'s x-axis tick labels. If `False`, hides them.
-        default=True
+        If `True`, shows `ax`'s x-axis tick labels. If `False`, hides
+        them. default=True
 
     Returns
     -------
@@ -193,8 +193,8 @@ def force_ax_ytick_visibility(
         The axes to set y-axis tick label visibility on
 
     on : :class:`bool`
-        If `True`, shows `ax`'s y-axis tick labels. If `False`, hides them.
-        default=True
+        If `True`, shows `ax`'s y-axis tick labels. If `False`, hides
+        them. default=True
 
     Returns
     -------

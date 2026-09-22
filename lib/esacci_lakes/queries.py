@@ -2,7 +2,7 @@ r"""
 queries.py
 
 Description:
-   Provides definitions for esacci_lakes-utility queries.
+    Provides definitions for esacci_lakes-utility queries.
 
 Written by William Chuter-Davies
 """
