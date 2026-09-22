@@ -230,7 +230,7 @@ def save_figure(
     -------
     None
     """
-    fdir  = Path(f"data/{prog}_{time}")
+    fdir  = Path(f"data/dv/{prog}_{time}")
 
     fdir.mkdir(
         parents  = True,
