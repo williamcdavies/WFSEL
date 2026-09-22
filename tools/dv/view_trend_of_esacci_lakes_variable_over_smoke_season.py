@@ -8,16 +8,21 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from pathlib                     import Path
-from datetime                    import datetime
+from pathlib  import Path
+from datetime import datetime
 
 # Related Third-party Imports
-import matplotlib.pyplot         as plt
-import numpy                     as np
-import pandas                    as pd
+import matplotlib.pyplot as plt
+import numpy             as np
+import pandas            as pd
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils.io   import (
+from lib.dataframe.utils              import filter_df_by_column_bounds
+from lib.esacci_lakes.utils.dataframe import (
+    drop_hylak_field_columns_from_df,
+    merge_dfs_on_esacci_lakes_id
+)
+from lib.esacci_lakes.utils.proc      import (
     add_argument_esacci_lakes_variable,
     add_argument_hylak_field,
     add_argument_esacci_lakes_hylak_fields_csv_path,
@@ -26,26 +31,22 @@ from lib.esacci_lakes.utils.io   import (
     argument_esacci_lakes_hylak_fields_csv_path_exists,
     read_esacci_lakes_hylak_fields_csv
 )
-from lib.esacci_lakes.utils.math import (
-    drop_hylak_field_columns_from_df,
-    merge_dfs_on_esacci_lakes_id
-)
-from lib.esacci_lakes.vars       import (
+from lib.esacci_lakes.vars            import (
     ESACCI_LAKES_VARIABLES,
     HYLAK_FIELDS
 )
-from lib.io.vars                 import (
-    RETURN_FAILURE,
-    RETURN_SUCCESS
-)
-from lib.math.utils              import filter_df_by_column_bounds
-from lib.plot.utils              import (
+from lib.plot.utils                   import (
     force_ax_xtick_visibility,
     save_figure
 )
+from lib.proc.vars                    import (
+    RETURN_FAILURE,
+    RETURN_SUCCESS
+)
+from lib.time.utils                   import get_program_time
 
 PROG  = "view_trend_of_esacci_lakes_variable_over_smoke_season.py"
-TIME  = datetime.now()
+TIME  = get_program_time()
 FORMS = [
     "Absolute",
     "Anomaly"
@@ -59,11 +60,11 @@ def add_argument_esacci_lakes_variable_over_high_smoke_season_csv_path(
 ) -> None:
     """
     Adds a `esacci_lakes_variable_over_high_smoke_season_csv_path`
-    argument to a :class:`ArgumentParser`.
+    argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -73,7 +74,7 @@ def add_argument_esacci_lakes_variable_over_high_smoke_season_csv_path(
     Notes
     -----
     Argument `esacci_lakes_variable_over_high_smoke_season_csv_path` is
-    of type :class:`Path`.
+    of type :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_variable_over_high_smoke_season_csv_path",
@@ -85,7 +86,7 @@ def add_argument_esacci_lakes_variable_over_high_smoke_season_csv_path(
 def argument_esacci_lakes_variable_over_high_smoke_season_csv_path_exists(
     esacci_lakes_variable_over_high_smoke_season_csv_path: Path,
     *,
-    loud:                                                  bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `esacci_lakes_variable_over_high_smoke_season_csv_path`.
@@ -96,14 +97,13 @@ def argument_esacci_lakes_variable_over_high_smoke_season_csv_path_exists(
         The argument
         `esacci_lakes_variable_over_high_smoke_season_csv_path`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
     -------
-    `True` if
-    `esacci_lakes_variable_over_high_smoke_season_csv_path` exists.
-    `False` otherwise.
+    `True` if `esacci_lakes_variable_over_high_smoke_season_csv_path`
+    exists. `False` otherwise.
     """
     if esacci_lakes_variable_over_high_smoke_season_csv_path.exists():
         return True
@@ -118,8 +118,8 @@ def read_esacci_lakes_variable_over_high_smoke_season_csv(
     esacci_lakes_variable_over_high_smoke_season_csv_path: Path
 ) -> pd.DataFrame:
     """
-    Reads `esacci_lakes_variable_over_high_smoke_season_csv_path` into
-    a :class:`pandas.DataFrame`.
+    Reads `esacci_lakes_variable_over_high_smoke_season_csv_path` into a
+    dataframe.
 
     Parameters
     ----------
@@ -142,11 +142,11 @@ def add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(
 ) -> None:
     """
     Adds a `esacci_lakes_variable_over_low_smoke_season_csv_path`
-    argument to a :class:`ArgumentParser`.
+    argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -156,7 +156,7 @@ def add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(
     Notes
     -----
     Argument `esacci_lakes_variable_over_low_smoke_season_csv_path` is
-    of type :class:`Path`.
+    of type :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_variable_over_low_smoke_season_csv_path",
@@ -168,7 +168,7 @@ def add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(
 def argument_esacci_lakes_variable_over_low_smoke_season_csv_path_exists(
     esacci_lakes_variable_over_low_smoke_season_csv_path: Path,
     *,
-    loud:                                                 bool = False
+    loud: bool = False
 ) -> bool:
     """
     Validates `esacci_lakes_variable_over_low_smoke_season_csv_path`.
@@ -179,7 +179,7 @@ def argument_esacci_lakes_variable_over_low_smoke_season_csv_path_exists(
         The argument
         `esacci_lakes_variable_over_low_smoke_season_csv_path`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -201,7 +201,7 @@ def read_esacci_lakes_variable_over_low_smoke_season_csv(
 ) -> pd.DataFrame:
     """
     Reads `esacci_lakes_variable_over_low_smoke_season_csv_path` into a
-    :class:`pandas.DataFrame`.
+    dataframe.
 
     Parameters
     ----------
@@ -223,11 +223,11 @@ def add_argument_form(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `form` argument to a :class:`ArgumentParser`.
+    Adds a `form` argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    parser : :class:`ArgumentParser`
+    parser : :class:`argparse.ArgumentParser`
         The parser
 
     Returns
@@ -260,7 +260,7 @@ def argument_form_is_in_forms(
     form : :class:`str`
         The argument `form`
 
-    loud : bool
+    loud : :class:`bool`
         If `True`, prints an error message to stdout. default=False
 
     Returns
@@ -280,7 +280,7 @@ def build_parser(
     prog: str
 ) -> argparse.ArgumentParser:
     """
-    Builds a :class:`ArgumentParser`.
+    Builds a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -289,7 +289,7 @@ def build_parser(
 
     Returns
     -------
-    A :class:`ArgumentParser`.
+    A :class:`argparse.ArgumentParser`.
     """
     parser = argparse.ArgumentParser(
         prog        = prog,
@@ -387,9 +387,7 @@ def get_lakes_df_week_number_ser_pairs(
     lakes_df: pd.DataFrame
 ) -> list[tuple[int, pd.Series]]:
     """
-    Returns `lakes_df`'s week columns as (week number,
-    :class:`pandas.Series`) pairs, restricted to week numbers in
-    [-3, 20].
+    Returns `lakes_df`'s week columns as (week number, series) pairs.
 
     Parameters
     ----------
@@ -398,12 +396,7 @@ def get_lakes_df_week_number_ser_pairs(
 
     Returns
     -------
-    A list of (week number, :class:`pandas.Series`) pairs.
-
-    Notes
-    -----
-    Internal `pandas.DataFrame.filter` call assumes `lakes_df` has one
-    or more columns named "w_{n}", where `n` is a week number.
+    A list of (week number, series) pairs.
     """
     prefix = "w_"
     pairs  = []
@@ -446,14 +439,9 @@ def get_lower_bounds_lakes_df(
     ------
     ValueError
         If `hylak_field`'s `lower_bound` is `None`.
-
-    Notes
-    -----
-    Internal `HYLAK_FIELDS` lookup assumes `hylak_field` has a non-`None`
-    `lower_bound`.
     """
     if HYLAK_FIELDS[hylak_field].lower_bound is None:
-        raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `lower_bound`")
+        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `lower_bound`")
 
     filtered_df = filter_df_by_column_bounds(
         df     = df,
@@ -489,17 +477,12 @@ def get_middle_bounds_lakes_df(
     ------
     ValueError
         If `hylak_field`'s `lower_bound` or `upper_bound` is `None`.
-
-    Notes
-    -----
-    Internal `HYLAK_FIELDS` lookup assumes `hylak_field` has non-`None`
-    `lower_bound` and `upper_bound`.
     """
     if HYLAK_FIELDS[hylak_field].lower_bound is None:
-        raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `lower_bound`")
+        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `lower_bound`")
 
     if HYLAK_FIELDS[hylak_field].upper_bound is None:
-        raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `upper_bound`")
+        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `upper_bound`")
 
     filtered_df = filter_df_by_column_bounds(
         df     = df,
@@ -535,14 +518,9 @@ def get_upper_bounds_lakes_df(
     ------
     ValueError
         If `hylak_field`'s `upper_bound` is `None`.
-
-    Notes
-    -----
-    Internal `HYLAK_FIELDS` lookup assumes `hylak_field` has a non-`None`
-    `upper_bound`.
     """
     if HYLAK_FIELDS[hylak_field].upper_bound is None:
-        raise ValueError(f"expected `hylak_field` \"{hylak_field}\" to have a non-`None` `upper_bound`")
+        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `upper_bound`")
 
     filtered_df = filter_df_by_column_bounds(
         df     = df,
@@ -558,8 +536,7 @@ def get_lakes_medians_ser(
     lakes_df: pd.DataFrame
 ) -> pd.Series:
     """
-    Returns `lakes_df`'s week columns' medians, indexed by week
-    number.
+    Returns `lakes_df`'s week columns' medians.
 
     Parameters
     ----------
@@ -568,7 +545,7 @@ def get_lakes_medians_ser(
 
     Returns
     -------
-    A :class:`pandas.Series` indexed by week number.
+    A :class:`pandas.Series`.
     """
     return pd.Series(
         {
@@ -588,8 +565,8 @@ def plot_lakes_df_scatterplot(
     ax:       plt.Axes, # type: ignore
     lakes_df: pd.DataFrame,
     *,
-    color:    str,
-    label:    str | None = None
+    color: str,
+    label: str | None = None
 ) -> None:
     """
     Plots a scatterplot of `lakes_df`'s week columns onto `ax`.
@@ -605,7 +582,7 @@ def plot_lakes_df_scatterplot(
     color : :class:`str`
         The point color
 
-    label : :class:`str`
+    label : :class:`str` | `None`
         The legend label
 
     Returns
@@ -627,8 +604,8 @@ def plot_lakes_df_lineplot(
     ax:         plt.Axes, # type: ignore
     median_ser: pd.Series,
     *,
-    color:      str,
-    label:      str | None = None
+    color: str,
+    label: str | None = None
 ) -> None:
     """
     Plots a line of `median_ser`'s values onto `ax`.
@@ -639,13 +616,12 @@ def plot_lakes_df_lineplot(
         The axes to plot onto
 
     median_ser : :class:`pandas.Series`
-        A :class:`pandas.Series` of weekly medians, indexed by week
-        number, as returned by `get_lakes_medians_ser`
+        A series of medians
 
     color : :class:`str`
         The line color
 
-    label : :class:`str`
+    label : :class:`str` | `None`
         The legend label
 
     Returns
@@ -662,7 +638,7 @@ def plot_lakes_df_lineplot(
 
 
 def plot_on_upper_bounds_lakes_ax(
-    upper_bounds_lakes_ax:        plt.Axes, # type: ignore
+    upper_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
     upper_high_lakes_df:          pd.DataFrame,
     upper_low_lakes_df:           pd.DataFrame,
@@ -723,7 +699,7 @@ def plot_on_upper_bounds_lakes_ax(
 
 
 def plot_on_middle_bounds_lakes_ax(
-    middle_bounds_lakes_ax:        plt.Axes, # type: ignore
+    middle_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
     middle_high_lakes_df:          pd.DataFrame,
     middle_low_lakes_df:           pd.DataFrame,
@@ -784,7 +760,7 @@ def plot_on_middle_bounds_lakes_ax(
 
 
 def plot_on_lower_bounds_lakes_ax(
-    lower_bounds_lakes_ax:        plt.Axes, # type: ignore
+    lower_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
     lower_high_lakes_df:          pd.DataFrame,
     lower_low_lakes_df:           pd.DataFrame,
@@ -827,7 +803,7 @@ def plot_on_lower_bounds_lakes_ax(
     plot_lakes_df_lineplot(
         lower_bounds_lakes_ax,
         lower_high_lakes_medians_ser,
-        color="#FF0000",
+        color ="#FF0000",
         label = "High Smoke Season (Median)"
     )
 
@@ -852,9 +828,7 @@ def set_upper_bounds_lakes_ax_properties(
     form:                  str
 ) -> None:
     """
-    Sets `upper_bounds_lakes_ax`'s properties, including its title,
-    x-axis label, y-axis label, x-axis ticks, and x-tick label
-    visibility.
+    Sets `upper_bounds_lakes_ax`'s properties.
 
     Parameters
     ----------
@@ -894,14 +868,12 @@ def set_upper_bounds_lakes_ax_properties(
 def set_middle_bounds_lakes_ax_properties(
     middle_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
-    esacci_lakes_variable:  str,
-    hylak_field:            str,
-    form:                   str
+    esacci_lakes_variable: str,
+    hylak_field:           str,
+    form:                  str
 ) -> None:
     """
-    Sets `middle_bounds_lakes_ax`'s properties, including its title,
-    x-axis label, y-axis label, x-axis ticks, and x-tick label
-    visibility.
+    Sets `middle_bounds_lakes_ax`'s properties.
 
     Parameters
     ----------
@@ -948,9 +920,7 @@ def set_lower_bounds_lakes_ax_properties(
     form:                  str
 ) -> None:
     """
-    Sets `lower_bounds_lakes_ax`'s properties, including its title,
-    x-axis label, y-axis label, x-axis ticks, and x-tick label
-    visibility.
+    Sets `lower_bounds_lakes_ax`'s properties.
 
     Parameters
     ----------
@@ -997,7 +967,7 @@ def main(
     """
     args = build_parser(PROG).parse_args()
 
-    if not arguments_are_valid(args): 
+    if not arguments_are_valid(args):
         return RETURN_FAILURE
 
     variable_over_high_smoke_season_df = read_esacci_lakes_variable_over_high_smoke_season_csv(args.esacci_lakes_variable_over_high_smoke_season_csv_path)
@@ -1063,14 +1033,14 @@ def main(
         sharey  = True,
         figsize = (12.8, 14.4)
     )
-    plt.subplots_adjust(hspace=0.25)
+    plt.subplots_adjust(hspace = 0.25)
 
     plot_on_upper_bounds_lakes_ax(
         upper_bounds_lakes_ax,
         upper_high_lakes_df          = upper_high_lakes_df,
         upper_low_lakes_df           = upper_low_lakes_df,
         upper_high_lakes_medians_ser = upper_high_lakes_medians_ser,
-        upper_low_lakes_medians_ser  = upper_low_lakes_medians_ser,
+        upper_low_lakes_medians_ser  = upper_low_lakes_medians_ser
     )
     plot_on_middle_bounds_lakes_ax(
         middle_bounds_lakes_ax,
