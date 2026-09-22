@@ -5,244 +5,482 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-import subprocess
+import argparse
 import sys
 
-from argparse           import ArgumentParser
 from concurrent.futures import (
+    Future,
     ThreadPoolExecutor,
     as_completed
 )
-from dataclasses        import dataclass
 from datetime           import datetime
 from pathlib            import Path
+from subprocess         import run
+from typing             import TextIO
 
 # Related Third-party Imports
 from tqdm import tqdm
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils.argparse import (
+from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_metadata_csv_path,
     add_argument_esacci_lakes_static_lake_mask_nc_path,
+    add_argument_esacci_lakes_merged_product_dir_path,
     argument_esacci_lakes_metadata_csv_path_exists,
-    argument_esacci_lakes_static_lake_mask_nc_path_exists
+    argument_esacci_lakes_static_lake_mask_nc_path_exists,
+    argument_esacci_lakes_merged_product_dir_path_exists,
+    get_esacci_lakes_merged_product_nc_paths
 )
-from lib.io.vars                     import (
+from lib.proc.objects            import CompletedProcessLog
+from lib.proc.utils              import (
+    open_logstream,
+    get_program_odir_path
+)
+from lib.proc.vars               import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
+from lib.time.utils              import (
+    get_program_time,
+    get_year_from_datetime,
+    get_month_from_datetime
+)
 
 PROG = "main_parallel.py"
+TIME = get_program_time()
 
 
-@dataclass
-class CompletedProcessLog:
-    args:       list
-    returncode: int
-    stdout:     str
-    stderr:     str
+# Argument functions
+# ==================================================================================================
+def add_argument_workers(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `workers` argument to a :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `workers` is of type :class:`int`. default=8.
+    """
+    parser.add_argument(
+        "--workers",
+        type    = int,
+        default = 8,
+        help    = """number of worker threads"""
+    )
 
 
-def get_date_str_from_file(
-    file: Path
-) -> str:
-    return file.stem.split("-")[5]
+def build_parser(
+    prog: str
+) -> argparse.ArgumentParser:
+    """
+    Builds a :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    prog : :class:`str`
+        The program name
+
+    Returns
+    -------
+    A :class:`argparse.ArgumentParser`.
+    """
+    parser = argparse.ArgumentParser(
+        prog        = prog,
+        usage       = "%(prog)s [options]",
+        description = """Runs `main.py` in parallel."""
+    )
+
+    # Positional arguments
+    add_argument_esacci_lakes_metadata_csv_path(parser)
+    add_argument_esacci_lakes_static_lake_mask_nc_path(parser)
+    add_argument_esacci_lakes_merged_product_dir_path(parser)
+    add_argument_workers(parser)
+
+    return parser
 
 
-def get_year_from_date_str(
-    date_str: str
-) -> str:
-    return date_str[0:4]
+def arguments_are_valid(
+    args: argparse.Namespace
+) -> bool:
+    """
+    Validates `args`.
+
+    Returns
+    -------
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
+    """
+    if not argument_esacci_lakes_metadata_csv_path_exists(
+        args.esacci_lakes_metadata_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_esacci_lakes_static_lake_mask_nc_path_exists(
+        args.esacci_lakes_static_lake_mask_nc_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_esacci_lakes_merged_product_dir_path_exists(
+        args.esacci_lakes_merged_product_dir_path,
+        loud = True
+    ):
+        return False
+
+    return True
 
 
-def get_year_from_file(
-    file: Path
-) -> str:
-    return get_year_from_date_str(get_date_str_from_file(file))
+# ==================================================================================================
+def get_esacci_lakes_merged_product_time(
+    esacci_lakes_merged_product_nc_path: Path
+) -> datetime:
+    """
+    Returns the time for `esacci_lakes_merged_product_nc_path` as a
+    :class:`datetime.datetime`.
+
+    Parameters
+    ----------
+    esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
+        The path to some ESA CCI Lakes merged product netCDF file
+
+    Returns
+    -------
+    A :class:`datetime.datetime`.
+    """
+    date_string = esacci_lakes_merged_product_nc_path.stem.split("-")[5]
+
+    return datetime.strptime(
+        date_string,
+        "%Y%m%d"
+    )
 
 
-def get_month_from_date_str(
-    date_str: str
-) -> str:
-    return date_str[4:6]
-
-
-def get_month_from_file(
-    file: Path
-) -> str:
-    return get_month_from_date_str(get_date_str_from_file(file))
-
-
-def get_output_csv_path_from_file(
-    file:            Path,
-    output_dir_path: Path
+def get_esacci_lakes_merged_product_cwd_path(
+    program_odir:                        Path,
+    esacci_lakes_merged_product_nc_path: Path
 ) -> Path:
-    date_str = get_date_str_from_file(file)
-    year     = get_year_from_date_str(date_str)
-    month    = get_month_from_date_str(date_str)
+    """
+    Returns the current working directory path for
+    `esacci_lakes_merged_product_nc_path`.
 
-    return Path(output_dir_path / year / month / (file.stem + ".csv"))
+    Parameters
+    ----------
+    program_odir : :class:`pathlib.Path`
+        The program's output directory
+
+    esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
+        The path to some ESA CCI Lakes merged product netCDF file
+
+    Returns
+    -------
+    A :class:`pathlib.Path`.
+    """
+    time  = get_esacci_lakes_merged_product_time(esacci_lakes_merged_product_nc_path)
+    year  = get_year_from_datetime(time)
+    month = get_month_from_datetime(time)
+
+    return program_odir / "data" / year / month
 
 
-def __main_py(
-    esacci_lakes_metadata_csv_path:        Path,
-    esacci_lakes_static_lake_mask_nc_path: Path,
-    esacci_lakes_merged_product_nc_path:   Path,
-    output_csv_path:                       Path
-) -> CompletedProcessLog:
-    completed_process = subprocess.run(
-        [
-            sys.executable,
-            "main.py",
-            str(esacci_lakes_metadata_csv_path),
-            str(esacci_lakes_static_lake_mask_nc_path),
-            str(esacci_lakes_merged_product_nc_path),
-            str(output_csv_path)
-        ],
-        capture_output=True,
-        text=True,
-    )
-    
-    return CompletedProcessLog(
-        args=completed_process.args,
-        returncode=completed_process.returncode,
-        stdout=completed_process.stdout,
-        stderr=completed_process.stderr
-    )
+def get_esacci_lakes_merged_product_cwd_paths(
+    program_odir:                         Path,
+    esacci_lakes_merged_product_nc_paths: list[Path]
+) -> list[Path]:
+    """
+    Returns the current working directory paths for
+    `esacci_lakes_merged_product_nc_paths`.
+
+    Parameters
+    ----------
+    program_odir : :class:`pathlib.Path`
+        The program's output directory
+
+    esacci_lakes_merged_product_nc_paths : list[:class:`pathlib.Path`]
+        Paths to some ESA CCI Lakes merged product netCDF files
+
+    Returns
+    -------
+    A list of :class:`pathlib.Path`.
+    """
+    return [
+        get_esacci_lakes_merged_product_cwd_path(
+            program_odir,
+            esacci_lakes_merged_product_nc_path
+        )
+        for esacci_lakes_merged_product_nc_path
+        in esacci_lakes_merged_product_nc_paths
+    ]
 
 
 def main_py(
     esacci_lakes_metadata_csv_path:        Path,
     esacci_lakes_static_lake_mask_nc_path: Path,
     esacci_lakes_merged_product_nc_path:   Path,
-    output_dir_path:                       Path
-) -> CompletedProcessLog: 
-    output_csv_path = get_output_csv_path_from_file(
-        esacci_lakes_merged_product_nc_path,
-        output_dir_path
-    )
-    output_csv_path.parent.mkdir(
-        parents=True, 
-        exist_ok=True
+    cwd:                                   Path
+) -> CompletedProcessLog:
+    """
+    Runs a main.py subprocess and returns the completed process log.
+
+    Parameters
+    ----------
+    esacci_lakes_metadata_csv_path : :class:`pathlib.Path`
+        The path to the `lakescci_v2.1.0_metadata.csv` file as provided by
+        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
+        Version 3.0
+
+    esacci_lakes_static_lake_mask_nc_path : :class:`pathlib.Path`
+        The path to the `ESA_CCI_static_lake_mask.nc` file as provided by
+        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
+        Version 3.0
+
+    esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
+        The path to some
+        `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` file
+        as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
+        Lake products, Version 3.0
+
+    cwd : :class:`pathlib.Path`
+        The current working directory
+
+    Returns
+    -------
+    A :class:`lib.proc.objects.CompletedProcessLog`
+    """
+    completed_process = run(
+        [
+            sys.executable,
+            "main.py",
+            str(esacci_lakes_metadata_csv_path),
+            str(esacci_lakes_static_lake_mask_nc_path),
+            str(esacci_lakes_merged_product_nc_path)
+        ],
+        capture_output = True,
+        text           = True,
+        cwd            = cwd
     )
 
-    return __main_py(
+    return CompletedProcessLog(
+        args       = completed_process.args,
+        returncode = completed_process.returncode,
+        stdout     = completed_process.stdout,
+        stderr     = completed_process.stderr
+    )
+
+
+def get_main_py_future(
+    executor: ThreadPoolExecutor,
+    *,
+    esacci_lakes_metadata_csv_path:        Path,
+    esacci_lakes_static_lake_mask_nc_path: Path,
+    esacci_lakes_merged_product_nc_path:   Path,
+    cwd:                                   Path
+) -> Future:
+    """
+    Submits a main.py subprocess and returns its future.
+
+    Parameters
+    ----------
+    executor : :class:`concurrent.futures.ThreadPoolExecutor`
+        The executor to submit to
+
+    esacci_lakes_metadata_csv_path : :class:`pathlib.Path`
+        The path to the `lakescci_v2.1.0_metadata.csv` file as provided by
+        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
+        Version 3.0
+
+    esacci_lakes_static_lake_mask_nc_path : :class:`pathlib.Path`
+        The path to the `ESA_CCI_static_lake_mask.nc` file as provided by
+        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
+        Version 3.0
+
+    esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
+        The path to some
+        `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` file
+        as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
+        Lake products, Version 3.0
+
+    cwd : :class:`pathlib.Path`
+        The current working directory
+
+    Returns
+    -------
+    A :class:`concurrent.futures.Future`.
+    """
+    return executor.submit(
+        main_py,
         esacci_lakes_metadata_csv_path,
-        esacci_lakes_static_lake_mask_nc_path, 
+        esacci_lakes_static_lake_mask_nc_path,
         esacci_lakes_merged_product_nc_path,
-        output_csv_path
+        cwd
     )
 
 
-def main() -> int:
-    # Argument parsing
-    # ==================================================================================================
-    parser = ArgumentParser(
-        prog=PROG,
-        usage="%(prog)s [options]",
-        description=""""""
-    )
+def get_main_py_futures(
+    executor: ThreadPoolExecutor,
+    *,
+    esacci_lakes_metadata_csv_path:        Path,
+    esacci_lakes_static_lake_mask_nc_path: Path,
+    esacci_lakes_merged_product_nc_paths:  list[Path],
+    cwds:                                  list[Path]
+) -> list[Future]:
+    """
+    Submits a main.py subprocess for each of
+    `esacci_lakes_merged_product_nc_paths`.
 
-    # Positional arguments
-    add_argument_esacci_lakes_metadata_csv_path(parser)
-    add_argument_esacci_lakes_static_lake_mask_nc_path(parser)
-    parser.add_argument(
-        "input_dir_path",
-        type=Path,
-        help=f""""""
-    )
-    parser.add_argument(
-        "output_dir_path",
-        type=Path,
-        help=f""""""
-    )
-    
-    # Optional arguments
-    parser.add_argument(
-        "--workers",
-        default=8,
-        type=int,
-        help=f""""""
-    )
+    Parameters
+    ----------
+    executor : :class:`concurrent.futures.ThreadPoolExecutor`
+        The executor to submit to
 
-    args = parser.parse_args()
-    # ==================================================================================================
+    esacci_lakes_metadata_csv_path : :class:`pathlib.Path`
+        The path to the `lakescci_v2.1.0_metadata.csv` file as provided by
+        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
+        Version 3.0
 
-    # Argument validation
-    # ==================================================================================================
-    if not argument_esacci_lakes_metadata_csv_path_exists(
-        args.esacci_lakes_metadata_csv_path,
-        loud=True
+    esacci_lakes_static_lake_mask_nc_path : :class:`pathlib.Path`
+        The path to the `ESA_CCI_static_lake_mask.nc` file as provided by
+        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
+        Version 3.0
+
+    esacci_lakes_merged_product_nc_paths : list[:class:`pathlib.Path`]
+        Paths to some
+        `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` files
+        as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
+        Lake products, Version 3.0
+
+    cwds : list[:class:`pathlib.Path`]
+        The current working directories
+
+    Returns
+    -------
+    A list of :class:`concurrent.futures.Future`.
+
+    Raises
+    ------
+    ValueError
+        If `cwds` and `esacci_lakes_merged_product_nc_paths` are not of
+        similar length.
+    """
+    if len(cwds) != len(esacci_lakes_merged_product_nc_paths):
+        raise ValueError("expected `cwds` and `esacci_lakes_merged_product_nc_paths` to be of similar length")
+
+    futures = []
+
+    for (
+        esacci_lakes_merged_product_nc_path,
+        cwd
+    ) in zip(
+        esacci_lakes_merged_product_nc_paths,
+        cwds
     ):
-        return RETURN_FAILURE
-
-    if not argument_esacci_lakes_static_lake_mask_nc_path_exists(
-        args.esacci_lakes_static_lake_mask_nc_path,
-        loud=True
-    ):
-        return RETURN_FAILURE
-
-    if not args.input_dir_path.exists():
-        print(
-            f"""error: argument input_dir_path: no such file or directory: {args.input_dir_path}"""
+        cwd.mkdir(
+            parents  = True,
+            exist_ok = True
         )
-        
-        return RETURN_FAILURE
 
-    if not args.output_dir_path.exists():
-        print(
-            f"""error: argument output_dir_path: no such file or directory: {args.output_dir_path}"""
+        future = get_main_py_future(
+            executor,
+            esacci_lakes_metadata_csv_path        = esacci_lakes_metadata_csv_path,
+            esacci_lakes_static_lake_mask_nc_path = esacci_lakes_static_lake_mask_nc_path,
+            esacci_lakes_merged_product_nc_path   = esacci_lakes_merged_product_nc_path,
+            cwd                                   = cwd
         )
-        
+
+        futures.append(future)
+
+    return futures
+
+
+def write_completed_process_log_to_logstream(
+    completed_process_log: CompletedProcessLog,
+    *,
+    logstream: TextIO
+) -> None:
+    """
+    Writes `completed_process_log` to `logstream`.
+
+    Parameters
+    ----------
+    completed_process_log : :class:`CompletedProcessLog`
+        The completed process log
+
+    logstream : :class:`typing.TextIO`
+        The writable file object
+
+    Returns
+    -------
+    None
+    """
+    logstream.write(f"{datetime.now().isoformat()}\n")
+    logstream.write(f"args:       {completed_process_log.args}\n")
+    logstream.write(f"returncode: {completed_process_log.returncode}\n")
+    logstream.write(f"stdout:     {completed_process_log.stdout}\n")
+    logstream.write(f"stderr:     {completed_process_log.stderr}\n")
+    logstream.write("-" * 100 + "\n")
+    logstream.flush()
+
+
+def main(
+) -> int:
+    """
+    Orchestration layer.
+    """
+    args = build_parser(PROG).parse_args()
+
+    if not arguments_are_valid(args):
         return RETURN_FAILURE
-    # ==================================================================================================
 
-    # Program logic
-    # ==================================================================================================
-    files = list(args.input_dir_path.glob('**/*.nc'))
+    program_odir_path = get_program_odir_path(
+        PROG,
+        TIME
+    )
 
-    timestamp     = datetime.now().strftime("%Y%m%dT%H%M%S")
-    log_file_path = args.output_dir_path / f"{timestamp}.log"
+    program_odir_path.mkdir(
+        parents  = True,
+        exist_ok = True
+    )
+
+    merged_product_nc_paths = get_esacci_lakes_merged_product_nc_paths(args.esacci_lakes_merged_product_dir_path)
+    merged_product_cwds     = get_esacci_lakes_merged_product_cwd_paths(
+        program_odir_path,
+        merged_product_nc_paths
+    )
 
     with (
-        ThreadPoolExecutor(max_workers=args.workers) as executor,
-        open(log_file_path, "a")                     as log_file
+        ThreadPoolExecutor(max_workers = args.workers) as executor,
+        open_logstream(program_odir_path)              as logstream
     ):
-        futures = []
-
-        for file in files:
-            if get_output_csv_path_from_file(
-                file, 
-                args.output_dir_path
-            ).exists():
-                continue
-
-            futures.append(
-                executor.submit(
-                    main_py, 
-                    args.esacci_lakes_metadata_csv_path, 
-                    args.esacci_lakes_static_lake_mask_nc_path, 
-                    file, 
-                    args.output_dir_path
-                )
-            )
+        futures = get_main_py_futures(
+            executor,
+            esacci_lakes_metadata_csv_path        = args.esacci_lakes_metadata_csv_path,
+            esacci_lakes_static_lake_mask_nc_path = args.esacci_lakes_static_lake_mask_nc_path,
+            esacci_lakes_merged_product_nc_paths  = merged_product_nc_paths,
+            cwds                                  = merged_product_cwds
+        )
 
         for future in tqdm(
             as_completed(futures),
-            total=len(futures)
+            total = len(futures)
         ):
-            result = future.result()
+            completed_process_log = future.result()
 
-            log_file.write(f"{datetime.now().isoformat()}\n")
-            log_file.write(f"args:       {result.args}\n")
-            log_file.write(f"returncode: {result.returncode}\n")
-            log_file.write(f"stdout:     {result.stdout}\n")
-            log_file.write(f"stderr:     {result.stderr}\n")
-            log_file.write("-" * 100 + "\n")
-            log_file.flush()
+            write_completed_process_log_to_logstream(
+                completed_process_log,
+                logstream = logstream
+            )
 
     return RETURN_SUCCESS
-    # ==================================================================================================
 
 
 if __name__ == "__main__":
