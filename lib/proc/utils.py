@@ -8,32 +8,97 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
+import argparse
+
 from pathlib import Path
 from typing  import TextIO
 
 
-def get_program_odir_path(
-    prog: str,
-    time: str
-) -> Path:
+def add_argument_output(
+    parser: argparse.ArgumentParser
+) -> None:
     """
-    Returns the program's output directory.
+    Adds an `output` argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    prog : :class:`str`
-        The program name
-
-    time : :class:`str`
-        The program time
+    parser : :class:`argparse.ArgumentParser`
+        The parser
 
     Returns
     -------
-    A :class:`pathlib.Path`.
-    """
-    stem = prog.split(".")[0]
+    None
 
-    return Path(f"{stem}_{time}")
+    Notes
+    -----
+    Argument `output` is of type :class:`pathlib.Path`.
+    """
+    parser.add_argument(
+        "-o", "--output",
+        type     = Path,
+        required = True,
+        help     = """path to some output destination"""
+    )
+
+
+def argument_output_is_a_file(
+    output: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `output`.
+
+    Parameters
+    ----------
+    output : :class:`pathlib.Path`
+        The argument `output`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `output` does not exist, or exists as a file. `False`
+    otherwise.
+    """
+    if not output.exists() or output.is_file():
+        return True
+
+    if loud:
+        print(f"""error: argument output: not a file: {output}""")
+
+    return False
+
+
+def argument_output_is_a_directory(
+    output: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `output`.
+
+    Parameters
+    ----------
+    output : :class:`pathlib.Path`
+        The argument `output`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `output` does not exist, or exists as a directory.
+    `False` otherwise.
+    """
+    if not output.exists() or output.is_dir():
+        return True
+
+    if loud:
+        print(f"""error: argument output: not a directory: {output}""")
+
+    return False
 
 
 def open_logstream(
