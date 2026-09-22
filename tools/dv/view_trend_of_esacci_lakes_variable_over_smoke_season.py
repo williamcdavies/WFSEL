@@ -38,14 +38,16 @@ from lib.plot.utils                   import (
     force_ax_xtick_visibility,
     save_figure
 )
+from lib.proc.utils                   import (
+    add_argument_output,
+    argument_output_is_a_directory
+)
 from lib.proc.vars                    import (
     RETURN_FAILURE,
     RETURN_SUCCESS
 )
-from lib.time.utils                   import get_program_time
 
 PROG  = "view_trend_of_esacci_lakes_variable_over_smoke_season.py"
-TIME  = get_program_time()
 FORMS = [
     "Absolute",
     "Anomaly"
@@ -305,6 +307,7 @@ def build_parser(
 
     # Optional arguments
     add_argument_form(parser)
+    add_argument_output(parser)
 
     return parser
 
@@ -352,6 +355,12 @@ def arguments_are_valid(
 
     if not argument_form_is_in_forms(
         args.form,
+        loud = True
+    ):
+        return False
+
+    if not argument_output_is_a_directory(
+        args.output,
         loud = True
     ):
         return False
@@ -959,25 +968,23 @@ def set_lower_bounds_lakes_ax_properties(
 # ==================================================================================================
 
 
+# Write functions
+# ==================================================================================================
 def write_lakes_df_to_csv(
     lakes_df: pd.DataFrame,
-    prog:     str,
-    time:     str,
+    output:   Path,
     name:     str
 ) -> None:
     """
-    Writes `lakes_df` to `{prog}/`.
+    Writes `lakes_df` to `output`, named by `name`.
 
     Parameters
     ----------
     lakes_df : :class:`pandas.DataFrame`
         The dataframe
 
-    prog : :class:`str`
-        The program name
-
-    time : :class:`str`
-        The program time
+    output : :class:`pathlib.Path`
+        The output directory path
 
     name : :class:`str`
         The output file name
@@ -986,14 +993,15 @@ def write_lakes_df_to_csv(
     -------
     None
     """
-    fdir = Path(f"data/dv/{prog}_{time}")
-
-    fdir.mkdir(
+    output.mkdir(
         parents  = True,
         exist_ok = True
     )
 
-    lakes_df.to_csv(fdir / (name + ".csv"))
+    lakes_df.to_csv(output / (name + ".csv"))
+
+
+# ==================================================================================================
 
 
 def main(
@@ -1118,45 +1126,37 @@ def main(
 
     save_figure(
         fig,
-        PROG,
-        TIME,
-        "figure"
+        args.output / "figure.png"
     )
 
     write_lakes_df_to_csv(
         upper_high_lakes_df,
-        PROG,
-        TIME,
+        args.output,
         "upper_high_lakes"
     )
     write_lakes_df_to_csv(
         upper_low_lakes_df,
-        PROG,
-        TIME,
+        args.output,
         "upper_low_lakes"
     )
     write_lakes_df_to_csv(
         middle_high_lakes_df,
-        PROG,
-        TIME,
+        args.output,
         "middle_high_lakes"
     )
     write_lakes_df_to_csv(
         middle_low_lakes_df,
-        PROG,
-        TIME,
+        args.output,
         "middle_low_lakes"
     )
     write_lakes_df_to_csv(
         lower_high_lakes_df,
-        PROG,
-        TIME,
+        args.output,
         "lower_high_lakes"
     )
     write_lakes_df_to_csv(
         lower_low_lakes_df,
-        PROG,
-        TIME,
+        args.output,
         "lower_low_lakes"
     )
 
