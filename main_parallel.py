@@ -235,14 +235,14 @@ def main_py(
     Parameters
     ----------
     esacci_lakes_metadata_csv_path : :class:`pathlib.Path`
-        The path to the `lakescci_v2.1.0_metadata.csv` file as provided by
-        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
-        Version 3.0
+        The path to the `lakescci_v2.1.0_metadata.csv` file as provided
+        by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
+        products, Version 3.0
 
     esacci_lakes_static_lake_mask_nc_path : :class:`pathlib.Path`
-        The path to the `ESA_CCI_static_lake_mask.nc` file as provided by
-        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
-        Version 3.0
+        The path to the `ESA_CCI_static_lake_mask.nc` file as provided
+        by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
+        products, Version 3.0
 
     esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
         The path to some
@@ -295,14 +295,14 @@ def get_main_py_future(
         The executor to submit to
 
     esacci_lakes_metadata_csv_path : :class:`pathlib.Path`
-        The path to the `lakescci_v2.1.0_metadata.csv` file as provided by
-        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
-        Version 3.0
+        The path to the `lakescci_v2.1.0_metadata.csv` file as provided
+        by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
+        products, Version 3.0
 
     esacci_lakes_static_lake_mask_nc_path : :class:`pathlib.Path`
-        The path to the `ESA_CCI_static_lake_mask.nc` file as provided by
-        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
-        Version 3.0
+        The path to the `ESA_CCI_static_lake_mask.nc` file as provided
+        by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
+        products, Version 3.0
 
     esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
         The path to some
@@ -344,14 +344,14 @@ def get_main_py_futures(
         The executor to submit to
 
     esacci_lakes_metadata_csv_path : :class:`pathlib.Path`
-        The path to the `lakescci_v2.1.0_metadata.csv` file as provided by
-        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
-        Version 3.0
+        The path to the `lakescci_v2.1.0_metadata.csv` file as provided
+        by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
+        products, Version 3.0
 
     esacci_lakes_static_lake_mask_nc_path : :class:`pathlib.Path`
-        The path to the `ESA_CCI_static_lake_mask.nc` file as provided by
-        ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
-        Version 3.0
+        The path to the `ESA_CCI_static_lake_mask.nc` file as provided
+        by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
+        products, Version 3.0
 
     esacci_lakes_merged_product_nc_paths : list[:class:`pathlib.Path`]
         Paths to some
