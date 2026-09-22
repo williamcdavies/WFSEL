@@ -86,6 +86,33 @@ def add_argument_low_lakes_csv_path(
     )
 
 
+def add_argument_name(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `name` argument to a :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `name` is of type :class:`str`. default=`{PROG}_{TIME}`.
+    """
+    parser.add_argument(
+        "-n", "--name",
+        type    = str,
+        default = f"{PROG.replace('.', '_')}_{TIME}",
+        help    = """the output folder name"""
+    )
+
+
 def argument_high_lakes_csv_path_exists(
     high_lakes_csv_path: Path,
     *,
@@ -168,6 +195,9 @@ def build_parser(
     # Positional arguments
     add_argument_high_lakes_csv_path(parser)
     add_argument_low_lakes_csv_path(parser)
+
+    # Optional arguments
+    add_argument_name(parser)
 
     return parser
 
@@ -699,28 +729,24 @@ def get_summary_df(
 # ==================================================================================================
 def write_results_df_to_csv(
     results_df: pd.DataFrame,
-    prog:       str,
-    time:       str
+    fdir_name:  str
 ) -> None:
     """
-    Writes `results_df` to `data/dp/{prog}_{time}/`.
+    Writes `results_df` to `data/dp/{fdir_name}/`.
 
     Parameters
     ----------
     results_df : :class:`pandas.DataFrame`
         The dataframe
 
-    prog : :class:`str`
-        The program name
-
-    time : :class:`str`
-        The program time
+    fdir_name : :class:`str`
+        The output folder name
 
     Returns
     -------
     None
     """
-    fdir = Path(f"data/dp/{prog}_{time}")
+    fdir = Path(f"data/dp/{fdir_name}")
 
     fdir.mkdir(
         parents  = True,
@@ -732,28 +758,24 @@ def write_results_df_to_csv(
 
 def write_summary_df_to_csv(
     summary_df: pd.DataFrame,
-    prog:       str,
-    time:       str
+    fdir_name:  str
 ) -> None:
     """
-    Writes `summary_df` to `data/dp/{prog}_{time}/`.
+    Writes `summary_df` to `data/dp/{fdir_name}/`.
 
     Parameters
     ----------
     summary_df : :class:`pandas.DataFrame`
         The dataframe
 
-    prog : :class:`str`
-        The program name
-
-    time : :class:`str`
-        The program time
+    fdir_name : :class:`str`
+        The output folder name
 
     Returns
     -------
     None
     """
-    fdir = Path(f"data/dp/{prog}_{time}")
+    fdir = Path(f"data/dp/{fdir_name}")
 
     fdir.mkdir(
         parents  = True,
@@ -828,14 +850,12 @@ def main(
 
     write_results_df_to_csv(
         results_df,
-        PROG,
-        TIME
+        args.name
     )
 
     write_summary_df_to_csv(
         summary_df,
-        PROG,
-        TIME
+        args.name
     )
 
     return RETURN_SUCCESS
