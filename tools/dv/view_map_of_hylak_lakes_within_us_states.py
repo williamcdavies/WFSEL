@@ -8,18 +8,16 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from datetime import datetime
-
 # Related Third-party Imports
 import geopandas         as gpd
 import matplotlib.pyplot as plt
 import sqlalchemy
 
 # Local Application/Library Specific Imports
-from lib.db.utils  import get_gdf_from_postgis
-from lib.geo.utils import join_gdfs_on_within
-from lib.geo.vars  import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
-from lib.proc.vars import (
+from lib.db.utils   import get_gdf_from_postgis
+from lib.geo.utils  import join_gdfs_on_within
+from lib.geo.vars   import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
+from lib.proc.vars  import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
@@ -30,9 +28,12 @@ from lib.plot.utils import (
     set_ax_yticks_to_empty_list,
     save_figure
 )
+from lib.time.utils import (
+    get_program_time
+)
 
 PROG = "view_map_of_hylak_lakes_within_us_states.py"
-TIME = datetime.now()
+TIME = get_program_time()
 
 
 # Argument functions
