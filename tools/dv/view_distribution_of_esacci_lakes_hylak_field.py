@@ -280,10 +280,10 @@ def plot_quantile_lines(
     ax : :class:`matplotlib.axes.Axes`
         The axes to plot onto
 
-    quantiles : :class:`list[float]`
+    quantiles : list[:class:`float`]
         The values to draw lines at
 
-    labels : :class:`list[str]`
+    labels : list[:class:`str`]
         The label for each of `quantiles`
 
     Returns
@@ -320,7 +320,7 @@ def plot_on_hist_ax(
     hylak_field_ser : :class:`pandas.Series`
         The series
 
-    hylak_field_quantiles : :class:`list[float]`
+    hylak_field_quantiles : list[:class:`float`]
         The quantile values to draw lines at
 
     scale : :class:`str`
@@ -342,7 +342,7 @@ def plot_on_hist_ax(
         )
     else:
         raise ValueError(f"expected `scale` to be one of {SCALES}: {scale}")
-    
+
     plot_quantile_lines(
         hist_ax,
         hylak_field_quantiles,
