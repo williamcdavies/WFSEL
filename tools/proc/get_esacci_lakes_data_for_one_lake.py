@@ -31,7 +31,8 @@ from lib.proc.vars               import (
     RETURN_FAILURE
 )
 
-PROG = "get_esacci_lakes_data_for_one_lake.py"
+PROG                = "get_esacci_lakes_data_for_one_lake.py"
+LOCAL_DATA_RUN_DATE = "31-08-26"
 
 
 # Argument functions
@@ -114,7 +115,7 @@ def get_local_data_csv_paths(
     -------
     A sorted list of :class:`pathlib.Path`.
     """
-    local_data_subdir_path = local_data_dir_path / "main.py" / "31-08-26"
+    local_data_subdir_path = local_data_dir_path / "main.py" / LOCAL_DATA_RUN_DATE
 
     return sorted(local_data_subdir_path.glob("**/*.csv"))
 
