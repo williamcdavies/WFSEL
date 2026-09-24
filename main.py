@@ -270,16 +270,26 @@ def get_esacci_lakes_merged_product_record(
     "lake_surface_water_temperature_mean", and
     "lake_surface_water_temperature_coverage".
     """
-    lat_max_box: Any = esacci_lakes_metadata_df.loc[esacci_lakes_id]["lat_max_box"]
-    lat_min_box: Any = esacci_lakes_metadata_df.loc[esacci_lakes_id]["lat_min_box"]
-    lon_max_box: Any = esacci_lakes_metadata_df.loc[esacci_lakes_id]["lon_max_box"]
-    lon_min_box: Any = esacci_lakes_metadata_df.loc[esacci_lakes_id]["lon_min_box"]
-
-    geo_bounding_box = get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
+    (
         lat_max_box,
         lat_min_box,
         lon_max_box,
-        lon_min_box,
+        lon_min_box
+    ) = esacci_lakes_metadata_df.loc[
+        esacci_lakes_id,
+        [
+            "lat_max_box",
+            "lat_min_box",
+            "lon_max_box",
+            "lon_min_box"
+        ]
+    ]
+
+    geo_bounding_box = get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
+        lat_max_box, # type: ignore
+        lat_min_box, # type: ignore
+        lon_max_box, # type: ignore
+        lon_min_box, # type: ignore
         esacci_lakes_static_lake_mask_ds
     )
 
@@ -302,7 +312,7 @@ def get_esacci_lakes_merged_product_record(
     )
 
     masked_merged_product_ds_window = mask_ds_by_combined_masks(
-        merged_product_ds_window,
+        merged_product_ds_window[["lake_surface_water_temperature"]],
         [
             id_mask,
             ~ice_mask

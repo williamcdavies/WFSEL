@@ -71,7 +71,7 @@ def add_argument_workers(
     Argument `workers` is of type :class:`int`. default=8.
     """
     parser.add_argument(
-        "--workers",
+        "-w", "--workers",
         type    = int,
         default = 8,
         help    = """number of worker threads"""
