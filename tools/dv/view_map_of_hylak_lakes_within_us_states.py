@@ -55,7 +55,7 @@ def add_argument_stusps(
 
     Notes
     -----
-    Argument `stusps` is of type :class:`list[str]`.
+    Argument `stusps` is of type list[:class:`str`].
     """
     parser.add_argument(
         "--stusps",
@@ -76,7 +76,7 @@ def argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
 
     Parameters
     ----------
-    stusps : :class:`list[str]`
+    stusps : list[:class:`str`]
         The argument `stusps`
 
     loud : :class:`bool`
@@ -218,12 +218,12 @@ def filter_gdf_by_stusps(
     gdf : :class:`geopandas.GeoDataFrame`
         The geodataframe
 
-    stusps : :class:`list[str]`
+    stusps : list[:class:`str`]
         The target list of two-letter state and possession abbreviations
 
     Returns
     -------
-    A geodataframe
+    A :class:`geopandas.GeoDataFrame`.
     """
     return gdf[gdf["stusps"].isin(stusps)]
 
