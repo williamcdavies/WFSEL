@@ -54,7 +54,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """"""
+        description = """Produces a csv file containing all of one lake's local data records, indexed by date."""
     )
 
     # Positional arguments
@@ -89,7 +89,7 @@ def arguments_are_valid(
         loud = True
     ):
         return False
-    
+
     return True
 
 
@@ -135,7 +135,7 @@ def get_local_data_datetime(
     A :class:`datetime.datetime`.
     """
     date_string = local_data_csv_path.stem.split("-")[5]
-    
+
     return datetime.strptime(
         date_string,
         "%Y%m%d"
@@ -209,7 +209,6 @@ def get_lake_data_df(
 
 # Write functions
 # ==================================================================================================
-
 def write_local_lake_data_df_to_csv(
     lake_data_df: pd.DataFrame,
     output:       Path
