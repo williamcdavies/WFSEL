@@ -1033,12 +1033,6 @@ def get_lakes_df_week_number_ser_pairs(
     for label_, ser in lakes_df.filter(like = prefix).items():
         n = int(label_.removeprefix(prefix)) # type: ignore
 
-        if (
-            n < -3
-            or n > 20
-        ):
-            continue
-
         pairs.append((n, ser))
 
     return pairs
