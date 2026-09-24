@@ -6,9 +6,10 @@ Written by William Chuter-Davies
 
 # Standard Library Imports
 import argparse
+import ast
 import sys
 
-from pathlib  import Path
+from pathlib import Path
 
 # Related Third-party Imports
 import matplotlib.pyplot as plt
@@ -16,33 +17,25 @@ import numpy             as np
 import pandas            as pd
 
 # Local Application/Library Specific Imports
-from lib.dataframe.utils              import filter_df_by_column_bounds
-from lib.esacci_lakes.utils.dataframe import (
-    drop_hylak_field_columns_from_df,
-    merge_dfs_on_esacci_lakes_id
-)
-from lib.esacci_lakes.utils.proc      import (
+from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_variable,
     add_argument_hylak_field,
-    add_argument_esacci_lakes_hylak_fields_csv_path,
     argument_esacci_lakes_variable_is_in_esacci_lakes_variables,
-    argument_hylak_field_is_in_hylak_fields,
-    argument_esacci_lakes_hylak_fields_csv_path_exists,
-    read_esacci_lakes_hylak_fields_csv
+    argument_hylak_field_is_in_hylak_fields
 )
-from lib.esacci_lakes.vars            import (
+from lib.esacci_lakes.vars       import (
     ESACCI_LAKES_VARIABLES,
     HYLAK_FIELDS
 )
-from lib.plot.utils                   import (
+from lib.plot.utils              import (
     force_ax_xtick_visibility,
     save_figure
 )
-from lib.proc.utils                   import (
+from lib.proc.utils              import (
     add_argument_output,
-    argument_output_is_a_directory
+    argument_output_is_a_file
 )
-from lib.proc.vars                    import (
+from lib.proc.vars               import (
     RETURN_FAILURE,
     RETURN_SUCCESS
 )
@@ -56,12 +49,12 @@ FORMS = [
 
 # Argument functions
 # ==================================================================================================
-def add_argument_esacci_lakes_variable_over_high_smoke_season_csv_path(
+def add_argument_upper_high_lakes_csv_path(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `esacci_lakes_variable_over_high_smoke_season_csv_path`
-    argument to a :class:`argparse.ArgumentParser`.
+    Adds a `upper_high_lakes_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -74,76 +67,22 @@ def add_argument_esacci_lakes_variable_over_high_smoke_season_csv_path(
 
     Notes
     -----
-    Argument `esacci_lakes_variable_over_high_smoke_season_csv_path` is
-    of type :class:`pathlib.Path`.
+    Argument `upper_high_lakes_csv_path` is of type
+    :class:`pathlib.Path`.
     """
     parser.add_argument(
-        "esacci_lakes_variable_over_high_smoke_season_csv_path",
+        "upper_high_lakes_csv_path",
         type = Path,
-        help = """path to some csv file produced by comp_esacci_lakes_variable_over_smoke_season.py"""
+        help = """path to some upper-bounds high-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py"""
     )
 
 
-def argument_esacci_lakes_variable_over_high_smoke_season_csv_path_exists(
-    esacci_lakes_variable_over_high_smoke_season_csv_path: Path,
-    *,
-    loud: bool = False
-) -> bool:
-    """
-    Validates `esacci_lakes_variable_over_high_smoke_season_csv_path`.
-
-    Parameters
-    ----------
-    esacci_lakes_variable_over_high_smoke_season_csv_path : :class:`pathlib.Path`
-        The argument
-        `esacci_lakes_variable_over_high_smoke_season_csv_path`
-
-    loud : :class:`bool`
-        If `True`, prints an error message to stdout. default=False
-
-    Returns
-    -------
-    `True` if `esacci_lakes_variable_over_high_smoke_season_csv_path`
-    exists. `False` otherwise.
-    """
-    if esacci_lakes_variable_over_high_smoke_season_csv_path.exists():
-        return True
-
-    if loud:
-        print(f"""error: argument esacci_lakes_variable_over_high_smoke_season_csv_path: no such file or directory: {esacci_lakes_variable_over_high_smoke_season_csv_path}""")
-
-    return False
-
-
-def read_esacci_lakes_variable_over_high_smoke_season_csv(
-    esacci_lakes_variable_over_high_smoke_season_csv_path: Path
-) -> pd.DataFrame:
-    """
-    Reads `esacci_lakes_variable_over_high_smoke_season_csv_path` into a
-    dataframe.
-
-    Parameters
-    ----------
-    esacci_lakes_variable_over_high_smoke_season_csv_path : :class:`pathlib.Path`
-        The path to some csv file as produced by
-        comp_esacci_lakes_variable_over_smoke_season.py
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-    """
-    return pd.read_csv(
-        esacci_lakes_variable_over_high_smoke_season_csv_path,
-        index_col = "esacci_lakes_id"
-    )
-
-
-def add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(
+def add_argument_upper_low_lakes_csv_path(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `esacci_lakes_variable_over_low_smoke_season_csv_path`
-    argument to a :class:`argparse.ArgumentParser`.
+    Adds a `upper_low_lakes_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -156,67 +95,288 @@ def add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(
 
     Notes
     -----
-    Argument `esacci_lakes_variable_over_low_smoke_season_csv_path` is
-    of type :class:`pathlib.Path`.
+    Argument `upper_low_lakes_csv_path` is of type
+    :class:`pathlib.Path`.
     """
     parser.add_argument(
-        "esacci_lakes_variable_over_low_smoke_season_csv_path",
+        "upper_low_lakes_csv_path",
         type = Path,
-        help = """path to some csv file produced by comp_esacci_lakes_variable_over_smoke_season.py"""
+        help = """path to some upper-bounds low-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py"""
     )
 
 
-def argument_esacci_lakes_variable_over_low_smoke_season_csv_path_exists(
-    esacci_lakes_variable_over_low_smoke_season_csv_path: Path,
-    *,
-    loud: bool = False
-) -> bool:
+def add_argument_middle_high_lakes_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
     """
-    Validates `esacci_lakes_variable_over_low_smoke_season_csv_path`.
+    Adds a `middle_high_lakes_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    esacci_lakes_variable_over_low_smoke_season_csv_path : :class:`pathlib.Path`
-        The argument
-        `esacci_lakes_variable_over_low_smoke_season_csv_path`
-
-    loud : :class:`bool`
-        If `True`, prints an error message to stdout. default=False
+    parser : :class:`argparse.ArgumentParser`
+        The parser
 
     Returns
     -------
-    `True` if `esacci_lakes_variable_over_low_smoke_season_csv_path`
-    exists. `False` otherwise.
+    None
+
+    Notes
+    -----
+    Argument `middle_high_lakes_csv_path` is of type
+    :class:`pathlib.Path`.
     """
-    if esacci_lakes_variable_over_low_smoke_season_csv_path.exists():
-        return True
-
-    if loud:
-        print(f"""error: argument esacci_lakes_variable_over_low_smoke_season_csv_path: no such file or directory: {esacci_lakes_variable_over_low_smoke_season_csv_path}""")
-
-    return False
+    parser.add_argument(
+        "middle_high_lakes_csv_path",
+        type = Path,
+        help = """path to some middle-bounds high-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py"""
+    )
 
 
-def read_esacci_lakes_variable_over_low_smoke_season_csv(
-    esacci_lakes_variable_over_low_smoke_season_csv_path: Path
-) -> pd.DataFrame:
+def add_argument_middle_low_lakes_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
     """
-    Reads `esacci_lakes_variable_over_low_smoke_season_csv_path` into a
-    dataframe.
+    Adds a `middle_low_lakes_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    esacci_lakes_variable_over_low_smoke_season_csv_path : :class:`pathlib.Path`
-        The path to some csv file as produced by
-        comp_esacci_lakes_variable_over_smoke_season.py
+    parser : :class:`argparse.ArgumentParser`
+        The parser
 
     Returns
     -------
-    A :class:`pandas.DataFrame`.
+    None
+
+    Notes
+    -----
+    Argument `middle_low_lakes_csv_path` is of type
+    :class:`pathlib.Path`.
     """
-    return pd.read_csv(
-        esacci_lakes_variable_over_low_smoke_season_csv_path,
-        index_col = "esacci_lakes_id"
+    parser.add_argument(
+        "middle_low_lakes_csv_path",
+        type = Path,
+        help = """path to some middle-bounds low-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py"""
+    )
+
+
+def add_argument_lower_high_lakes_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `lower_high_lakes_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `lower_high_lakes_csv_path` is of type
+    :class:`pathlib.Path`.
+    """
+    parser.add_argument(
+        "lower_high_lakes_csv_path",
+        type = Path,
+        help = """path to some lower-bounds high-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py"""
+    )
+
+
+def add_argument_lower_low_lakes_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `lower_low_lakes_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `lower_low_lakes_csv_path` is of type
+    :class:`pathlib.Path`.
+    """
+    parser.add_argument(
+        "lower_low_lakes_csv_path",
+        type = Path,
+        help = """path to some lower-bounds low-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py"""
+    )
+
+
+def add_argument_upper_results_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `upper_results_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `upper_results_csv_path` is of type :class:`pathlib.Path`.
+    """
+    parser.add_argument(
+        "upper_results_csv_path",
+        type = Path,
+        help = """path to some upper-bounds results csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py"""
+    )
+
+
+def add_argument_middle_results_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `middle_results_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `middle_results_csv_path` is of type
+    :class:`pathlib.Path`.
+    """
+    parser.add_argument(
+        "middle_results_csv_path",
+        type = Path,
+        help = """path to some middle-bounds results csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py"""
+    )
+
+
+def add_argument_lower_results_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `lower_results_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `lower_results_csv_path` is of type :class:`pathlib.Path`.
+    """
+    parser.add_argument(
+        "lower_results_csv_path",
+        type = Path,
+        help = """path to some lower-bounds results csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py"""
+    )
+
+
+def add_argument_upper_summary_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `upper_summary_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `upper_summary_csv_path` is of type :class:`pathlib.Path`.
+    """
+    parser.add_argument(
+        "upper_summary_csv_path",
+        type = Path,
+        help = """path to some upper-bounds summary csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py"""
+    )
+
+
+def add_argument_middle_summary_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `middle_summary_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `middle_summary_csv_path` is of type :class:`pathlib.Path`.
+    """
+    parser.add_argument(
+        "middle_summary_csv_path",
+        type = Path,
+        help = """path to some middle-bounds summary csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py"""
+    )
+
+
+def add_argument_lower_summary_csv_path(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `lower_summary_csv_path` argument to a
+    :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `lower_summary_csv_path` is of type :class:`pathlib.Path`.
+    """
+    parser.add_argument(
+        "lower_summary_csv_path",
+        type = Path,
+        help = """path to some lower-bounds summary csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py"""
     )
 
 
@@ -237,7 +397,7 @@ def add_argument_form(
 
     Notes
     -----
-    Argument `form` is of type :class:`str`.
+    Argument `form` is of type :class:`str`. default=Absolute.
     """
     parser.add_argument(
         "-f", "--form",
@@ -246,6 +406,354 @@ def add_argument_form(
         choices = FORMS,
         help    = """the form of the input data. default=Absolute"""
     )
+
+
+def argument_upper_high_lakes_csv_path_exists(
+    upper_high_lakes_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `upper_high_lakes_csv_path`.
+
+    Parameters
+    ----------
+    upper_high_lakes_csv_path : :class:`pathlib.Path`
+        The argument `upper_high_lakes_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `upper_high_lakes_csv_path` exists. `False` otherwise.
+    """
+    if upper_high_lakes_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument upper_high_lakes_csv_path: no such file or directory: {upper_high_lakes_csv_path}""")
+
+    return False
+
+
+def argument_upper_low_lakes_csv_path_exists(
+    upper_low_lakes_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `upper_low_lakes_csv_path`.
+
+    Parameters
+    ----------
+    upper_low_lakes_csv_path : :class:`pathlib.Path`
+        The argument `upper_low_lakes_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `upper_low_lakes_csv_path` exists. `False` otherwise.
+    """
+    if upper_low_lakes_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument upper_low_lakes_csv_path: no such file or directory: {upper_low_lakes_csv_path}""")
+
+    return False
+
+
+def argument_middle_high_lakes_csv_path_exists(
+    middle_high_lakes_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `middle_high_lakes_csv_path`.
+
+    Parameters
+    ----------
+    middle_high_lakes_csv_path : :class:`pathlib.Path`
+        The argument `middle_high_lakes_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `middle_high_lakes_csv_path` exists. `False` otherwise.
+    """
+    if middle_high_lakes_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument middle_high_lakes_csv_path: no such file or directory: {middle_high_lakes_csv_path}""")
+
+    return False
+
+
+def argument_middle_low_lakes_csv_path_exists(
+    middle_low_lakes_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `middle_low_lakes_csv_path`.
+
+    Parameters
+    ----------
+    middle_low_lakes_csv_path : :class:`pathlib.Path`
+        The argument `middle_low_lakes_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `middle_low_lakes_csv_path` exists. `False` otherwise.
+    """
+    if middle_low_lakes_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument middle_low_lakes_csv_path: no such file or directory: {middle_low_lakes_csv_path}""")
+
+    return False
+
+
+def argument_lower_high_lakes_csv_path_exists(
+    lower_high_lakes_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `lower_high_lakes_csv_path`.
+
+    Parameters
+    ----------
+    lower_high_lakes_csv_path : :class:`pathlib.Path`
+        The argument `lower_high_lakes_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `lower_high_lakes_csv_path` exists. `False` otherwise.
+    """
+    if lower_high_lakes_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument lower_high_lakes_csv_path: no such file or directory: {lower_high_lakes_csv_path}""")
+
+    return False
+
+
+def argument_lower_low_lakes_csv_path_exists(
+    lower_low_lakes_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `lower_low_lakes_csv_path`.
+
+    Parameters
+    ----------
+    lower_low_lakes_csv_path : :class:`pathlib.Path`
+        The argument `lower_low_lakes_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `lower_low_lakes_csv_path` exists. `False` otherwise.
+    """
+    if lower_low_lakes_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument lower_low_lakes_csv_path: no such file or directory: {lower_low_lakes_csv_path}""")
+
+    return False
+
+
+def argument_upper_results_csv_path_exists(
+    upper_results_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `upper_results_csv_path`.
+
+    Parameters
+    ----------
+    upper_results_csv_path : :class:`pathlib.Path`
+        The argument `upper_results_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `upper_results_csv_path` exists. `False` otherwise.
+    """
+    if upper_results_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument upper_results_csv_path: no such file or directory: {upper_results_csv_path}""")
+
+    return False
+
+
+def argument_middle_results_csv_path_exists(
+    middle_results_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `middle_results_csv_path`.
+
+    Parameters
+    ----------
+    middle_results_csv_path : :class:`pathlib.Path`
+        The argument `middle_results_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `middle_results_csv_path` exists. `False` otherwise.
+    """
+    if middle_results_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument middle_results_csv_path: no such file or directory: {middle_results_csv_path}""")
+
+    return False
+
+
+def argument_lower_results_csv_path_exists(
+    lower_results_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `lower_results_csv_path`.
+
+    Parameters
+    ----------
+    lower_results_csv_path : :class:`pathlib.Path`
+        The argument `lower_results_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `lower_results_csv_path` exists. `False` otherwise.
+    """
+    if lower_results_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument lower_results_csv_path: no such file or directory: {lower_results_csv_path}""")
+
+    return False
+
+
+def argument_upper_summary_csv_path_exists(
+    upper_summary_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `upper_summary_csv_path`.
+
+    Parameters
+    ----------
+    upper_summary_csv_path : :class:`pathlib.Path`
+        The argument `upper_summary_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `upper_summary_csv_path` exists. `False` otherwise.
+    """
+    if upper_summary_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument upper_summary_csv_path: no such file or directory: {upper_summary_csv_path}""")
+
+    return False
+
+
+def argument_middle_summary_csv_path_exists(
+    middle_summary_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `middle_summary_csv_path`.
+
+    Parameters
+    ----------
+    middle_summary_csv_path : :class:`pathlib.Path`
+        The argument `middle_summary_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `middle_summary_csv_path` exists. `False` otherwise.
+    """
+    if middle_summary_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument middle_summary_csv_path: no such file or directory: {middle_summary_csv_path}""")
+
+    return False
+
+
+def argument_lower_summary_csv_path_exists(
+    lower_summary_csv_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `lower_summary_csv_path`.
+
+    Parameters
+    ----------
+    lower_summary_csv_path : :class:`pathlib.Path`
+        The argument `lower_summary_csv_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stdout. default=False
+
+    Returns
+    -------
+    `True` if `lower_summary_csv_path` exists. `False` otherwise.
+    """
+    if lower_summary_csv_path.exists():
+        return True
+
+    if loud:
+        print(f"""error: argument lower_summary_csv_path: no such file or directory: {lower_summary_csv_path}""")
+
+    return False
 
 
 def argument_form_is_in_forms(
@@ -295,15 +803,24 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """"""
+        description = """Produces a trend visualisation of an ESA CCI Lakes variable over the smoke season, split by a HydroLAKES field's bounds, from precomputed lakes, results, and summary csv files."""
     )
 
     # Positional arguments
     add_argument_esacci_lakes_variable(parser)
-    add_argument_esacci_lakes_variable_over_high_smoke_season_csv_path(parser)
-    add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(parser)
     add_argument_hylak_field(parser)
-    add_argument_esacci_lakes_hylak_fields_csv_path(parser)
+    add_argument_upper_high_lakes_csv_path(parser)
+    add_argument_upper_low_lakes_csv_path(parser)
+    add_argument_middle_high_lakes_csv_path(parser)
+    add_argument_middle_low_lakes_csv_path(parser)
+    add_argument_lower_high_lakes_csv_path(parser)
+    add_argument_lower_low_lakes_csv_path(parser)
+    add_argument_upper_results_csv_path(parser)
+    add_argument_middle_results_csv_path(parser)
+    add_argument_lower_results_csv_path(parser)
+    add_argument_upper_summary_csv_path(parser)
+    add_argument_middle_summary_csv_path(parser)
+    add_argument_lower_summary_csv_path(parser)
 
     # Optional arguments
     add_argument_form(parser)
@@ -329,26 +846,80 @@ def arguments_are_valid(
     ):
         return False
 
-    if not argument_esacci_lakes_variable_over_high_smoke_season_csv_path_exists(
-        args.esacci_lakes_variable_over_high_smoke_season_csv_path,
-        loud = True
-    ):
-        return False
-
-    if not argument_esacci_lakes_variable_over_low_smoke_season_csv_path_exists(
-        args.esacci_lakes_variable_over_low_smoke_season_csv_path,
-        loud = True
-    ):
-        return False
-
     if not argument_hylak_field_is_in_hylak_fields(
         args.hylak_field,
         loud = True
     ):
         return False
 
-    if not argument_esacci_lakes_hylak_fields_csv_path_exists(
-        args.esacci_lakes_hylak_fields_csv_path,
+    if not argument_upper_high_lakes_csv_path_exists(
+        args.upper_high_lakes_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_upper_low_lakes_csv_path_exists(
+        args.upper_low_lakes_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_middle_high_lakes_csv_path_exists(
+        args.middle_high_lakes_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_middle_low_lakes_csv_path_exists(
+        args.middle_low_lakes_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_lower_high_lakes_csv_path_exists(
+        args.lower_high_lakes_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_lower_low_lakes_csv_path_exists(
+        args.lower_low_lakes_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_upper_results_csv_path_exists(
+        args.upper_results_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_middle_results_csv_path_exists(
+        args.middle_results_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_lower_results_csv_path_exists(
+        args.lower_results_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_upper_summary_csv_path_exists(
+        args.upper_summary_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_middle_summary_csv_path_exists(
+        args.middle_summary_csv_path,
+        loud = True
+    ):
+        return False
+
+    if not argument_lower_summary_csv_path_exists(
+        args.lower_summary_csv_path,
         loud = True
     ):
         return False
@@ -359,7 +930,7 @@ def arguments_are_valid(
     ):
         return False
 
-    if not argument_output_is_a_directory(
+    if not argument_output_is_a_file(
         args.output,
         loud = True
     ):
@@ -371,26 +942,76 @@ def arguments_are_valid(
 # ==================================================================================================
 
 
-# Data functions
+# Read functions
 # ==================================================================================================
-def convert_lakes_df_units_from_kelvin_to_celsius(
-    lakes_df: pd.DataFrame
+def read_lakes_csv(
+    lakes_csv_path: Path
 ) -> pd.DataFrame:
     """
-    Converts `lakes_df`'s units from Kelvin to Celsius.
+    Reads `lakes_csv_path` into a dataframe.
 
     Parameters
     ----------
-    lakes_df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+    lakes_csv_path : :class:`pathlib.Path`
+        The path to some lakes csv file as produced by
+        comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py
 
     Returns
     -------
     A :class:`pandas.DataFrame`.
     """
-    return lakes_df - 273.15
+    return pd.read_csv(
+        lakes_csv_path,
+        index_col = "esacci_lakes_id"
+    )
 
 
+def read_results_csv(
+    results_csv_path: Path
+) -> pd.DataFrame:
+    """
+    Reads `results_csv_path` into a dataframe.
+
+    Parameters
+    ----------
+    results_csv_path : :class:`pathlib.Path`
+        The path to some results csv file as produced by
+        comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame` indexed by "w".
+    """
+    return pd.read_csv(
+        results_csv_path,
+        index_col = "w"
+    )
+
+
+def read_summary_csv(
+    summary_csv_path: Path
+) -> pd.Series:
+    """
+    Reads `summary_csv_path`'s single row into a series.
+
+    Parameters
+    ----------
+    summary_csv_path : :class:`pathlib.Path`
+        The path to some summary csv file as produced by
+        comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py
+
+    Returns
+    -------
+    A :class:`pandas.Series`.
+    """
+    return pd.read_csv(summary_csv_path).iloc[0]
+
+
+# ==================================================================================================
+
+
+# Data functions
+# ==================================================================================================
 def get_lakes_df_week_number_ser_pairs(
     lakes_df: pd.DataFrame
 ) -> list[tuple[int, pd.Series]]:
@@ -400,7 +1021,7 @@ def get_lakes_df_week_number_ser_pairs(
     Parameters
     ----------
     lakes_df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     Returns
     -------
@@ -423,145 +1044,59 @@ def get_lakes_df_week_number_ser_pairs(
     return pairs
 
 
-def get_lower_bounds_lakes_df(
-    df:          pd.DataFrame,
-    hylak_field: str
-) -> pd.DataFrame:
-    """
-    Returns `df` filtered to lakes at or below `hylak_field`'s lower
-    bound, with all `HYLAK_FIELDS` columns dropped.
-
-    Parameters
-    ----------
-    df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
-
-    hylak_field : :class:`str`
-        The HydroLAKES field id
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-
-    Raises
-    ------
-    ValueError
-        If `hylak_field`'s `lower_bound` is `None`.
-    """
-    if HYLAK_FIELDS[hylak_field].lower_bound is None:
-        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `lower_bound`")
-
-    filtered_df = filter_df_by_column_bounds(
-        df     = df,
-        column = hylak_field,
-        lower  = None,
-        upper  = HYLAK_FIELDS[hylak_field].lower_bound
-    )
-
-    return drop_hylak_field_columns_from_df(filtered_df)
-
-
-def get_middle_bounds_lakes_df(
-    df:          pd.DataFrame,
-    hylak_field: str
-) -> pd.DataFrame:
-    """
-    Returns `df` filtered to lakes between `hylak_field`'s lower and
-    upper bounds, with all `HYLAK_FIELDS` columns dropped.
-
-    Parameters
-    ----------
-    df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
-
-    hylak_field : :class:`str`
-        The HydroLAKES field id
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-
-    Raises
-    ------
-    ValueError
-        If `hylak_field`'s `lower_bound` or `upper_bound` is `None`.
-    """
-    if HYLAK_FIELDS[hylak_field].lower_bound is None:
-        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `lower_bound`")
-
-    if HYLAK_FIELDS[hylak_field].upper_bound is None:
-        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `upper_bound`")
-
-    filtered_df = filter_df_by_column_bounds(
-        df     = df,
-        column = hylak_field,
-        lower  = HYLAK_FIELDS[hylak_field].lower_bound,
-        upper  = HYLAK_FIELDS[hylak_field].upper_bound
-    )
-
-    return drop_hylak_field_columns_from_df(filtered_df)
-
-
-def get_upper_bounds_lakes_df(
-    df:          pd.DataFrame,
-    hylak_field: str
-) -> pd.DataFrame:
-    """
-    Returns `df` filtered to lakes at or above `hylak_field`'s upper
-    bound, with all `HYLAK_FIELDS` columns dropped.
-
-    Parameters
-    ----------
-    df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
-
-    hylak_field : :class:`str`
-        The HydroLAKES field id
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-
-    Raises
-    ------
-    ValueError
-        If `hylak_field`'s `upper_bound` is `None`.
-    """
-    if HYLAK_FIELDS[hylak_field].upper_bound is None:
-        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `upper_bound`")
-
-    filtered_df = filter_df_by_column_bounds(
-        df     = df,
-        column = hylak_field,
-        lower  = HYLAK_FIELDS[hylak_field].upper_bound,
-        upper  = None
-    )
-
-    return drop_hylak_field_columns_from_df(filtered_df)
-
-
-def get_lakes_medians_ser(
-    lakes_df: pd.DataFrame
+def get_mean_high_ser(
+    results_df: pd.DataFrame
 ) -> pd.Series:
     """
-    Returns `lakes_df`'s week columns' medians.
+    Returns `results_df`'s "mean_high" column.
 
     Parameters
     ----------
-    lakes_df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+    results_df : :class:`pandas.DataFrame`
+        The dataframe, as returned by `read_results_csv`
 
     Returns
     -------
-    A :class:`pandas.Series`.
+    A :class:`pandas.Series` indexed by "w".
     """
-    return pd.Series(
-        {
-            n: ser.median()
-            for n, ser
-            in get_lakes_df_week_number_ser_pairs(lakes_df)
-        }
-    )
+    return results_df["mean_high"]
+
+
+def get_mean_low_ser(
+    results_df: pd.DataFrame
+) -> pd.Series:
+    """
+    Returns `results_df`'s "mean_low" column.
+
+    Parameters
+    ----------
+    results_df : :class:`pandas.DataFrame`
+        The dataframe, as returned by `read_results_csv`
+
+    Returns
+    -------
+    A :class:`pandas.Series` indexed by "w".
+    """
+    return results_df["mean_low"]
+
+
+def get_longest_cluster_weeks(
+    summary_ser: pd.Series
+) -> list[int]:
+    """
+    Returns `summary_ser`'s "longest_cluster_weeks" field, parsed from
+    its string representation.
+
+    Parameters
+    ----------
+    summary_ser : :class:`pandas.Series`
+        The series, as returned by `read_summary_csv`
+
+    Returns
+    -------
+    A list of :class:`int`.
+    """
+    return ast.literal_eval(summary_ser["longest_cluster_weeks"])
 
 
 # ==================================================================================================
@@ -585,7 +1120,7 @@ def plot_lakes_df_scatterplot(
         The axes to plot onto
 
     lakes_df : :class:`pandas.DataFrame`
-        The :class:`pandas.DataFrame`
+        The dataframe
 
     color : :class:`str`
         The point color
@@ -609,22 +1144,22 @@ def plot_lakes_df_scatterplot(
 
 
 def plot_lakes_df_lineplot(
-    ax:         plt.Axes, # type: ignore
-    median_ser: pd.Series,
+    ax:       plt.Axes, # type: ignore
+    mean_ser: pd.Series,
     *,
     color: str,
     label: str | None = None
 ) -> None:
     """
-    Plots a line of `median_ser`'s values onto `ax`.
+    Plots a line of `mean_ser`'s values onto `ax`.
 
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
         The axes to plot onto
 
-    median_ser : :class:`pandas.Series`
-        A series of medians
+    mean_ser : :class:`pandas.Series`
+        A series of means
 
     color : :class:`str`
         The line color
@@ -637,26 +1172,59 @@ def plot_lakes_df_lineplot(
     None
     """
     ax.plot(
-        median_ser.index,
-        median_ser,
+        mean_ser.index,
+        mean_ser,
         label  = label,
         color  = color,
         marker = "o"
     )
 
 
+def plot_significant_cluster_span(
+    ax: plt.Axes, # type: ignore
+    *,
+    longest_cluster_weeks: list[int]
+) -> None:
+    """
+    Shades `ax`'s background over `longest_cluster_weeks`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes to plot onto
+
+    longest_cluster_weeks : list[:class:`int`]
+        The weeks, as returned by `get_longest_cluster_weeks`
+
+    Returns
+    -------
+    None
+    """
+    if not longest_cluster_weeks:
+        return
+
+    ax.axvspan(
+        min(longest_cluster_weeks) - 0.5,
+        max(longest_cluster_weeks) + 0.5,
+        color  = "#CCCCCC",
+        alpha  = 0.3,
+        zorder = 0
+    )
+
+
 def plot_on_upper_bounds_lakes_ax(
     upper_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
-    upper_high_lakes_df:          pd.DataFrame,
-    upper_low_lakes_df:           pd.DataFrame,
-    upper_high_lakes_medians_ser: pd.Series,
-    upper_low_lakes_medians_ser:  pd.Series
+    upper_high_lakes_df:         pd.DataFrame,
+    upper_low_lakes_df:          pd.DataFrame,
+    upper_high_mean_ser:         pd.Series,
+    upper_low_mean_ser:          pd.Series,
+    upper_longest_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `upper_high_lakes_df`, `upper_low_lakes_df`,
-    `upper_high_lakes_medians_ser`, and `upper_low_lakes_medians_ser`
-    onto `upper_bounds_lakes_ax`.
+    `upper_high_mean_ser`, `upper_low_mean_ser`, and
+    `upper_longest_cluster_weeks` onto `upper_bounds_lakes_ax`.
 
     Parameters
     ----------
@@ -669,18 +1237,26 @@ def plot_on_upper_bounds_lakes_ax(
     upper_low_lakes_df : :class:`pandas.DataFrame`
         Upper-bounds-depth lakes during a low smoke season
 
-    upper_high_lakes_medians_ser : :class:`pandas.Series`
-        `upper_high_lakes_df`'s weekly medians, as returned by
-        `get_lakes_medians_ser`
+    upper_high_mean_ser : :class:`pandas.Series`
+        `upper_high_lakes_df`'s weekly means, as returned by
+        `get_mean_high_ser`
 
-    upper_low_lakes_medians_ser : :class:`pandas.Series`
-        `upper_low_lakes_df`'s weekly medians, as returned by
-        `get_lakes_medians_ser`
+    upper_low_mean_ser : :class:`pandas.Series`
+        `upper_low_lakes_df`'s weekly means, as returned by
+        `get_mean_low_ser`
+
+    upper_longest_cluster_weeks : list[:class:`int`]
+        The weeks, as returned by `get_longest_cluster_weeks`
 
     Returns
     -------
     None
     """
+    plot_significant_cluster_span(
+        upper_bounds_lakes_ax,
+        longest_cluster_weeks = upper_longest_cluster_weeks
+    )
+
     plot_lakes_df_scatterplot(
         upper_bounds_lakes_ax,
         upper_high_lakes_df,
@@ -688,9 +1264,9 @@ def plot_on_upper_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         upper_bounds_lakes_ax,
-        upper_high_lakes_medians_ser,
+        upper_high_mean_ser,
         color = "#FF0000",
-        label = "High Smoke Season (Median)"
+        label = "High Smoke Season (Mean)"
     )
 
     plot_lakes_df_scatterplot(
@@ -700,24 +1276,25 @@ def plot_on_upper_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         upper_bounds_lakes_ax,
-        upper_low_lakes_medians_ser,
+        upper_low_mean_ser,
         color = "#0000FF",
-        label = "Low Smoke Season (Median)"
+        label = "Low Smoke Season (Mean)"
     )
 
 
 def plot_on_middle_bounds_lakes_ax(
     middle_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
-    middle_high_lakes_df:          pd.DataFrame,
-    middle_low_lakes_df:           pd.DataFrame,
-    middle_high_lakes_medians_ser: pd.Series,
-    middle_low_lakes_medians_ser:  pd.Series
+    middle_high_lakes_df:         pd.DataFrame,
+    middle_low_lakes_df:          pd.DataFrame,
+    middle_high_mean_ser:         pd.Series,
+    middle_low_mean_ser:          pd.Series,
+    middle_longest_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `middle_high_lakes_df`, `middle_low_lakes_df`,
-    `middle_high_lakes_medians_ser`, and `middle_low_lakes_medians_ser`
-    onto `middle_bounds_lakes_ax`.
+    `middle_high_mean_ser`, `middle_low_mean_ser`, and
+    `middle_longest_cluster_weeks` onto `middle_bounds_lakes_ax`.
 
     Parameters
     ----------
@@ -730,18 +1307,26 @@ def plot_on_middle_bounds_lakes_ax(
     middle_low_lakes_df : :class:`pandas.DataFrame`
         Middle-bounds-depth lakes during a low smoke season
 
-    middle_high_lakes_medians_ser : :class:`pandas.Series`
-        `middle_high_lakes_df`'s weekly medians, as returned by
-        `get_lakes_medians_ser`
+    middle_high_mean_ser : :class:`pandas.Series`
+        `middle_high_lakes_df`'s weekly means, as returned by
+        `get_mean_high_ser`
 
-    middle_low_lakes_medians_ser : :class:`pandas.Series`
-        `middle_low_lakes_df`'s weekly medians, as returned by
-        `get_lakes_medians_ser`
+    middle_low_mean_ser : :class:`pandas.Series`
+        `middle_low_lakes_df`'s weekly means, as returned by
+        `get_mean_low_ser`
+
+    middle_longest_cluster_weeks : list[:class:`int`]
+        The weeks, as returned by `get_longest_cluster_weeks`
 
     Returns
     -------
     None
     """
+    plot_significant_cluster_span(
+        middle_bounds_lakes_ax,
+        longest_cluster_weeks = middle_longest_cluster_weeks
+    )
+
     plot_lakes_df_scatterplot(
         middle_bounds_lakes_ax,
         middle_high_lakes_df,
@@ -749,9 +1334,9 @@ def plot_on_middle_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         middle_bounds_lakes_ax,
-        middle_high_lakes_medians_ser,
+        middle_high_mean_ser,
         color = "#FF0000",
-        label = "High Smoke Season (Median)"
+        label = "High Smoke Season (Mean)"
     )
 
     plot_lakes_df_scatterplot(
@@ -761,24 +1346,25 @@ def plot_on_middle_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         middle_bounds_lakes_ax,
-        middle_low_lakes_medians_ser,
+        middle_low_mean_ser,
         color = "#0000FF",
-        label = "Low Smoke Season (Median)"
+        label = "Low Smoke Season (Mean)"
     )
 
 
 def plot_on_lower_bounds_lakes_ax(
     lower_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
-    lower_high_lakes_df:          pd.DataFrame,
-    lower_low_lakes_df:           pd.DataFrame,
-    lower_high_lakes_medians_ser: pd.Series,
-    lower_low_lakes_medians_ser:  pd.Series
+    lower_high_lakes_df:         pd.DataFrame,
+    lower_low_lakes_df:          pd.DataFrame,
+    lower_high_mean_ser:         pd.Series,
+    lower_low_mean_ser:          pd.Series,
+    lower_longest_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `lower_high_lakes_df`, `lower_low_lakes_df`,
-    `lower_high_lakes_medians_ser`, and `lower_low_lakes_medians_ser`
-    onto `lower_bounds_lakes_ax`.
+    `lower_high_mean_ser`, `lower_low_mean_ser`, and
+    `lower_longest_cluster_weeks` onto `lower_bounds_lakes_ax`.
 
     Parameters
     ----------
@@ -791,18 +1377,26 @@ def plot_on_lower_bounds_lakes_ax(
     lower_low_lakes_df : :class:`pandas.DataFrame`
         Lower-bounds-depth lakes during a low smoke season
 
-    lower_high_lakes_medians_ser : :class:`pandas.Series`
-        `lower_high_lakes_df`'s weekly medians, as returned by
-        `get_lakes_medians_ser`
+    lower_high_mean_ser : :class:`pandas.Series`
+        `lower_high_lakes_df`'s weekly means, as returned by
+        `get_mean_high_ser`
 
-    lower_low_lakes_medians_ser : :class:`pandas.Series`
-        `lower_low_lakes_df`'s weekly medians, as returned by
-        `get_lakes_medians_ser`
+    lower_low_mean_ser : :class:`pandas.Series`
+        `lower_low_lakes_df`'s weekly means, as returned by
+        `get_mean_low_ser`
+
+    lower_longest_cluster_weeks : list[:class:`int`]
+        The weeks, as returned by `get_longest_cluster_weeks`
 
     Returns
     -------
     None
     """
+    plot_significant_cluster_span(
+        lower_bounds_lakes_ax,
+        longest_cluster_weeks = lower_longest_cluster_weeks
+    )
+
     plot_lakes_df_scatterplot(
         lower_bounds_lakes_ax,
         lower_high_lakes_df,
@@ -810,9 +1404,9 @@ def plot_on_lower_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         lower_bounds_lakes_ax,
-        lower_high_lakes_medians_ser,
-        color ="#FF0000",
-        label = "High Smoke Season (Median)"
+        lower_high_mean_ser,
+        color = "#FF0000",
+        label = "High Smoke Season (Mean)"
     )
 
     plot_lakes_df_scatterplot(
@@ -822,9 +1416,9 @@ def plot_on_lower_bounds_lakes_ax(
     )
     plot_lakes_df_lineplot(
         lower_bounds_lakes_ax,
-        lower_low_lakes_medians_ser,
+        lower_low_mean_ser,
         color = "#0000FF",
-        label = "Low Smoke Season (Median)"
+        label = "Low Smoke Season (Mean)"
     )
 
 
@@ -968,42 +1562,6 @@ def set_lower_bounds_lakes_ax_properties(
 # ==================================================================================================
 
 
-# Write functions
-# ==================================================================================================
-def write_lakes_df_to_csv(
-    lakes_df: pd.DataFrame,
-    output:   Path,
-    name:     str
-) -> None:
-    """
-    Writes `lakes_df` to `output`, named by `name`.
-
-    Parameters
-    ----------
-    lakes_df : :class:`pandas.DataFrame`
-        The dataframe
-
-    output : :class:`pathlib.Path`
-        The output directory path
-
-    name : :class:`str`
-        The output file name
-
-    Returns
-    -------
-    None
-    """
-    output.mkdir(
-        parents  = True,
-        exist_ok = True
-    )
-
-    lakes_df.to_csv(output / (name + ".csv"))
-
-
-# ==================================================================================================
-
-
 def main(
 ) -> int:
     """
@@ -1014,57 +1572,31 @@ def main(
     if not arguments_are_valid(args):
         return RETURN_FAILURE
 
-    variable_over_high_smoke_season_df = read_esacci_lakes_variable_over_high_smoke_season_csv(args.esacci_lakes_variable_over_high_smoke_season_csv_path)
-    variable_over_low_smoke_season_df  = read_esacci_lakes_variable_over_low_smoke_season_csv(args.esacci_lakes_variable_over_low_smoke_season_csv_path)
-    hylak_fields_df                    = read_esacci_lakes_hylak_fields_csv(args.esacci_lakes_hylak_fields_csv_path)
+    upper_high_lakes_df  = read_lakes_csv(args.upper_high_lakes_csv_path)
+    upper_low_lakes_df   = read_lakes_csv(args.upper_low_lakes_csv_path)
+    middle_high_lakes_df = read_lakes_csv(args.middle_high_lakes_csv_path)
+    middle_low_lakes_df  = read_lakes_csv(args.middle_low_lakes_csv_path)
+    lower_high_lakes_df  = read_lakes_csv(args.lower_high_lakes_csv_path)
+    lower_low_lakes_df   = read_lakes_csv(args.lower_low_lakes_csv_path)
 
-    if (
-        args.form == "Absolute"
-        and args.esacci_lakes_variable == "lake_surface_water_temperature"
-    ):
-        variable_over_high_smoke_season_df = convert_lakes_df_units_from_kelvin_to_celsius(variable_over_high_smoke_season_df)
-        variable_over_low_smoke_season_df  = convert_lakes_df_units_from_kelvin_to_celsius(variable_over_low_smoke_season_df)
+    upper_results_df  = read_results_csv(args.upper_results_csv_path)
+    middle_results_df = read_results_csv(args.middle_results_csv_path)
+    lower_results_df  = read_results_csv(args.lower_results_csv_path)
 
-    variable_over_high_smoke_season_hylak_fields_df = merge_dfs_on_esacci_lakes_id(
-        variable_over_high_smoke_season_df,
-        hylak_fields_df
-    )
-    variable_over_low_smoke_season_hylak_fields_df  = merge_dfs_on_esacci_lakes_id(
-        variable_over_low_smoke_season_df,
-        hylak_fields_df
-    )
+    upper_summary_ser  = read_summary_csv(args.upper_summary_csv_path)
+    middle_summary_ser = read_summary_csv(args.middle_summary_csv_path)
+    lower_summary_ser  = read_summary_csv(args.lower_summary_csv_path)
 
-    upper_high_lakes_df  = get_upper_bounds_lakes_df(
-        variable_over_high_smoke_season_hylak_fields_df,
-        args.hylak_field
-    )
-    upper_low_lakes_df   = get_upper_bounds_lakes_df(
-        variable_over_low_smoke_season_hylak_fields_df,
-        args.hylak_field
-    )
-    middle_high_lakes_df = get_middle_bounds_lakes_df(
-        variable_over_high_smoke_season_hylak_fields_df,
-        args.hylak_field
-    )
-    middle_low_lakes_df  = get_middle_bounds_lakes_df(
-        variable_over_low_smoke_season_hylak_fields_df,
-        args.hylak_field
-    )
-    lower_high_lakes_df  = get_lower_bounds_lakes_df(
-        variable_over_high_smoke_season_hylak_fields_df,
-        args.hylak_field
-    )
-    lower_low_lakes_df   = get_lower_bounds_lakes_df(
-        variable_over_low_smoke_season_hylak_fields_df,
-        args.hylak_field
-    )
+    upper_high_mean_ser  = get_mean_high_ser(upper_results_df)
+    upper_low_mean_ser   = get_mean_low_ser(upper_results_df)
+    middle_high_mean_ser = get_mean_high_ser(middle_results_df)
+    middle_low_mean_ser  = get_mean_low_ser(middle_results_df)
+    lower_high_mean_ser  = get_mean_high_ser(lower_results_df)
+    lower_low_mean_ser   = get_mean_low_ser(lower_results_df)
 
-    upper_high_lakes_medians_ser  = get_lakes_medians_ser(upper_high_lakes_df)
-    upper_low_lakes_medians_ser   = get_lakes_medians_ser(upper_low_lakes_df)
-    middle_high_lakes_medians_ser = get_lakes_medians_ser(middle_high_lakes_df)
-    middle_low_lakes_medians_ser  = get_lakes_medians_ser(middle_low_lakes_df)
-    lower_high_lakes_medians_ser  = get_lakes_medians_ser(lower_high_lakes_df)
-    lower_low_lakes_medians_ser   = get_lakes_medians_ser(lower_low_lakes_df)
+    upper_longest_cluster_weeks  = get_longest_cluster_weeks(upper_summary_ser)
+    middle_longest_cluster_weeks = get_longest_cluster_weeks(middle_summary_ser)
+    lower_longest_cluster_weeks  = get_longest_cluster_weeks(lower_summary_ser)
 
     fig, (
         upper_bounds_lakes_ax,
@@ -1081,24 +1613,27 @@ def main(
 
     plot_on_upper_bounds_lakes_ax(
         upper_bounds_lakes_ax,
-        upper_high_lakes_df          = upper_high_lakes_df,
-        upper_low_lakes_df           = upper_low_lakes_df,
-        upper_high_lakes_medians_ser = upper_high_lakes_medians_ser,
-        upper_low_lakes_medians_ser  = upper_low_lakes_medians_ser
+        upper_high_lakes_df         = upper_high_lakes_df,
+        upper_low_lakes_df          = upper_low_lakes_df,
+        upper_high_mean_ser         = upper_high_mean_ser,
+        upper_low_mean_ser          = upper_low_mean_ser,
+        upper_longest_cluster_weeks = upper_longest_cluster_weeks
     )
     plot_on_middle_bounds_lakes_ax(
         middle_bounds_lakes_ax,
-        middle_high_lakes_df          = middle_high_lakes_df,
-        middle_low_lakes_df           = middle_low_lakes_df,
-        middle_high_lakes_medians_ser = middle_high_lakes_medians_ser,
-        middle_low_lakes_medians_ser  = middle_low_lakes_medians_ser
+        middle_high_lakes_df         = middle_high_lakes_df,
+        middle_low_lakes_df          = middle_low_lakes_df,
+        middle_high_mean_ser         = middle_high_mean_ser,
+        middle_low_mean_ser          = middle_low_mean_ser,
+        middle_longest_cluster_weeks = middle_longest_cluster_weeks
     )
     plot_on_lower_bounds_lakes_ax(
         lower_bounds_lakes_ax,
-        lower_high_lakes_df          = lower_high_lakes_df,
-        lower_low_lakes_df           = lower_low_lakes_df,
-        lower_high_lakes_medians_ser = lower_high_lakes_medians_ser,
-        lower_low_lakes_medians_ser  = lower_low_lakes_medians_ser
+        lower_high_lakes_df         = lower_high_lakes_df,
+        lower_low_lakes_df          = lower_low_lakes_df,
+        lower_high_mean_ser         = lower_high_mean_ser,
+        lower_low_mean_ser          = lower_low_mean_ser,
+        lower_longest_cluster_weeks = lower_longest_cluster_weeks
     )
 
     set_upper_bounds_lakes_ax_properties(
@@ -1126,38 +1661,7 @@ def main(
 
     save_figure(
         fig,
-        args.output / "figure.png"
-    )
-
-    write_lakes_df_to_csv(
-        upper_high_lakes_df,
-        args.output,
-        "upper_high_lakes"
-    )
-    write_lakes_df_to_csv(
-        upper_low_lakes_df,
-        args.output,
-        "upper_low_lakes"
-    )
-    write_lakes_df_to_csv(
-        middle_high_lakes_df,
-        args.output,
-        "middle_high_lakes"
-    )
-    write_lakes_df_to_csv(
-        middle_low_lakes_df,
-        args.output,
-        "middle_low_lakes"
-    )
-    write_lakes_df_to_csv(
-        lower_high_lakes_df,
-        args.output,
-        "lower_high_lakes"
-    )
-    write_lakes_df_to_csv(
-        lower_low_lakes_df,
-        args.output,
-        "lower_low_lakes"
+        args.output
     )
 
     return RETURN_SUCCESS

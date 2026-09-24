@@ -82,7 +82,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """Produces a comparison of each lake's mean value for a ESA CCI Lakes variable over its most recent high-smoke and low-smoke seasons."""
+        description = """Produces a comparison of each lake's mean value for an ESA CCI Lakes variable over its most recent high-smoke and low-smoke seasons."""
     )
 
     # Positional arguments
@@ -752,7 +752,7 @@ def get_esacci_lakes_variable_mean_by_period_idx(
 
     Parameters
     ----------
-    esacci_lakes_variable_values_by_period_idx : class:`dict[int, list[float]]`
+    esacci_lakes_variable_values_by_period_idx : dict[:class:`int`, list[:class:`float`]]
         A dict mapping period index to a list of values
 
     Returns
