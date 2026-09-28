@@ -16,7 +16,11 @@ import pandas as pd
 import xarray as xr
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils.geo  import get_geo_bounding_box_from_esacci_lakes_static_lake_mask
+from lib.esacci_lakes.utils.geo  import (
+    get_geo_bounding_box_from_esacci_lakes_static_lake_mask,
+    get_esacci_lakes_id_mask,
+    get_esacci_lakes_cover_class_mask
+)
 from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_metadata_csv_path,
     add_argument_esacci_lakes_static_lake_mask_nc_path,
@@ -29,11 +33,14 @@ from lib.esacci_lakes.utils.proc import (
 from lib.esacci_lakes.vars       import ESACCI_LAKES_COVER_CLASS_ICE
 from lib.geo.utils               import (
     select_ds_by_geo_bounding_box,
-    mask_ds_by_combined_masks
+    mask_ds,
+    get_ds_variable_mean,
+    get_ds_variable_coverage
 )
 from lib.proc.utils              import (
     add_argument_output,
-    argument_output_is_a_file
+    argument_output_is_a_file,
+    write_df_to_csv
 )
 from lib.proc.vars               import (
     RETURN_SUCCESS,
@@ -120,128 +127,9 @@ def arguments_are_valid(
 
 # Data functions
 # ==================================================================================================
-def get_esacci_lakes_id_mask(
-    esacci_lakes_id:                  int,
-    esacci_lakes_static_lake_mask_ds: xr.Dataset
-) -> xr.DataArray:
-    """
-    Returns a boolean mask of `esacci_lakes_static_lake_mask_ds`'s
-    "CCI_lakeid" pixels belonging to `esacci_lakes_id`.
-
-    Parameters
-    ----------
-    esacci_lakes_id : :class:`int`
-        The ESA CCI Lakes id
-
-    esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
-        The static lake mask dataset
-
-    Returns
-    -------
-    A :class:`xarray.DataArray`.
-    """
-    return esacci_lakes_static_lake_mask_ds["CCI_lakeid"] == esacci_lakes_id
-
-
-def get_esacci_lakes_cover_class_mask(
-    esacci_lakes_cover_class:       int,
-    esacci_lakes_merged_product_ds: xr.Dataset
-) -> xr.DataArray:
-    """
-    Returns a boolean mask of `esacci_lakes_merged_product_ds`'s
-    "lake_cover_class" pixels equal to `esacci_lakes_cover_class`.
-
-    Parameters
-    ----------
-    esacci_lakes_cover_class : :class:`int`
-        One of `ESACCI_LAKES_COVER_CLASS_WATER`,
-        `ESACCI_LAKES_COVER_CLASS_ICE`, or
-        `ESACCI_LAKES_COVER_CLASS_CLOUD`
-
-    esacci_lakes_merged_product_ds : :class:`xarray.Dataset`
-        The merged product
-
-    Returns
-    -------
-    A :class:`xarray.DataArray`.
-    """
-    return esacci_lakes_merged_product_ds["lake_cover_class"] == esacci_lakes_cover_class
-
-
-def get_esacci_lakes_variable_mean(
-    esacci_lakes_variable: str,
-    *,
-    esacci_lakes_merged_product_ds: xr.Dataset
-) -> float:
-    """
-    Returns the mean `esacci_lakes_variable` of
-    `esacci_lakes_merged_product_ds`.
-
-    Parameters
-    ----------
-    esacci_lakes_variable : :class:`str`
-        The ESA CCI Lakes variable id
-
-    esacci_lakes_merged_product_ds : :class:`xarray.Dataset`
-        The merged product
-
-    Returns
-    -------
-    A :class:`float`.
-    """
-    return (
-        esacci_lakes_merged_product_ds[esacci_lakes_variable]
-        .mean(
-            dim    = ["time", "lat", "lon"],
-            skipna = True
-        )
-        .item()
-    )
-
-
-def get_esacci_lakes_variable_coverage(
-    esacci_lakes_variable: str,
-    *,
-    esacci_lakes_merged_product_ds: xr.Dataset,
-    esacci_lakes_mask:              xr.DataArray
-) -> float:
-    """
-    Returns the percentage of `esacci_lakes_mask`'s pixels with a
-    non-null `esacci_lakes_variable` value in
-    `esacci_lakes_merged_product_ds`.
-
-    Parameters
-    ----------
-    esacci_lakes_variable : :class:`str`
-        The ESA CCI Lakes variable id
-
-    esacci_lakes_merged_product_ds : :class:`xarray.Dataset`
-        The merged product
-
-    esacci_lakes_mask : :class:`xarray.DataArray`
-        The base mask
-
-    Returns
-    -------
-    A :class:`float`.
-    """
-    num = (
-        esacci_lakes_merged_product_ds[esacci_lakes_variable]
-        .notnull()
-        .sum()
-        .item()
-    )
-    den = (
-        esacci_lakes_mask
-        .sum()
-        .item()
-    )
-
-    return num / den
-
-
 def get_esacci_lakes_merged_product_record(
-    esacci_lakes_id:                  int,
+    esacci_lakes_id: int,
+    *,
     esacci_lakes_metadata_df:         pd.DataFrame,
     esacci_lakes_static_lake_mask_ds: xr.Dataset,
     esacci_lakes_merged_product_ds:   xr.Dataset
@@ -256,7 +144,7 @@ def get_esacci_lakes_merged_product_record(
         The ESA CCI Lakes id
 
     esacci_lakes_metadata_df : :class:`pandas.DataFrame`
-        The dataframe
+        The ESA CCI Lakes metadata
 
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
         The ESA CCI Lakes static lake mask
@@ -266,7 +154,7 @@ def get_esacci_lakes_merged_product_record(
 
     Returns
     -------
-    A :class:`dict[str, Any]` with keys "esacci_lakes_id",
+    A dict[:class:`str`, :class:`Any`] with keys "esacci_lakes_id",
     "lake_surface_water_temperature_mean", and
     "lake_surface_water_temperature_coverage".
     """
@@ -304,14 +192,14 @@ def get_esacci_lakes_merged_product_record(
 
     id_mask  = get_esacci_lakes_id_mask(
         esacci_lakes_id,
-        static_lake_mask_ds_window
+        esacci_lakes_static_lake_mask_ds = static_lake_mask_ds_window
     )
     ice_mask = get_esacci_lakes_cover_class_mask(
         ESACCI_LAKES_COVER_CLASS_ICE,
-        merged_product_ds_window
+        esacci_lakes_merged_product_ds = merged_product_ds_window
     )
 
-    masked_merged_product_ds_window = mask_ds_by_combined_masks(
+    masked_merged_product_ds_window = mask_ds(
         merged_product_ds_window[["lake_surface_water_temperature"]],
         [
             id_mask,
@@ -320,20 +208,21 @@ def get_esacci_lakes_merged_product_record(
     )
 
     record: dict[str, Any]                            = {"esacci_lakes_id": esacci_lakes_id}
-    record["lake_surface_water_temperature_mean"]     = get_esacci_lakes_variable_mean(
+    record["lake_surface_water_temperature_mean"]     = get_ds_variable_mean(
         "lake_surface_water_temperature",
-        esacci_lakes_merged_product_ds = masked_merged_product_ds_window
+        ds = masked_merged_product_ds_window
     )
-    record["lake_surface_water_temperature_coverage"] = get_esacci_lakes_variable_coverage(
+    record["lake_surface_water_temperature_coverage"] = get_ds_variable_coverage(
         "lake_surface_water_temperature",
-        esacci_lakes_merged_product_ds = masked_merged_product_ds_window,
-        esacci_lakes_mask              = id_mask
+        ds   = masked_merged_product_ds_window,
+        mask = id_mask
     )
 
     return record
 
 
 def get_esacci_lakes_merged_product_df(
+    *,
     esacci_lakes_metadata_df:         pd.DataFrame,
     esacci_lakes_static_lake_mask_ds: xr.Dataset,
     esacci_lakes_merged_product_ds:   xr.Dataset
@@ -345,7 +234,7 @@ def get_esacci_lakes_merged_product_df(
     Parameters
     ----------
     esacci_lakes_metadata_df : :class:`pandas.DataFrame`
-        The dataframe
+        The ESA CCI Lakes metadata
 
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
         The ESA CCI Lakes static lake mask
@@ -362,47 +251,15 @@ def get_esacci_lakes_merged_product_df(
     records = [
         get_esacci_lakes_merged_product_record(
             esacci_lakes_id,
-            esacci_lakes_metadata_df,
-            esacci_lakes_static_lake_mask_ds,
-            esacci_lakes_merged_product_ds
+            esacci_lakes_metadata_df         = esacci_lakes_metadata_df,
+            esacci_lakes_static_lake_mask_ds = esacci_lakes_static_lake_mask_ds,
+            esacci_lakes_merged_product_ds   = esacci_lakes_merged_product_ds
         )
         for esacci_lakes_id
         in esacci_lakes_metadata_df.index
     ]
 
     return pd.DataFrame(records).set_index("esacci_lakes_id")
-
-
-# ==================================================================================================
-
-
-# Write functions
-# ==================================================================================================
-def write_esacci_lakes_merged_product_df_to_csv(
-    esacci_lakes_merged_product_df: pd.DataFrame,
-    output:                         Path
-) -> None:
-    """
-    Writes `esacci_lakes_merged_product_df` to `output`.
-
-    Parameters
-    ----------
-    esacci_lakes_merged_product_df : :class:`pandas.DataFrame`
-        The dataframe
-
-    output : :class:`pathlib.Path`
-        The output file path
-
-    Returns
-    -------
-    None
-    """
-    output.parent.mkdir(
-        parents  = True,
-        exist_ok = True
-    )
-
-    esacci_lakes_merged_product_df.to_csv(output)
 
 
 # ==================================================================================================
@@ -425,15 +282,15 @@ def main(
         xr.open_dataset(args.esacci_lakes_merged_product_nc_path)   as merged_product_ds
     ):
         merged_product_df = get_esacci_lakes_merged_product_df(
-            metadata_df,
-            static_lake_mask_ds,
-            merged_product_ds
+            esacci_lakes_metadata_df         = metadata_df,
+            esacci_lakes_static_lake_mask_ds = static_lake_mask_ds,
+            esacci_lakes_merged_product_ds   = merged_product_ds
         )
 
-    write_esacci_lakes_merged_product_df_to_csv(
-        merged_product_df,
-        args.output
-    )
+        write_df_to_csv(
+            merged_product_df,
+            args.output
+        )
 
     return RETURN_SUCCESS
 

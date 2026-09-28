@@ -50,12 +50,12 @@ def select_ds_by_geo_bounding_box(
     )
 
 
-def mask_ds_by_combined_masks(
+def mask_ds(
     ds:    xr.Dataset,
     masks: list[xr.DataArray]
 ) -> xr.Dataset:
     """
-    Returns `ds` masked by the elementwise `&` of `masks`.
+    Returns `ds` masked by the elementwise `and` of `masks`.
 
     Parameters
     ----------
@@ -107,3 +107,73 @@ def join_gdfs_on_within(
         right_df  = right_gdf,
         predicate = "within"
     )
+
+
+def get_ds_variable_mean(
+    variable: str,
+    *,
+    ds: xr.Dataset
+) -> float:
+    """
+    Returns the mean `variable` of `ds`.
+
+    Parameters
+    ----------
+    variable : :class:`str`
+        The variable id
+
+    ds : :class:`xarray.Dataset`
+        The dataset
+
+    Returns
+    -------
+    A :class:`float`.
+    """
+    return (
+        ds[variable]
+        .mean(
+            dim    = ["time", "lat", "lon"],
+            skipna = True
+        )
+        .item()
+    )
+
+
+def get_ds_variable_coverage(
+    variable: str,
+    *,
+    ds:   xr.Dataset,
+    mask: xr.DataArray
+) -> float:
+    """
+    Returns the percentage of `mask`'s pixels with a non-null
+    `variable` value in `ds`.
+
+    Parameters
+    ----------
+    variable : :class:`str`
+        The variable id
+
+    ds : :class:`xarray.Dataset`
+        The dataset
+
+    mask : :class:`xarray.DataArray`
+        The base mask
+
+    Returns
+    -------
+    A :class:`float`.
+    """
+    num = (
+        ds[variable]
+        .notnull()
+        .sum()
+        .item()
+    )
+    den = (
+        mask
+        .sum()
+        .item()
+    )
+
+    return num / den

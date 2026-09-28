@@ -13,6 +13,9 @@ import argparse
 from pathlib import Path
 from typing  import TextIO
 
+# Related Third-party Imports
+import pandas as pd
+
 
 def add_argument_output(
     parser: argparse.ArgumentParser
@@ -124,3 +127,30 @@ def open_logstream(
         output / "log.txt",
         "a"
     )
+
+
+def write_df_to_csv(
+    df:     pd.DataFrame,
+    output: Path
+) -> None:
+    """
+    Writes `df` to `output`.
+
+    Parameters
+    ----------
+    df : :class:`pandas.DataFrame`
+        The dataframe
+
+    output : :class:`pathlib.Path`
+        The output file path
+
+    Returns
+    -------
+    None
+    """
+    output.parent.mkdir(
+        parents  = True,
+        exist_ok = True
+    )
+
+    df.to_csv(output)

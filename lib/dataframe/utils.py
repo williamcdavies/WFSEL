@@ -14,27 +14,27 @@ import re
 import pandas as pd
 
 
-def subtract_column_from_df(
-    df:     pd.DataFrame,
-    column: str
+def subtract_columns_from_df(
+    df:      pd.DataFrame,
+    columns: list[str]
 ) -> pd.DataFrame:
     """
-    Returns `df` with every column subtracted by `column`.
+    Returns `df` with every column subtracted by the mean of `columns`.
 
     Parameters
     ----------
     df : :class:`pandas.DataFrame`
         The dataframe
 
-    column : :class:`str`
-        The column
+    columns : list[:class:`str`]
+        The columns
 
     Returns
     -------
     A :class:`pandas.DataFrame`.
     """
     return df.sub(
-        df[column],
+        df[columns].mean(axis = 1),
         axis = 0
     )
 
@@ -275,7 +275,7 @@ def get_quantiles_from_ser(
     ser : :class:`pandas.Series`
         The series
 
-    quantiles : :class:`list[float]`
+    quantiles : list[:class:`float`]
         The quantiles
 
     Returns
