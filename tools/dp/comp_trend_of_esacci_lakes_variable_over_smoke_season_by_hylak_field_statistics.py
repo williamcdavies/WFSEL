@@ -26,10 +26,12 @@ from lib.proc.vars       import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
+from lib.stat.vars       import (
+    ALPHA,
+    MINIMUM_SAMPLE_SIZE_FOR_ONE_TAILED_PAIRED_TTEST
+)
 
-PROG                                            = "comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py"
-ALPHA                                           = 0.05
-MINIMUM_SAMPLE_SIZE_FOR_ONE_TAILED_PAIRED_TTEST = 5
+PROG = "comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py"
 
 
 # Argument functions
