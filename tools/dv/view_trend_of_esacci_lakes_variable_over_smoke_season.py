@@ -1074,12 +1074,12 @@ def get_mean_low_ser(
     return results_df["mean_low"]
 
 
-def get_longest_cluster_weeks(
+def get_most_significant_cluster_weeks(
     summary_ser: pd.Series
 ) -> list[int]:
     """
-    Returns `summary_ser`'s "longest_cluster_weeks" field, parsed from
-    its string representation.
+    Returns `summary_ser`'s "most_significant_cluster_weeks" field,
+    parsed from its string representation.
 
     Parameters
     ----------
@@ -1090,7 +1090,7 @@ def get_longest_cluster_weeks(
     -------
     A list of :class:`int`.
     """
-    return ast.literal_eval(summary_ser["longest_cluster_weeks"])
+    return ast.literal_eval(summary_ser["most_significant_cluster_weeks"])
 
 
 # ==================================================================================================
@@ -1177,48 +1177,47 @@ def plot_lakes_df_lineplot(
 def plot_significant_cluster_span(
     ax: plt.Axes, # type: ignore
     *,
-    longest_cluster_weeks: list[int]
+    most_significant_cluster_weeks: list[int]
 ) -> None:
     """
-    Shades `ax`'s background over `longest_cluster_weeks`.
+    Shades `ax`'s background over `most_significant_cluster_weeks`.
 
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
         The axes to plot onto
 
-    longest_cluster_weeks : list[:class:`int`]
-        The weeks, as returned by `get_longest_cluster_weeks`
+    most_significant_cluster_weeks : list[:class:`int`]
+        The weeks, as returned by `get_most_significant_cluster_weeks`
 
     Returns
     -------
     None
     """
-    if not longest_cluster_weeks:
+    if not most_significant_cluster_weeks:
         return
 
     ax.axvspan(
-        min(longest_cluster_weeks) - 0.5,
-        max(longest_cluster_weeks) + 0.5,
+        min(most_significant_cluster_weeks) - 0.5,
+        max(most_significant_cluster_weeks) + 0.5,
         color  = "#CCCCCC",
-        alpha  = 0.3,
-        zorder = 0
+        alpha  = 0.25
     )
 
 
 def plot_on_upper_bounds_lakes_ax(
     upper_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
-    upper_high_lakes_df:         pd.DataFrame,
-    upper_low_lakes_df:          pd.DataFrame,
-    upper_high_mean_ser:         pd.Series,
-    upper_low_mean_ser:          pd.Series,
-    upper_longest_cluster_weeks: list[int]
+    upper_high_lakes_df:                  pd.DataFrame,
+    upper_low_lakes_df:                   pd.DataFrame,
+    upper_high_mean_ser:                  pd.Series,
+    upper_low_mean_ser:                   pd.Series,
+    upper_most_significant_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `upper_high_lakes_df`, `upper_low_lakes_df`,
     `upper_high_mean_ser`, `upper_low_mean_ser`, and
-    `upper_longest_cluster_weeks` onto `upper_bounds_lakes_ax`.
+    `upper_most_significant_cluster_weeks` onto `upper_bounds_lakes_ax`.
 
     Parameters
     ----------
@@ -1239,8 +1238,8 @@ def plot_on_upper_bounds_lakes_ax(
         `upper_low_lakes_df`'s weekly means, as returned by
         `get_mean_low_ser`
 
-    upper_longest_cluster_weeks : list[:class:`int`]
-        The weeks, as returned by `get_longest_cluster_weeks`
+    upper_most_significant_cluster_weeks : list[:class:`int`]
+        The weeks, as returned by `get_most_significant_cluster_weeks`
 
     Returns
     -------
@@ -1248,7 +1247,7 @@ def plot_on_upper_bounds_lakes_ax(
     """
     plot_significant_cluster_span(
         upper_bounds_lakes_ax,
-        longest_cluster_weeks = upper_longest_cluster_weeks
+        most_significant_cluster_weeks = upper_most_significant_cluster_weeks
     )
 
     plot_lakes_df_scatterplot(
@@ -1279,16 +1278,17 @@ def plot_on_upper_bounds_lakes_ax(
 def plot_on_middle_bounds_lakes_ax(
     middle_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
-    middle_high_lakes_df:         pd.DataFrame,
-    middle_low_lakes_df:          pd.DataFrame,
-    middle_high_mean_ser:         pd.Series,
-    middle_low_mean_ser:          pd.Series,
-    middle_longest_cluster_weeks: list[int]
+    middle_high_lakes_df:                  pd.DataFrame,
+    middle_low_lakes_df:                   pd.DataFrame,
+    middle_high_mean_ser:                  pd.Series,
+    middle_low_mean_ser:                   pd.Series,
+    middle_most_significant_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `middle_high_lakes_df`, `middle_low_lakes_df`,
     `middle_high_mean_ser`, `middle_low_mean_ser`, and
-    `middle_longest_cluster_weeks` onto `middle_bounds_lakes_ax`.
+    `middle_most_significant_cluster_weeks` onto
+    `middle_bounds_lakes_ax`.
 
     Parameters
     ----------
@@ -1309,8 +1309,8 @@ def plot_on_middle_bounds_lakes_ax(
         `middle_low_lakes_df`'s weekly means, as returned by
         `get_mean_low_ser`
 
-    middle_longest_cluster_weeks : list[:class:`int`]
-        The weeks, as returned by `get_longest_cluster_weeks`
+    middle_most_significant_cluster_weeks : list[:class:`int`]
+        The weeks, as returned by `get_most_significant_cluster_weeks`
 
     Returns
     -------
@@ -1318,7 +1318,7 @@ def plot_on_middle_bounds_lakes_ax(
     """
     plot_significant_cluster_span(
         middle_bounds_lakes_ax,
-        longest_cluster_weeks = middle_longest_cluster_weeks
+        most_significant_cluster_weeks = middle_most_significant_cluster_weeks
     )
 
     plot_lakes_df_scatterplot(
@@ -1349,16 +1349,16 @@ def plot_on_middle_bounds_lakes_ax(
 def plot_on_lower_bounds_lakes_ax(
     lower_bounds_lakes_ax: plt.Axes, # type: ignore
     *,
-    lower_high_lakes_df:         pd.DataFrame,
-    lower_low_lakes_df:          pd.DataFrame,
-    lower_high_mean_ser:         pd.Series,
-    lower_low_mean_ser:          pd.Series,
-    lower_longest_cluster_weeks: list[int]
+    lower_high_lakes_df:                  pd.DataFrame,
+    lower_low_lakes_df:                   pd.DataFrame,
+    lower_high_mean_ser:                  pd.Series,
+    lower_low_mean_ser:                   pd.Series,
+    lower_most_significant_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `lower_high_lakes_df`, `lower_low_lakes_df`,
     `lower_high_mean_ser`, `lower_low_mean_ser`, and
-    `lower_longest_cluster_weeks` onto `lower_bounds_lakes_ax`.
+    `lower_most_significant_cluster_weeks` onto `lower_bounds_lakes_ax`.
 
     Parameters
     ----------
@@ -1379,8 +1379,8 @@ def plot_on_lower_bounds_lakes_ax(
         `lower_low_lakes_df`'s weekly means, as returned by
         `get_mean_low_ser`
 
-    lower_longest_cluster_weeks : list[:class:`int`]
-        The weeks, as returned by `get_longest_cluster_weeks`
+    lower_most_significant_cluster_weeks : list[:class:`int`]
+        The weeks, as returned by `get_most_significant_cluster_weeks`
 
     Returns
     -------
@@ -1388,7 +1388,7 @@ def plot_on_lower_bounds_lakes_ax(
     """
     plot_significant_cluster_span(
         lower_bounds_lakes_ax,
-        longest_cluster_weeks = lower_longest_cluster_weeks
+        most_significant_cluster_weeks = lower_most_significant_cluster_weeks
     )
 
     plot_lakes_df_scatterplot(
@@ -1453,9 +1453,18 @@ def set_upper_bounds_lakes_ax_properties(
     hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale # type: ignore
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
-    upper_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} >= {hylak_field_upper_bound_display:g} {hylak_field_display_units}""")
-    upper_bounds_lakes_ax.set_xlabel("Week relative to start of smoke season")
-    upper_bounds_lakes_ax.set_ylabel(f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""")
+    upper_bounds_lakes_ax.set_title(
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} >= {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
+        fontsize = 10
+    )
+    upper_bounds_lakes_ax.set_xlabel(
+        "Week relative to start of smoke season",
+        fontsize = 10
+    )
+    upper_bounds_lakes_ax.set_ylabel(
+        f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
+        fontsize = 10
+    )
     upper_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
     force_ax_xtick_visibility(upper_bounds_lakes_ax)
@@ -1500,9 +1509,18 @@ def set_middle_bounds_lakes_ax_properties(
     hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale # type: ignore
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
-    middle_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} between {hylak_field_lower_bound_display:g} {hylak_field_display_units} and {hylak_field_upper_bound_display:g} {hylak_field_display_units}""")
-    middle_bounds_lakes_ax.set_xlabel("Week relative to start of smoke season")
-    middle_bounds_lakes_ax.set_ylabel(f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""")
+    middle_bounds_lakes_ax.set_title(
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} between {hylak_field_lower_bound_display:g} {hylak_field_display_units} and {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
+        fontsize = 10
+    )
+    middle_bounds_lakes_ax.set_xlabel(
+        "Week relative to start of smoke season",
+        fontsize = 10
+    )
+    middle_bounds_lakes_ax.set_ylabel(
+        f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
+        fontsize = 10
+    )
     middle_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
     force_ax_xtick_visibility(middle_bounds_lakes_ax)
@@ -1545,9 +1563,18 @@ def set_lower_bounds_lakes_ax_properties(
     hylak_field_lower_bound_display = hylak_field_lower_bound / hylak_field_display_scale # type: ignore
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
-    lower_bounds_lakes_ax.set_title(f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} <= {hylak_field_lower_bound_display:g} {hylak_field_display_units}""")
-    lower_bounds_lakes_ax.set_xlabel("Week relative to start of smoke season")
-    lower_bounds_lakes_ax.set_ylabel(f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""")
+    lower_bounds_lakes_ax.set_title(
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} <= {hylak_field_lower_bound_display:g} {hylak_field_display_units}""",
+        fontsize = 10
+    )
+    lower_bounds_lakes_ax.set_xlabel(
+        "Week relative to start of smoke season",
+        fontsize = 10
+    )
+    lower_bounds_lakes_ax.set_ylabel(
+        f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
+        fontsize = 10
+    )
     lower_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
     force_ax_xtick_visibility(lower_bounds_lakes_ax)
@@ -1588,9 +1615,9 @@ def main(
     lower_high_mean_ser  = get_mean_high_ser(lower_results_df)
     lower_low_mean_ser   = get_mean_low_ser(lower_results_df)
 
-    upper_longest_cluster_weeks  = get_longest_cluster_weeks(upper_summary_ser)
-    middle_longest_cluster_weeks = get_longest_cluster_weeks(middle_summary_ser)
-    lower_longest_cluster_weeks  = get_longest_cluster_weeks(lower_summary_ser)
+    upper_most_significant_cluster_weeks  = get_most_significant_cluster_weeks(upper_summary_ser)
+    middle_most_significant_cluster_weeks = get_most_significant_cluster_weeks(middle_summary_ser)
+    lower_most_significant_cluster_weeks  = get_most_significant_cluster_weeks(lower_summary_ser)
 
     fig, (
         upper_bounds_lakes_ax,
@@ -1601,33 +1628,33 @@ def main(
         ncols   = 1,
         sharex  = True,
         sharey  = True,
-        figsize = (12.8, 14.4)
+        figsize = (10, 15)
     )
     plt.subplots_adjust(hspace = 0.25)
 
     plot_on_upper_bounds_lakes_ax(
         upper_bounds_lakes_ax,
-        upper_high_lakes_df         = upper_high_lakes_df,
-        upper_low_lakes_df          = upper_low_lakes_df,
-        upper_high_mean_ser         = upper_high_mean_ser,
-        upper_low_mean_ser          = upper_low_mean_ser,
-        upper_longest_cluster_weeks = upper_longest_cluster_weeks
+        upper_high_lakes_df                  = upper_high_lakes_df,
+        upper_low_lakes_df                   = upper_low_lakes_df,
+        upper_high_mean_ser                  = upper_high_mean_ser,
+        upper_low_mean_ser                   = upper_low_mean_ser,
+        upper_most_significant_cluster_weeks = upper_most_significant_cluster_weeks
     )
     plot_on_middle_bounds_lakes_ax(
         middle_bounds_lakes_ax,
-        middle_high_lakes_df         = middle_high_lakes_df,
-        middle_low_lakes_df          = middle_low_lakes_df,
-        middle_high_mean_ser         = middle_high_mean_ser,
-        middle_low_mean_ser          = middle_low_mean_ser,
-        middle_longest_cluster_weeks = middle_longest_cluster_weeks
+        middle_high_lakes_df                  = middle_high_lakes_df,
+        middle_low_lakes_df                   = middle_low_lakes_df,
+        middle_high_mean_ser                  = middle_high_mean_ser,
+        middle_low_mean_ser                   = middle_low_mean_ser,
+        middle_most_significant_cluster_weeks = middle_most_significant_cluster_weeks
     )
     plot_on_lower_bounds_lakes_ax(
         lower_bounds_lakes_ax,
-        lower_high_lakes_df         = lower_high_lakes_df,
-        lower_low_lakes_df          = lower_low_lakes_df,
-        lower_high_mean_ser         = lower_high_mean_ser,
-        lower_low_mean_ser          = lower_low_mean_ser,
-        lower_longest_cluster_weeks = lower_longest_cluster_weeks
+        lower_high_lakes_df                  = lower_high_lakes_df,
+        lower_low_lakes_df                   = lower_low_lakes_df,
+        lower_high_mean_ser                  = lower_high_mean_ser,
+        lower_low_mean_ser                   = lower_low_mean_ser,
+        lower_most_significant_cluster_weeks = lower_most_significant_cluster_weeks
     )
 
     set_upper_bounds_lakes_ax_properties(
@@ -1649,9 +1676,9 @@ def main(
         form                  = args.form
     )
 
-    upper_bounds_lakes_ax.legend()
-    middle_bounds_lakes_ax.legend()
-    lower_bounds_lakes_ax.legend()
+    upper_bounds_lakes_ax.legend(loc = 'upper left')
+    middle_bounds_lakes_ax.legend(loc = 'upper left')
+    lower_bounds_lakes_ax.legend(loc = 'upper left')
 
     save_figure(
         fig,

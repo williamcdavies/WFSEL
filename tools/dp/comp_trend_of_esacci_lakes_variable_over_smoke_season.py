@@ -804,7 +804,7 @@ def get_esacci_lakes_variable_means_ser(
 
     Returns
     -------
-    A :class:`pandas.Series` indexed by "w_{n}".
+    A :class:`pandas.Series` indexed by "w_{n}", restricted to `n=20`
     """
     local_data_csv_paths = get_local_data_csv_paths_by_year(
         most_recent_smoke_year,
@@ -826,6 +826,7 @@ def get_esacci_lakes_variable_means_ser(
             f"w_{period_idx - NUMBER_OF_LOOKBACK_PERIODS}": mean
             for period_idx, mean
             in variable_mean_by_period_idx.items()
+            if period_idx - NUMBER_OF_LOOKBACK_PERIODS <= 20
         }
     )
 

@@ -166,7 +166,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """Computes the longest consecutive cluster of weeks whose paired t-test of a high-smoke-season lakes file against a low-smoke-season lakes file is significant."""
+        description = """"Computes the most significant consecutive cluster of weeks in a paired t-test of a high-smoke-season lakes file against a low-smoke-season lakes file."""
     )
 
     # Positional arguments
@@ -520,18 +520,22 @@ def get_mean_delta_ser(
     return (mean_high_ser - mean_low_ser).rename_axis("w")
 
 
-def get_longest_significant_cluster(
+def get_most_significant_cluster(
     w_ser: pd.Series,
+    t_ser: pd.Series,
     p_ser: pd.Series
 ) -> list[int]:
     """
-    Returns the weeks in `w_ser`'s longest cluster of consecutive weeks
-    whose `p_ser` value is less than `ALPHA`.
+    Returns the cluster of consecutive weeks with `p_ser` below `ALPHA`
+    whose `t_ser` values have the greatest total magnitude.
 
     Parameters
     ----------
     w_ser : :class:`pandas.Series`
         The series, as returned by `get_w_ser`
+
+    t_ser : :class:`pandas.Series`
+        The series, as returned by `get_t_ser`
 
     p_ser : :class:`pandas.Series`
         The series, as returned by `get_p_ser`
@@ -545,73 +549,77 @@ def get_longest_significant_cluster(
     if not significant_weeks:
         return []
 
-    longest_significant_cluster = [significant_weeks[0]]
-    current_significant_cluster = [significant_weeks[0]]
+    significant_clusters = []
+    significant_cluster  = [significant_weeks[0]]
 
-    for week in significant_weeks[1:]:
-        if week == current_significant_cluster[-1] + 1:
-            current_significant_cluster.append(week)
+    for significant_week in significant_weeks[1:]:
+        if significant_week == significant_cluster[-1] + 1:
+            significant_cluster.append(significant_week)
         else:
-            current_significant_cluster = [week]
+            significant_clusters.append(significant_cluster)
 
-        if len(current_significant_cluster) > len(longest_significant_cluster):
-            longest_significant_cluster = current_significant_cluster
+            significant_cluster = [significant_week]
 
-    return longest_significant_cluster
+    significant_clusters.append(significant_cluster)
+
+    return max(
+        significant_clusters,
+        key = lambda x: t_ser.loc[x].abs().sum()
+    )
 
 
-def get_significant_mean_delta_min(
-    mean_delta_ser:              pd.Series,
-    longest_significant_cluster: list[int]
+def get_most_significant_mean_delta_min(
+    mean_delta_ser:           pd.Series,
+    most_significant_cluster: list[int]
 ) -> float:
     """
     Returns `mean_delta_ser`'s minimum value over
-    `longest_significant_cluster`.
+    `most_significant_cluster`.
 
     Parameters
     ----------
     mean_delta_ser : :class:`pandas.Series`
         The series, as returned by `get_mean_delta_ser`
 
-    longest_significant_cluster : list[:class:`int`]
-        The weeks, as returned by `get_longest_significant_cluster`
+    most_significant_cluster : list[:class:`int`]
+        The weeks, as returned by `get_most_significant_cluster`
 
     Returns
     -------
-    A :class:`float`. `numpy.nan` if `longest_significant_cluster` is
+    A :class:`float`. `numpy.nan` if `most_significant_cluster` is
     empty.
     """
-    if not longest_significant_cluster:
+    if not most_significant_cluster:
         return np.nan
 
-    return mean_delta_ser.loc[longest_significant_cluster].min()
+    return mean_delta_ser.loc[most_significant_cluster].min()
 
 
-def get_significant_mean_delta_max(
-    mean_delta_ser:              pd.Series,
-    longest_significant_cluster: list[int]
+def get_most_significant_mean_delta_max(
+    mean_delta_ser:           pd.Series,
+    most_significant_cluster: list[int]
 ) -> float:
     """
     Returns `mean_delta_ser`'s maximum value over
-    `longest_significant_cluster`.
+    `most_significant_cluster`.
 
     Parameters
     ----------
     mean_delta_ser : :class:`pandas.Series`
         The series, as returned by `get_mean_delta_ser`
 
-    longest_significant_cluster : list[:class:`int`]
-        The weeks, as returned by `get_longest_significant_cluster`
+    most_significant_cluster : list[:class:`int`]
+        The weeks, as returned by `get_most_significant_cluster`
 
     Returns
     -------
-    A :class:`float`. `numpy.nan` if `longest_significant_cluster` is
+    A :class:`float`. `numpy.nan` if `most_significant_cluster` is
     empty.
     """
-    if not longest_significant_cluster:
+    if not most_significant_cluster:
         return np.nan
 
-    return mean_delta_ser.loc[longest_significant_cluster].max()
+    return mean_delta_ser.loc[most_significant_cluster].max()
 
 
 def get_results_df(
@@ -669,37 +677,38 @@ def get_results_df(
 
 
 def get_summary_df(
-    longest_significant_cluster: list[int],
-    significant_mean_delta_min:  float,
-    significant_mean_delta_max:  float
+    most_significant_cluster:        list[int],
+    most_significant_mean_delta_min: float,
+    most_significant_mean_delta_max: float
 ) -> pd.DataFrame:
     """
-    Returns a single-row summary of `longest_significant_cluster` and
+    Returns a single-row summary of `most_significant_cluster` and
     its mean delta bounds.
 
     Parameters
     ----------
-    longest_significant_cluster : list[:class:`int`]
-        The weeks, as returned by `get_longest_significant_cluster`
+    most_significant_cluster : list[:class:`int`]
+        The weeks, as returned by `get_most_significant_cluster`
 
-    significant_mean_delta_min : :class:`float`
-        The minimum, as returned by `get_significant_mean_delta_min`
+    most_significant_mean_delta_min : :class:`float`
+        The minimum, as returned by `get_most_significant_mean_delta_min`
 
-    significant_mean_delta_max : :class:`float`
-        The maximum, as returned by `get_significant_mean_delta_max`
+    most_significant_mean_delta_max : :class:`float`
+        The maximum, as returned by `get_most_significant_mean_delta_max`
 
     Returns
     -------
     A single-row :class:`pandas.DataFrame` with columns
-    "longest_cluster_weeks", "longest_cluster_min_delta", and
-    "longest_cluster_max_delta".
+    "most_significant_cluster_weeks",
+    "most_significant_cluster_min_delta", and
+    "most_significant_cluster_max_delta".
     """
     return pd.DataFrame(
         [
             {
-                "longest_cluster_weeks":     longest_significant_cluster,
-                "longest_cluster_min_delta": significant_mean_delta_min,
-                "longest_cluster_max_delta": significant_mean_delta_max
+                "most_significant_cluster_weeks":     most_significant_cluster,
+                "most_significant_cluster_min_delta": most_significant_mean_delta_min,
+                "most_significant_cluster_max_delta": most_significant_mean_delta_max
             }
         ]
     )
@@ -799,17 +808,18 @@ def main(
         mean_low_ser
     )
 
-    longest_significant_cluster = get_longest_significant_cluster(
+    most_significant_cluster        = get_most_significant_cluster(
         w_ser,
+        t_ser,
         p_ser
     )
-    significant_mean_delta_min  = get_significant_mean_delta_min(
+    most_significant_mean_delta_min = get_most_significant_mean_delta_min(
         mean_delta_ser,
-        longest_significant_cluster
+        most_significant_cluster
     )
-    significant_mean_delta_max  = get_significant_mean_delta_max(
+    most_significant_mean_delta_max = get_most_significant_mean_delta_max(
         mean_delta_ser,
-        longest_significant_cluster
+        most_significant_cluster
     )
 
     results_df = get_results_df(
@@ -822,16 +832,15 @@ def main(
         mean_delta_ser
     )
     summary_df = get_summary_df(
-        longest_significant_cluster,
-        significant_mean_delta_min,
-        significant_mean_delta_max
+        most_significant_cluster,
+        most_significant_mean_delta_min,
+        most_significant_mean_delta_max
     )
 
     write_results_df_to_csv(
         results_df,
         args.output
     )
-
     write_summary_df_to_csv(
         summary_df,
         args.output
