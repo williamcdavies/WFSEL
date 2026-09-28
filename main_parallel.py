@@ -13,10 +13,8 @@ from concurrent.futures import (
     ThreadPoolExecutor,
     as_completed
 )
-from datetime           import datetime
 from pathlib            import Path
 from subprocess         import run
-from typing             import TextIO
 
 # Related Third-party Imports
 from tqdm import tqdm
@@ -29,13 +27,15 @@ from lib.esacci_lakes.utils.proc import (
     argument_esacci_lakes_metadata_csv_path_exists,
     argument_esacci_lakes_static_lake_mask_nc_path_exists,
     argument_esacci_lakes_merged_product_dir_path_exists,
+    get_esacci_lakes_merged_product_time,
     get_esacci_lakes_merged_product_nc_paths
 )
 from lib.proc.objects             import CompletedProcessLog
 from lib.proc.utils               import (
     add_argument_output,
     argument_output_is_a_directory,
-    open_logstream
+    open_logstream,
+    write_completed_process_log_to_logstream
 )
 from lib.proc.vars                import (
     RETURN_SUCCESS,
@@ -150,32 +150,9 @@ def arguments_are_valid(
 
 
 # ==================================================================================================
-def get_esacci_lakes_merged_product_time(
-    esacci_lakes_merged_product_nc_path: Path
-) -> datetime:
-    """
-    Returns the time for `esacci_lakes_merged_product_nc_path` as a
-    :class:`datetime.datetime`.
-
-    Parameters
-    ----------
-    esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
-        The path to some ESA CCI Lakes merged product netCDF file
-
-    Returns
-    -------
-    A :class:`datetime.datetime`.
-    """
-    date_string = esacci_lakes_merged_product_nc_path.stem.split("-")[5]
-
-    return datetime.strptime(
-        date_string,
-        "%Y%m%d"
-    )
-
-
 def get_esacci_lakes_merged_product_output_path(
-    output:                               Path,
+    *,
+    output:                              Path,
     esacci_lakes_merged_product_nc_path: Path
 ) -> Path:
     """
@@ -203,6 +180,7 @@ def get_esacci_lakes_merged_product_output_path(
 
 
 def get_esacci_lakes_merged_product_output_paths(
+    *,
     output:                               Path,
     esacci_lakes_merged_product_nc_paths: list[Path]
 ) -> list[Path]:
@@ -224,8 +202,8 @@ def get_esacci_lakes_merged_product_output_paths(
     """
     return [
         get_esacci_lakes_merged_product_output_path(
-            output,
-            esacci_lakes_merged_product_nc_path
+            output                              = output,
+            esacci_lakes_merged_product_nc_path = esacci_lakes_merged_product_nc_path
         )
         for esacci_lakes_merged_product_nc_path
         in esacci_lakes_merged_product_nc_paths
@@ -233,6 +211,7 @@ def get_esacci_lakes_merged_product_output_paths(
 
 
 def main_py(
+    *,
     esacci_lakes_metadata_csv_path:        Path,
     esacci_lakes_static_lake_mask_nc_path: Path,
     esacci_lakes_merged_product_nc_path:   Path,
@@ -328,10 +307,10 @@ def get_main_py_future(
     """
     return executor.submit(
         main_py,
-        esacci_lakes_metadata_csv_path,
-        esacci_lakes_static_lake_mask_nc_path,
-        esacci_lakes_merged_product_nc_path,
-        output
+        esacci_lakes_metadata_csv_path        = esacci_lakes_metadata_csv_path,
+        esacci_lakes_static_lake_mask_nc_path = esacci_lakes_static_lake_mask_nc_path,
+        esacci_lakes_merged_product_nc_path   = esacci_lakes_merged_product_nc_path,
+        output                                = output
     )
 
 
@@ -406,35 +385,6 @@ def get_main_py_futures(
     return futures
 
 
-def write_completed_process_log_to_logstream(
-    completed_process_log: CompletedProcessLog,
-    *,
-    logstream: TextIO
-) -> None:
-    """
-    Writes `completed_process_log` to `logstream`.
-
-    Parameters
-    ----------
-    completed_process_log : :class:`lib.proc.objects.CompletedProcessLog`
-        The completed process log
-
-    logstream : :class:`typing.TextIO`
-        The writable file object
-
-    Returns
-    -------
-    None
-    """
-    logstream.write(f"{datetime.now().isoformat()}\n")
-    logstream.write(f"args:       {completed_process_log.args}\n")
-    logstream.write(f"returncode: {completed_process_log.returncode}\n")
-    logstream.write(f"stdout:     {completed_process_log.stdout}\n")
-    logstream.write(f"stderr:     {completed_process_log.stderr}\n")
-    logstream.write("-" * 100 + "\n")
-    logstream.flush()
-
-
 def main(
 ) -> int:
     """
@@ -452,8 +402,8 @@ def main(
 
     merged_product_nc_paths = get_esacci_lakes_merged_product_nc_paths(args.esacci_lakes_merged_product_dir_path)
     merged_product_outputs  = get_esacci_lakes_merged_product_output_paths(
-        args.output,
-        merged_product_nc_paths
+        output                               = args.output,
+        esacci_lakes_merged_product_nc_paths = merged_product_nc_paths
     )
 
     with (

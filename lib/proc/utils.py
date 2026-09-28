@@ -10,11 +10,15 @@ Written by William Chuter-Davies
 # Standard Library Imports
 import argparse
 
-from pathlib import Path
-from typing  import TextIO
+from datetime import datetime
+from pathlib  import Path
+from typing   import TextIO
 
 # Related Third-party Imports
 import pandas as pd
+
+# Local Application/Library Specific Imports
+from lib.proc.objects import CompletedProcessLog
 
 
 def add_argument_output(
@@ -127,6 +131,35 @@ def open_logstream(
         output / "log.txt",
         "a"
     )
+
+
+def write_completed_process_log_to_logstream(
+    completed_process_log: CompletedProcessLog,
+    *,
+    logstream: TextIO
+) -> None:
+    """
+    Writes `completed_process_log` to `logstream`.
+
+    Parameters
+    ----------
+    completed_process_log : :class:`lib.proc.objects.CompletedProcessLog`
+        The completed process log
+
+    logstream : :class:`typing.TextIO`
+        The writable file object
+
+    Returns
+    -------
+    None
+    """
+    logstream.write(f"{datetime.now().isoformat()}\n")
+    logstream.write(f"args:       {completed_process_log.args}\n")
+    logstream.write(f"returncode: {completed_process_log.returncode}\n")
+    logstream.write(f"stdout:     {completed_process_log.stdout}\n")
+    logstream.write(f"stderr:     {completed_process_log.stderr}\n")
+    logstream.write("-" * 100 + "\n")
+    logstream.flush()
 
 
 def write_df_to_csv(
