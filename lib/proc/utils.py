@@ -187,3 +187,26 @@ def write_df_to_csv(
     )
 
     df.to_csv(output)
+
+
+def get_dir_paths_by_extension(
+    dir_path: Path,
+    *,
+    extension: str
+) -> list[Path]:
+    """
+    Returns each `extension` file's path in `dir_path`.
+
+    Parameters
+    ----------
+    dir_path : :class:`pathlib.Path`
+        The directory
+
+    extension : :class:`str`
+        The file extension to match, without a leading period
+
+    Returns
+    -------
+    A sorted list of :class:`pathlib.Path`.
+    """
+    return sorted(dir_path.glob(f"**/*.{extension}"))

@@ -27,13 +27,13 @@ from lib.esacci_lakes.utils.proc import (
     argument_esacci_lakes_metadata_csv_path_exists,
     argument_esacci_lakes_static_lake_mask_nc_path_exists,
     argument_esacci_lakes_merged_product_dir_path_exists,
-    get_esacci_lakes_merged_product_time,
-    get_esacci_lakes_merged_product_nc_paths
+    get_esacci_lakes_filename_time
 )
 from lib.proc.objects             import CompletedProcessLog
 from lib.proc.utils               import (
     add_argument_output,
     argument_output_is_a_directory,
+    get_dir_paths_by_extension,
     open_logstream,
     write_completed_process_log_to_logstream
 )
@@ -171,7 +171,7 @@ def get_esacci_lakes_merged_product_output_path(
     -------
     A :class:`pathlib.Path`.
     """
-    time  = get_esacci_lakes_merged_product_time(esacci_lakes_merged_product_nc_path)
+    time  = get_esacci_lakes_filename_time(esacci_lakes_merged_product_nc_path)
     year  = get_year_from_datetime(time)
     month = get_month_from_datetime(time)
     stem  = esacci_lakes_merged_product_nc_path.stem
@@ -400,7 +400,10 @@ def main(
         exist_ok = True
     )
 
-    merged_product_nc_paths = get_esacci_lakes_merged_product_nc_paths(args.esacci_lakes_merged_product_dir_path)
+    merged_product_nc_paths = get_dir_paths_by_extension(
+        args.esacci_lakes_merged_product_dir_path,
+        extension = "nc"
+    )
     merged_product_outputs  = get_esacci_lakes_merged_product_output_paths(
         output                               = args.output,
         esacci_lakes_merged_product_nc_paths = merged_product_nc_paths

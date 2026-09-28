@@ -20,11 +20,14 @@ from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_id,
     add_argument_local_data_dir_path,
     argument_local_data_dir_path_exists,
+    get_esacci_lakes_filename_time,
     read_local_data_csv
 )
-from lib.proc.utils              import (
+from lib.proc.utils import (
     add_argument_output,
-    argument_output_is_a_file
+    argument_output_is_a_file,
+    get_dir_paths_by_extension,
+    write_df_to_csv
 )
 from lib.proc.vars               import (
     RETURN_SUCCESS,
@@ -99,50 +102,6 @@ def arguments_are_valid(
 
 # Data functions
 # ==================================================================================================
-def get_local_data_csv_paths(
-    local_data_dir_path: Path
-) -> list[Path]:
-    """
-    Returns each local data csv file's path in
-    `local_data_dir_path`.
-
-    Parameters
-    ----------
-    local_data_dir_path : :class:`pathlib.Path`
-        The directory
-
-    Returns
-    -------
-    A sorted list of :class:`pathlib.Path`.
-    """
-    local_data_subdir_path = local_data_dir_path / "main.py" / LOCAL_DATA_RUN_DATE
-
-    return sorted(local_data_subdir_path.glob("**/*.csv"))
-
-
-def get_local_data_datetime(
-    local_data_csv_path: Path
-) -> datetime:
-    """
-    Returns the datetime for `local_data_csv_path`.
-
-    Parameters
-    ----------
-    local_data_csv_path : :class:`pathlib.Path`
-        The path to some local data csv file
-
-    Returns
-    -------
-    A :class:`datetime.datetime`.
-    """
-    date_string = local_data_csv_path.stem.split("-")[5]
-
-    return datetime.strptime(
-        date_string,
-        "%Y%m%d"
-    )
-
-
 def get_lake_data_record(
     local_data_csv_path: Path,
     esacci_lakes_id:     int
@@ -163,7 +122,7 @@ def get_lake_data_record(
     A :class:`dict` with keys "esacci_lakes_id", "date", and
     `local_data_csv_path`'s columns.
     """
-    local_data_datetime = get_local_data_datetime(local_data_csv_path)
+    local_data_datetime = get_esacci_lakes_filename_time(local_data_csv_path)
     local_data_df       = read_local_data_csv(local_data_csv_path)
 
     record: dict[str, Any] = {"esacci_lakes_id": esacci_lakes_id}
@@ -208,38 +167,6 @@ def get_lake_data_df(
 # ==================================================================================================
 
 
-# Write functions
-# ==================================================================================================
-def write_local_lake_data_df_to_csv(
-    lake_data_df: pd.DataFrame,
-    output:       Path
-) -> None:
-    """
-    Writes `lake_data_df` to `output`.
-
-    Parameters
-    ----------
-    lake_data_df : :class:`pandas.DataFrame`
-        The dataframe
-
-    output : :class:`pathlib.Path`
-        The output file path
-
-    Returns
-    -------
-    None
-    """
-    output.parent.mkdir(
-        parents  = True,
-        exist_ok = True
-    )
-
-    lake_data_df.to_csv(output)
-
-
-# ==================================================================================================
-
-
 def main(
 ) -> int:
     """
@@ -250,13 +177,16 @@ def main(
     if not arguments_are_valid(args):
         return RETURN_FAILURE
 
-    local_data_csv_paths = get_local_data_csv_paths(args.local_data_dir_path)
+    local_data_csv_paths = get_dir_paths_by_extension(
+        args.local_data_dir_path / "main.py" / LOCAL_DATA_RUN_DATE,
+        extension = "csv"
+    )
     local_lake_data_df   = get_lake_data_df(
         local_data_csv_paths,
         args.esacci_lakes_id
     )
 
-    write_local_lake_data_df_to_csv(
+    write_df_to_csv(
         local_lake_data_df,
         args.output
     )

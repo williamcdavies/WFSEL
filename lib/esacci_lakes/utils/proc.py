@@ -667,47 +667,29 @@ def read_esacci_lakes_metadata_csv(
 
 # Merged product functions
 # ==================================================================================================
-def get_esacci_lakes_merged_product_time(
-    esacci_lakes_merged_product_nc_path: Path
+def get_esacci_lakes_filename_time(
+    path: Path
 ) -> datetime:
     """
-    Returns the time for `esacci_lakes_merged_product_nc_path` as a
+    Returns the time encoded in `path`'s stem, as a
     :class:`datetime.datetime`.
 
     Parameters
     ----------
-    esacci_lakes_merged_product_nc_path : :class:`pathlib.Path`
-        The path to some ESA CCI Lakes merged product netCDF file
+    path : :class:`pathlib.Path`
+        A path whose stem is a `-`-delimited ESA CCI Lakes filename,
+        with the date as its sixth segment, in `%Y%m%d` format
 
     Returns
     -------
     A :class:`datetime.datetime`.
     """
-    date_string = esacci_lakes_merged_product_nc_path.stem.split("-")[5]
+    date_string = path.stem.split("-")[5]
 
     return datetime.strptime(
         date_string,
         "%Y%m%d"
     )
-
-
-def get_esacci_lakes_merged_product_nc_paths(
-    esacci_lakes_merged_product_dir_path: Path
-) -> list[Path]:
-    """
-    Returns each ESA CCI Lakes merged product netCDF file's path in
-    `esacci_lakes_merged_product_dir_path`.
-
-    Parameters
-    ----------
-    esacci_lakes_merged_product_dir_path : :class:`pathlib.Path`
-        The directory
-
-    Returns
-    -------
-    A list of :class:`pathlib.Path`.
-    """
-    return list(esacci_lakes_merged_product_dir_path.glob("**/*.nc"))
 
 
 # ==================================================================================================
