@@ -15,7 +15,10 @@ import sqlalchemy
 
 # Local Application/Library Specific Imports
 from lib.db.utils   import get_gdf_from_postgis
-from lib.geo.utils  import join_gdfs_on_within
+from lib.geo.utils import (
+    join_gdfs_on_within,
+    filter_gdf_by_column_membership
+)
 from lib.geo.vars   import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
 from lib.plot.utils import (
     set_ax_xlim_to_gdf_total_bounds,
@@ -206,28 +209,6 @@ def get_lakes_gdf(
     return get_gdf_from_postgis(query, connection)
 
 
-def filter_gdf_by_stusps(
-    gdf:    gpd.GeoDataFrame,
-    stusps: list[str]
-) -> gpd.GeoDataFrame:
-    """
-    Filters `gdf` to rows whose `stusps` column is in `stusps`.
-
-    Parameters
-    ----------
-    gdf : :class:`geopandas.GeoDataFrame`
-        The geodataframe
-
-    stusps : list[:class:`str`]
-        The target list of two-letter state and possession abbreviations
-
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-    """
-    return gdf[gdf["stusps"].isin(stusps)]
-
-
 # ==================================================================================================
 
 
@@ -408,12 +389,14 @@ def main(
         lakes_gdf,
         states_gdf
     )
-    target_states_gdf = filter_gdf_by_stusps(
+    target_states_gdf = filter_gdf_by_column_membership(
         states_gdf,
+        "stusps",
         args.stusps
     )
-    target_lakes_gdf  = filter_gdf_by_stusps(
+    target_lakes_gdf  = filter_gdf_by_column_membership(
         lakes_states_gdf,
+        "stusps",
         args.stusps
     )
 

@@ -665,7 +665,7 @@ def read_esacci_lakes_metadata_csv(
 # ==================================================================================================
 
 
-# Merged product functions
+# Filename functions
 # ==================================================================================================
 def get_esacci_lakes_filename_time(
     path: Path

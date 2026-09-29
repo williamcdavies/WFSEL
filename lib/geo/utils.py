@@ -109,6 +109,32 @@ def join_gdfs_on_within(
     )
 
 
+def filter_gdf_by_column_membership(
+    gdf:    gpd.GeoDataFrame,
+    column: str,
+    values: list[str]
+) -> gpd.GeoDataFrame:
+    """
+    Filters `gdf` to rows whose `column` is in `values`.
+
+    Parameters
+    ----------
+    gdf : :class:`geopandas.GeoDataFrame`
+        The geodataframe
+
+    column : :class:`str`
+        The column
+
+    values : list[:class:`str`]
+        The target values
+
+    Returns
+    -------
+    A :class:`geopandas.GeoDataFrame`.
+    """
+    return gdf[gdf[column].isin(values)]
+
+
 def get_ds_variable_mean(
     variable: str,
     *,
