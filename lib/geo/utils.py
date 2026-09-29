@@ -12,8 +12,13 @@ from functools import reduce
 from operator  import and_
 
 # Related Third-party Imports
-import geopandas  as gpd
-import xarray     as xr
+import geopandas as gpd
+import numpy     as np
+import rasterio.features
+import rasterio.transform
+import shapely.geometry
+import shapely.ops
+import xarray    as xr
 
 # Local Application/Library Specific Imports
 from lib.geo.objects import GeoBoundingBox
@@ -203,3 +208,49 @@ def get_ds_variable_coverage(
     )
 
     return num / den
+
+
+def get_da_geometry_as_wkb(
+    da: xr.DataArray
+) -> bytes:
+    """
+    Returns `da`'s geometry as well-known binary.
+
+    Parameters
+    ----------
+    da : :class:`xarray.DataArray`
+        The data array
+
+    Returns
+    -------
+    A :class:`bytes`.
+    """
+    da   = da.sortby(["lon", "lat"])
+    lons = da["lon"].values
+    lats = da["lat"].values
+
+    mask      = np.flipud(da.values)
+    transform = rasterio.transform.from_bounds(
+        west   = lons.min(),
+        south  = lats.min(),
+        east   = lons.max(),
+        north  = lats.max(),
+        width  = len(lons),
+        height = len(lats)
+    )
+
+    polygons, _ = rasterio.features.shapes(
+        mask.astype(np.uint8),
+        mask      = mask.astype(bool),
+        transform = transform
+    )
+    geometry    = shapely.ops.unary_union(
+        [
+            shapely.geometry.shape(polygon)
+            for polygon
+            in polygons
+        ]
+    )
+    geometry    = shapely.MultiPolygon([geometry]) if geometry.geom_type == "Polygon" else geometry # type: ignore
+
+    return shapely.to_wkb(geometry)
