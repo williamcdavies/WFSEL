@@ -54,12 +54,10 @@ from lib.proc.vars               import (
     RETURN_SUCCESS
 )
 
-PROG                       = "comp_trend_of_esacci_lakes_variable_over_smoke_season.py"
-NUMBER_OF_LOOKBACK_WEEKS   = 3
-NUMBER_OF_DAYS_IN_A_WEEK   = 7
-NUMBER_OF_LOOKBACK_PERIODS = NUMBER_OF_LOOKBACK_WEEKS
-NUMBER_OF_DAYS_IN_A_PERIOD = NUMBER_OF_DAYS_IN_A_WEEK
-LOCAL_DATA_RUN_DATE        = "31-08-26"
+PROG                     = "comp_trend_of_esacci_lakes_variable_over_smoke_season.py"
+NUMBER_OF_LOOKBACK_WEEKS = 3
+NUMBER_OF_DAYS_IN_A_WEEK = 7
+LOCAL_DATA_RUN_DATE      = "31-08-26"
 
 
 # Argument functions
@@ -354,31 +352,31 @@ def get_esacci_lakes_distinct_start_days_ser(
     )
 
 
-def get_period_idx(
-    day_i:                      int,
-    day_0:                      int,
-    number_of_days_in_a_period: int
+def get_week_idx(
+    day_i:                    int,
+    day_0:                    int,
+    number_of_days_in_a_week: int
 ) -> int:
     """
-    Returns the index of the period containing `day_i`, relative to
+    Returns the index of the week containing `day_i`, relative to
     `day_0`.
 
     Parameters
     ----------
     day_i : :class:`int`
-        The day to find the period index for
+        The day to find the week index for
 
     day_0 : :class:`int`
         The anchor day
 
-    number_of_days_in_a_period : :class:`int`
-        The number of days in a period
+    number_of_days_in_a_week : :class:`int`
+        The number of days in a week
 
     Returns
     -------
-    The period index.
+    The week index.
     """
-    return (day_i - day_0) // number_of_days_in_a_period
+    return (day_i - day_0) // number_of_days_in_a_week
 
 
 def get_first_day_of_smoke_season(
@@ -445,9 +443,9 @@ def get_last_day_of_smoke_season(
 
 
 def get_first_day_of_interest(
-    day_of_smoke_season_0:      int,
-    number_of_lookback_periods: int,
-    number_of_days_in_a_period: int
+    day_of_smoke_season_0:    int,
+    number_of_lookback_weeks: int,
+    number_of_days_in_a_week: int
 ) -> int:
     """
     Returns the first day of interest.
@@ -457,25 +455,25 @@ def get_first_day_of_interest(
     day_of_smoke_season_0 : :class:`int`
         The first day of the smoke season
 
-    number_of_lookback_periods : :class:`int`
-        The number of periods to look back
+    number_of_lookback_weeks : :class:`int`
+        The number of weeks to look back
 
-    number_of_days_in_a_period : :class:`int`
-        The number of days in a period
+    number_of_days_in_a_week : :class:`int`
+        The number of days in a week
 
     Returns
     -------
     The first day of interest.
     """
-    number_of_lookback_days = number_of_lookback_periods * number_of_days_in_a_period
+    number_of_lookback_days = number_of_lookback_weeks * number_of_days_in_a_week
 
     return day_of_smoke_season_0 - number_of_lookback_days
 
 
 def get_last_day_of_interest(
-    day_of_smoke_season_0:      int,
-    day_of_smoke_season_n:      int,
-    number_of_days_in_a_period: int
+    day_of_smoke_season_0:    int,
+    day_of_smoke_season_n:    int,
+    number_of_days_in_a_week: int
 ) -> int:
     """
     Returns the last day of interest.
@@ -488,20 +486,20 @@ def get_last_day_of_interest(
     day_of_smoke_season_n : :class:`int`
         The last day of the smoke season
 
-    number_of_days_in_a_period : :class:`int`
-        The number of days in a period
+    number_of_days_in_a_week : :class:`int`
+        The number of days in a week
 
     Returns
     -------
     The last day of interest.
     """
-    period_idx = get_period_idx(
+    week_idx = get_week_idx(
         day_of_smoke_season_n,
         day_of_smoke_season_0,
-        number_of_days_in_a_period
+        number_of_days_in_a_week
     )
 
-    number_of_lookahead_days = (period_idx + 1) * number_of_days_in_a_period - 1
+    number_of_lookahead_days = (week_idx + 1) * number_of_days_in_a_week - 1
 
     return day_of_smoke_season_0 + number_of_lookahead_days
 
@@ -611,13 +609,13 @@ def get_esacci_lakes_interest_ranges_df(
         else:
             day_of_interest_0 = get_first_day_of_interest(
                 day_of_smoke_season_0,
-                NUMBER_OF_LOOKBACK_PERIODS,
-                NUMBER_OF_DAYS_IN_A_PERIOD
+                NUMBER_OF_LOOKBACK_WEEKS,
+                NUMBER_OF_DAYS_IN_A_WEEK
             )
             day_of_interest_n = get_last_day_of_interest(
                 day_of_smoke_season_0,
                 day_of_smoke_season_n,
-                NUMBER_OF_DAYS_IN_A_PERIOD
+                NUMBER_OF_DAYS_IN_A_WEEK
             )
 
             if day_of_interest_0 < 1:
@@ -671,18 +669,18 @@ def get_local_data_csv_paths_by_year(
     return sorted(year_dir_path.glob("**/*.csv"))
 
 
-def get_esacci_lakes_variable_values_by_period_idx(
+def get_esacci_lakes_variable_values_by_week_idx(
     esacci_lakes_id:       int,
     esacci_lakes_variable: str,
     *,
-    local_data_csv_paths:       list[Path],
-    day_of_interest_0:          int,
-    day_of_interest_n:          int,
-    number_of_days_in_a_period: int
+    local_data_csv_paths:     list[Path],
+    day_of_interest_0:        int,
+    day_of_interest_n:        int,
+    number_of_days_in_a_week: int
 ) -> dict[int, list[float]]:
     """
     Returns `esacci_lakes_id`'s `esacci_lakes_variable` values, bucketed
-    by period index, for days `day_of_interest_0` through
+    by week index, for days `day_of_interest_0` through
     `day_of_interest_n`.
 
     Parameters
@@ -703,12 +701,12 @@ def get_esacci_lakes_variable_values_by_period_idx(
     day_of_interest_n : :class:`int`
         The last day to sample
 
-    number_of_days_in_a_period : :class:`int`
-        The number of days in a period
+    number_of_days_in_a_week : :class:`int`
+        The number of days in a week
 
     Returns
     -------
-    A dict mapping period index to a list of daily values.
+    A dict mapping week index to a list of daily values.
 
     Raises
     ------
@@ -722,13 +720,13 @@ def get_esacci_lakes_variable_values_by_period_idx(
     if day_of_interest_n > len(local_data_csv_paths):
         raise ValueError("expected `day_of_interest_n` to be <= `len(local_data_csv_paths)`")
 
-    variable_values_by_period_idx = defaultdict(list)
+    variable_values_by_week_idx = defaultdict(list)
 
     for day in range(day_of_interest_0, day_of_interest_n + 1):
-        period_idx = get_period_idx(
+        week_idx = get_week_idx(
             day,
             day_of_interest_0,
-            number_of_days_in_a_period
+            number_of_days_in_a_week
         )
 
         local_data_df = read_local_data_csv(local_data_csv_paths[day - 1])
@@ -742,32 +740,32 @@ def get_esacci_lakes_variable_values_by_period_idx(
             column = f"""{esacci_lakes_variable}_mean"""
             value  = local_data_df[column].loc[esacci_lakes_id].item()
 
-            variable_values_by_period_idx[period_idx].append(value)
+            variable_values_by_week_idx[week_idx].append(value)
 
-    return variable_values_by_period_idx
+    return variable_values_by_week_idx
 
 
-def get_esacci_lakes_variable_mean_by_period_idx(
-    esacci_lakes_variable_values_by_period_idx: dict[int, list[float]]
+def get_esacci_lakes_variable_mean_by_week_idx(
+    esacci_lakes_variable_values_by_week_idx: dict[int, list[float]]
 ) -> dict[int, float]:
     """
-    Returns the mean of each period's values in
-    `esacci_lakes_variable_values_by_period_idx`.
+    Returns the mean of each week's values in
+    `esacci_lakes_variable_values_by_week_idx`.
 
     Parameters
     ----------
-    esacci_lakes_variable_values_by_period_idx : dict[:class:`int`, list[:class:`float`]]
-        A dict mapping period index to a list of values
+    esacci_lakes_variable_values_by_week_idx : dict[:class:`int`, list[:class:`float`]]
+        A dict mapping week index to a list of values
 
     Returns
     -------
-    A dict mapping period index to the mean of that period's values. A
-    period with no values maps to `numpy.nan`.
+    A dict mapping week index to the mean of that week's values. A
+    week with no values maps to `numpy.nan`.
     """
     return {
-        period_idx: (np.nanmean(values) if values else np.nan)
-        for period_idx, values
-        in esacci_lakes_variable_values_by_period_idx.items()
+        week_idx: (np.nanmean(values) if values else np.nan)
+        for week_idx, values
+        in esacci_lakes_variable_values_by_week_idx.items()
     }
 
 
@@ -782,7 +780,7 @@ def get_esacci_lakes_variable_means_ser(
 ) -> pd.Series:
     """
     Returns a :class:`pandas.Series` of `esacci_lakes_id`'s
-    `esacci_lakes_variable` period means, indexed by "w_{n}", for days
+    `esacci_lakes_variable` week means, indexed by "w_{n}", for days
     `day_of_interest_0` through `day_of_interest_n` of `smoke_year`.
 
     Parameters
@@ -814,22 +812,22 @@ def get_esacci_lakes_variable_means_ser(
         local_data_dir_path
     )
 
-    variable_values_by_period_idx = get_esacci_lakes_variable_values_by_period_idx(
+    variable_values_by_week_idx = get_esacci_lakes_variable_values_by_week_idx(
         esacci_lakes_id,
         esacci_lakes_variable,
-        local_data_csv_paths       = local_data_csv_paths,
-        day_of_interest_0          = day_of_interest_0,
-        day_of_interest_n          = day_of_interest_n,
-        number_of_days_in_a_period = NUMBER_OF_DAYS_IN_A_PERIOD
+        local_data_csv_paths     = local_data_csv_paths,
+        day_of_interest_0        = day_of_interest_0,
+        day_of_interest_n        = day_of_interest_n,
+        number_of_days_in_a_week = NUMBER_OF_DAYS_IN_A_WEEK
     )
-    variable_mean_by_period_idx = get_esacci_lakes_variable_mean_by_period_idx(variable_values_by_period_idx)
+    variable_mean_by_week_idx = get_esacci_lakes_variable_mean_by_week_idx(variable_values_by_week_idx)
 
     return pd.Series(
         {
-            f"w_{period_idx - NUMBER_OF_LOOKBACK_PERIODS}": mean
-            for period_idx, mean
-            in variable_mean_by_period_idx.items()
-            if period_idx - NUMBER_OF_LOOKBACK_PERIODS <= 20
+            f"w_{week_idx - NUMBER_OF_LOOKBACK_WEEKS}": mean
+            for week_idx, mean
+            in variable_mean_by_week_idx.items()
+            if week_idx - NUMBER_OF_LOOKBACK_WEEKS <= 20
         }
     )
 
@@ -869,7 +867,7 @@ def get_esacci_lakes_variable_over_smoke_seasons_df(
     Returns
     -------
     A :class:`pandas.DataFrame` indexed by "esacci_lakes_id", with one
-    column per period, named "w_{n}".
+    column per week, named "w_{n}".
     """
     records = []
 
