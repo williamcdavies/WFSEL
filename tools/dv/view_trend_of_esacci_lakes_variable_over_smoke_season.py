@@ -1676,9 +1676,9 @@ def main(
         form                  = args.form
     )
 
-    upper_bounds_lakes_ax.legend(loc = 'upper left')
-    middle_bounds_lakes_ax.legend(loc = 'upper left')
-    lower_bounds_lakes_ax.legend(loc = 'upper left')
+    upper_bounds_lakes_ax.legend(loc = "upper left")
+    middle_bounds_lakes_ax.legend(loc = "upper left")
+    lower_bounds_lakes_ax.legend(loc = "upper left")
 
     save_figure(
         fig,

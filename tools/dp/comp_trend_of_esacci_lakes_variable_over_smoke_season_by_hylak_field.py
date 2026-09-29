@@ -11,12 +11,13 @@ import sys
 from pathlib  import Path
 
 # Related Third-party Imports
-import matplotlib.pyplot as plt
-import numpy             as np
 import pandas            as pd
 
 # Local Application/Library Specific Imports
-from lib.dataframe.utils              import filter_df_by_column_bounds
+from lib.dataframe.utils              import (
+    filter_df_by_column_bounds,
+    convert_df_from_kelvin_to_celsius
+)
 from lib.esacci_lakes.utils.dataframe import (
     drop_hylak_field_columns_from_df,
     merge_dfs_on_esacci_lakes_id
@@ -31,16 +32,12 @@ from lib.esacci_lakes.utils.proc      import (
     read_esacci_lakes_hylak_fields_csv
 )
 from lib.esacci_lakes.vars            import (
-    ESACCI_LAKES_VARIABLES,
     HYLAK_FIELDS
-)
-from lib.plot.utils                   import (
-    force_ax_xtick_visibility,
-    save_figure
 )
 from lib.proc.utils                   import (
     add_argument_output,
-    argument_output_is_a_directory
+    argument_output_is_a_directory,
+    write_df_to_csv
 )
 from lib.proc.vars                    import (
     RETURN_FAILURE,
@@ -378,24 +375,6 @@ def read_esacci_lakes_variable_over_low_smoke_season_csv(
 
 # Data functions
 # ==================================================================================================
-def convert_lakes_df_units_from_kelvin_to_celsius(
-    lakes_df: pd.DataFrame
-) -> pd.DataFrame:
-    """
-    Converts `lakes_df`'s units from Kelvin to Celsius.
-
-    Parameters
-    ----------
-    lakes_df : :class:`pandas.DataFrame`
-        The dataframe
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-    """
-    return lakes_df - 273.15
-
-
 def get_lakes_df_week_number_ser_pairs(
     lakes_df: pd.DataFrame
 ) -> list[tuple[int, pd.Series]]:
@@ -548,42 +527,6 @@ def get_upper_bounds_lakes_df(
 # ==================================================================================================
 
 
-# Write functions
-# ==================================================================================================
-def write_lakes_df_to_csv(
-    lakes_df: pd.DataFrame,
-    output:   Path,
-    name:     str
-) -> None:
-    """
-    Writes `lakes_df` to `output`, named by `name`.
-
-    Parameters
-    ----------
-    lakes_df : :class:`pandas.DataFrame`
-        The dataframe
-
-    output : :class:`pathlib.Path`
-        The output directory path
-
-    name : :class:`str`
-        The output file name
-
-    Returns
-    -------
-    None
-    """
-    output.mkdir(
-        parents  = True,
-        exist_ok = True
-    )
-
-    lakes_df.to_csv(output / (name + ".csv"))
-
-
-# ==================================================================================================
-
-
 def main(
 ) -> int:
     """
@@ -602,8 +545,8 @@ def main(
         args.form == "Absolute"
         and args.esacci_lakes_variable == "lake_surface_water_temperature"
     ):
-        variable_over_high_smoke_season_df = convert_lakes_df_units_from_kelvin_to_celsius(variable_over_high_smoke_season_df)
-        variable_over_low_smoke_season_df  = convert_lakes_df_units_from_kelvin_to_celsius(variable_over_low_smoke_season_df)
+        variable_over_high_smoke_season_df = convert_df_from_kelvin_to_celsius(variable_over_high_smoke_season_df)
+        variable_over_low_smoke_season_df  = convert_df_from_kelvin_to_celsius(variable_over_low_smoke_season_df)
 
     variable_over_high_smoke_season_hylak_fields_df = merge_dfs_on_esacci_lakes_id(
         variable_over_high_smoke_season_df,
@@ -639,35 +582,35 @@ def main(
         args.hylak_field
     )
 
-    write_lakes_df_to_csv(
+    write_df_to_csv(
         upper_high_lakes_df,
         args.output,
-        "upper_high_lakes"
+        name = "upper_high_lakes"
     )
-    write_lakes_df_to_csv(
+    write_df_to_csv(
         upper_low_lakes_df,
         args.output,
-        "upper_low_lakes"
+        name = "upper_low_lakes"
     )
-    write_lakes_df_to_csv(
+    write_df_to_csv(
         middle_high_lakes_df,
         args.output,
-        "middle_high_lakes"
+        name = "middle_high_lakes"
     )
-    write_lakes_df_to_csv(
+    write_df_to_csv(
         middle_low_lakes_df,
         args.output,
-        "middle_low_lakes"
+        name = "middle_low_lakes"
     )
-    write_lakes_df_to_csv(
+    write_df_to_csv(
         lower_high_lakes_df,
         args.output,
-        "lower_high_lakes"
+        name = "lower_high_lakes"
     )
-    write_lakes_df_to_csv(
+    write_df_to_csv(
         lower_low_lakes_df,
         args.output,
-        "lower_low_lakes"
+        name = "lower_low_lakes"
     )
 
     return RETURN_SUCCESS

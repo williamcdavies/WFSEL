@@ -108,6 +108,49 @@ def argument_output_is_a_directory(
     return False
 
 
+def write_df_to_csv(
+    df:     pd.DataFrame,
+    output: Path,
+    *,
+    name: str | None = None
+) -> None:
+    """
+    Writes `df` to `output`, or to `output` named by `name` if `name`
+    is not `None`.
+
+    Parameters
+    ----------
+    df : :class:`pandas.DataFrame`
+        The dataframe
+
+    output : :class:`pathlib.Path`
+        The output file path, or the output directory path if `name`
+        is not `None`
+
+    name : :class:`str` | `None`
+        The output file name, without extension. If `None`, `output`
+        is treated as the file path itself. default=None
+
+    Returns
+    -------
+    None
+    """
+    if name is not None:
+        output.mkdir(
+            parents  = True,
+            exist_ok = True
+        )
+
+        output = output / (name + ".csv")
+    else:
+        output.parent.mkdir(
+            parents  = True,
+            exist_ok = True
+        )
+
+    df.to_csv(output)
+
+
 def open_logstream(
     output: Path
 ) -> TextIO:
@@ -160,33 +203,6 @@ def write_completed_process_log_to_logstream(
     logstream.write(f"stderr:     {completed_process_log.stderr}\n")
     logstream.write("-" * 100 + "\n")
     logstream.flush()
-
-
-def write_df_to_csv(
-    df:     pd.DataFrame,
-    output: Path
-) -> None:
-    """
-    Writes `df` to `output`.
-
-    Parameters
-    ----------
-    df : :class:`pandas.DataFrame`
-        The dataframe
-
-    output : :class:`pathlib.Path`
-        The output file path
-
-    Returns
-    -------
-    None
-    """
-    output.parent.mkdir(
-        parents  = True,
-        exist_ok = True
-    )
-
-    df.to_csv(output)
 
 
 def get_dir_paths_by_extension(

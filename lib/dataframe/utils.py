@@ -241,6 +241,24 @@ def sort_df_columns_numerically(
     return df.reindex(columns = columns)
 
 
+def convert_df_from_kelvin_to_celsius(
+    df: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Converts `df`'s units from Kelvin to Celsius.
+
+    Parameters
+    ----------
+    df : :class:`pandas.DataFrame`
+        The dataframe
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+    """
+    return df - 273.15
+
+
 def get_ser_from_df(
     df:     pd.DataFrame,
     column: str

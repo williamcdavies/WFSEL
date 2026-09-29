@@ -14,8 +14,6 @@ from pathlib import Path
 import numpy  as np
 import pandas as pd
 
-from scipy.stats import ttest_rel
-
 # Local Application/Library Specific Imports
 from lib.dataframe.utils import get_ser_from_df
 from lib.proc.utils      import (
@@ -26,6 +24,7 @@ from lib.proc.vars       import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
+from lib.stat.utils      import get_ttest_result
 from lib.stat.vars       import (
     ALPHA,
     MINIMUM_SAMPLE_SIZE_FOR_ONE_TAILED_PAIRED_TTEST
@@ -166,7 +165,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """"Computes the most significant consecutive cluster of weeks in a paired t-test of a high-smoke-season lakes file against a low-smoke-season lakes file."""
+        description = """Computes the most significant consecutive cluster of weeks in a paired t-test of a high-smoke-season lakes file against a low-smoke-season lakes file."""
     )
 
     # Positional arguments
@@ -244,8 +243,9 @@ def read_lakes_csv(
 # Data functions
 # ==================================================================================================
 def get_week_numbers(
+    *,
     high_lakes_df: pd.DataFrame,
-    low_lakes_df: pd.DataFrame
+    low_lakes_df:  pd.DataFrame
 ) -> set[int]:
     """
     Returns the week numbers common to `high_lakes_df`'s and
@@ -281,48 +281,8 @@ def get_week_numbers(
     return high_week_numbers & low_week_numbers
 
 
-def get_ttest_result(
-    a:           pd.Series,
-    b:           pd.Series,
-    alternative: str
-):
-    """
-    Returns the paired t-test result of `a` against `b`.
-
-    Parameters
-    ----------
-    a : :class:`pandas.Series`
-        The series
-
-    b : :class:`pandas.Series`
-        The series
-
-    alternative : :class:`str`
-        The alternative hypothesis
-
-    Returns
-    -------
-    A :class:`scipy.stats.TtestResult`.
-
-    Raises
-    ------
-    ValueError
-        If `a` and `b` are not of equal length, or not of equal index.
-    """
-    if len(a) != len(b):
-        raise ValueError("expected `a` and `b` to be of equal length")
-
-    if not a.index.equals(b.index):
-        raise ValueError("expected `a` and `b` to be of equal index")
-
-    return ttest_rel(
-        a,
-        b,
-        alternative = alternative
-    )
-
-
 def get_ttest_results_ser(
+    *,
     high_lakes_df: pd.DataFrame,
     low_lakes_df:  pd.DataFrame
 ) -> pd.Series:
@@ -352,8 +312,8 @@ def get_ttest_results_ser(
     results = {}
 
     week_numbers = get_week_numbers(
-        high_lakes_df,
-        low_lakes_df
+        high_lakes_df = high_lakes_df,
+        low_lakes_df  = low_lakes_df
     )
 
     for week_number in week_numbers:
@@ -382,6 +342,7 @@ def get_ttest_results_ser(
 
 
 def get_w_ser(
+    *,
     high_lakes_df: pd.DataFrame,
     low_lakes_df:  pd.DataFrame
 ) -> pd.Series:
@@ -403,8 +364,8 @@ def get_w_ser(
     """
     week_numbers = sorted(
         get_week_numbers(
-            high_lakes_df,
-            low_lakes_df
+            high_lakes_df = high_lakes_df,
+            low_lakes_df  = low_lakes_df
         )
     )
 
@@ -499,6 +460,7 @@ def get_mean_ser(
 
 
 def get_mean_delta_ser(
+    *,
     mean_high_ser: pd.Series,
     mean_low_ser:  pd.Series
 ) -> pd.Series:
@@ -521,6 +483,7 @@ def get_mean_delta_ser(
 
 
 def get_most_significant_cluster(
+    *,
     w_ser: pd.Series,
     t_ser: pd.Series,
     p_ser: pd.Series
@@ -623,6 +586,7 @@ def get_most_significant_mean_delta_max(
 
 
 def get_results_df(
+    *,
     w_ser:          pd.Series,
     t_ser:          pd.Series,
     p_ser:          pd.Series,
@@ -677,6 +641,7 @@ def get_results_df(
 
 
 def get_summary_df(
+    *,
     most_significant_cluster:        list[int],
     most_significant_mean_delta_min: float,
     most_significant_mean_delta_max: float
@@ -729,7 +694,7 @@ def write_results_df_to_csv(
     Parameters
     ----------
     results_df : :class:`pandas.DataFrame`
-        The dataframe
+        The dataframe, as returned by `get_results_df`
 
     output : :class:`pathlib.Path`
         The output directory path
@@ -756,7 +721,7 @@ def write_summary_df_to_csv(
     Parameters
     ----------
     summary_df : :class:`pandas.DataFrame`
-        The dataframe
+        The dataframe, as returned by `get_summary_df`
 
     output : :class:`pathlib.Path`
         The output directory path
@@ -790,13 +755,13 @@ def main(
     low_lakes_df  = read_lakes_csv(args.low_lakes_csv_path)
 
     ttest_results_ser = get_ttest_results_ser(
-        high_lakes_df,
-        low_lakes_df
+        high_lakes_df = high_lakes_df,
+        low_lakes_df  = low_lakes_df
     )
 
     w_ser          = get_w_ser(
-        high_lakes_df,
-        low_lakes_df
+        high_lakes_df = high_lakes_df,
+        low_lakes_df  = low_lakes_df
     )
     t_ser          = get_t_ser(ttest_results_ser)
     p_ser          = get_p_ser(ttest_results_ser)
@@ -804,14 +769,14 @@ def main(
     mean_high_ser  = get_mean_ser(high_lakes_df)
     mean_low_ser   = get_mean_ser(low_lakes_df)
     mean_delta_ser = get_mean_delta_ser(
-        mean_high_ser,
-        mean_low_ser
+        mean_high_ser = mean_high_ser,
+        mean_low_ser  = mean_low_ser
     )
 
     most_significant_cluster        = get_most_significant_cluster(
-        w_ser,
-        t_ser,
-        p_ser
+        w_ser = w_ser,
+        t_ser = t_ser,
+        p_ser = p_ser
     )
     most_significant_mean_delta_min = get_most_significant_mean_delta_min(
         mean_delta_ser,
@@ -823,18 +788,18 @@ def main(
     )
 
     results_df = get_results_df(
-        w_ser,
-        t_ser,
-        p_ser,
-        dof_ser,
-        mean_high_ser,
-        mean_low_ser,
-        mean_delta_ser
+        w_ser          = w_ser,
+        t_ser          = t_ser,
+        p_ser          = p_ser,
+        dof_ser        = dof_ser,
+        mean_high_ser  = mean_high_ser,
+        mean_low_ser   = mean_low_ser,
+        mean_delta_ser = mean_delta_ser
     )
     summary_df = get_summary_df(
-        most_significant_cluster,
-        most_significant_mean_delta_min,
-        most_significant_mean_delta_max
+        most_significant_cluster        = most_significant_cluster,
+        most_significant_mean_delta_min = most_significant_mean_delta_min,
+        most_significant_mean_delta_max = most_significant_mean_delta_max
     )
 
     write_results_df_to_csv(

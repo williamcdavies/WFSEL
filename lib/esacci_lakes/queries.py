@@ -10,6 +10,7 @@ Written by William Chuter-Davies
 # Related Third-party Imports
 from psycopg import sql
 
+
 COUNT_OF_DISTINCT_START_DAYS_QUERY = sql.SQL("""
 WITH xref AS (
     SELECT 

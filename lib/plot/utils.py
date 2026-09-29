@@ -8,7 +8,6 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-from datetime import datetime
 from pathlib  import Path
 
 # Related Third-party Imports
