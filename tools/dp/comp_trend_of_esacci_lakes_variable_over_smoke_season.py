@@ -57,7 +57,7 @@ from lib.proc.vars               import (
 PROG                     = "comp_trend_of_esacci_lakes_variable_over_smoke_season.py"
 NUMBER_OF_LOOKBACK_WEEKS = 3
 NUMBER_OF_DAYS_IN_A_WEEK = 7
-LOCAL_DATA_RUN_DATE      = "31-08-26"
+LOCAL_DATA_RUN_DATE      = "22-09-26"
 
 
 # Argument functions
@@ -80,7 +80,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """Produces a comparison of each lake's mean value for an ESA CCI Lakes variable over its most recent high-smoke and low-smoke seasons."""
+        description = """Produces a comparison of each lake's mean value for an ESA CCI Lakes variable over its high-smoke and low-smoke seasons, averaged across every qualifying year."""
     )
 
     # Positional arguments
@@ -732,8 +732,8 @@ def get_esacci_lakes_variable_values_by_week_idx(
         local_data_df = read_local_data_csv(local_data_csv_paths[day - 1])
         local_data_df = filter_df_by_column_bounds(
             local_data_df,
-            "coverage",
-            lower = 50
+            f"""{esacci_lakes_variable}_coverage""",
+            lower = 0.5
         )
 
         if esacci_lakes_id in local_data_df.index:

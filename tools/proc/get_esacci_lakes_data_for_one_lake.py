@@ -35,7 +35,7 @@ from lib.proc.vars               import (
 )
 
 PROG                = "get_esacci_lakes_data_for_one_lake.py"
-LOCAL_DATA_RUN_DATE = "31-08-26"
+LOCAL_DATA_RUN_DATE = "22-09-26"
 
 
 # Argument functions
