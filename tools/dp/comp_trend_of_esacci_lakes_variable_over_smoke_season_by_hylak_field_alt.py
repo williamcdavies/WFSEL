@@ -1,5 +1,5 @@
 r"""
-comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py
+comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_alt.py
 
 Written by William Chuter-Davies
 """
@@ -31,9 +31,6 @@ from lib.esacci_lakes.utils.proc      import (
     argument_esacci_lakes_hylak_fields_csv_path_exists,
     read_esacci_lakes_hylak_fields_csv
 )
-from lib.esacci_lakes.vars            import (
-    HYLAK_FIELDS
-)
 from lib.proc.utils                   import (
     add_argument_output,
     argument_output_is_a_directory,
@@ -44,7 +41,7 @@ from lib.proc.vars                    import (
     RETURN_SUCCESS
 )
 
-PROG  = "comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py"
+PROG  = "comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_alt.py"
 FORMS = [
     "Absolute",
     "Anomaly"
@@ -106,6 +103,32 @@ def add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(
         "esacci_lakes_variable_over_low_smoke_season_csv_path",
         type = Path,
         help = """path to some csv file produced by comp_trend_of_esacci_lakes_variable_over_smoke_season.py"""
+    )
+
+
+def add_argument_threshold(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `threshold` argument to a :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Argument `threshold` is of type :class:`float`.
+    """
+    parser.add_argument(
+        "threshold",
+        type = float,
+        help = """the value to split `hylak_field` on"""
     )
 
 
@@ -246,7 +269,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """Produces upper-, middle-, and lower-bounds high- and low-smoke-season lakes csv files, split by a HydroLAKES field's bounds."""
+        description = """Produces at-or-below- and at-or-above- threshold high- and low-smoke-season lakes csv files, split by a HydroLAKES field's value against an explicit threshold."""
     )
 
     # Positional arguments
@@ -254,6 +277,7 @@ def build_parser(
     add_argument_esacci_lakes_variable_over_high_smoke_season_csv_path(parser)
     add_argument_esacci_lakes_variable_over_low_smoke_season_csv_path(parser)
     add_argument_hylak_field(parser)
+    add_argument_threshold(parser)
     add_argument_esacci_lakes_hylak_fields_csv_path(parser)
 
     # Optional arguments
@@ -407,13 +431,14 @@ def get_lakes_df_week_number_ser_pairs(
     return pairs
 
 
-def get_lower_bounds_lakes_df(
+def get_at_or_below_threshold_lakes_df(
     df:          pd.DataFrame,
-    hylak_field: str
+    hylak_field: str,
+    threshold:   float
 ) -> pd.DataFrame:
     """
-    Returns `df` filtered to lakes at or below `hylak_field`'s lower
-    bound, with all `HYLAK_FIELDS` columns dropped.
+    Returns `df` filtered to lakes at or below `threshold`, with all
+    `HYLAK_FIELDS` columns dropped.
 
     Parameters
     ----------
@@ -423,35 +448,31 @@ def get_lower_bounds_lakes_df(
     hylak_field : :class:`str`
         The HydroLAKES field id
 
+    threshold : :class:`float`
+        The value to split `hylak_field` on
+
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Raises
-    ------
-    ValueError
-        If `hylak_field`'s `lower_bound` is `None`.
     """
-    if HYLAK_FIELDS[hylak_field].lower_bound is None:
-        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `lower_bound`")
-
     filtered_df = filter_df_by_column_bounds(
         df     = df,
         column = hylak_field,
         lower  = None,
-        upper  = HYLAK_FIELDS[hylak_field].lower_bound
+        upper  = threshold
     )
 
     return drop_hylak_field_columns_from_df(filtered_df)
 
 
-def get_middle_bounds_lakes_df(
+def get_at_or_above_threshold_lakes_df(
     df:          pd.DataFrame,
-    hylak_field: str
+    hylak_field: str,
+    threshold:   float
 ) -> pd.DataFrame:
     """
-    Returns `df` filtered to lakes between `hylak_field`'s lower and
-    upper bounds, with all `HYLAK_FIELDS` columns dropped.
+    Returns `df` filtered to lakes at or above `threshold`, with all
+    `HYLAK_FIELDS` columns dropped.
 
     Parameters
     ----------
@@ -461,63 +482,17 @@ def get_middle_bounds_lakes_df(
     hylak_field : :class:`str`
         The HydroLAKES field id
 
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-
-    Raises
-    ------
-    ValueError
-        If `hylak_field`'s `lower_bound` or `upper_bound` is `None`.
-    """
-    if HYLAK_FIELDS[hylak_field].lower_bound is None:
-        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `lower_bound`")
-
-    if HYLAK_FIELDS[hylak_field].upper_bound is None:
-        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `upper_bound`")
-
-    filtered_df = filter_df_by_column_bounds(
-        df     = df,
-        column = hylak_field,
-        lower  = HYLAK_FIELDS[hylak_field].lower_bound,
-        upper  = HYLAK_FIELDS[hylak_field].upper_bound
-    )
-
-    return drop_hylak_field_columns_from_df(filtered_df)
-
-
-def get_upper_bounds_lakes_df(
-    df:          pd.DataFrame,
-    hylak_field: str
-) -> pd.DataFrame:
-    """
-    Returns `df` filtered to lakes at or above `hylak_field`'s upper
-    bound, with all `HYLAK_FIELDS` columns dropped.
-
-    Parameters
-    ----------
-    df : :class:`pandas.DataFrame`
-        The dataframe
-
-    hylak_field : :class:`str`
-        The HydroLAKES field id
+    threshold : :class:`float`
+        The value to split `hylak_field` on
 
     Returns
     -------
     A :class:`pandas.DataFrame`.
-
-    Raises
-    ------
-    ValueError
-        If `hylak_field`'s `upper_bound` is `None`.
     """
-    if HYLAK_FIELDS[hylak_field].upper_bound is None:
-        raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `upper_bound`")
-
     filtered_df = filter_df_by_column_bounds(
         df     = df,
         column = hylak_field,
-        lower  = HYLAK_FIELDS[hylak_field].upper_bound,
+        lower  = threshold,
         upper  = None
     )
 
@@ -557,60 +532,46 @@ def main(
         hylak_fields_df
     )
 
-    upper_high_lakes_df  = get_upper_bounds_lakes_df(
+    above_high_lakes_df = get_at_or_above_threshold_lakes_df(
         variable_over_high_smoke_season_hylak_fields_df,
-        args.hylak_field
+        args.hylak_field,
+        args.threshold
     )
-    upper_low_lakes_df   = get_upper_bounds_lakes_df(
+    above_low_lakes_df  = get_at_or_above_threshold_lakes_df(
         variable_over_low_smoke_season_hylak_fields_df,
-        args.hylak_field
+        args.hylak_field,
+        args.threshold
     )
-    middle_high_lakes_df = get_middle_bounds_lakes_df(
+    below_high_lakes_df = get_at_or_below_threshold_lakes_df(
         variable_over_high_smoke_season_hylak_fields_df,
-        args.hylak_field
+        args.hylak_field,
+        args.threshold
     )
-    middle_low_lakes_df  = get_middle_bounds_lakes_df(
+    below_low_lakes_df  = get_at_or_below_threshold_lakes_df(
         variable_over_low_smoke_season_hylak_fields_df,
-        args.hylak_field
-    )
-    lower_high_lakes_df  = get_lower_bounds_lakes_df(
-        variable_over_high_smoke_season_hylak_fields_df,
-        args.hylak_field
-    )
-    lower_low_lakes_df   = get_lower_bounds_lakes_df(
-        variable_over_low_smoke_season_hylak_fields_df,
-        args.hylak_field
+        args.hylak_field,
+        args.threshold
     )
 
     write_df_to_csv(
-        upper_high_lakes_df,
+        above_high_lakes_df,
         args.output,
-        name = "upper_high_lakes"
+        name = "above_high_lakes"
     )
     write_df_to_csv(
-        upper_low_lakes_df,
+        above_low_lakes_df,
         args.output,
-        name = "upper_low_lakes"
+        name = "above_low_lakes"
     )
     write_df_to_csv(
-        middle_high_lakes_df,
+        below_high_lakes_df,
         args.output,
-        name = "middle_high_lakes"
+        name = "below_high_lakes"
     )
     write_df_to_csv(
-        middle_low_lakes_df,
+        below_low_lakes_df,
         args.output,
-        name = "middle_low_lakes"
-    )
-    write_df_to_csv(
-        lower_high_lakes_df,
-        args.output,
-        name = "lower_high_lakes"
-    )
-    write_df_to_csv(
-        lower_low_lakes_df,
-        args.output,
-        name = "lower_low_lakes"
+        name = "below_low_lakes"
     )
 
     return RETURN_SUCCESS
