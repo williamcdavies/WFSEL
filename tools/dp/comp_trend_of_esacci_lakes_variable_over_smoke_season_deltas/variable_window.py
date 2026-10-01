@@ -1,5 +1,5 @@
 r"""
-comp_trend_of_esacci_lakes_variable_over_smoke_season_deltas.py
+variable_window.py
 
 Written by William Chuter-Davies
 """
@@ -33,7 +33,7 @@ from lib.proc.vars                import (
     RETURN_FAILURE
 )
 
-PROG = "comp_trend_of_esacci_lakes_variable_over_smoke_season_deltas.py"
+PROG = "variable_window.py"
 
 
 # Argument functions
