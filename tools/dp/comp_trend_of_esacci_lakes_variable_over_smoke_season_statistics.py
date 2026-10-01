@@ -1,5 +1,5 @@
 r"""
-comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py
+comp_trend_of_esacci_lakes_variable_over_smoke_season_statistics.py
 
 Written by William Chuter-Davies
 """
@@ -30,7 +30,7 @@ from lib.stat.vars       import (
     MINIMUM_SAMPLE_SIZE_FOR_ONE_TAILED_PAIRED_TTEST
 )
 
-PROG = "comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field_statistics.py"
+PROG = "comp_trend_of_esacci_lakes_variable_over_smoke_season_statistics.py"
 
 
 # Argument functions
@@ -58,7 +58,7 @@ def add_argument_high_lakes_csv_path(
     parser.add_argument(
         "high_lakes_csv_path",
         type = Path,
-        help = """path to some high-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py"""
+        help = """path to some high-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py or comp_trend_of_esacci_lakes_variable_over_smoke_season.py"""
     )
 
 
@@ -85,7 +85,7 @@ def add_argument_low_lakes_csv_path(
     parser.add_argument(
         "low_lakes_csv_path",
         type = Path,
-        help = """path to some low-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py"""
+        help = """path to some low-smoke-season lakes csv file as produced by comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py or comp_trend_of_esacci_lakes_variable_over_smoke_season.py"""
     )
 
 
@@ -226,6 +226,7 @@ def read_lakes_csv(
     lakes_csv_path : :class:`pathlib.Path`
         The path to some lakes csv file as produced by
         comp_trend_of_esacci_lakes_variable_over_smoke_season_by_hylak_field.py
+        or comp_trend_of_esacci_lakes_variable_over_smoke_season.py
 
     Returns
     -------
