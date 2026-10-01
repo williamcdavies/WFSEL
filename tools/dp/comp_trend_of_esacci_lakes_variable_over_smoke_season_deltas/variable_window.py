@@ -231,7 +231,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """Produces a csv file containing each lake's latitude, longitude, and volume, alongside its mean delta over the longest significant cluster of weeks of an ESA CCI Lakes variable's high- and low-smoke-season comparison."""
+        description = """Produces a csv file containing each lake's latitude, longitude, area, depth, elevation, and volume, alongside its mean delta over the longest significant cluster of weeks of an ESA CCI Lakes variable's high- and low-smoke-season comparison."""
     )
 
     # Positional arguments
@@ -453,7 +453,7 @@ def get_esacci_lakes_deltas_df(
     records = []
 
     for id_, row in esacci_lakes_metadata_df.iterrows():
-        vol_total_m3 = esacci_lakes_hylak_fields_df["vol_total_m3"].get(id_)
+        hylak_fields_row = esacci_lakes_hylak_fields_df.loc[id_] if id_ in esacci_lakes_hylak_fields_df.index else None # type: ignore
 
         mean_delta = get_esacci_lakes_mean_delta(
             id_, # type: ignore
@@ -467,7 +467,10 @@ def get_esacci_lakes_deltas_df(
                 "esacci_lakes_id": id_,
                 "latitude":        row["lat_centre"],
                 "longitude":       row["lon_centre"],
-                "vol_total_m3":    vol_total_m3,
+                "lake_area_m2":    hylak_fields_row["lake_area_m2"] if hylak_fields_row is not None else None,
+                "depth_avg_m":     hylak_fields_row["depth_avg_m"]  if hylak_fields_row is not None else None,
+                "elevation_m":     hylak_fields_row["elevation_m"]  if hylak_fields_row is not None else None,
+                "vol_total_m3":    hylak_fields_row["vol_total_m3"] if hylak_fields_row is not None else None,
                 "mean_delta":      mean_delta
             }
         )

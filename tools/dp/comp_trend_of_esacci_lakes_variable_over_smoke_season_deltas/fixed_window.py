@@ -176,7 +176,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = f"""Produces a csv file containing each lake's latitude, longitude, lake area, depth, elevation, and volume, alongside its mean delta over a fixed week {FIRST_WEEK}-{LAST_WEEK} window of an ESA CCI Lakes variable's high- and low-smoke-season comparison."""
+        description = f"""Produces a csv file containing each lake's latitude, longitude, area, depth, elevation, and volume, alongside its mean delta over a fixed week {FIRST_WEEK}-{LAST_WEEK} window of an ESA CCI Lakes variable's high- and low-smoke-season comparison."""
     )
 
     # Positional arguments
