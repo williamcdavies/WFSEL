@@ -308,16 +308,16 @@ def get_esacci_lakes_mean_delta(
     mean_high = esacci_lakes_variable_over_high_smoke_season_df.loc[esacci_lakes_id, columns].mean()
     mean_low  = esacci_lakes_variable_over_low_smoke_season_df.loc[esacci_lakes_id, columns].mean()
 
-    return mean_high - mean_low # type: ignore
+    return mean_high - mean_low
 
 
 def get_esacci_lakes_deltas_df(
     esacci_lakes_metadata_df: pd.DataFrame,
     *,
-    esacci_lakes_hylak_fields_df:                     pd.DataFrame,
-    esacci_lakes_variable_over_high_smoke_season_df:  pd.DataFrame,
-    esacci_lakes_variable_over_low_smoke_season_df:   pd.DataFrame,
-    weeks:                                            list[int]
+    esacci_lakes_hylak_fields_df:                    pd.DataFrame,
+    esacci_lakes_variable_over_high_smoke_season_df: pd.DataFrame,
+    esacci_lakes_variable_over_low_smoke_season_df:  pd.DataFrame,
+    weeks:                                           list[int]
 ) -> pd.DataFrame:
     """
     Returns each of `esacci_lakes_metadata_df`'s lake's latitude,
@@ -351,10 +351,10 @@ def get_esacci_lakes_deltas_df(
     records = []
 
     for id_, row in esacci_lakes_metadata_df.iterrows():
-        hylak_fields_row = esacci_lakes_hylak_fields_df.loc[id_] if id_ in esacci_lakes_hylak_fields_df.index else None # type: ignore
+        hylak_fields_row = esacci_lakes_hylak_fields_df.loc[id_] if id_ in esacci_lakes_hylak_fields_df.index else None
 
         mean_delta = get_esacci_lakes_mean_delta(
-            id_, # type: ignore
+            id_,
             esacci_lakes_variable_over_high_smoke_season_df = esacci_lakes_variable_over_high_smoke_season_df,
             esacci_lakes_variable_over_low_smoke_season_df  = esacci_lakes_variable_over_low_smoke_season_df,
             weeks                                           = weeks

@@ -375,7 +375,7 @@ def get_esacci_lakes_mean_delta(
     mean_high = esacci_lakes_variable_over_high_smoke_season_df.loc[esacci_lakes_id, columns].mean()
     mean_low  = esacci_lakes_variable_over_low_smoke_season_df.loc[esacci_lakes_id, columns].mean()
 
-    return mean_high - mean_low # type: ignore
+    return mean_high - mean_low
 
 
 def get_esacci_lakes_deltas_df(
@@ -421,13 +421,13 @@ def get_esacci_lakes_deltas_df(
     records = []
 
     for id_, row in esacci_lakes_metadata_df.iterrows():
-        hylak_fields_row = esacci_lakes_hylak_fields_df.loc[id_] if id_ in esacci_lakes_hylak_fields_df.index else None # type: ignore
+        hylak_fields_row = esacci_lakes_hylak_fields_df.loc[id_] if id_ in esacci_lakes_hylak_fields_df.index else None
         vol_total_m3     = hylak_fields_row["vol_total_m3"] if hylak_fields_row is not None else None
 
         if vol_total_m3 is not None:
             group      = get_volume_group(vol_total_m3)
             mean_delta = get_esacci_lakes_mean_delta(
-                id_, # type: ignore
+                id_,
                 esacci_lakes_variable_over_high_smoke_season_df = high_lakes_dfs_by_group[group],
                 esacci_lakes_variable_over_low_smoke_season_df  = low_lakes_dfs_by_group[group],
                 weeks                                           = weeks_by_group[group]
