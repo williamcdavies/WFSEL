@@ -15,7 +15,7 @@ import sqlalchemy
 
 # Local Application/Library Specific Imports
 from lib.db.utils   import get_gdf_from_postgis
-from lib.geo.utils import (
+from lib.geo.utils  import (
     join_gdfs_on_within,
     filter_gdf_by_column_membership
 )
@@ -215,7 +215,7 @@ def get_lakes_gdf(
 # Plot functions
 # ==================================================================================================
 def plot_states_gdf(
-    ax:         plt.Axes, # type: ignore
+    ax:         plt.Axes,
     states_gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -241,7 +241,7 @@ def plot_states_gdf(
 
 
 def plot_target_states_gdf(
-    ax:                plt.Axes, # type: ignore
+    ax:                plt.Axes,
     target_states_gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -267,7 +267,7 @@ def plot_target_states_gdf(
 
 
 def plot_target_lakes_gdf(
-    ax:               plt.Axes, # type: ignore
+    ax:               plt.Axes,
     target_lakes_gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -293,7 +293,7 @@ def plot_target_lakes_gdf(
 
 
 def plot_on_ax(
-    ax:                plt.Axes, # type: ignore
+    ax: plt.Axes,
     *,
     states_gdf:        gpd.GeoDataFrame,
     target_states_gdf: gpd.GeoDataFrame,
@@ -336,7 +336,7 @@ def plot_on_ax(
 
 
 def set_ax_properties(
-    ax:                plt.Axes, # type: ignore
+    ax: plt.Axes,
     *,
     target_states_gdf: gpd.GeoDataFrame
 ) -> None:
