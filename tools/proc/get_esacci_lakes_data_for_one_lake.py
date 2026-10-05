@@ -127,7 +127,7 @@ def get_lake_data_record(
 
     record: dict[str, Any] = {"esacci_lakes_id": esacci_lakes_id}
     record["date"]         = local_data_datetime.strftime("%Y-%m-%d")
-    record.update(local_data_df.loc[esacci_lakes_id].to_dict()) # type: ignore
+    record.update(local_data_df.loc[esacci_lakes_id].to_dict())
 
     return record
 
