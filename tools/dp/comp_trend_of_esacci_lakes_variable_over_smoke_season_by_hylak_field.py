@@ -8,7 +8,7 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from pathlib  import Path
+from pathlib import Path
 
 # Related Third-party Imports
 import pandas as pd
@@ -375,38 +375,6 @@ def read_esacci_lakes_variable_over_low_smoke_season_csv(
 
 # Data functions
 # ==================================================================================================
-def get_lakes_df_week_number_ser_pairs(
-    lakes_df: pd.DataFrame
-) -> list[tuple[int, pd.Series]]:
-    """
-    Returns `lakes_df`'s week columns as (week number, series) pairs.
-
-    Parameters
-    ----------
-    lakes_df : :class:`pandas.DataFrame`
-        The dataframe
-
-    Returns
-    -------
-    A list of (week number, series) pairs.
-    """
-    prefix = "w_"
-    pairs  = []
-
-    for label_, ser in lakes_df.filter(like = prefix).items():
-        n = int(label_.removeprefix(prefix)) # type: ignore
-
-        if (
-            n < -3
-            or n > 20
-        ):
-            continue
-
-        pairs.append((n, ser))
-
-    return pairs
-
-
 def get_lower_bounds_lakes_df(
     df:          pd.DataFrame,
     hylak_field: str
@@ -450,8 +418,8 @@ def get_middle_bounds_lakes_df(
     hylak_field: str
 ) -> pd.DataFrame:
     """
-    Returns `df` filtered to lakes between `hylak_field`'s lower and
-    upper bounds, with all `HYLAK_FIELDS` columns dropped.
+    Returns `df` filtered to lakes strictly between `hylak_field`'s
+    lower and upper bounds, with all `HYLAK_FIELDS` columns dropped.
 
     Parameters
     ----------
@@ -477,10 +445,12 @@ def get_middle_bounds_lakes_df(
         raise ValueError(f"expected `hylak_field` `{hylak_field}` to have a non-`None` `upper_bound`")
 
     filtered_df = filter_df_by_column_bounds(
-        df     = df,
-        column = hylak_field,
-        lower  = HYLAK_FIELDS[hylak_field].lower_bound,
-        upper  = HYLAK_FIELDS[hylak_field].upper_bound
+        df              = df,
+        column          = hylak_field,
+        lower           = HYLAK_FIELDS[hylak_field].lower_bound,
+        upper           = HYLAK_FIELDS[hylak_field].upper_bound,
+        lower_inclusive = False,
+        upper_inclusive = False
     )
 
     return drop_hylak_field_columns_from_df(filtered_df)

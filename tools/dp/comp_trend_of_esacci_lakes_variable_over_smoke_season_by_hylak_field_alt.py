@@ -8,7 +8,7 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from pathlib  import Path
+from pathlib import Path
 
 # Related Third-party Imports
 import pandas as pd
@@ -399,38 +399,6 @@ def read_esacci_lakes_variable_over_low_smoke_season_csv(
 
 # Data functions
 # ==================================================================================================
-def get_lakes_df_week_number_ser_pairs(
-    lakes_df: pd.DataFrame
-) -> list[tuple[int, pd.Series]]:
-    """
-    Returns `lakes_df`'s week columns as (week number, series) pairs.
-
-    Parameters
-    ----------
-    lakes_df : :class:`pandas.DataFrame`
-        The dataframe
-
-    Returns
-    -------
-    A list of (week number, series) pairs.
-    """
-    prefix = "w_"
-    pairs  = []
-
-    for label_, ser in lakes_df.filter(like = prefix).items():
-        n = int(label_.removeprefix(prefix)) # type: ignore
-
-        if (
-            n < -3
-            or n > 20
-        ):
-            continue
-
-        pairs.append((n, ser))
-
-    return pairs
-
-
 def get_at_or_below_threshold_lakes_df(
     df:          pd.DataFrame,
     hylak_field: str,
@@ -471,7 +439,7 @@ def get_at_or_above_threshold_lakes_df(
     threshold:   float
 ) -> pd.DataFrame:
     """
-    Returns `df` filtered to lakes at or above `threshold`, with all
+    Returns `df` filtered to lakes strictly above `threshold`, with all
     `HYLAK_FIELDS` columns dropped.
 
     Parameters
@@ -490,10 +458,11 @@ def get_at_or_above_threshold_lakes_df(
     A :class:`pandas.DataFrame`.
     """
     filtered_df = filter_df_by_column_bounds(
-        df     = df,
-        column = hylak_field,
-        lower  = threshold,
-        upper  = None
+        df              = df,
+        column          = hylak_field,
+        lower           = threshold,
+        upper           = None,
+        lower_inclusive = False
     )
 
     return drop_hylak_field_columns_from_df(filtered_df)
