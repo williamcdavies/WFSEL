@@ -803,7 +803,7 @@ def get_lakes_df_week_number_ser_pairs(
     pairs  = []
 
     for label_, ser in lakes_df.filter(like = prefix).items():
-        n = int(label_.removeprefix(prefix)) # type: ignore
+        n = int(label_.removeprefix(prefix))
 
         pairs.append((n, ser))
 
@@ -871,7 +871,7 @@ def get_longest_cluster_weeks(
 # Plot functions
 # ==================================================================================================
 def plot_lakes_df_scatterplot(
-    ax:       plt.Axes, # type: ignore
+    ax:       plt.Axes,
     lakes_df: pd.DataFrame,
     *,
     color: str,
@@ -910,7 +910,7 @@ def plot_lakes_df_scatterplot(
 
 
 def plot_lakes_df_lineplot(
-    ax:       plt.Axes, # type: ignore
+    ax:       plt.Axes,
     mean_ser: pd.Series,
     *,
     color: str,
@@ -947,7 +947,7 @@ def plot_lakes_df_lineplot(
 
 
 def plot_significant_cluster_span(
-    ax: plt.Axes, # type: ignore
+    ax: plt.Axes,
     *,
     longest_cluster_weeks: list[int]
 ) -> None:
@@ -978,13 +978,13 @@ def plot_significant_cluster_span(
 
 
 def plot_on_above_threshold_lakes_ax(
-    above_threshold_lakes_ax: plt.Axes, # type: ignore
+    above_threshold_lakes_ax: plt.Axes,
     *,
-    above_high_lakes_df:          pd.DataFrame,
-    above_low_lakes_df:           pd.DataFrame,
-    above_high_mean_ser:          pd.Series,
-    above_low_mean_ser:           pd.Series,
-    above_longest_cluster_weeks:  list[int]
+    above_high_lakes_df:         pd.DataFrame,
+    above_low_lakes_df:          pd.DataFrame,
+    above_high_mean_ser:         pd.Series,
+    above_low_mean_ser:          pd.Series,
+    above_longest_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `above_high_lakes_df`, `above_low_lakes_df`,
@@ -1048,13 +1048,13 @@ def plot_on_above_threshold_lakes_ax(
 
 
 def plot_on_below_threshold_lakes_ax(
-    below_threshold_lakes_ax: plt.Axes, # type: ignore
+    below_threshold_lakes_ax: plt.Axes,
     *,
-    below_high_lakes_df:          pd.DataFrame,
-    below_low_lakes_df:           pd.DataFrame,
-    below_high_mean_ser:          pd.Series,
-    below_low_mean_ser:           pd.Series,
-    below_longest_cluster_weeks:  list[int]
+    below_high_lakes_df:         pd.DataFrame,
+    below_low_lakes_df:          pd.DataFrame,
+    below_high_mean_ser:         pd.Series,
+    below_low_mean_ser:          pd.Series,
+    below_longest_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `below_high_lakes_df`, `below_low_lakes_df`,
@@ -1118,7 +1118,7 @@ def plot_on_below_threshold_lakes_ax(
 
 
 def set_above_threshold_lakes_ax_properties(
-    above_threshold_lakes_ax: plt.Axes, # type: ignore
+    above_threshold_lakes_ax: plt.Axes,
     *,
     esacci_lakes_variable: str,
     hylak_field:           str,
@@ -1154,11 +1154,11 @@ def set_above_threshold_lakes_ax_properties(
     hylak_field_long_name           = HYLAK_FIELDS[hylak_field].long_name
     hylak_field_display_units       = HYLAK_FIELDS[hylak_field].display_units or HYLAK_FIELDS[hylak_field].units
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
-    threshold_display               = threshold / hylak_field_display_scale # type: ignore
+    threshold_display               = threshold / hylak_field_display_scale
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     above_threshold_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} >= {threshold_display:g} {hylak_field_display_units}""",
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} > {threshold_display:g} {hylak_field_display_units}""",
         fontsize = 10
     )
     above_threshold_lakes_ax.set_xlabel(
@@ -1175,7 +1175,7 @@ def set_above_threshold_lakes_ax_properties(
 
 
 def set_below_threshold_lakes_ax_properties(
-    below_threshold_lakes_ax: plt.Axes, # type: ignore
+    below_threshold_lakes_ax: plt.Axes,
     *,
     esacci_lakes_variable: str,
     hylak_field:           str,
@@ -1211,7 +1211,7 @@ def set_below_threshold_lakes_ax_properties(
     hylak_field_long_name           = HYLAK_FIELDS[hylak_field].long_name
     hylak_field_display_units       = HYLAK_FIELDS[hylak_field].display_units or HYLAK_FIELDS[hylak_field].units
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
-    threshold_display               = threshold / hylak_field_display_scale # type: ignore
+    threshold_display               = threshold / hylak_field_display_scale
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     below_threshold_lakes_ax.set_title(

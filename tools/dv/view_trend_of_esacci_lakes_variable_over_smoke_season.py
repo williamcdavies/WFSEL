@@ -1031,7 +1031,7 @@ def get_lakes_df_week_number_ser_pairs(
     pairs  = []
 
     for label_, ser in lakes_df.filter(like = prefix).items():
-        n = int(label_.removeprefix(prefix)) # type: ignore
+        n = int(label_.removeprefix(prefix))
 
         pairs.append((n, ser))
 
@@ -1099,7 +1099,7 @@ def get_longest_cluster_weeks(
 # Plot functions
 # ==================================================================================================
 def plot_lakes_df_scatterplot(
-    ax:       plt.Axes, # type: ignore
+    ax:       plt.Axes,
     lakes_df: pd.DataFrame,
     *,
     color: str,
@@ -1138,7 +1138,7 @@ def plot_lakes_df_scatterplot(
 
 
 def plot_lakes_df_lineplot(
-    ax:       plt.Axes, # type: ignore
+    ax:       plt.Axes,
     mean_ser: pd.Series,
     *,
     color: str,
@@ -1175,7 +1175,7 @@ def plot_lakes_df_lineplot(
 
 
 def plot_significant_cluster_span(
-    ax: plt.Axes, # type: ignore
+    ax: plt.Axes,
     *,
     longest_cluster_weeks: list[int]
 ) -> None:
@@ -1206,13 +1206,13 @@ def plot_significant_cluster_span(
 
 
 def plot_on_upper_bounds_lakes_ax(
-    upper_bounds_lakes_ax: plt.Axes, # type: ignore
+    upper_bounds_lakes_ax: plt.Axes,
     *,
-    upper_high_lakes_df:          pd.DataFrame,
-    upper_low_lakes_df:           pd.DataFrame,
-    upper_high_mean_ser:          pd.Series,
-    upper_low_mean_ser:           pd.Series,
-    upper_longest_cluster_weeks:  list[int]
+    upper_high_lakes_df:         pd.DataFrame,
+    upper_low_lakes_df:          pd.DataFrame,
+    upper_high_mean_ser:         pd.Series,
+    upper_low_mean_ser:          pd.Series,
+    upper_longest_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `upper_high_lakes_df`, `upper_low_lakes_df`,
@@ -1276,13 +1276,13 @@ def plot_on_upper_bounds_lakes_ax(
 
 
 def plot_on_middle_bounds_lakes_ax(
-    middle_bounds_lakes_ax: plt.Axes, # type: ignore
+    middle_bounds_lakes_ax: plt.Axes,
     *,
-    middle_high_lakes_df:          pd.DataFrame,
-    middle_low_lakes_df:           pd.DataFrame,
-    middle_high_mean_ser:          pd.Series,
-    middle_low_mean_ser:           pd.Series,
-    middle_longest_cluster_weeks:  list[int]
+    middle_high_lakes_df:         pd.DataFrame,
+    middle_low_lakes_df:          pd.DataFrame,
+    middle_high_mean_ser:         pd.Series,
+    middle_low_mean_ser:          pd.Series,
+    middle_longest_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `middle_high_lakes_df`, `middle_low_lakes_df`,
@@ -1347,13 +1347,13 @@ def plot_on_middle_bounds_lakes_ax(
 
 
 def plot_on_lower_bounds_lakes_ax(
-    lower_bounds_lakes_ax: plt.Axes, # type: ignore
+    lower_bounds_lakes_ax: plt.Axes,
     *,
-    lower_high_lakes_df:          pd.DataFrame,
-    lower_low_lakes_df:           pd.DataFrame,
-    lower_high_mean_ser:          pd.Series,
-    lower_low_mean_ser:           pd.Series,
-    lower_longest_cluster_weeks:  list[int]
+    lower_high_lakes_df:         pd.DataFrame,
+    lower_low_lakes_df:          pd.DataFrame,
+    lower_high_mean_ser:         pd.Series,
+    lower_low_mean_ser:          pd.Series,
+    lower_longest_cluster_weeks: list[int]
 ) -> None:
     """
     Plots `lower_high_lakes_df`, `lower_low_lakes_df`,
@@ -1417,7 +1417,7 @@ def plot_on_lower_bounds_lakes_ax(
 
 
 def set_upper_bounds_lakes_ax_properties(
-    upper_bounds_lakes_ax: plt.Axes, # type: ignore
+    upper_bounds_lakes_ax: plt.Axes,
     *,
     esacci_lakes_variable: str,
     hylak_field:           str,
@@ -1450,7 +1450,7 @@ def set_upper_bounds_lakes_ax_properties(
     hylak_field_display_units       = HYLAK_FIELDS[hylak_field].display_units or HYLAK_FIELDS[hylak_field].units
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
     hylak_field_upper_bound         = HYLAK_FIELDS[hylak_field].upper_bound
-    hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale # type: ignore
+    hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     upper_bounds_lakes_ax.set_title(
@@ -1471,7 +1471,7 @@ def set_upper_bounds_lakes_ax_properties(
 
 
 def set_middle_bounds_lakes_ax_properties(
-    middle_bounds_lakes_ax: plt.Axes, # type: ignore
+    middle_bounds_lakes_ax: plt.Axes,
     *,
     esacci_lakes_variable: str,
     hylak_field:           str,
@@ -1505,8 +1505,8 @@ def set_middle_bounds_lakes_ax_properties(
     hylak_field_upper_bound         = HYLAK_FIELDS[hylak_field].upper_bound
     hylak_field_display_units       = HYLAK_FIELDS[hylak_field].display_units or HYLAK_FIELDS[hylak_field].units
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
-    hylak_field_lower_bound_display = hylak_field_lower_bound / hylak_field_display_scale # type: ignore
-    hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale # type: ignore
+    hylak_field_lower_bound_display = hylak_field_lower_bound / hylak_field_display_scale
+    hylak_field_upper_bound_display = hylak_field_upper_bound / hylak_field_display_scale
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     middle_bounds_lakes_ax.set_title(
@@ -1527,7 +1527,7 @@ def set_middle_bounds_lakes_ax_properties(
 
 
 def set_lower_bounds_lakes_ax_properties(
-    lower_bounds_lakes_ax: plt.Axes, # type: ignore
+    lower_bounds_lakes_ax: plt.Axes,
     *,
     esacci_lakes_variable: str,
     hylak_field:           str,
@@ -1560,7 +1560,7 @@ def set_lower_bounds_lakes_ax_properties(
     hylak_field_lower_bound         = HYLAK_FIELDS[hylak_field].lower_bound
     hylak_field_display_units       = HYLAK_FIELDS[hylak_field].display_units or HYLAK_FIELDS[hylak_field].units
     hylak_field_display_scale       = HYLAK_FIELDS[hylak_field].display_scale or HYLAK_FIELDS[hylak_field].scale
-    hylak_field_lower_bound_display = hylak_field_lower_bound / hylak_field_display_scale # type: ignore
+    hylak_field_lower_bound_display = hylak_field_lower_bound / hylak_field_display_scale
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     lower_bounds_lakes_ax.set_title(
