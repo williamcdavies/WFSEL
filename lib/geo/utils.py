@@ -251,6 +251,6 @@ def get_da_geometry_as_wkb(
             in polygons
         ]
     )
-    geometry    = shapely.MultiPolygon([geometry]) if geometry.geom_type == "Polygon" else geometry # type: ignore
+    geometry    = shapely.MultiPolygon([geometry]) if geometry.geom_type == "Polygon" else geometry
 
     return shapely.to_wkb(geometry)
