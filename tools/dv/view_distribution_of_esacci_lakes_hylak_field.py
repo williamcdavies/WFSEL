@@ -178,7 +178,7 @@ def arguments_are_valid(
 # Plot functions
 # ==================================================================================================
 def plot_ser_histogram_lin(
-    ax:  plt.Axes, # type: ignore
+    ax:  plt.Axes,
     ser: pd.Series
 ) -> None:
     """
@@ -208,7 +208,7 @@ def plot_ser_histogram_lin(
 
 
 def plot_ser_histogram_log(
-    ax:  plt.Axes, # type: ignore
+    ax:  plt.Axes,
     ser: pd.Series
 ) -> None:
     """
@@ -242,7 +242,7 @@ def plot_ser_histogram_log(
 
 
 def plot_ser_boxplot(
-    ax:  plt.Axes, # type: ignore
+    ax:  plt.Axes,
     ser: pd.Series
 ) -> None:
     """
@@ -267,7 +267,7 @@ def plot_ser_boxplot(
 
 
 def plot_quantile_lines(
-    ax:        plt.Axes, # type: ignore
+    ax:        plt.Axes,
     quantiles: list[float],
     *,
     labels: list[str]
@@ -302,7 +302,7 @@ def plot_quantile_lines(
 
 
 def plot_on_hist_ax(
-    hist_ax: plt.Axes, # type: ignore
+    hist_ax: plt.Axes,
     *,
     hylak_field_ser:       pd.Series,
     hylak_field_quantiles: list[float],
@@ -355,7 +355,7 @@ def plot_on_hist_ax(
 
 
 def plot_on_box_ax(
-    box_ax: plt.Axes, # type: ignore
+    box_ax: plt.Axes,
     *,
     hylak_field_ser:       pd.Series,
     hylak_field_quantiles: list[float]
@@ -395,9 +395,9 @@ def plot_on_box_ax(
 
 
 def set_hist_ax_properties(
-    hist_ax: plt.Axes, # type: ignore
+    hist_ax: plt.Axes,
     *,
-    scale:   str
+    scale: str
 ) -> None:
     """
     Sets `hist_ax`'s x-axis scale to `scale`.
@@ -423,9 +423,9 @@ def set_hist_ax_properties(
 
 
 def set_box_ax_properties(
-    box_ax: plt.Axes, # type: ignore
+    box_ax: plt.Axes,
     *,
-    scale:  str
+    scale: str
 ) -> None:
     """
     Sets `box_ax`'s x-axis scale to `scale`.
@@ -451,7 +451,7 @@ def set_box_ax_properties(
 
 
 def set_fig_properties(
-    fig:         plt.Figure, # type: ignore
+    fig: plt.Figure,
     *,
     hylak_field: str,
     scale:       str
