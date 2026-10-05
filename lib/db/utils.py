@@ -8,8 +8,8 @@ Written by William Chuter-Davies
 """
 
 # Related Third-party Imports
-import geopandas  as gpd
-import pandas     as pd
+import geopandas as gpd
+import pandas    as pd
 import sqlalchemy
 
 
@@ -32,7 +32,10 @@ def get_df_from_postgis(
     -------
     A :class:`pandas.DataFrame`.
     """
-    return pd.read_sql(query, connection)
+    return pd.read_sql(
+        query,
+        connection
+    )
 
 
 def get_gdf_from_postgis(
