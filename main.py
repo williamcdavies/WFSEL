@@ -8,7 +8,7 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from typing  import Any
+from typing import Any
 
 # Related Third-party Imports
 import pandas as pd
@@ -173,10 +173,10 @@ def get_esacci_lakes_merged_product_record(
     ]
 
     geo_bounding_box = get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
-        lat_max_box, # type: ignore
-        lat_min_box, # type: ignore
-        lon_max_box, # type: ignore
-        lon_min_box, # type: ignore
+        lat_max_box,
+        lat_min_box,
+        lon_max_box,
+        lon_min_box,
         esacci_lakes_static_lake_mask_ds
     )
 
@@ -195,7 +195,7 @@ def get_esacci_lakes_merged_product_record(
     )
     ice_mask = get_esacci_lakes_cover_class_mask(
         ESACCI_LAKES_COVER_CLASS_ICE,
-        esacci_lakes_merged_product_ds = merged_product_ds_window
+        esacci_lakes_merged_product_ds   = merged_product_ds_window
     )
 
     masked_merged_product_ds_window = mask_ds(
