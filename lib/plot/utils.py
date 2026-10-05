@@ -17,7 +17,7 @@ from matplotlib import pyplot as plt
 
 
 def set_ax_xlim_to_gdf_total_bounds(
-    ax:  plt.Axes, # type: ignore
+    ax:  plt.Axes,
     gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -50,7 +50,7 @@ def set_ax_xlim_to_gdf_total_bounds(
 
 
 def set_ax_ylim_to_gdf_total_bounds(
-    ax:  plt.Axes, # type: ignore
+    ax:  plt.Axes,
     gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -83,7 +83,7 @@ def set_ax_ylim_to_gdf_total_bounds(
 
 
 def set_ax_xscale_to_lin(
-    ax: plt.Axes # type: ignore
+    ax: plt.Axes
 ) -> None:
     """
     Sets `ax`'s x-axis to a linear scale.
@@ -101,7 +101,7 @@ def set_ax_xscale_to_lin(
 
 
 def set_ax_xscale_to_log(
-    ax: plt.Axes # type: ignore
+    ax: plt.Axes
 ) -> None:
     """
     Sets `ax`'s x-axis to a log scale.
@@ -119,7 +119,7 @@ def set_ax_xscale_to_log(
 
 
 def set_ax_xticks_to_empty_list(
-    ax: plt.Axes # type: ignore
+    ax: plt.Axes
 ) -> None:
     """
     Clears `ax`'s x-axis ticks.
@@ -137,7 +137,7 @@ def set_ax_xticks_to_empty_list(
 
 
 def set_ax_yticks_to_empty_list(
-    ax: plt.Axes # type: ignore
+    ax: plt.Axes
 ) -> None:
     """
     Clears `ax`'s y-axis ticks.
@@ -155,7 +155,7 @@ def set_ax_yticks_to_empty_list(
 
 
 def force_ax_xtick_visibility(
-    ax: plt.Axes, # type: ignore
+    ax: plt.Axes,
     *,
     on: bool = True
 ) -> None:
@@ -179,7 +179,7 @@ def force_ax_xtick_visibility(
 
 
 def force_ax_ytick_visibility(
-    ax: plt.Axes, # type: ignore
+    ax: plt.Axes,
     *,
     on: bool = True
 ) -> None:
@@ -203,7 +203,7 @@ def force_ax_ytick_visibility(
 
 
 def save_figure(
-    figure: plt.Figure, # type: ignore
+    figure: plt.Figure,
     output: Path
 ) -> None:
     """
