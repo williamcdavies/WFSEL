@@ -65,8 +65,10 @@ def filter_df_by_column_bounds(
     df:     pd.DataFrame,
     column: str,
     *,
-    lower: float | None = None,
-    upper: float | None = None
+    lower:           float | None = None,
+    upper:           float | None = None,
+    lower_inclusive: bool = True,
+    upper_inclusive: bool = True
 ) -> pd.DataFrame:
     """
     Filters `df` to rows whose `column` is within [`lower`, `upper`].
@@ -80,22 +82,28 @@ def filter_df_by_column_bounds(
         The column
 
     lower : :class:`float` | `None`
-        Inclusive lower bound. If `None`, no lower bound is applied.
-        default=None
+        Lower bound, inclusive if `lower_inclusive`. If `None`, no
+        lower bound is applied. default=None
 
     upper : :class:`float` | `None`
-        Inclusive upper bound. If `None`, no upper bound is applied.
-        default=None
+        Upper bound, inclusive if `upper_inclusive`. If `None`, no
+        upper bound is applied. default=None
+
+    lower_inclusive : :class:`bool`
+        If `True`, rows where `column` equals `lower` pass. default=True
+
+    upper_inclusive : :class:`bool`
+        If `True`, rows where `column` equals `upper` pass. default=True
 
     Returns
     -------
     A :class:`pandas.DataFrame`.
     """
     if lower is not None:
-        df = df[df[column] >= lower]
+        df = df[df[column] >= lower] if lower_inclusive else df[df[column] > lower]
 
     if upper is not None:
-        df = df[df[column] <= upper]
+        df = df[df[column] <= upper] if upper_inclusive else df[df[column] < upper]
 
     return df
 
