@@ -188,10 +188,10 @@ def write_esacci_lake_to_psql(
     ]
 
     geo_bounding_box = get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
-        lat_max_box, # type: ignore
-        lat_min_box, # type: ignore
-        lon_max_box, # type: ignore
-        lon_min_box, # type: ignore
+        lat_max_box,
+        lat_min_box,
+        lon_max_box,
+        lon_min_box,
         esacci_lakes_static_lake_mask_ds
     )
 
