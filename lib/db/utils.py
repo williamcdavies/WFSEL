@@ -13,6 +13,8 @@ import pandas    as pd
 import sqlalchemy
 
 
+# Import functions
+# ==================================================================================================
 def get_df_from_postgis(
     query:      str,
     connection: sqlalchemy.Connection
@@ -43,8 +45,7 @@ def get_gdf_from_postgis(
     connection: sqlalchemy.Connection
 ) -> gpd.GeoDataFrame:
     """
-    Returns a :class:`geopandas.GeoDataFrame` from `query` and
-    `connection`.
+    Returns a :class:`geopandas.GeoDataFrame` from `query` and `connection`.
 
     Parameters
     ----------
@@ -62,3 +63,6 @@ def get_gdf_from_postgis(
         query,
         connection
     )
+
+
+# ==================================================================================================
