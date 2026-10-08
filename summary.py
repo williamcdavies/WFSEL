@@ -1,5 +1,5 @@
 r"""
-table.py
+summary.py
 
 Written by William Chuter-Davies
 """
@@ -194,7 +194,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """Builds the summary table for one variation (A-D)."""
+        description = """Produces a .csv file containing results summary for one variation of strategies A-D."""
     )
 
     # Positional arguments
@@ -266,7 +266,7 @@ def get_results_dir_path(
     return local_data_dir_path / "results" / variation / "results"
 
 
-def get_table_df_record(
+def get_summary_record(
     results_dir_path: Path,
     *,
     folder:           str,
@@ -275,19 +275,18 @@ def get_table_df_record(
     group:            str
 ) -> dict[str, Any]:
     """
-    Returns a table record for one `ENTRIES` entry.
+    Returns a record of `folder`, `subfolder`, `variable`, `group` summary.
 
     Parameters
     ----------
     results_dir_path : :class:`pathlib.Path`
-        The results directory path, as returned by
-        `get_results_dir_path`
+        The results directory path.
 
     folder : :class:`str`
-        The field folder name, e.g. "depth_avg_m_anomaly"
+        The field folder name.
 
     subfolder : :class:`str`
-        The group subfolder name, e.g. "lower"
+        The group subfolder name,.
 
     variable : :class:`str`
         The display name of the field
@@ -297,10 +296,7 @@ def get_table_df_record(
 
     Returns
     -------
-    A dict[:class:`str`, :class:`Any`] with keys "Variable", "Group",
-    "Significant weeks", "n", "Min (°C)", "Max (°C)", and
-    "Average (°C)". The last three are `None` if the group has no
-    significant weeks.
+    A dict[:class:`str`, :class:`Any`].
     """
     directory = results_dir_path / folder / subfolder
 
@@ -316,57 +312,59 @@ def get_table_df_record(
     longest_cluster_weeks = ast.literal_eval(summary_df["longest_cluster_weeks"].iloc[0])
 
     if longest_cluster_weeks:
-        significant_weeks        = f"{min(longest_cluster_weeks)}-{max(longest_cluster_weeks)}"
-        no_of_significant_weeks  = len(longest_cluster_weeks)
-        min_significant_delta    = round(
+        range_of_significant_weeks  = f"{min(longest_cluster_weeks)}-{max(longest_cluster_weeks)}"
+        number_of_significant_weeks = len(longest_cluster_weeks)
+        min_significant_delta       = round(
             summary_df["longest_cluster_min_delta"].iloc[0],
             3
         )
-        max_significant_delta    = round(
+        max_significant_delta       = round(
             summary_df["longest_cluster_max_delta"].iloc[0],
             3
         )
-        average_significant_delta = round(
-            results_df.loc[longest_cluster_weeks, "mean_delta"].mean(),
+        average_significant_delta   = round(
+            results_df.loc[
+                longest_cluster_weeks,
+                "mean_delta"
+            ].mean(),
             3
         )
     else:
-        significant_weeks        = "None"
-        no_of_significant_weeks  = 0
-        min_significant_delta    = None
-        max_significant_delta    = None
-        average_significant_delta = None
+        range_of_significant_weeks  = "None"
+        number_of_significant_weeks = 0
+        min_significant_delta       = None
+        max_significant_delta       = None
+        average_significant_delta   = None
 
     return {
-        "Variable":                    variable,
-        "Group":                       group,
-        "Significant Weeks":           significant_weeks,
-        "Number of Significant Weeks": no_of_significant_weeks,
+        "Variable":                            variable,
+        "Group":                               group,
+        "Range of Significant Weeks":          range_of_significant_weeks,
+        "Number of Significant Weeks":         number_of_significant_weeks,
         "Min Significant Delta (deg C)":       min_significant_delta,
         "Max Significant Delta (deg C)":       max_significant_delta,
         "Average Significant Delta (deg C)":   average_significant_delta
     }
 
 
-def get_table_df(
+def get_summary_df(
     results_dir_path: Path
 ) -> pd.DataFrame:
     """
-    Returns the summary table.
+    Returns a :class:`pandas.DataFrame` of the `ENTRIES` summary.
 
     Parameters
     ----------
     results_dir_path : :class:`pathlib.Path`
-        The results directory path, as returned by
-        `get_results_dir_path`
+        The results directory path.
 
     Returns
     -------
-    A :class:`pandas.DataFrame` with one row per `ENTRIES` entry.
+    A :class:`pandas.DataFrame`.
     """
     return pd.DataFrame(
         [
-            get_table_df_record(
+            get_summary_record(
                 results_dir_path,
                 folder    = folder,
                 subfolder = subfolder,
@@ -407,18 +405,16 @@ def main(
 
         return RETURN_FAILURE
 
-    table_df = get_table_df(results_dir_path)
+    summary_df = get_summary_df(results_dir_path)
 
     args.output.parent.mkdir(
         parents  = True,
         exist_ok = True
     )
-    table_df.to_csv(
+    summary_df.to_csv(
         args.output,
         index = False
     )
-
-    print(table_df.to_string(index = False))
 
     return RETURN_SUCCESS
 
