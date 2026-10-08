@@ -206,7 +206,7 @@ def get_esacci_lakes_merged_product_record(
         ]
     )
 
-    record: dict[str, Any]                            = {"esacci_lakes_id": esacci_lakes_id}
+    record = {"esacci_lakes_id": esacci_lakes_id}
     record["lake_surface_water_temperature_mean"]     = get_ds_variable_mean(
         "lake_surface_water_temperature",
         ds = masked_merged_product_ds_window
