@@ -156,8 +156,7 @@ def get_esacci_lakes_merged_product_output_path(
     esacci_lakes_merged_product_nc_path: Path
 ) -> Path:
     """
-    Returns the output file path for
-    `esacci_lakes_merged_product_nc_path`.
+    Returns the output file path for a ESA CCI Lakes merged product netCDF file.
 
     Parameters
     ----------
@@ -185,8 +184,8 @@ def get_esacci_lakes_merged_product_output_paths(
     esacci_lakes_merged_product_nc_paths: list[Path]
 ) -> list[Path]:
     """
-    Returns the output file paths for
-    `esacci_lakes_merged_product_nc_paths`.
+    Returns the output file paths for all ESA CCI Lakes merged product netCDF
+    files.
 
     Parameters
     ----------
@@ -218,7 +217,7 @@ def main_py(
     output:                                Path
 ) -> CompletedProcessLog:
     """
-    Runs a main.py subprocess and returns the completed process log.
+    Runs a main.py subprocess and returns its completed process log.
 
     Parameters
     ----------
@@ -323,8 +322,8 @@ def get_main_py_futures(
     outputs:                               list[Path]
 ) -> list[Future]:
     """
-    Submits a main.py subprocess for each of
-    `esacci_lakes_merged_product_nc_paths`.
+    Submits a main.py subprocess for all ESA CCI Lakes merged product netCDF
+    files and returns their futures.
 
     Parameters
     ----------
