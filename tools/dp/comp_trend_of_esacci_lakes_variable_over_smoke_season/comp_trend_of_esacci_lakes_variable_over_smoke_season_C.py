@@ -55,9 +55,9 @@ from lib.proc.vars               import (
 )
 
 PROG                     = "comp_trend_of_esacci_lakes_variable_over_smoke_season.py"
+LOCAL_DATA_RUN_DATE      = "22-09-26"
 NUMBER_OF_LOOKBACK_WEEKS = 3
 NUMBER_OF_DAYS_IN_A_WEEK = 7
-LOCAL_DATA_RUN_DATE      = "22-09-26"
 
 
 # Argument functions
@@ -308,9 +308,9 @@ def get_esacci_lakes_smoke_year(
     upper_bound: float | None = None
 ) -> list[tuple[str, int]]:
     """
-    Returns `esacci_lakes_id`'s year with the greatest count of
-    distinct start days, among years whose count is within
-    [`lower_bound`, `upper_bound`].
+    Returns `esacci_lakes_id`'s most recent year, among years whose
+    count of distinct start days is within [`lower_bound`,
+    `upper_bound`].
 
     Parameters
     ----------
@@ -330,9 +330,8 @@ def get_esacci_lakes_smoke_year(
 
     Returns
     -------
-    A list containing `esacci_lakes_id`'s (year, count of distinct
-    start days) pair with the greatest count, empty if no year
-    qualifies.
+    A list containing `esacci_lakes_id`'s most recent (year, count of
+    distinct start days) pair, empty if no year qualifies.
     """
     counts_of_distinct_start_days_ser = esacci_lakes_counts_of_distinct_start_days_df.loc[esacci_lakes_id]
 
@@ -345,7 +344,7 @@ def get_esacci_lakes_smoke_year(
     if counts_of_distinct_start_days_ser.empty:
         return []
 
-    year                          = counts_of_distinct_start_days_ser.idxmax()
+    year                         = counts_of_distinct_start_days_ser.idxmax()
     count_of_distinct_start_days = counts_of_distinct_start_days_ser.loc[year]
 
     return [
@@ -683,11 +682,8 @@ def get_esacci_lakes_smoke_season_ranges_df(
 
     Returns
     -------
-    A :class:`pandas.DataFrame` indexed by "esacci_lakes_id", with
-    columns "smoke_year", "day_of_smoke_season_0", and
-    "day_of_smoke_season_n". `smoke_year` is `None`, and the latter two
-    are `-1`, for a lake with no smoke year, or whose smoke year has no
-    valid smoke season.
+    A :class:`pandas.DataFrame` indexed by "esacci_lakes_id", with columns
+    "smoke_year", "day_of_smoke_season_0", and "day_of_smoke_season_n".
     """
     records = []
 
@@ -741,11 +737,8 @@ def get_esacci_lakes_interest_ranges_df(
 
     Returns
     -------
-    A :class:`pandas.DataFrame` indexed by "esacci_lakes_id", with
-    columns "smoke_year", "day_of_interest_0", and "day_of_interest_n".
-    The latter two are `-1` if the smoke season is invalid, or if the
-    computed interest range falls outside [1, the number of local data
-    files for the chosen smoke year].
+    A :class:`pandas.DataFrame` indexed by "esacci_lakes_id", with columns
+    "smoke_year", "day_of_interest_0", and "day_of_interest_n".
     """
     records = []
 
