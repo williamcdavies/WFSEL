@@ -7,7 +7,7 @@ Description:
 Written by William Chuter-Davies
 """
 
-SCALES = [
-    "Lin",
+AXIS_SCALES = [
+    "Linear",
     "Log"
 ]

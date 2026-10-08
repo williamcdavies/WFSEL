@@ -8,16 +8,19 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-from pathlib  import Path
+from pathlib import Path
 
 # Related Third-party Imports
 import geopandas as gpd
 
-from matplotlib import pyplot as plt
+from matplotlib.axes   import Axes
+from matplotlib.figure import Figure
 
 
+# Limit functions
+# ==================================================================================================
 def set_ax_xlim_to_gdf_total_bounds(
-    ax:  plt.Axes,
+    ax:  Axes,
     gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -26,14 +29,14 @@ def set_ax_xlim_to_gdf_total_bounds(
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to set limits on
+        The axes
 
     gdf : :class:`geopandas.GeoDataFrame`
         The geodataframe
 
     Returns
     -------
-    None
+    None.
 
     Raises
     ------
@@ -50,7 +53,7 @@ def set_ax_xlim_to_gdf_total_bounds(
 
 
 def set_ax_ylim_to_gdf_total_bounds(
-    ax:  plt.Axes,
+    ax:  Axes,
     gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -59,14 +62,14 @@ def set_ax_ylim_to_gdf_total_bounds(
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to set limits on
+        The axes
 
     gdf : :class:`geopandas.GeoDataFrame`
         The geodataframe
 
     Returns
     -------
-    None
+    None.
 
     Raises
     ------
@@ -82,8 +85,13 @@ def set_ax_ylim_to_gdf_total_bounds(
     )
 
 
-def set_ax_xscale_to_lin(
-    ax: plt.Axes
+# ==================================================================================================
+
+
+# Scale functions
+# ==================================================================================================
+def set_ax_xscale_to_linear(
+    ax: Axes
 ) -> None:
     """
     Sets `ax`'s x-axis to a linear scale.
@@ -91,17 +99,17 @@ def set_ax_xscale_to_lin(
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to set the scale on
+        The axes
 
     Returns
     -------
-    None
+    None.
     """
     ax.set_xscale("linear")
 
 
 def set_ax_xscale_to_log(
-    ax: plt.Axes
+    ax: Axes
 ) -> None:
     """
     Sets `ax`'s x-axis to a log scale.
@@ -109,17 +117,106 @@ def set_ax_xscale_to_log(
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to set the scale on
+        The axes
 
     Returns
     -------
-    None
+    None.
     """
     ax.set_xscale("log")
 
 
+def set_ax_yscale_to_linear(
+    ax: Axes
+) -> None:
+    """
+    Sets `ax`'s y-axis to a linear scale.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    Returns
+    -------
+    None.
+    """
+    ax.set_yscale("linear")
+
+
+def set_ax_yscale_to_log(
+    ax: Axes
+) -> None:
+    """
+    Sets `ax`'s y-axis to a log scale.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    Returns
+    -------
+    None.
+    """
+    ax.set_yscale("log")
+
+
+# ==================================================================================================
+
+
+# Tick functions
+# ==================================================================================================
+def force_ax_xtick_visibility(
+    ax: Axes,
+    *,
+    on: bool = True
+) -> None:
+    """
+    Forces the visibility of `ax`'s x-axis tick labels.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    on : :class:`bool`
+        If `True`, shows `ax`'s x-axis tick labels. If `False`, hides `ax`'s
+        x-axis tick labels. default=True
+
+    Returns
+    -------
+    None.
+    """
+    ax.tick_params(labelbottom = on)
+
+
+def force_ax_ytick_visibility(
+    ax: Axes,
+    *,
+    on: bool = True
+) -> None:
+    """
+    Forces the visibility of `ax`'s y-axis tick labels.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    on : :class:`bool`
+        If `True`, shows `ax`'s y-axis tick labels. If `False`, hides `ax`'s
+        y-axis tick labels. default=True
+
+    Returns
+    -------
+    None.
+    """
+    ax.tick_params(labelleft = on)
+
+
 def set_ax_xticks_to_empty_list(
-    ax: plt.Axes
+    ax: Axes
 ) -> None:
     """
     Clears `ax`'s x-axis ticks.
@@ -127,17 +224,17 @@ def set_ax_xticks_to_empty_list(
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to clear ticks on
+        The axes
 
     Returns
     -------
-    None
+    None.
     """
     ax.set_xticks([])
 
 
 def set_ax_yticks_to_empty_list(
-    ax: plt.Axes
+    ax: Axes
 ) -> None:
     """
     Clears `ax`'s y-axis ticks.
@@ -145,65 +242,22 @@ def set_ax_yticks_to_empty_list(
     Parameters
     ----------
     ax : :class:`matplotlib.axes.Axes`
-        The axes to clear ticks on
+        The axes
 
     Returns
     -------
-    None
+    None.
     """
     ax.set_yticks([])
 
 
-def force_ax_xtick_visibility(
-    ax: plt.Axes,
-    *,
-    on: bool = True
-) -> None:
-    """
-    Forces `ax`'s x-axis tick labels to be shown or hidden.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to set x-axis tick label visibility on
-
-    on : :class:`bool`
-        If `True`, shows `ax`'s x-axis tick labels. If `False`, hides
-        them. default=True
-
-    Returns
-    -------
-    None
-    """
-    ax.tick_params(labelbottom = on)
+# ==================================================================================================
 
 
-def force_ax_ytick_visibility(
-    ax: plt.Axes,
-    *,
-    on: bool = True
-) -> None:
-    """
-    Forces `ax`'s y-axis tick labels to be shown or hidden.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to set y-axis tick label visibility on
-
-    on : :class:`bool`
-        If `True`, shows `ax`'s y-axis tick labels. If `False`, hides
-        them. default=True
-
-    Returns
-    -------
-    None
-    """
-    ax.tick_params(labelleft = on)
-
-
+# Export functions
+# ==================================================================================================
 def save_figure(
-    figure: plt.Figure,
+    figure: Figure,
     output: Path
 ) -> None:
     """
@@ -212,14 +266,18 @@ def save_figure(
     Parameters
     ----------
     figure : :class:`matplotlib.figure.Figure`
-        The figure to save
+        The figure
 
     output : :class:`pathlib.Path`
         The output file path
 
     Returns
     -------
-    None
+    None.
+
+    Notes
+    -----
+    Creates the parent of `output` if it does not exist.
     """
     output.parent.mkdir(
         parents  = True,
@@ -231,3 +289,6 @@ def save_figure(
         dpi         = 300,
         bbox_inches = "tight"
     )
+
+
+# ==================================================================================================
