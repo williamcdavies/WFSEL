@@ -153,9 +153,7 @@ def get_esacci_lakes_merged_product_record(
 
     Returns
     -------
-    A dict[:class:`str`, :class:`Any`] with keys "esacci_lakes_id",
-    "lake_surface_water_temperature_mean", and
-    "lake_surface_water_temperature_coverage".
+    A dict[:class:`str`, :class:`Any`].
     """
     (
         lat_max_box,
@@ -243,9 +241,7 @@ def get_esacci_lakes_merged_product_df(
 
     Returns
     -------
-    A :class:`pandas.DataFrame` indexed by "esacci_lakes_id", with
-    columns "lake_surface_water_temperature_mean" and
-    "lake_surface_water_temperature_coverage".
+    A :class:`pandas.DataFrame`.
     """
     records = [
         get_esacci_lakes_merged_product_record(
