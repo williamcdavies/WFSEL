@@ -80,7 +80,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """Produces a comparison of each lake's mean value for an ESA CCI Lakes variable over its high-smoke and low-smoke seasons, averaged across every qualifying year."""
+        description = """Produces a comparison of each lake's mean value for an ESA CCI Lakes variable over its high-smoke and low-smoke seasons, using the most recent qualifying year of each class."""
     )
 
     # Positional arguments
@@ -363,9 +363,9 @@ def get_esacci_lakes_smoke_year_ser(
     upper_bound: float | None = None
 ) -> pd.Series:
     """
-    Returns a :class:`pandas.Series` of each lake's year with the
-    greatest count of distinct start days, among years whose count is
-    within [`lower_bound`, `upper_bound`].
+    Returns a :class:`pandas.Series` of each lake's most recent year, among
+    years whose count of distinct start days is within [`lower_bound`,
+    `upper_bound`].
 
     Parameters
     ----------
@@ -1005,8 +1005,8 @@ def get_esacci_lakes_variable_over_smoke_seasons_df(
         The ESA CCI Lakes variable id
 
     esacci_lakes_smoke_years_ser : :class:`pandas.Series`
-        The series, as returned by `get_esacci_lakes_high_smoke_year_ser`
-        or `get_esacci_lakes_low_smoke_years_ser`
+        The series, as returned by `get_esacci_lakes_high_smoke_year_ser` or
+        `get_esacci_lakes_low_smoke_year_ser`
 
     esacci_lakes_interest_ranges_df : :class:`pandas.DataFrame`
         The dataframe, as returned by

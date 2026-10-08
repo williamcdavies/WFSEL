@@ -80,7 +80,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         prog        = prog,
         usage       = "%(prog)s [options]",
-        description = """Produces a comparison of each lake's mean value for an ESA CCI Lakes variable over its high-smoke and low-smoke seasons, averaged across every qualifying year."""
+        description = """Produces a comparison of each lake's mean value for an ESA CCI Lakes variable over its high-smoke and low-smoke seasons, using the highest-count qualifying high-smoke year and the average of every qualifying low-smoke year."""
     )
 
     # Positional arguments
@@ -308,9 +308,9 @@ def get_esacci_lakes_smoke_year(
     upper_bound: float | None = None
 ) -> list[tuple[str, int]]:
     """
-    Returns `esacci_lakes_id`'s most recent year, among years whose
-    count of distinct start days is within [`lower_bound`,
-    `upper_bound`].
+    Returns `esacci_lakes_id`'s year with the greatest count of distinct start
+    days, among years whose count of distinct start days is within
+    [`lower_bound`, `upper_bound`].
 
     Parameters
     ----------
@@ -330,8 +330,9 @@ def get_esacci_lakes_smoke_year(
 
     Returns
     -------
-    A list containing `esacci_lakes_id`'s most recent (year, count of
-    distinct start days) pair, empty if no year qualifies.
+    A list containing `esacci_lakes_id`'s (year, count of distinct start days)
+    pair with the greatest count of distinct start days, empty if no year
+    qualifies.
     """
     counts_of_distinct_start_days_ser = esacci_lakes_counts_of_distinct_start_days_df.loc[esacci_lakes_id]
 
@@ -363,9 +364,9 @@ def get_esacci_lakes_smoke_year_ser(
     upper_bound: float | None = None
 ) -> pd.Series:
     """
-    Returns a :class:`pandas.Series` of each lake's year with the
-    greatest count of distinct start days, among years whose count is
-    within [`lower_bound`, `upper_bound`].
+    Returns a :class:`pandas.Series` of each lake's year with the greatest count
+    of distinct start days, among years whose count is within [`lower_bound`,
+    `upper_bound`]. Ties resolve to the oldest year.
 
     Parameters
     ----------
@@ -666,8 +667,7 @@ def get_esacci_lakes_smoke_season_ranges_df(
     esacci_lakes_smoke_year_ser: pd.Series
 ) -> pd.DataFrame:
     """
-    Returns a :class:`pandas.DataFrame` of each lake's smoke season
-    range.
+    Returns a :class:`pandas.DataFrame` of each lake's smoke season range.
 
     Parameters
     ----------
@@ -1005,8 +1005,8 @@ def get_esacci_lakes_variable_over_smoke_seasons_df(
         The ESA CCI Lakes variable id
 
     esacci_lakes_smoke_years_ser : :class:`pandas.Series`
-        The series, as returned by `get_esacci_lakes_high_smoke_year_ser`
-        or `get_esacci_lakes_low_smoke_years_ser`
+        The series, as returned by `get_esacci_lakes_high_smoke_year_ser` or
+        `get_esacci_lakes_low_smoke_years_ser`
 
     esacci_lakes_interest_ranges_df : :class:`pandas.DataFrame`
         The dataframe, as returned by
