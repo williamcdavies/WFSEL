@@ -195,7 +195,7 @@ def argument_output_is_dir_or_missing(
     Parameters
     ----------
     output : :class:`pathlib.Path`
-        The output argument
+        The argument `output`
 
     loud : :class:`bool`
         If `True`, prints an error message to stderr. default=False
@@ -227,7 +227,7 @@ def argument_output_is_file_or_missing(
     Parameters
     ----------
     output : :class:`pathlib.Path`
-        The output argument
+        The argument `output`
 
     loud : :class:`bool`
         If `True`, prints an error message to stderr. default=False

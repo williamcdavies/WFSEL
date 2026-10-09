@@ -11,10 +11,12 @@ Written by William Chuter-Davies
 from dataclasses import dataclass
 
 
-@dataclass
+# Dataclasses
+# ==================================================================================================
+@dataclass(kw_only = True)
 class ESACCILakesVariable:
     """
-    Dataclass object for representing an ESA CCI Lakes variable.
+    Represents an ESA CCI Lakes variable.
 
     Parameters
     ----------
@@ -34,10 +36,10 @@ class ESACCILakesVariable:
     units:     str
 
 
-@dataclass
+@dataclass(kw_only = True)
 class HylakField:
     """
-    Dataclass object for representing a HydroLAKES field.
+    Represents a HydroLAKES field.
 
     Parameters
     ----------
@@ -76,3 +78,6 @@ class HylakField:
     display_scale: float | None
     lower_bound:   float | None
     upper_bound:   float | None
+
+
+# ==================================================================================================

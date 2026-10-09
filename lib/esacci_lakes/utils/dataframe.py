@@ -1,5 +1,5 @@
 r"""
-fataframe.py
+dataframe.py
 
 Description:
     Provides definitions for esacci_lakes-utility dataframe functions.
@@ -14,6 +14,8 @@ import pandas as pd
 from lib.esacci_lakes.vars import HYLAK_FIELDS
 
 
+# DataFrame functions
+# ==================================================================================================
 def drop_hylak_field_columns_from_df(
     df: pd.DataFrame
 ) -> pd.DataFrame:
@@ -40,7 +42,8 @@ def merge_dfs_on_esacci_lakes_id(
     right_df: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Merges `left_df` with `right_df` on the `esacci_lakes_id` index.
+    Returns the inner merge of `left_df` and `right_df` on the `esacci_lakes_id`
+    index.
 
     Parameters
     ----------
@@ -58,7 +61,7 @@ def merge_dfs_on_esacci_lakes_id(
     ------
     ValueError
         If `left_df.index.name` or `right_df.index.name` is not
-        "esacci_lakes_id".
+        "esacci_lakes_id", or if either index has duplicate values.
     """
     if (
         left_df.index.name != "esacci_lakes_id"
@@ -73,4 +76,6 @@ def merge_dfs_on_esacci_lakes_id(
         right_index = True,
         validate    = "one_to_one"
     )
-    
+
+
+# ==================================================================================================
