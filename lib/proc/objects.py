@@ -11,26 +11,31 @@ Written by William Chuter-Davies
 from dataclasses import dataclass
 
 
+# Dataclasses
+# ==================================================================================================
 @dataclass
 class CompletedProcessLog:
     """
-    Dataclass object for encapsulating the output of `subprocess.run`.
+    Encapsulates the output of a subprocess.
 
     Parameters
     ----------
-    args : :class:`list`
-        The command and arguments passed to `subprocess.run`
+    args : list[:class:`str`]
+        The command and arguments passed to a subprocess
 
     returncode : :class:`int`
-        The exit code returned by `subprocess.run`
+        The exit code returned by a subprocess
 
     stdout : :class:`str`
-        The captured standard output from `subprocess.run`
+        The captured standard output from a subprocess
 
     stderr : :class:`str`
-        The captured standard error from `subprocess.run`
+        The captured standard error from a subprocess
     """
-    args:       list
+    args:       list[str]
     returncode: int
     stdout:     str
     stderr:     str
+
+
+# ==================================================================================================

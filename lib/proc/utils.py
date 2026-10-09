@@ -9,10 +9,15 @@ Written by William Chuter-Davies
 
 # Standard Library Imports
 import argparse
+import sys
 
 from datetime import datetime
 from pathlib  import Path
-from typing   import TextIO
+from typing   import (
+    Callable,
+    Iterable,
+    TextIO
+)
 
 # Related Third-party Imports
 import pandas as pd
@@ -21,165 +26,59 @@ import pandas as pd
 from lib.proc.objects import CompletedProcessLog
 
 
-def add_argument_output(
-    parser: argparse.ArgumentParser
-) -> None:
+# FS functions
+# ==================================================================================================
+def get_file_paths_from_dir_by_extension(
+    dir_path:  Path,
+    extension: str
+) -> list[Path]:
     """
-    Adds an `output` argument to a :class:`argparse.ArgumentParser`.
+    Returns the paths of all files in `dir_path` with the extension `extension`.
 
     Parameters
     ----------
-    parser : :class:`argparse.ArgumentParser`
-        The parser
+    dir_path : :class:`pathlib.Path`
+        The directory
+
+    extension : :class:`str`
+        The extension
 
     Returns
     -------
-    None
-
-    Notes
-    -----
-    Argument `output` is of type :class:`pathlib.Path`.
+    A sorted list of :class:`pathlib.Path`.
     """
-    parser.add_argument(
-        "-o", "--output",
-        type     = Path,
-        required = True,
-        help     = """path to some output destination"""
-    )
+    return sorted(dir_path.glob(f"**/*.{extension}"))
 
 
-def argument_output_is_a_file(
-    output: Path,
-    *,
-    loud: bool = False
-) -> bool:
-    """
-    Validates `output`.
-
-    Parameters
-    ----------
-    output : :class:`pathlib.Path`
-        The argument `output`
-
-    loud : :class:`bool`
-        If `True`, prints an error message to stdout. default=False
-
-    Returns
-    -------
-    `True` if `output` does not exist, or exists as a file. `False`
-    otherwise.
-    """
-    if not output.exists() or output.is_file():
-        return True
-
-    if loud:
-        print(f"""error: argument output: not a file: {output}""")
-
-    return False
+# ==================================================================================================
 
 
-def argument_output_is_a_directory(
-    output: Path,
-    *,
-    loud: bool = False
-) -> bool:
-    """
-    Validates `output`.
-
-    Parameters
-    ----------
-    output : :class:`pathlib.Path`
-        The argument `output`
-
-    loud : :class:`bool`
-        If `True`, prints an error message to stdout. default=False
-
-    Returns
-    -------
-    `True` if `output` does not exist, or exists as a directory.
-    `False` otherwise.
-    """
-    if not output.exists() or output.is_dir():
-        return True
-
-    if loud:
-        print(f"""error: argument output: not a directory: {output}""")
-
-    return False
-
-
-def write_df_to_csv(
-    df:     pd.DataFrame,
-    output: Path,
-    *,
-    name: str | None = None
-) -> None:
-    """
-    Writes `df` to `output`, or to `output` named by `name` if `name`
-    is not `None`.
-
-    Parameters
-    ----------
-    df : :class:`pandas.DataFrame`
-        The dataframe
-
-    output : :class:`pathlib.Path`
-        The output file path, or the output directory path if `name`
-        is not `None`
-
-    name : :class:`str` | `None`
-        The output file name, without extension. If `None`, `output`
-        is treated as the file path itself. default=None
-
-    Returns
-    -------
-    None
-    """
-    if name is not None:
-        output.mkdir(
-            parents  = True,
-            exist_ok = True
-        )
-
-        output = output / (name + ".csv")
-    else:
-        output.parent.mkdir(
-            parents  = True,
-            exist_ok = True
-        )
-
-    df.to_csv(output)
-
-
+# Log functions
+# ==================================================================================================
 def open_logstream(
-    output: Path
+    dir_path: Path
 ) -> TextIO:
     """
-    Opens a log file for appending.
+    Opens the log file in `dir_path` for appending.
 
     Parameters
     ----------
-    output : :class:`pathlib.Path`
-        The output directory path
+    dir_path : :class:`pathlib.Path`
+        The directory
 
     Returns
     -------
     A :class:`typing.TextIO`.
-
-    Notes
-    -----
-    The returned file object is a context manager.
     """
     return open(
-        output / "log.txt",
+        dir_path / "log.txt",
         "a"
     )
 
 
 def write_completed_process_log_to_logstream(
     completed_process_log: CompletedProcessLog,
-    *,
-    logstream: TextIO
+    logstream:             TextIO
 ) -> None:
     """
     Writes `completed_process_log` to `logstream`.
@@ -194,7 +93,7 @@ def write_completed_process_log_to_logstream(
 
     Returns
     -------
-    None
+    None.
     """
     logstream.write(f"{datetime.now().isoformat()}\n")
     logstream.write(f"args:       {completed_process_log.args}\n")
@@ -205,24 +104,215 @@ def write_completed_process_log_to_logstream(
     logstream.flush()
 
 
-def get_dir_paths_by_extension(
-    dir_path: Path,
-    *,
-    extension: str
-) -> list[Path]:
+# ==================================================================================================
+
+
+# Parser functions
+# ==================================================================================================
+def add_argument_output(
+    parser: argparse.ArgumentParser
+) -> None:
     """
-    Returns each `extension` file's path in `dir_path`.
+    Adds a `output` argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
-    dir_path : :class:`pathlib.Path`
-        The directory
-
-    extension : :class:`str`
-        The file extension to match, without a leading period
+    parser : :class:`argparse.ArgumentParser`
+        The parser
 
     Returns
     -------
-    A sorted list of :class:`pathlib.Path`.
+    None.
+
+    Notes
+    -----
+    Argument `output` is of type :class:`pathlib.Path`.
     """
-    return sorted(dir_path.glob(f"**/*.{extension}"))
+    parser.add_argument(
+        "-o", "--output",
+        type     = Path,
+        required = True,
+        help     = "path to some output destination"
+    )
+
+
+def build_parser(
+    program:     str,
+    description: str,
+    *,
+    positional_arguments: Iterable[Callable[[argparse.ArgumentParser], None]] = (),
+    optional_arguments:   Iterable[Callable[[argparse.ArgumentParser], None]] = ()
+) -> argparse.ArgumentParser:
+    """
+    Builds a :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    program : :class:`str`
+        The program name
+
+    description : :class:`str`
+        The program description
+
+    positional_arguments : Iterable[Callable[[:class:`argparse.ArgumentParser`], None]]
+        The positional argument functions. default=()
+
+    optional_arguments : Iterable[Callable[[:class:`argparse.ArgumentParser`], None]]
+        The optional argument functions. default=()
+
+    Returns
+    -------
+    A :class:`argparse.ArgumentParser`.
+    """
+    parser = argparse.ArgumentParser(
+        prog        = program,
+        usage       = "%(prog)s [options]",
+        description = description
+    )
+
+    for add in (
+        *positional_arguments,
+        *optional_arguments
+    ):
+        add(parser)
+
+    return parser
+
+
+# ==================================================================================================
+
+
+# Validation functions
+# ==================================================================================================
+def argument_output_is_dir_or_missing(
+    output: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `output`.
+
+    Parameters
+    ----------
+    output : :class:`pathlib.Path`
+        The output argument
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stderr. default=False
+
+    Returns
+    -------
+    `True` if `output` does not exist or is a directory. `False` otherwise.
+    """
+    if not output.exists() or output.is_dir():
+        return True
+
+    if loud:
+        print(
+            f"error: argument output: not a directory: {output}",
+            file = sys.stderr
+        )
+
+    return False
+
+
+def argument_output_is_file_or_missing(
+    output: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `output`.
+
+    Parameters
+    ----------
+    output : :class:`pathlib.Path`
+        The output argument
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stderr. default=False
+
+    Returns
+    -------
+    `True` if `output` does not exist or is a file. `False` otherwise.
+    """
+    if not output.exists() or output.is_file():
+        return True
+
+    if loud:
+        print(
+            f"error: argument output: not a file: {output}",
+            file = sys.stderr
+        )
+
+    return False
+
+
+def arguments_are_valid(
+    arguments: argparse.Namespace,
+    functions: Iterable[tuple[Callable[..., bool], str]]
+) -> bool:
+    """
+    Validates `arguments`.
+
+    Parameters
+    ----------
+    arguments : :class:`argparse.Namespace`
+        The arguments
+
+    functions : Iterable[tuple[Callable[..., bool], :class:`str`]]
+        The functions
+
+    Returns
+    -------
+    `True` if every argument passes its validator. `False` otherwise.
+    """
+    for (
+        function,
+        argument
+    ) in functions:
+        if not function(
+            getattr(
+                arguments,
+                argument
+            ),
+            loud = True
+        ):
+            return False
+
+    return True
+
+
+# ==================================================================================================
+
+
+# Write functions
+# ==================================================================================================
+def write_df_to_csv(
+    df:     pd.DataFrame,
+    output: Path
+) -> None:
+    """
+    Writes `df` to `output`.
+
+    Parameters
+    ----------
+    df : :class:`pandas.DataFrame`
+        The dataframe
+
+    output : :class:`pathlib.Path`
+        The output file path
+
+    Returns
+    -------
+    None.
+    """
+    output.parent.mkdir(
+        parents  = True,
+        exist_ok = True
+    )
+
+    df.to_csv(output)
+
+
+# ==================================================================================================
