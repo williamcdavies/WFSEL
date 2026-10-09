@@ -26,33 +26,6 @@ import pandas as pd
 from lib.proc.objects import CompletedProcessLog
 
 
-# FS functions
-# ==================================================================================================
-def get_file_paths_from_dir_by_extension(
-    dir_path:  Path,
-    extension: str
-) -> list[Path]:
-    """
-    Returns the paths of all files in `dir_path` with the extension `extension`.
-
-    Parameters
-    ----------
-    dir_path : :class:`pathlib.Path`
-        The directory
-
-    extension : :class:`str`
-        The extension
-
-    Returns
-    -------
-    A sorted list of :class:`pathlib.Path`.
-    """
-    return sorted(dir_path.glob(f"**/*.{extension}"))
-
-
-# ==================================================================================================
-
-
 # Log functions
 # ==================================================================================================
 def open_logstream(
@@ -182,7 +155,34 @@ def build_parser(
 # ==================================================================================================
 
 
-# Validation functions
+# System functions
+# ==================================================================================================
+def get_file_paths_from_dir_by_extension(
+    dir_path:  Path,
+    extension: str
+) -> list[Path]:
+    """
+    Returns the paths of all files in `dir_path` with the extension `extension`.
+
+    Parameters
+    ----------
+    dir_path : :class:`pathlib.Path`
+        The directory
+
+    extension : :class:`str`
+        The extension
+
+    Returns
+    -------
+    A sorted list of :class:`pathlib.Path`.
+    """
+    return sorted(dir_path.glob(f"**/*.{extension}"))
+
+
+# ==================================================================================================
+
+
+# Validator functions
 # ==================================================================================================
 def argument_output_is_dir_or_missing(
     output: Path,
