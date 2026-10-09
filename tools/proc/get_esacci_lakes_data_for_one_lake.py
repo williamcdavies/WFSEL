@@ -8,9 +8,8 @@ Written by William Chuter-Davies
 import argparse
 import sys
 
-from datetime import datetime
-from pathlib  import Path
-from typing   import Any
+from pathlib import Path
+from typing  import Any
 
 # Related Third-party Imports
 import pandas as pd
@@ -19,119 +18,36 @@ import pandas as pd
 from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_id,
     add_argument_local_data_dir_path,
-    argument_local_data_dir_path_exists,
+    argument_local_data_dir_path_is_dir,
     get_esacci_lakes_filename_time,
     read_local_data_csv
 )
-from lib.proc.utils import (
+from lib.proc.utils              import (
+    arguments_are_valid as _arguments_are_valid,
+    build_parser        as _build_parser,
+
     add_argument_output,
-    argument_output_is_a_file,
-    get_dir_paths_by_extension,
+    argument_output_is_file_or_missing,
+    get_file_paths_from_dir_by_extension,
     write_df_to_csv
 )
 from lib.proc.vars               import (
-    RETURN_SUCCESS,
-    RETURN_FAILURE
+    RETURN_FAILURE,
+    RETURN_SUCCESS
 )
 
+
+# Constants
+# ==================================================================================================
 PROG                = "get_esacci_lakes_data_for_one_lake.py"
 LOCAL_DATA_RUN_DATE = "22-09-26"
 
 
-# Argument functions
-# ==================================================================================================
-def build_parser(
-    prog: str
-) -> argparse.ArgumentParser:
-    """
-    Builds a :class:`argparse.ArgumentParser`.
-
-    Parameters
-    ----------
-    prog : :class:`str`
-        The program name
-
-    Returns
-    -------
-    A :class:`argparse.ArgumentParser`.
-    """
-    parser = argparse.ArgumentParser(
-        prog        = prog,
-        usage       = "%(prog)s [options]",
-        description = """Produces a csv file containing all of one lake's local data records, indexed by date."""
-    )
-
-    # Positional arguments
-    add_argument_esacci_lakes_id(parser)
-    add_argument_local_data_dir_path(parser)
-
-    # Optional arguments
-    add_argument_output(parser)
-
-    return parser
-
-
-def arguments_are_valid(
-    args: argparse.Namespace
-) -> bool:
-    """
-    Validates `args`.
-
-    Returns
-    -------
-    `True` if all arguments are successfully validated. `False`
-    otherwise.
-    """
-    if not argument_local_data_dir_path_exists(
-        args.local_data_dir_path,
-        loud = True
-    ):
-        return False
-
-    if not argument_output_is_a_file(
-        args.output,
-        loud = True
-    ):
-        return False
-
-    return True
-
-
 # ==================================================================================================
 
 
-# Data functions
+# DataFrame functions
 # ==================================================================================================
-def get_lake_data_record(
-    local_data_csv_path: Path,
-    esacci_lakes_id:     int
-) -> dict[str, Any]:
-    """
-    Returns `esacci_lakes_id`'s record from `local_data_csv_path`.
-
-    Parameters
-    ----------
-    local_data_csv_path : :class:`pathlib.Path`
-        The path to some local data csv file
-
-    esacci_lakes_id : :class:`int`
-        The ESA CCI Lakes id
-
-    Returns
-    -------
-    A :class:`dict` with keys "esacci_lakes_id", "date", and
-    `local_data_csv_path`'s columns.
-    """
-    local_data_datetime = get_esacci_lakes_filename_time(local_data_csv_path)
-    local_data_df       = read_local_data_csv(local_data_csv_path)
-
-    record: dict[str, Any] = {"esacci_lakes_id": esacci_lakes_id}
-    record["date"]         = local_data_datetime.strftime("%Y-%m-%d")
-    record.update(local_data_df.loc[esacci_lakes_id].to_dict())
-
-    return record
-
-
 def get_lake_data_df(
     local_data_csv_paths: list[Path],
     esacci_lakes_id:      int
@@ -164,6 +80,98 @@ def get_lake_data_df(
     return pd.DataFrame(records).set_index("esacci_lakes_id")
 
 
+def get_lake_data_record(
+    local_data_csv_path: Path,
+    esacci_lakes_id:     int
+) -> dict[str, Any]:
+    """
+    Returns `esacci_lakes_id`'s record from `local_data_csv_path`.
+
+    Parameters
+    ----------
+    local_data_csv_path : :class:`pathlib.Path`
+        The path to some local data csv file
+
+    esacci_lakes_id : :class:`int`
+        The ESA CCI Lakes id
+
+    Returns
+    -------
+    A :class:`dict` with keys "esacci_lakes_id", "date", and
+    `local_data_csv_path`'s columns.
+    """
+    local_data_datetime = get_esacci_lakes_filename_time(local_data_csv_path)
+    local_data_df       = read_local_data_csv(local_data_csv_path)
+
+    record         = {"esacci_lakes_id": esacci_lakes_id}
+    record["date"] = local_data_datetime.strftime("%Y-%m-%d")
+    record.update(local_data_df.loc[esacci_lakes_id].to_dict())
+
+    return record
+
+
+# ==================================================================================================
+
+
+# Parser functions
+# ==================================================================================================
+def build_parser(
+) -> argparse.ArgumentParser:
+    """
+    Builds a :class:`argparse.ArgumentParser`.
+
+    Returns
+    -------
+    A :class:`argparse.ArgumentParser`.
+    """
+    return _build_parser(
+        PROG,
+        "Produces a csv file containing all of one lake's local data records, indexed by date.",
+        positional_arguments = [
+            add_argument_esacci_lakes_id,
+            add_argument_local_data_dir_path
+        ],
+        optional_arguments   = [
+            add_argument_output
+        ]
+    )
+
+
+# ==================================================================================================
+
+
+# Validator functions
+# ==================================================================================================
+def arguments_are_valid(
+    args: argparse.Namespace
+) -> bool:
+    """
+    Validates `args`.
+
+    Parameters
+    ----------
+    args : :class:`argparse.Namespace`
+        The arguments
+
+    Returns
+    -------
+    `True` if all arguments are successfully validated. `False` otherwise.
+    """
+    return _arguments_are_valid(
+        args,
+        [
+            (
+                argument_local_data_dir_path_is_dir,
+                "local_data_dir_path"
+            ),
+            (
+                argument_output_is_file_or_missing,
+                "output"
+            )
+        ]
+    )
+
+
 # ==================================================================================================
 
 
@@ -172,14 +180,14 @@ def main(
     """
     Orchestration layer.
     """
-    args = build_parser(PROG).parse_args()
+    args = build_parser().parse_args()
 
     if not arguments_are_valid(args):
         return RETURN_FAILURE
 
-    local_data_csv_paths = get_dir_paths_by_extension(
+    local_data_csv_paths = get_file_paths_from_dir_by_extension(
         args.local_data_dir_path / "main.py" / LOCAL_DATA_RUN_DATE,
-        extension = "csv"
+        "csv"
     )
     local_lake_data_df   = get_lake_data_df(
         local_data_csv_paths,

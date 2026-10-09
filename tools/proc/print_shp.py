@@ -14,15 +14,25 @@ from pathlib import Path
 import geopandas as gpd
 
 # Local Application/Library Specific Imports
-from lib.proc.vars import (
-    RETURN_SUCCESS,
-    RETURN_FAILURE
+from lib.proc.utils import (
+    arguments_are_valid as _arguments_are_valid,
+    build_parser        as _build_parser
+)
+from lib.proc.vars  import (
+    RETURN_FAILURE,
+    RETURN_SUCCESS
 )
 
+
+# Constants
+# ==================================================================================================
 PROG = "print_shp.py"
 
 
-# Argument functions
+# ==================================================================================================
+
+
+# Parser functions
 # ==================================================================================================
 def add_argument_shp_path(
     parser: argparse.ArgumentParser
@@ -37,7 +47,7 @@ def add_argument_shp_path(
 
     Returns
     -------
-    None
+    None.
 
     Notes
     -----
@@ -46,84 +56,26 @@ def add_argument_shp_path(
     parser.add_argument(
         "shp_path",
         type = Path,
-        help = """path to some Shapefile"""
+        help = "path to some Shapefile"
     )
 
 
-def argument_shp_path_exists(
-    shp_path: Path,
-    *,
-    loud: bool = False
-) -> bool:
-    """
-    Validates `shp_path`.
-
-    Parameters
-    ----------
-    shp_path : :class:`pathlib.Path`
-        The argument `shp_path`
-
-    loud : :class:`bool`
-        If `True`, prints an error message to stdout. default=False
-
-    Returns
-    -------
-    `True` if `shp_path` exists. `False` otherwise.
-    """
-    if shp_path.exists():
-        return True
-
-    if loud:
-        print(f"""error: argument shp_path: no such file or directory: {shp_path}""")
-
-    return False
-
-
 def build_parser(
-    prog: str
 ) -> argparse.ArgumentParser:
     """
     Builds a :class:`argparse.ArgumentParser`.
-
-    Parameters
-    ----------
-    prog : :class:`str`
-        The program name
 
     Returns
     -------
     A :class:`argparse.ArgumentParser`.
     """
-    parser = argparse.ArgumentParser(
-        prog        = prog,
-        usage       = "%(prog)s [options]",
-        description = """Prints Shapefile metadata to `sys.stdout`."""
+    return _build_parser(
+        PROG,
+        "Prints Shapefile metadata to `sys.stdout`.",
+        positional_arguments = [
+            add_argument_shp_path
+        ]
     )
-
-    # Positional arguments
-    add_argument_shp_path(parser)
-
-    return parser
-
-
-def arguments_are_valid(
-    args: argparse.Namespace
-) -> bool:
-    """
-    Validates `args`.
-
-    Returns
-    -------
-    `True` if all arguments are successfully validated. `False`
-    otherwise.
-    """
-    if not argument_shp_path_exists(
-        args.shp_path,
-        loud = True
-    ):
-        return False
-
-    return True
 
 
 # ==================================================================================================
@@ -144,11 +96,74 @@ def print_shp(
 
     Returns
     -------
-    None
+    None.
     """
     gdf = gpd.read_file(shp_path)
 
     print(gdf)
+
+
+# ==================================================================================================
+
+
+# Validator functions
+# ==================================================================================================
+def argument_shp_path_exists(
+    shp_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `shp_path`.
+
+    Parameters
+    ----------
+    shp_path : :class:`pathlib.Path`
+        The argument `shp_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stderr. default=False
+
+    Returns
+    -------
+    `True` if `shp_path` exists. `False` otherwise.
+    """
+    if shp_path.exists():
+        return True
+
+    if loud:
+        print(
+            f"error: argument shp_path: no such file or directory: {shp_path}",
+            file = sys.stderr
+        )
+
+    return False
+
+
+def arguments_are_valid(
+    args: argparse.Namespace
+) -> bool:
+    """
+    Validates `args`.
+
+    Parameters
+    ----------
+    args : :class:`argparse.Namespace`
+        The arguments
+
+    Returns
+    -------
+    `True` if all arguments are successfully validated. `False` otherwise.
+    """
+    return _arguments_are_valid(
+        args,
+        [
+            (
+                argument_shp_path_exists,
+                "shp_path"
+            )
+        ]
+    )
 
 
 # ==================================================================================================
@@ -159,7 +174,7 @@ def main(
     """
     Orchestration layer.
     """
-    args = build_parser(PROG).parse_args()
+    args = build_parser().parse_args()
 
     if not arguments_are_valid(args):
         return RETURN_FAILURE

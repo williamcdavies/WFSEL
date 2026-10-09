@@ -14,15 +14,25 @@ from pathlib import Path
 import xarray as xr
 
 # Local Application/Library Specific Imports
-from lib.proc.vars import (
-    RETURN_SUCCESS,
-    RETURN_FAILURE
+from lib.proc.utils import (
+    arguments_are_valid as _arguments_are_valid,
+    build_parser        as _build_parser
+)
+from lib.proc.vars  import (
+    RETURN_FAILURE,
+    RETURN_SUCCESS
 )
 
+
+# Constants
+# ==================================================================================================
 PROG = "print_nc.py"
 
 
-# Argument functions
+# ==================================================================================================
+
+
+# Parser functions
 # ==================================================================================================
 def add_argument_nc_path(
     parser: argparse.ArgumentParser
@@ -37,7 +47,7 @@ def add_argument_nc_path(
 
     Returns
     -------
-    None
+    None.
 
     Notes
     -----
@@ -46,84 +56,26 @@ def add_argument_nc_path(
     parser.add_argument(
         "nc_path",
         type = Path,
-        help = """path to some netCDF file"""
+        help = "path to some netCDF file"
     )
 
 
-def argument_nc_path_exists(
-    nc_path: Path,
-    *,
-    loud: bool = False
-) -> bool:
-    """
-    Validates `nc_path`.
-
-    Parameters
-    ----------
-    nc_path : :class:`pathlib.Path`
-        The argument `nc_path`
-
-    loud : :class:`bool`
-        If `True`, prints an error message to stdout. default=False
-
-    Returns
-    -------
-    `True` if `nc_path` exists. `False` otherwise.
-    """
-    if nc_path.exists():
-        return True
-
-    if loud:
-        print(f"""error: argument nc_path: no such file or directory: {nc_path}""")
-
-    return False
-
-
 def build_parser(
-    prog: str
 ) -> argparse.ArgumentParser:
     """
     Builds a :class:`argparse.ArgumentParser`.
-
-    Parameters
-    ----------
-    prog : :class:`str`
-        The program name
 
     Returns
     -------
     A :class:`argparse.ArgumentParser`.
     """
-    parser = argparse.ArgumentParser(
-        prog        = prog,
-        usage       = "%(prog)s [options]",
-        description = """Prints netCDF file metadata to `sys.stdout`."""
+    return _build_parser(
+        PROG,
+        "Prints netCDF file metadata to `sys.stdout`.",
+        positional_arguments = [
+            add_argument_nc_path
+        ]
     )
-
-    # Positional arguments
-    add_argument_nc_path(parser)
-
-    return parser
-
-
-def arguments_are_valid(
-    args: argparse.Namespace
-) -> bool:
-    """
-    Validates `args`.
-
-    Returns
-    -------
-    `True` if all arguments are successfully validated. `False`
-    otherwise.
-    """
-    if not argument_nc_path_exists(
-        args.nc_path,
-        loud = True
-    ):
-        return False
-
-    return True
 
 
 # ==================================================================================================
@@ -144,10 +96,73 @@ def print_nc(
 
     Returns
     -------
-    None
+    None.
     """
     with xr.open_dataset(nc_path) as ds:
         print(ds)
+
+
+# ==================================================================================================
+
+
+# Validator functions
+# ==================================================================================================
+def argument_nc_path_exists(
+    nc_path: Path,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `nc_path`.
+
+    Parameters
+    ----------
+    nc_path : :class:`pathlib.Path`
+        The argument `nc_path`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stderr. default=False
+
+    Returns
+    -------
+    `True` if `nc_path` exists. `False` otherwise.
+    """
+    if nc_path.exists():
+        return True
+
+    if loud:
+        print(
+            f"error: argument nc_path: no such file or directory: {nc_path}",
+            file = sys.stderr
+        )
+
+    return False
+
+
+def arguments_are_valid(
+    args: argparse.Namespace
+) -> bool:
+    """
+    Validates `args`.
+
+    Parameters
+    ----------
+    args : :class:`argparse.Namespace`
+        The arguments
+
+    Returns
+    -------
+    `True` if all arguments are successfully validated. `False` otherwise.
+    """
+    return _arguments_are_valid(
+        args,
+        [
+            (
+                argument_nc_path_exists,
+                "nc_path"
+            )
+        ]
+    )
 
 
 # ==================================================================================================
@@ -158,7 +173,7 @@ def main(
     """
     Orchestration layer.
     """
-    args = build_parser(PROG).parse_args()
+    args = build_parser().parse_args()
 
     if not arguments_are_valid(args):
         return RETURN_FAILURE
