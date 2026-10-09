@@ -271,10 +271,9 @@ def add_argument_variation(
     Argument `variation` is of type :class:`str`.
     """
     parser.add_argument(
-        "-v", "--variation",
-        type    = str,
-        choices = VARIATIONS,
-        help    = "the variation of the input data"
+        "variation",
+        type = str,
+        help = f"one of {", ".join(VARIATIONS)}"
     )
 
 
@@ -291,10 +290,10 @@ def build_parser(
         PROG,
         "Produces a .csv file containing results summary for one variation of strategies A-D.",
         positional_arguments = [
-            add_argument_local_data_dir_path
+            add_argument_local_data_dir_path,
+            add_argument_variation
         ],
         optional_arguments   = [
-            add_argument_variation,
             add_argument_output
         ]
     )
