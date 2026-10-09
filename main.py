@@ -1,9 +1,6 @@
 r"""
 main.py
 
-Description:
-    Produces the lake surface skin temperature mean and coverage for each lake.
-
 Written by William Chuter-Davies
 """
 
