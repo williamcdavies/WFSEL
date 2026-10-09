@@ -121,7 +121,8 @@ def get_esacci_lakes_merged_product_output_file_path(
     esacci_lakes_merged_product_nc_path: Path
 ) -> Path:
     """
-    Returns the output file path for an ESA CCI Lakes merged product netCDF file.
+    Returns the output file path for an ESA CCI Lakes merged product netCDF
+    file.
 
     Parameters
     ----------
