@@ -11,10 +11,30 @@ Written by William Chuter-Davies
 from datetime import datetime
 
 
-def get_now_as_date_string(
+# Datetime functions
+# ==================================================================================================
+def get_month_from_datetime(
+    time: datetime
 ) -> str:
     """
-    Returns the current time as a date string.
+    Returns `time`'s month, as a zero-padded two-digit string.
+
+    Parameters
+    ----------
+    time : :class:`datetime.datetime`
+        The datetime
+
+    Returns
+    -------
+    A :class:`str`.
+    """
+    return time.strftime("%m")
+
+
+def get_now_as_timestamp_string(
+) -> str:
+    """
+    Returns the current local time as a timestamp string.
 
     Returns
     -------
@@ -41,19 +61,4 @@ def get_year_from_datetime(
     return time.strftime("%Y")
 
 
-def get_month_from_datetime(
-    time: datetime
-) -> str:
-    """
-    Returns `time`'s month, as a zero-padded two-digit string.
-
-    Parameters
-    ----------
-    time : :class:`datetime.datetime`
-        The datetime
-
-    Returns
-    -------
-    A :class:`str`.
-    """
-    return time.strftime("%m")
+# ==================================================================================================

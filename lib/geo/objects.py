@@ -11,10 +11,12 @@ Written by William Chuter-Davies
 from dataclasses import dataclass
 
 
-@dataclass
+# Dataclasses
+# ==================================================================================================
+@dataclass(kw_only = True)
 class GeoBoundingBox:
     """
-    Dataclass object for representing a geographic bounding box.
+    Represents a geographic bounding box.
 
     Parameters
     ----------
@@ -34,3 +36,6 @@ class GeoBoundingBox:
     lat_min: float
     lon_max: float
     lon_min: float
+
+
+# ==================================================================================================

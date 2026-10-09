@@ -14,7 +14,7 @@ import re
 import pandas as pd
 
 # Local Application/Library Specific Imports
-from lib.phys.vars import FREEZING_POINT_OF_WATER
+from lib.phys.vars import FREEZING_POINT_OF_WATER_K
 
 
 # DataFrame functions
@@ -34,7 +34,7 @@ def convert_df_from_kelvin_to_celsius(
     -------
     A :class:`pandas.DataFrame`.
     """
-    return df - FREEZING_POINT_OF_WATER
+    return df - FREEZING_POINT_OF_WATER_K
 
 
 def drop_column_from_df(
