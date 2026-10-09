@@ -21,9 +21,8 @@ class ESACCILakesVariable:
     Parameters
     ----------
     var_id : :class:`str`
-        The variable name, or key, as it appears in the ESA Lakes
-        Climate Change Initiative (Lakes_cci): Lake products, Version
-        3.0 Product User Guide
+        The variable name, or key, as it appears in the ESA Lakes Climate Change
+        Initiative (Lakes_cci): Lake products, Version 3.0 Product User Guide
 
     long_name : :class:`str`
         The variable long name
@@ -44,8 +43,8 @@ class HylakField:
     Parameters
     ----------
     field_id : :class:`str`
-        The field name, or key, as it appears in the HydroLAKES v1.0
-        technical documentation
+        The field name, or key, as it appears in the HydroLAKES v1.0 technical
+        documentation
 
     long_name : :class:`str`
         The field long name
@@ -63,12 +62,12 @@ class HylakField:
         The scale of `display_units` relative to 1
 
     lower_bound : :class:`float` | `None`
-        The lower bound used to filter lakes by this field. `None` if
-        no lower bound applies
+        The lower bound used to filter lakes by this field. `None` if no lower
+        bound applies
 
     upper_bound : :class:`float` | `None`
-        The upper bound used to filter lakes by this field. `None` if
-        no upper bound applies
+        The upper bound used to filter lakes by this field. `None` if no upper
+        bound applies
     """
     field_id:      str
     long_name:     str
