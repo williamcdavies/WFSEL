@@ -18,7 +18,7 @@ import xarray as xr
 from lib.esacci_lakes.utils.geo  import (
     get_esacci_lakes_cover_class_mask,
     get_esacci_lakes_id_mask,
-    get_geo_bounding_box_from_esacci_lakes_static_lake_mask
+    get_geo_bounding_box_from_ds
 )
 from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_merged_product_nc_path,
@@ -34,7 +34,7 @@ from lib.geo.utils               import (
     get_ds_variable_coverage,
     get_ds_variable_mean,
     mask_ds,
-    select_ds_by_geo_bounding_box
+    select_ds_window_by_geo_bounding_box
 )
 from lib.proc.utils              import (
     arguments_are_valid as _arguments_are_valid,
@@ -49,16 +49,82 @@ from lib.proc.vars               import (
     RETURN_SUCCESS
 )
 
-
-# Constants
-# ==================================================================================================
 PROG = "main.py"
 
 
+# Parser functions
+# ==================================================================================================
+def build_parser(
+) -> argparse.ArgumentParser:
+    """
+    Builds a :class:`argparse.ArgumentParser`.
+
+    Returns
+    -------
+    A :class:`argparse.ArgumentParser`.
+    """
+    return _build_parser(
+        PROG,
+        "Produces a .csv file containing the mean lake surface skin temperature and lake surface skin temperature coverage for each lake within the candidate set.",
+        positional_arguments = [
+            add_argument_esacci_lakes_metadata_csv_path,
+            add_argument_esacci_lakes_static_lake_mask_nc_path,
+            add_argument_esacci_lakes_merged_product_nc_path
+        ],
+        optional_arguments   = [
+            add_argument_output
+        ]
+    )
+
+
 # ==================================================================================================
 
 
-# Dataset functions
+# Validator functions
+# ==================================================================================================
+def arguments_are_valid(
+    args: argparse.Namespace
+) -> bool:
+    """
+    Validates `args`.
+
+    Parameters
+    ----------
+    args : :class:`argparse.Namespace`
+        The arguments
+
+    Returns
+    -------
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
+    """
+    return _arguments_are_valid(
+        args,
+        [
+            (
+                argument_esacci_lakes_metadata_csv_path_exists,
+                "esacci_lakes_metadata_csv_path"
+            ),
+            (
+                argument_esacci_lakes_static_lake_mask_nc_path_exists,
+                "esacci_lakes_static_lake_mask_nc_path"
+            ),
+            (
+                argument_esacci_lakes_merged_product_nc_path_exists,
+                "esacci_lakes_merged_product_nc_path"
+            ),
+            (
+                argument_output_is_file_or_missing,
+                "output"
+            )
+        ]
+    )
+
+
+# ==================================================================================================
+
+
+# Data functions
 # ==================================================================================================
 def get_esacci_lakes_merged_product_df(
     esacci_lakes_metadata_df:         pd.DataFrame,
@@ -66,8 +132,9 @@ def get_esacci_lakes_merged_product_df(
     esacci_lakes_merged_product_ds:   xr.Dataset
 ) -> pd.DataFrame:
     """
-    Returns a :class:`pandas.DataFrame` of each lake's lake surface skin
-    temperature mean and lake surface skin temperature coverage.
+    Returns a :class:`pandas.DataFrame` containing each lake's lake
+    surface skin temperature mean and lake surface skin temperature
+    coverage.
 
     Parameters
     ----------
@@ -105,8 +172,8 @@ def get_esacci_lakes_merged_product_record(
     esacci_lakes_merged_product_ds:   xr.Dataset
 ) -> dict[str, Any]:
     """
-    Returns a record of `esacci_lakes_id`'s lake surface skin temperature mean
-    and lake surface skin temperature coverage.
+    Returns a record containing `esacci_lakes_id`'s lake surface skin
+    temperature mean and lake surface skin temperature coverage.
 
     Parameters
     ----------
@@ -141,7 +208,12 @@ def get_esacci_lakes_merged_product_record(
         ]
     ]
 
-    geo_bounding_box = get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
+    assert isinstance(lat_max_box, float)
+    assert isinstance(lat_min_box, float)
+    assert isinstance(lon_max_box, float)
+    assert isinstance(lon_min_box, float)
+
+    geo_bounding_box = get_geo_bounding_box_from_ds(
         esacci_lakes_static_lake_mask_ds,
         lat_max_box = lat_max_box,
         lat_min_box = lat_min_box,
@@ -149,11 +221,11 @@ def get_esacci_lakes_merged_product_record(
         lon_min_box = lon_min_box
     )
 
-    static_lake_mask_ds_window = select_ds_by_geo_bounding_box(
+    static_lake_mask_ds_window = select_ds_window_by_geo_bounding_box(
         esacci_lakes_static_lake_mask_ds,
         geo_bounding_box
     )
-    merged_product_ds_window   = select_ds_by_geo_bounding_box(
+    merged_product_ds_window   = select_ds_window_by_geo_bounding_box(
         esacci_lakes_merged_product_ds,
         geo_bounding_box
     )
@@ -175,7 +247,8 @@ def get_esacci_lakes_merged_product_record(
         ]
     )
 
-    record = {"esacci_lakes_id": esacci_lakes_id}
+    record = {}
+    record["esacci_lakes_id"]                         = esacci_lakes_id
     record["lake_surface_water_temperature_mean"]     = get_ds_variable_mean(
         masked_merged_product_ds_window,
         "lake_surface_water_temperature"
@@ -187,77 +260,6 @@ def get_esacci_lakes_merged_product_record(
     )
 
     return record
-
-
-# ==================================================================================================
-
-
-# Parser functions
-# ==================================================================================================
-def build_parser(
-) -> argparse.ArgumentParser:
-    """
-    Builds a :class:`argparse.ArgumentParser`.
-
-    Returns
-    -------
-    A :class:`argparse.ArgumentParser`.
-    """
-    return _build_parser(
-        PROG,
-        "Produces a .csv file containing the mean lake surface skin temperature for each lake within the candidate set.",
-        positional_arguments = [
-            add_argument_esacci_lakes_metadata_csv_path,
-            add_argument_esacci_lakes_static_lake_mask_nc_path,
-            add_argument_esacci_lakes_merged_product_nc_path
-        ],
-        optional_arguments   = [
-            add_argument_output
-        ]
-    )
-
-
-# ==================================================================================================
-
-
-# Validator functions
-# ==================================================================================================
-def arguments_are_valid(
-    args: argparse.Namespace
-) -> bool:
-    """
-    Validates `args`.
-
-    Parameters
-    ----------
-    args : :class:`argparse.Namespace`
-        The arguments
-
-    Returns
-    -------
-    `True` if all arguments are successfully validated. `False` otherwise.
-    """
-    return _arguments_are_valid(
-        args,
-        [
-            (
-                argument_esacci_lakes_metadata_csv_path_exists,
-                "esacci_lakes_metadata_csv_path"
-            ),
-            (
-                argument_esacci_lakes_static_lake_mask_nc_path_exists,
-                "esacci_lakes_static_lake_mask_nc_path"
-            ),
-            (
-                argument_esacci_lakes_merged_product_nc_path_exists,
-                "esacci_lakes_merged_product_nc_path"
-            ),
-            (
-                argument_output_is_file_or_missing,
-                "output"
-            )
-        ]
-    )
 
 
 # ==================================================================================================
