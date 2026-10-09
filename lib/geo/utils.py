@@ -26,58 +26,75 @@ from lib.geo.objects import GeoBoundingBox
 
 # DataArray functions
 # ==================================================================================================
+def get_da_geometry_as_wkb(
+    da: xr.DataArray
+) -> bytes:
+    """
+    Returns the geometry of `da`'s `True` pixels in well-known binary, as a
+    MultiPolygon.
 
-# ! get_da_geometry_as_wkb IS UNTESTED
+    Parameters
+    ----------
+    da : :class:`xarray.DataArray`
+        The boolean mask
 
-# def get_da_geometry_as_wkb(
-#     da: xr.DataArray
-# ) -> bytes:
-#     """
-#     Returns `da`'s geometry in well-known binary.
+    Returns
+    -------
+    A :class:`bytes`.
 
-#     Parameters
-#     ----------
-#     da : :class:`xarray.DataArray`
-#         The data array
+    Raises
+    ------
+    ValueError
+        If `da` has fewer than two `lon` or `lat` coordinates, or no `True`
+        pixels.
+    """
+    da   = da.sortby([
+        "lon",
+        "lat"
+    ])
+    lons = da["lon"].values
+    lats = da["lat"].values
 
-#     Returns
-#     -------
-#     A :class:`bytes`.
-#     """
-#     da   = da.sortby([
-#         "lon",
-#         "lat"
-#     ])
-#     lons = da["lon"].values
-#     lats = da["lat"].values
+    if len(lons) < 2 or len(lats) < 2:
+        raise ValueError("expected `da` to have at least two `lon` and two `lat` coordinates")
 
-#     mask      = np.flipud(da.values)
-#     transform = rasterio.transform.from_bounds(
-#         west   = lons.min(),
-#         south  = lats.min(),
-#         east   = lons.max(),
-#         north  = lats.max(),
-#         width  = len(lons),
-#         height = len(lats)
-#     )
+    mask = np.flipud(da.values.astype(bool))
 
-#     polygons, _ = rasterio.features.shapes(
-#         mask.astype(np.uint8),
-#         mask      = mask.astype(bool),
-#         transform = transform
-#     )
-#     geometry    = shapely.ops.unary_union(
-#         [
-#             shapely.geometry.shape(polygon)
-#             for polygon
-#             in polygons
-#         ]
-#     )
+    if not mask.any():
+        raise ValueError("expected `da` to have at least one `True` pixel")
 
-#     if isinstance(geometry, shapely.Polygon):
-#         geometry = shapely.MultiPolygon([geometry])
+    half_pixel_lon = (lons.max() - lons.min()) / (len(lons) - 1) / 2
+    half_pixel_lat = (lats.max() - lats.min()) / (len(lats) - 1) / 2
 
-#     return shapely.to_wkb(geometry)
+    transform = rasterio.transform.from_bounds(
+        west   = lons.min() - half_pixel_lon,
+        south  = lats.min() - half_pixel_lat,
+        east   = lons.max() + half_pixel_lon,
+        north  = lats.max() + half_pixel_lat,
+        width  = len(lons),
+        height = len(lats)
+    )
+
+    shapes   = rasterio.features.shapes(
+        mask.astype(np.uint8),
+        mask      = mask,
+        transform = transform
+    )
+    geometry = shapely.ops.unary_union(
+        [
+            shapely.geometry.shape(polygon)
+            for (
+                polygon,
+                _
+            )
+            in shapes
+        ]
+    )
+
+    if isinstance(geometry, shapely.Polygon):
+        geometry = shapely.MultiPolygon([geometry])
+
+    return shapely.to_wkb(geometry)
 
 
 # ==================================================================================================
