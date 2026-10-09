@@ -407,7 +407,7 @@ def get_esacci_lakes_filename_time(
     Parameters
     ----------
     path : :class:`pathlib.Path`
-        A path named `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.*`
+        A path to some `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.*` file
 
     Returns
     -------
