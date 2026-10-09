@@ -1,10 +1,9 @@
 -- query_esacci_lakes_for_counts_of_distinct_start_days.sql
 
--- Description: Queries counts of distinct start days for all smoke
---     observations in spatial.hms_smokes over all lakes in
---     spatial.esacci_lakes (Same lakes as provided by as provided by
---     ESA Lakes Climate Change Initiative (Lakes_cci): Lake products,
---     Version 3.0) for each year between 2011--2023 inclusive.
+-- Description: Queries counts of distinct start days for all smoke observations
+--     in spatial.hms_smokes over all lakes in spatial.esacci_lakes (Same lakes
+--     as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
+--     products, Version 3.0) for each year between 2011--2023 inclusive.
 
 -- | esacci_lakes_id | 2011     | $\cdots$ | 2023     |
 -- |:--------------- |:-------- |:-------- |:-------- |

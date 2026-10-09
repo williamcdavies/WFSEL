@@ -1,16 +1,15 @@
 -- query_esacci_lakes_for_hylak_fields.sql
 
--- Description: Queries all HYDROLakes v1.0 fields (excluding `gid` and
---     `geom`) for all lakes in spatial.esacci_lakes (Same lakes as
---     provided by ESA Lakes Climate Change Initiative (esacci_lakes):
---     Lake products, Version 3.0). Metric fields are scaled to base SI
---     units where the conversion is a simple scalar multiple; fields
---     are suffixed with their unit for clarity.
+-- Description: Queries all HydroLAKES v1.0 fields (excluding `gid` and `geom`)
+--     for all lakes in spatial.esacci_lakes (Same lakes as provided by ESA
+--     Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0).
+--     Metric fields are scaled to base SI units where the conversion is a
+--     simple scalar multiple; fields are suffixed with their unit for clarity.
 
--- Of the 667 lakes in the candidate set, 15 do not have `hylak_id`
--- where a `esacci_lakes_id` is present. The `esacci_lakes_id`s of these
--- 15 are as follows: [141, 143, 149, 211, 293, 317, 363, 420, 451, 473,
--- 507, 512, 581, 2132, 3171]
+-- Of the 667 lakes in the candidate set, 15 do not have `hylak_id` where a
+-- `esacci_lakes_id` is present. The `esacci_lakes_id`s of these 15 are as
+-- follows: [141, 143, 149, 211, 293, 317, 363, 420, 451, 473, 507, 512, 581,
+-- 2132, 3171]
 
 -- Written by William Chuter-Davies
 
@@ -80,7 +79,7 @@ COPY (
         x1.pour_lat           AS "pour_lat"
     FROM x2
     LEFT JOIN x1
-        ON 
+        ON
             ST_COVERS(x1.geom, x2.geom)
     ORDER BY x2.id
 ) TO STDOUT WITH (FORMAT csv, HEADER);
