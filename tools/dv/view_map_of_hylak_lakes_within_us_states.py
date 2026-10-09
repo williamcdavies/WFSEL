@@ -13,33 +13,44 @@ import geopandas         as gpd
 import matplotlib.pyplot as plt
 import sqlalchemy
 
+from matplotlib.axes import Axes
+
 # Local Application/Library Specific Imports
 from lib.db.utils   import get_gdf_from_postgis
 from lib.geo.utils  import (
-    join_gdfs_on_within,
-    filter_gdf_by_column_membership
+    filter_gdf_by_column_membership,
+    join_gdfs_on_within
 )
 from lib.geo.vars   import TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS
 from lib.plot.utils import (
+    save_figure,
     set_ax_xlim_to_gdf_total_bounds,
-    set_ax_ylim_to_gdf_total_bounds,
     set_ax_xticks_to_empty_list,
-    set_ax_yticks_to_empty_list,
-    save_figure
+    set_ax_ylim_to_gdf_total_bounds,
+    set_ax_yticks_to_empty_list
 )
 from lib.proc.utils import (
+    arguments_are_valid as _arguments_are_valid,
+    build_parser        as _build_parser,
+
     add_argument_output,
-    argument_output_is_a_file
+    argument_output_is_file_or_missing
 )
 from lib.proc.vars  import (
-    RETURN_SUCCESS,
-    RETURN_FAILURE
+    RETURN_FAILURE,
+    RETURN_SUCCESS
 )
 
+
+# Constants
+# ==================================================================================================
 PROG = "view_map_of_hylak_lakes_within_us_states.py"
 
 
-# Argument functions
+# ==================================================================================================
+
+
+# Parser functions
 # ==================================================================================================
 def add_argument_stusps(
     parser: argparse.ArgumentParser
@@ -54,159 +65,39 @@ def add_argument_stusps(
 
     Returns
     -------
-    None
+    None.
 
     Notes
     -----
     Argument `stusps` is of type list[:class:`str`].
     """
     parser.add_argument(
-        "--stusps",
-        nargs    = "+",
-        type     = str,
-        required = True,
-        help     = """one or more of two-letter state and possession abbreviations as defined in Mailing Standards of the United States Postal Service Publication 28 - Postal Addressing Standards"""
+        "stusps",
+        nargs = "+",
+        type  = str,
+        help  = "one or more of two-letter state and possession abbreviations as defined in Mailing Standards of the United States Postal Service Publication 28 - Postal Addressing Standards"
     )
 
 
-def argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
-    stusps: list[str],
-    *,
-    loud: bool = False
-) -> bool:
-    """
-    Validates `stusps`.
-
-    Parameters
-    ----------
-    stusps : list[:class:`str`]
-        The argument `stusps`
-
-    loud : :class:`bool`
-        If `True`, prints an error message to stdout. default=False
-
-    Returns
-    -------
-    `True` if every element in `stusps` is in
-    `TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS`. `False` otherwise.
-    """
-    for element in stusps:
-        if element not in TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS:
-            if loud:
-                print(f"""error: argument stusps: element not in `TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS`: {element}""")
-
-            return False
-
-    return True
-
-
 def build_parser(
-    prog: str
 ) -> argparse.ArgumentParser:
     """
     Builds a :class:`argparse.ArgumentParser`.
-
-    Parameters
-    ----------
-    prog : :class:`str`
-        The program name
 
     Returns
     -------
     A :class:`argparse.ArgumentParser`.
     """
-    parser = argparse.ArgumentParser(
-        prog        = prog,
-        usage       = "%(prog)s [options]",
-        description = """Produces a map visualisation of all lakes in spatial.hylak_points (Same lakes as provided by HYDROLakes v1.0) within a set of U.S. states."""
+    return _build_parser(
+        PROG,
+        "Produces a map visualisation of all lakes in spatial.lakes_points (Same lakes as provided by HYDROLakes v1.0) within a set of U.S. states.",
+        positional_arguments = [
+            add_argument_stusps
+        ],
+        optional_arguments   = [
+            add_argument_output
+        ]
     )
-
-    # Optional arguments
-    add_argument_stusps(parser)
-    add_argument_output(parser)
-
-    return parser
-
-
-def arguments_are_valid(
-    args: argparse.Namespace
-) -> bool:
-    """
-    Validates `args`.
-
-    Returns
-    -------
-    `True` if all arguments are successfully validated. `False`
-    otherwise.
-    """
-    if not argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
-        args.stusps,
-        loud = True
-    ):
-        return False
-
-    if not argument_output_is_a_file(
-        args.output,
-        loud = True
-    ):
-        return False
-
-    return True
-
-
-# ==================================================================================================
-
-
-# Data functions
-# ==================================================================================================
-def get_states_gdf(
-    connection: sqlalchemy.Connection
-) -> gpd.GeoDataFrame:
-    """
-    Returns a :class:`geopandas.GeoDataFrame` of all states.
-
-    Parameters
-    ----------
-    connection : :class:`sqlalchemy.Connection`
-        The connection
-
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-    """
-    query = """
-        SELECT
-            s.stusps,
-            s.geom
-        FROM states AS s
-        """
-
-    return get_gdf_from_postgis(query, connection)
-
-
-def get_lakes_gdf(
-    connection: sqlalchemy.Connection
-) -> gpd.GeoDataFrame:
-    """
-    Returns a :class:`geopandas.GeoDataFrame` of all lakes.
-
-    Parameters
-    ----------
-    connection : :class:`sqlalchemy.Connection`
-        The connection
-
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-    """
-    query = """
-        SELECT
-            l.id,
-            l.geom
-        FROM lakes_points AS l
-        """
-
-    return get_gdf_from_postgis(query, connection)
 
 
 # ==================================================================================================
@@ -214,86 +105,8 @@ def get_lakes_gdf(
 
 # Plot functions
 # ==================================================================================================
-def plot_states_gdf(
-    ax:         plt.Axes,
-    states_gdf: gpd.GeoDataFrame
-) -> None:
-    """
-    Plots `states_gdf` onto `ax`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    states_gdf : :class:`geopandas.GeoDataFrame`
-        All states
-
-    Returns
-    -------
-    None
-    """
-    states_gdf.plot(
-        ax        = ax,
-        facecolor = "#FFFFFF",
-        edgecolor = "#000000"
-    )
-
-
-def plot_target_states_gdf(
-    ax:                plt.Axes,
-    target_states_gdf: gpd.GeoDataFrame
-) -> None:
-    """
-    Plots `target_states_gdf` onto `ax`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    target_states_gdf : :class:`geopandas.GeoDataFrame`
-        The target states
-
-    Returns
-    -------
-    None
-    """
-    target_states_gdf.plot(
-        ax        = ax,
-        facecolor = "#A9C8E9",
-        edgecolor = "#000000"
-    )
-
-
-def plot_target_lakes_gdf(
-    ax:               plt.Axes,
-    target_lakes_gdf: gpd.GeoDataFrame
-) -> None:
-    """
-    Plots `target_lakes_gdf` onto `ax`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    target_lakes_gdf : :class:`geopandas.GeoDataFrame`
-        The target lakes
-
-    Returns
-    -------
-    None
-    """
-    target_lakes_gdf.plot(
-        ax         = ax,
-        color      = "#000000",
-        markersize = 2
-    )
-
-
 def plot_on_ax(
-    ax: plt.Axes,
+    ax: Axes,
     *,
     states_gdf:        gpd.GeoDataFrame,
     target_states_gdf: gpd.GeoDataFrame,
@@ -319,7 +132,7 @@ def plot_on_ax(
 
     Returns
     -------
-    None
+    None.
     """
     plot_states_gdf(
         ax,
@@ -335,9 +148,86 @@ def plot_on_ax(
     )
 
 
+def plot_states_gdf(
+    ax:         Axes,
+    states_gdf: gpd.GeoDataFrame
+) -> None:
+    """
+    Plots `states_gdf` onto `ax`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes to plot onto
+
+    states_gdf : :class:`geopandas.GeoDataFrame`
+        All states
+
+    Returns
+    -------
+    None.
+    """
+    states_gdf.plot(
+        ax        = ax,
+        facecolor = "#FFFFFF",
+        edgecolor = "#000000"
+    )
+
+
+def plot_target_lakes_gdf(
+    ax:               Axes,
+    target_lakes_gdf: gpd.GeoDataFrame
+) -> None:
+    """
+    Plots `target_lakes_gdf` onto `ax`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes to plot onto
+
+    target_lakes_gdf : :class:`geopandas.GeoDataFrame`
+        The target lakes
+
+    Returns
+    -------
+    None.
+    """
+    target_lakes_gdf.plot(
+        ax         = ax,
+        color      = "#000000",
+        markersize = 2
+    )
+
+
+def plot_target_states_gdf(
+    ax:                Axes,
+    target_states_gdf: gpd.GeoDataFrame
+) -> None:
+    """
+    Plots `target_states_gdf` onto `ax`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes to plot onto
+
+    target_states_gdf : :class:`geopandas.GeoDataFrame`
+        The target states
+
+    Returns
+    -------
+    None.
+    """
+    target_states_gdf.plot(
+        ax        = ax,
+        facecolor = "#A9C8E9",
+        edgecolor = "#000000"
+    )
+
+
 def set_ax_properties(
-    ax: plt.Axes,
-    *,
+    ax:                Axes,
     target_states_gdf: gpd.GeoDataFrame
 ) -> None:
     """
@@ -354,7 +244,7 @@ def set_ax_properties(
 
     Returns
     -------
-    None
+    None.
     """
     set_ax_xlim_to_gdf_total_bounds(
         ax,
@@ -371,12 +261,136 @@ def set_ax_properties(
 # ==================================================================================================
 
 
+# Read functions
+# ==================================================================================================
+def get_lakes_gdf(
+    connection: sqlalchemy.Connection
+) -> gpd.GeoDataFrame:
+    """
+    Returns a :class:`geopandas.GeoDataFrame` of all lakes.
+
+    Parameters
+    ----------
+    connection : :class:`sqlalchemy.Connection`
+        The connection
+
+    Returns
+    -------
+    A :class:`geopandas.GeoDataFrame`.
+    """
+    query = """
+        SELECT
+            l.id,
+            l.geom
+        FROM lakes_points AS l
+        """
+
+    return get_gdf_from_postgis(query, connection)
+
+
+def get_states_gdf(
+    connection: sqlalchemy.Connection
+) -> gpd.GeoDataFrame:
+    """
+    Returns a :class:`geopandas.GeoDataFrame` of all states.
+
+    Parameters
+    ----------
+    connection : :class:`sqlalchemy.Connection`
+        The connection
+
+    Returns
+    -------
+    A :class:`geopandas.GeoDataFrame`.
+    """
+    query = """
+        SELECT
+            s.stusps,
+            s.geom
+        FROM states AS s
+        """
+
+    return get_gdf_from_postgis(query, connection)
+
+
+# ==================================================================================================
+
+
+# Validator functions
+# ==================================================================================================
+def argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations(
+    stusps: list[str],
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `stusps`.
+
+    Parameters
+    ----------
+    stusps : list[:class:`str`]
+        The argument `stusps`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stderr. default=False
+
+    Returns
+    -------
+    `True` if every element in `stusps` is in
+    `TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS`. `False` otherwise.
+    """
+    for element in stusps:
+        if element not in TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS:
+            if loud:
+                print(
+                    f"error: argument stusps: element not in `TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS`: {element}",
+                    file = sys.stderr
+                )
+
+            return False
+
+    return True
+
+
+def arguments_are_valid(
+    args: argparse.Namespace
+) -> bool:
+    """
+    Validates `args`.
+
+    Parameters
+    ----------
+    args : :class:`argparse.Namespace`
+        The arguments
+
+    Returns
+    -------
+    `True` if all arguments are successfully validated. `False` otherwise.
+    """
+    return _arguments_are_valid(
+        args,
+        [
+            (
+                argument_stusps_is_subset_of_two_letter_state_and_possession_abbreviations,
+                "stusps"
+            ),
+            (
+                argument_output_is_file_or_missing,
+                "output"
+            )
+        ]
+    )
+
+
+# ==================================================================================================
+
+
 def main(
 ) -> int:
     """
     Orchestration layer.
     """
-    args = build_parser(PROG).parse_args()
+    args = build_parser().parse_args()
 
     if not arguments_are_valid(args):
         return RETURN_FAILURE
@@ -411,7 +425,7 @@ def main(
 
     set_ax_properties(
         ax,
-        target_states_gdf = target_states_gdf
+        target_states_gdf
     )
 
     save_figure(
