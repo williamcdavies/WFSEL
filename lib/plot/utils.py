@@ -17,6 +17,46 @@ from matplotlib.axes   import Axes
 from matplotlib.figure import Figure
 
 
+# Export functions
+# ==================================================================================================
+def save_figure(
+    figure: Figure,
+    output: Path
+) -> None:
+    """
+    Saves `figure` to `output`.
+
+    Parameters
+    ----------
+    figure : :class:`matplotlib.figure.Figure`
+        The figure
+
+    output : :class:`pathlib.Path`
+        The output file path
+
+    Returns
+    -------
+    None.
+
+    Notes
+    -----
+    Creates the parent of `output` if it does not exist.
+    """
+    output.parent.mkdir(
+        parents  = True,
+        exist_ok = True
+    )
+
+    figure.savefig(
+        output,
+        dpi         = 300,
+        bbox_inches = "tight"
+    )
+
+
+# ==================================================================================================
+
+
 # Limit functions
 # ==================================================================================================
 def set_ax_xlim_to_gdf_total_bounds(
@@ -249,46 +289,6 @@ def set_ax_yticks_to_empty_list(
     None.
     """
     ax.set_yticks([])
-
-
-# ==================================================================================================
-
-
-# Export functions
-# ==================================================================================================
-def save_figure(
-    figure: Figure,
-    output: Path
-) -> None:
-    """
-    Saves `figure` to `output`.
-
-    Parameters
-    ----------
-    figure : :class:`matplotlib.figure.Figure`
-        The figure
-
-    output : :class:`pathlib.Path`
-        The output file path
-
-    Returns
-    -------
-    None.
-
-    Notes
-    -----
-    Creates the parent of `output` if it does not exist.
-    """
-    output.parent.mkdir(
-        parents  = True,
-        exist_ok = True
-    )
-
-    figure.savefig(
-        output,
-        dpi         = 300,
-        bbox_inches = "tight"
-    )
 
 
 # ==================================================================================================

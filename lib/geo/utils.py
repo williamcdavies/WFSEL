@@ -24,59 +24,60 @@ import xarray    as xr
 from lib.geo.objects import GeoBoundingBox
 
 
-# GeoDataFrame functions
+# DataArray functions
 # ==================================================================================================
-def filter_gdf_by_column_membership(
-    gdf:    gpd.GeoDataFrame,
-    column: str,
-    values: list[str]
-) -> gpd.GeoDataFrame:
-    """
-    Filters `gdf` to rows whose `column` value(s) is in `values`.
 
-    Parameters
-    ----------
-    gdf : :class:`geopandas.GeoDataFrame`
-        The geodataframe
+# ! get_da_geometry_as_wkb IS UNTESTED
 
-    column : :class:`str`
-        The column
+# def get_da_geometry_as_wkb(
+#     da: xr.DataArray
+# ) -> bytes:
+#     """
+#     Returns `da`'s geometry in well-known binary.
 
-    values : list[:class:`str`]
-        The values
+#     Parameters
+#     ----------
+#     da : :class:`xarray.DataArray`
+#         The data array
 
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-    """
-    return gdf[gdf[column].isin(values)]
+#     Returns
+#     -------
+#     A :class:`bytes`.
+#     """
+#     da   = da.sortby([
+#         "lon",
+#         "lat"
+#     ])
+#     lons = da["lon"].values
+#     lats = da["lat"].values
 
+#     mask      = np.flipud(da.values)
+#     transform = rasterio.transform.from_bounds(
+#         west   = lons.min(),
+#         south  = lats.min(),
+#         east   = lons.max(),
+#         north  = lats.max(),
+#         width  = len(lons),
+#         height = len(lats)
+#     )
 
-def join_gdfs_on_within(
-    left_gdf:  gpd.GeoDataFrame,
-    right_gdf: gpd.GeoDataFrame
-) -> gpd.GeoDataFrame:
-    """
-    Joins `left_gdf` to `right_gdf` where `left_gdf` geometries fall within
-    `right_gdf` geometries.
+#     polygons, _ = rasterio.features.shapes(
+#         mask.astype(np.uint8),
+#         mask      = mask.astype(bool),
+#         transform = transform
+#     )
+#     geometry    = shapely.ops.unary_union(
+#         [
+#             shapely.geometry.shape(polygon)
+#             for polygon
+#             in polygons
+#         ]
+#     )
 
-    Parameters
-    ----------
-    left_gdf : :class:`geopandas.GeoDataFrame`
-        The left geodataframe
+#     if isinstance(geometry, shapely.Polygon):
+#         geometry = shapely.MultiPolygon([geometry])
 
-    right_gdf : :class:`geopandas.GeoDataFrame`
-        The right geodataframe
-
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-    """
-    return gpd.sjoin(
-        left_df   = left_gdf,
-        right_df  = right_gdf,
-        predicate = "within"
-    )
+#     return shapely.to_wkb(geometry)
 
 
 # ==================================================================================================
@@ -234,60 +235,59 @@ def select_ds_by_geo_bounding_box(
 # ==================================================================================================
 
 
-# DataArray functions
+# GeoDataFrame functions
 # ==================================================================================================
+def filter_gdf_by_column_membership(
+    gdf:    gpd.GeoDataFrame,
+    column: str,
+    values: list[str]
+) -> gpd.GeoDataFrame:
+    """
+    Filters `gdf` to rows whose `column` value(s) is in `values`.
 
-# ! get_da_geometry_as_wkb IS UNTESTED
+    Parameters
+    ----------
+    gdf : :class:`geopandas.GeoDataFrame`
+        The geodataframe
 
-# def get_da_geometry_as_wkb(
-#     da: xr.DataArray
-# ) -> bytes:
-#     """
-#     Returns `da`'s geometry in well-known binary.
+    column : :class:`str`
+        The column
 
-#     Parameters
-#     ----------
-#     da : :class:`xarray.DataArray`
-#         The data array
+    values : list[:class:`str`]
+        The values
 
-#     Returns
-#     -------
-#     A :class:`bytes`.
-#     """
-#     da   = da.sortby([
-#         "lon",
-#         "lat"
-#     ])
-#     lons = da["lon"].values
-#     lats = da["lat"].values
+    Returns
+    -------
+    A :class:`geopandas.GeoDataFrame`.
+    """
+    return gdf[gdf[column].isin(values)]
 
-#     mask      = np.flipud(da.values)
-#     transform = rasterio.transform.from_bounds(
-#         west   = lons.min(),
-#         south  = lats.min(),
-#         east   = lons.max(),
-#         north  = lats.max(),
-#         width  = len(lons),
-#         height = len(lats)
-#     )
 
-#     polygons, _ = rasterio.features.shapes(
-#         mask.astype(np.uint8),
-#         mask      = mask.astype(bool),
-#         transform = transform
-#     )
-#     geometry    = shapely.ops.unary_union(
-#         [
-#             shapely.geometry.shape(polygon)
-#             for polygon
-#             in polygons
-#         ]
-#     )
+def join_gdfs_on_within(
+    left_gdf:  gpd.GeoDataFrame,
+    right_gdf: gpd.GeoDataFrame
+) -> gpd.GeoDataFrame:
+    """
+    Joins `left_gdf` to `right_gdf` where `left_gdf` geometries fall within
+    `right_gdf` geometries.
 
-#     if isinstance(geometry, shapely.Polygon):
-#         geometry = shapely.MultiPolygon([geometry])
+    Parameters
+    ----------
+    left_gdf : :class:`geopandas.GeoDataFrame`
+        The left geodataframe
 
-#     return shapely.to_wkb(geometry)
+    right_gdf : :class:`geopandas.GeoDataFrame`
+        The right geodataframe
+
+    Returns
+    -------
+    A :class:`geopandas.GeoDataFrame`.
+    """
+    return gpd.sjoin(
+        left_df   = left_gdf,
+        right_df  = right_gdf,
+        predicate = "within"
+    )
 
 
 # ==================================================================================================
