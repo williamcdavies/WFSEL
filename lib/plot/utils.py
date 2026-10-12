@@ -20,18 +20,18 @@ from matplotlib.figure import Figure
 # Export functions
 # ==================================================================================================
 def save_figure(
-    figure: Figure,
-    output: Path
+    figure:           Figure,
+    output_file_path: Path
 ) -> None:
     """
-    Saves `figure` to `output`.
+    Saves `figure` to `output_file_path`.
 
     Parameters
     ----------
     figure : :class:`matplotlib.figure.Figure`
         The figure
 
-    output : :class:`pathlib.Path`
+    output_file_path : :class:`pathlib.Path`
         The output file path
 
     Returns
@@ -40,15 +40,16 @@ def save_figure(
 
     Notes
     -----
-    Creates the parent of `output` if it does not exist.
+    Creates the parent directories of `output_file_path` if they do not
+    exist.
     """
-    output.parent.mkdir(
+    output_file_path.parent.mkdir(
         parents  = True,
         exist_ok = True
     )
 
     figure.savefig(
-        output,
+        output_file_path,
         dpi         = 300,
         bbox_inches = "tight"
     )
@@ -221,8 +222,8 @@ def force_ax_xtick_visibility(
         The axes
 
     on : :class:`bool`
-        If `True`, shows `ax`'s x-axis tick labels. If `False`, hides `ax`'s
-        x-axis tick labels. default=True
+        If `True`, shows `ax`'s x-axis tick labels. If `False`, hides
+        `ax`'s x-axis tick labels. default=True
 
     Returns
     -------
@@ -245,8 +246,8 @@ def force_ax_ytick_visibility(
         The axes
 
     on : :class:`bool`
-        If `True`, shows `ax`'s y-axis tick labels. If `False`, hides `ax`'s
-        y-axis tick labels. default=True
+        If `True`, shows `ax`'s y-axis tick labels. If `False`, hides
+        `ax`'s y-axis tick labels. default=True
 
     Returns
     -------
