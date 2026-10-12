@@ -31,18 +31,6 @@ def get_month_from_datetime(
     return time.strftime("%m")
 
 
-def get_now_as_timestamp_string(
-) -> str:
-    """
-    Returns the current local time as a timestamp string.
-
-    Returns
-    -------
-    A :class:`str`.
-    """
-    return datetime.now().strftime("%Y%m%d%H%M%S%f")
-
-
 def get_year_from_datetime(
     time: datetime
 ) -> str:
@@ -60,5 +48,25 @@ def get_year_from_datetime(
     """
     return time.strftime("%Y")
 
+
+# ==================================================================================================
+
+
+# Timestamp functions
+# ==================================================================================================
+def get_now_as_timestamp_string(
+) -> str:
+    """
+    Returns the current local time as a timestamp string.
+
+    Returns
+    -------
+    A :class:`str`.
+    """
+    return (
+        datetime
+        .now()
+        .strftime("%Y%m%d%H%M%S%f")
+    )
 
 # ==================================================================================================
