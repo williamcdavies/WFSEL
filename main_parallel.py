@@ -67,12 +67,12 @@ def build_parser(
     return _build_parser(
         PROG,
         "Runs `main.py` in parallel.",
-        positional_arguments = [
+        positional_args = [
             add_argument_esacci_lakes_metadata_csv_path,
             add_argument_esacci_lakes_static_lake_mask_nc_path,
             add_argument_esacci_lakes_merged_product_dir_path
         ],
-        optional_arguments   = [
+        optional_args   = [
             add_argument_workers,
             add_argument_output
         ]

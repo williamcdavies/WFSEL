@@ -66,12 +66,12 @@ def build_parser(
     return _build_parser(
         PROG,
         "Produces a .csv file containing the mean lake surface skin temperature and lake surface skin temperature coverage for each lake within the candidate set.",
-        positional_arguments = [
+        positional_args = [
             add_argument_esacci_lakes_metadata_csv_path,
             add_argument_esacci_lakes_static_lake_mask_nc_path,
             add_argument_esacci_lakes_merged_product_nc_path
         ],
-        optional_arguments   = [
+        optional_args   = [
             add_argument_output
         ]
     )
