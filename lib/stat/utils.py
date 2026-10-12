@@ -22,7 +22,11 @@ from scipy.stats._result_classes import TtestResult
 def get_ttest_result(
     sample_a:    pd.Series,
     sample_b:    pd.Series,
-    alternative: Literal["two-sided", "less", "greater"]
+    alternative: Literal[
+        "two-sided",
+        "less",
+        "greater"
+    ]
 ) -> TtestResult:
     """
     Returns the paired t-test result of `sample_a` against `sample_b`.
