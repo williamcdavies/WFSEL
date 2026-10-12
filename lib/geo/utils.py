@@ -169,6 +169,76 @@ def get_ds_variable_mean(
     )
 
 
+def get_geo_bounding_box_from_ds(
+    ds: xr.Dataset,
+    *,
+    lat_max_box: float,
+    lat_min_box: float,
+    lon_max_box: float,
+    lon_min_box: float
+) -> GeoBoundingBox:
+    """
+    Returns the geographic bounding box of `lat_max_box`, `lat_min_box`,
+    `lon_max_box` and `lon_min_box`, snapped to the nearest coordinates
+    of `ds`.
+
+    Parameters
+    ----------
+    ds : :class:`xarray.Dataset`
+        The dataset
+
+    lat_max_box : :class:`float`
+        The northernmost latitude of the bounding box
+
+    lat_min_box : :class:`float`
+        The southernmost latitude of the bounding box
+
+    lon_max_box : :class:`float`
+        The easternmost longitude of the bounding box
+
+    lon_min_box : :class:`float`
+        The westernmost longitude of the bounding box
+
+    Returns
+    -------
+    A :class:`lib.geo.objects.GeoBoundingBox`.
+    """
+    return GeoBoundingBox(
+        lat_max = (
+            ds["lat"]
+            .sel(
+                lat    = lat_max_box,
+                method = "nearest"
+            )
+            .item()
+        ),
+        lat_min = (
+            ds["lat"]
+            .sel(
+                lat    = lat_min_box,
+                method = "nearest"
+            )
+            .item()
+        ),
+        lon_max = (
+            ds["lon"]
+            .sel(
+                lon    = lon_max_box,
+                method = "nearest"
+            )
+            .item()
+        ),
+        lon_min = (
+            ds["lon"]
+            .sel(
+                lon    = lon_min_box,
+                method = "nearest"
+            )
+            .item()
+        )
+    )
+
+
 def mask_ds(
     ds:    xr.Dataset,
     masks: list[xr.DataArray]

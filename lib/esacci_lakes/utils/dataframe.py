@@ -20,7 +20,7 @@ def drop_hylak_field_columns_from_df(
     df: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Returns `df` with all `HYLAK_FIELDS` columns dropped.
+    Drops `HYLAK_FIELDS` columns from `df`.
 
     Parameters
     ----------
@@ -42,8 +42,7 @@ def merge_dfs_on_esacci_lakes_id(
     right_df: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Returns the inner merge of `left_df` and `right_df` on the `esacci_lakes_id`
-    index.
+    Merges `left_df` and `right_df` on the index "esacci_lakes_id".
 
     Parameters
     ----------
@@ -60,18 +59,18 @@ def merge_dfs_on_esacci_lakes_id(
     Raises
     ------
     ValueError
-        If `left_df.index.name` or `right_df.index.name` is not
+        If the index name of `left_df` or `right_df` is not
         "esacci_lakes_id", or if either index has duplicate values.
     """
     if (
-        left_df.index.name != "esacci_lakes_id"
-        or right_df.index.name != "esacci_lakes_id"
+        left_df.index.name != "esacci_lakes_id" or
+        right_df.index.name != "esacci_lakes_id"
     ):
         raise ValueError("expected `esacci_lakes_id` as the index name of both `left_df` and `right_df`")
 
     return pd.merge(
-        left        = left_df,
-        right       = right_df,
+        left_df,
+        right_df,
         left_index  = True,
         right_index = True,
         validate    = "one_to_one"

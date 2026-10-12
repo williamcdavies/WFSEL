@@ -17,8 +17,7 @@ import xarray as xr
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.utils.geo  import (
     get_esacci_lakes_cover_class_mask,
-    get_esacci_lakes_id_mask,
-    get_geo_bounding_box_from_ds
+    get_esacci_lakes_id_mask
 )
 from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_merged_product_nc_path,
@@ -33,6 +32,7 @@ from lib.esacci_lakes.vars       import ESACCI_LAKES_COVER_CLASS_ICE
 from lib.geo.utils               import (
     get_ds_variable_coverage,
     get_ds_variable_mean,
+    get_geo_bounding_box_from_ds,
     mask_ds,
     select_ds_window_by_geo_bounding_box
 )

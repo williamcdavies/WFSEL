@@ -30,8 +30,8 @@ def add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `esacci_lakes_counts_of_distinct_start_days_csv_path` argument to a
-    :class:`argparse.ArgumentParser`.
+    Adds a `esacci_lakes_counts_of_distinct_start_days_csv_path`
+    argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -44,8 +44,8 @@ def add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path(
 
     Notes
     -----
-    Argument `esacci_lakes_counts_of_distinct_start_days_csv_path` is of type
-    :class:`pathlib.Path`.
+    Argument `esacci_lakes_counts_of_distinct_start_days_csv_path` is of
+    type :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_counts_of_distinct_start_days_csv_path",
@@ -86,7 +86,8 @@ def add_argument_esacci_lakes_id(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `esacci_lakes_id` argument to a :class:`argparse.ArgumentParser`.
+    Adds a `esacci_lakes_id` argument to a
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -132,7 +133,7 @@ def add_argument_esacci_lakes_merged_product_dir_path(
     parser.add_argument(
         "esacci_lakes_merged_product_dir_path",
         type = Path,
-        help = "path to the ESA CCI merged_product directory as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0"
+        help = "path to the ESA CCI Lakes merged_product directory as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0"
     )
 
 
@@ -182,7 +183,8 @@ def add_argument_esacci_lakes_metadata_csv_path(
 
     Notes
     -----
-    Argument `esacci_lakes_metadata_csv_path` is of type :class:`pathlib.Path`.
+    Argument `esacci_lakes_metadata_csv_path` is of type
+    :class:`pathlib.Path`.
     """
     parser.add_argument(
         "esacci_lakes_metadata_csv_path",
@@ -276,7 +278,8 @@ def add_argument_local_data_dir_path(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `local_data_dir_path` argument to a :class:`argparse.ArgumentParser`.
+    Adds a `local_data_dir_path` argument to a
+    :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -301,129 +304,6 @@ def add_argument_local_data_dir_path(
 # ==================================================================================================
 
 
-# Read functions
-# ==================================================================================================
-def read_esacci_lakes_counts_of_distinct_start_days_csv(
-    esacci_lakes_counts_of_distinct_start_days_csv_path: Path
-) -> pd.DataFrame:
-    """
-    Reads `esacci_lakes_counts_of_distinct_start_days_csv_path` into a
-    :class:`pandas.DataFrame` indexed by `esacci_lakes_id`.
-
-    Parameters
-    ----------
-    esacci_lakes_counts_of_distinct_start_days_csv_path : :class:`pathlib.Path`
-        The path to some counts of distinct start days data csv file
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-    """
-    return pd.read_csv(
-        esacci_lakes_counts_of_distinct_start_days_csv_path,
-        index_col = "esacci_lakes_id"
-    )
-
-
-def read_esacci_lakes_hylak_fields_csv(
-    esacci_lakes_hylak_fields_csv_path: Path
-) -> pd.DataFrame:
-    """
-    Reads `esacci_lakes_hylak_fields_csv_path` into a :class:`pandas.DataFrame`
-    indexed by `esacci_lakes_id`.
-
-    Parameters
-    ----------
-    esacci_lakes_hylak_fields_csv_path : :class:`pathlib.Path`
-        The path to some hylak fields data csv file
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-    """
-    return pd.read_csv(
-        esacci_lakes_hylak_fields_csv_path,
-        index_col = "esacci_lakes_id"
-    )
-
-
-def read_esacci_lakes_metadata_csv(
-    esacci_lakes_metadata_csv_path: Path
-) -> pd.DataFrame:
-    """
-    Reads `esacci_lakes_metadata_csv_path` into a :class:`pandas.DataFrame`
-    indexed by `id`.
-
-    Parameters
-    ----------
-    esacci_lakes_metadata_csv_path : :class:`pathlib.Path`
-        The path to the `lakescci_v2.1.0_metadata.csv` file as provided by ESA
-        Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-    """
-    return pd.read_csv(
-        esacci_lakes_metadata_csv_path,
-        delimiter = ";",
-        index_col = "id"
-    )
-
-
-def read_local_data_csv(
-    local_data_csv_path: Path
-) -> pd.DataFrame:
-    """
-    Reads `local_data_csv_path` into a :class:`pandas.DataFrame` indexed by
-    `esacci_lakes_id`.
-
-    Parameters
-    ----------
-    local_data_csv_path : :class:`pathlib.Path`
-        The path to a local data csv file
-
-    Returns
-    -------
-    A :class:`pandas.DataFrame`.
-    """
-    return pd.read_csv(
-        local_data_csv_path,
-        index_col = "esacci_lakes_id"
-    )
-
-
-# ==================================================================================================
-
-
-# System functions
-# ==================================================================================================
-def get_esacci_lakes_filename_time(
-    path: Path
-) -> datetime:
-    """
-    Returns the time encoded in `path`'s stem, as a :class:`datetime.datetime`.
-
-    Parameters
-    ----------
-    path : :class:`pathlib.Path`
-        A path to some `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.*` file
-
-    Returns
-    -------
-    A :class:`datetime.datetime`.
-    """
-    date_string = path.stem.split("-")[5]
-
-    return datetime.strptime(
-        date_string,
-        "%Y%m%d"
-    )
-
-
-# ==================================================================================================
-
-
 # Validator functions
 # ==================================================================================================
 def argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
@@ -437,15 +317,16 @@ def argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists(
     Parameters
     ----------
     esacci_lakes_counts_of_distinct_start_days_csv_path : :class:`pathlib.Path`
-        The argument `esacci_lakes_counts_of_distinct_start_days_csv_path`
+        The argument
+        `esacci_lakes_counts_of_distinct_start_days_csv_path`
 
     loud : :class:`bool`
         If `True`, prints an error message to stderr. default=False
 
     Returns
     -------
-    `True` if `esacci_lakes_counts_of_distinct_start_days_csv_path` exists.
-    `False` otherwise.
+    `True` if `esacci_lakes_counts_of_distinct_start_days_csv_path`
+    exists. `False` otherwise.
     """
     if esacci_lakes_counts_of_distinct_start_days_csv_path.exists():
         return True
@@ -477,7 +358,8 @@ def argument_esacci_lakes_hylak_fields_csv_path_exists(
 
     Returns
     -------
-    `True` if `esacci_lakes_hylak_fields_csv_path` exists. `False` otherwise.
+    `True` if `esacci_lakes_hylak_fields_csv_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_hylak_fields_csv_path.exists():
         return True
@@ -509,8 +391,8 @@ def argument_esacci_lakes_merged_product_dir_path_is_dir(
 
     Returns
     -------
-    `True` if `esacci_lakes_merged_product_dir_path` is a directory. `False`
-    otherwise.
+    `True` if `esacci_lakes_merged_product_dir_path` is a directory.
+    `False` otherwise.
     """
     if esacci_lakes_merged_product_dir_path.is_dir():
         return True
@@ -542,7 +424,8 @@ def argument_esacci_lakes_merged_product_nc_path_exists(
 
     Returns
     -------
-    `True` if `esacci_lakes_merged_product_nc_path` exists. `False` otherwise.
+    `True` if `esacci_lakes_merged_product_nc_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_merged_product_nc_path.exists():
         return True
@@ -574,7 +457,8 @@ def argument_esacci_lakes_metadata_csv_path_exists(
 
     Returns
     -------
-    `True` if `esacci_lakes_metadata_csv_path` exists. `False` otherwise.
+    `True` if `esacci_lakes_metadata_csv_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_metadata_csv_path.exists():
         return True
@@ -606,7 +490,8 @@ def argument_esacci_lakes_static_lake_mask_nc_path_exists(
 
     Returns
     -------
-    `True` if `esacci_lakes_static_lake_mask_nc_path` exists. `False` otherwise.
+    `True` if `esacci_lakes_static_lake_mask_nc_path` exists. `False`
+    otherwise.
     """
     if esacci_lakes_static_lake_mask_nc_path.exists():
         return True
@@ -638,8 +523,8 @@ def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(
 
     Returns
     -------
-    `True` if `esacci_lakes_variable` is in `ESACCI_LAKES_VARIABLES`. `False`
-    otherwise.
+    `True` if `esacci_lakes_variable` is in `ESACCI_LAKES_VARIABLES`.
+    `False` otherwise.
     """
     if esacci_lakes_variable in ESACCI_LAKES_VARIABLES:
         return True
@@ -715,6 +600,135 @@ def argument_local_data_dir_path_is_dir(
         )
 
     return False
+
+
+# ==================================================================================================
+
+
+# System functions
+# ==================================================================================================
+def get_esacci_lakes_merged_product_datetime(
+    esacci_lakes_merged_product_file_path: Path
+) -> datetime:
+    """
+    Returns the time encoded in
+    `esacci_lakes_merged_product_file_path`'s stem, as a
+    :class:`datetime.datetime`.
+
+    Parameters
+    ----------
+    esacci_lakes_merged_product_file_path : :class:`pathlib.Path`
+        The path to some
+        `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.*` file as
+        provided by ESA Lakes Climate Change Initiative (Lakes_cci):
+        Lake products, Version 3.0
+
+    Returns
+    -------
+    A :class:`datetime.datetime`.
+    """
+    date_string = esacci_lakes_merged_product_file_path.stem.split("-")[5]
+
+    return datetime.strptime(
+        date_string,
+        "%Y%m%d"
+    )
+
+
+# ==================================================================================================
+
+
+# Read functions
+# ==================================================================================================
+def read_esacci_lakes_counts_of_distinct_start_days_csv(
+    esacci_lakes_counts_of_distinct_start_days_csv_path: Path
+) -> pd.DataFrame:
+    """
+    Reads `esacci_lakes_counts_of_distinct_start_days_csv_path` into a
+    :class:`pandas.DataFrame` indexed by "esacci_lakes_id".
+
+    Parameters
+    ----------
+    esacci_lakes_counts_of_distinct_start_days_csv_path : :class:`pathlib.Path`
+        The path to some counts of distinct start days data csv file
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+    """
+    return pd.read_csv(
+        esacci_lakes_counts_of_distinct_start_days_csv_path,
+        index_col = "esacci_lakes_id"
+    )
+
+
+def read_esacci_lakes_hylak_fields_csv(
+    esacci_lakes_hylak_fields_csv_path: Path
+) -> pd.DataFrame:
+    """
+    Reads `esacci_lakes_hylak_fields_csv_path` into a
+    :class:`pandas.DataFrame` indexed by "esacci_lakes_id".
+
+    Parameters
+    ----------
+    esacci_lakes_hylak_fields_csv_path : :class:`pathlib.Path`
+        The path to some hylak fields data csv file
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+    """
+    return pd.read_csv(
+        esacci_lakes_hylak_fields_csv_path,
+        index_col = "esacci_lakes_id"
+    )
+
+
+def read_esacci_lakes_metadata_csv(
+    esacci_lakes_metadata_csv_path: Path
+) -> pd.DataFrame:
+    """
+    Reads `esacci_lakes_metadata_csv_path` into a
+    :class:`pandas.DataFrame` indexed by "id".
+
+    Parameters
+    ----------
+    esacci_lakes_metadata_csv_path : :class:`pathlib.Path`
+        The path to the `lakescci_v2.1.0_metadata.csv` file as provided
+        by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
+        products, Version 3.0
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+    """
+    return pd.read_csv(
+        esacci_lakes_metadata_csv_path,
+        delimiter = ";",
+        index_col = "id"
+    )
+
+
+def read_local_data_csv(
+    local_data_csv_path: Path
+) -> pd.DataFrame:
+    """
+    Reads `local_data_csv_path` into a :class:`pandas.DataFrame` indexed
+    by "esacci_lakes_id".
+
+    Parameters
+    ----------
+    local_data_csv_path : :class:`pathlib.Path`
+        The path to some local data csv file
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+    """
+    return pd.read_csv(
+        local_data_csv_path,
+        index_col = "esacci_lakes_id"
+    )
 
 
 # ==================================================================================================

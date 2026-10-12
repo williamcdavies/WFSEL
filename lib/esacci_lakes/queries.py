@@ -10,9 +10,6 @@ Written by William Chuter-Davies
 # Related Third-party Imports
 from psycopg import sql
 
-
-# Queries
-# ==================================================================================================
 DISTINCT_START_DAYS_QUERY = sql.SQL("""
 SELECT DISTINCT
     s.start_day AS "day"
@@ -24,6 +21,3 @@ WHERE l.id = %(id)s
     AND s.density > 1
 ORDER BY s.start_day
 """)
-
-
-# ==================================================================================================
