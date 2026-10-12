@@ -267,7 +267,7 @@ def sort_df_columns_numerically(
     return df.reindex(columns = columns)
 
 
-def subtract_columns_mean_from_df(
+def subtract_columns_row_wise_mean_from_df(
     df:      pd.DataFrame,
     columns: list[str]
 ) -> pd.DataFrame:
