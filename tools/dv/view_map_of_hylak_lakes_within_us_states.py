@@ -41,13 +41,7 @@ from lib.proc.vars  import (
     RETURN_SUCCESS
 )
 
-
-# Constants
-# ==================================================================================================
 PROG = "view_map_of_hylak_lakes_within_us_states.py"
-
-
-# ==================================================================================================
 
 
 # Parser functions
@@ -90,227 +84,14 @@ def build_parser(
     """
     return _build_parser(
         PROG,
-        "Produces a map visualisation of all lakes in spatial.lakes_points (Same lakes as provided by HYDROLakes v1.0) within a set of U.S. states.",
-        positional_arguments = [
+        "Produces a map visualisation of all lakes in spatial.lakes_points (Same lakes as provided by HydroLAKES v1.0) within a set of U.S. states.",
+        positional_args = [
             add_argument_stusps
         ],
-        optional_arguments   = [
+        optional_args   = [
             add_argument_output
         ]
     )
-
-
-# ==================================================================================================
-
-
-# Plot functions
-# ==================================================================================================
-def plot_on_ax(
-    ax: Axes,
-    *,
-    states_gdf:        gpd.GeoDataFrame,
-    target_states_gdf: gpd.GeoDataFrame,
-    target_lakes_gdf:  gpd.GeoDataFrame
-) -> None:
-    """
-    Plots `states_gdf`, `target_states_gdf`, and `target_lakes_gdf` onto
-    `ax`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    states_gdf : :class:`geopandas.GeoDataFrame`
-        All states
-
-    target_states_gdf : :class:`geopandas.GeoDataFrame`
-        The target states
-
-    target_lakes_gdf : :class:`geopandas.GeoDataFrame`
-        The target lakes
-
-    Returns
-    -------
-    None.
-    """
-    plot_states_gdf(
-        ax,
-        states_gdf
-    )
-    plot_target_states_gdf(
-        ax,
-        target_states_gdf
-    )
-    plot_target_lakes_gdf(
-        ax,
-        target_lakes_gdf
-    )
-
-
-def plot_states_gdf(
-    ax:         Axes,
-    states_gdf: gpd.GeoDataFrame
-) -> None:
-    """
-    Plots `states_gdf` onto `ax`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    states_gdf : :class:`geopandas.GeoDataFrame`
-        All states
-
-    Returns
-    -------
-    None.
-    """
-    states_gdf.plot(
-        ax        = ax,
-        facecolor = "#FFFFFF",
-        edgecolor = "#000000"
-    )
-
-
-def plot_target_lakes_gdf(
-    ax:               Axes,
-    target_lakes_gdf: gpd.GeoDataFrame
-) -> None:
-    """
-    Plots `target_lakes_gdf` onto `ax`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    target_lakes_gdf : :class:`geopandas.GeoDataFrame`
-        The target lakes
-
-    Returns
-    -------
-    None.
-    """
-    target_lakes_gdf.plot(
-        ax         = ax,
-        color      = "#000000",
-        markersize = 2
-    )
-
-
-def plot_target_states_gdf(
-    ax:                Axes,
-    target_states_gdf: gpd.GeoDataFrame
-) -> None:
-    """
-    Plots `target_states_gdf` onto `ax`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    target_states_gdf : :class:`geopandas.GeoDataFrame`
-        The target states
-
-    Returns
-    -------
-    None.
-    """
-    target_states_gdf.plot(
-        ax        = ax,
-        facecolor = "#A9C8E9",
-        edgecolor = "#000000"
-    )
-
-
-def set_ax_properties(
-    ax:                Axes,
-    target_states_gdf: gpd.GeoDataFrame
-) -> None:
-    """
-    Sets `ax`'s properties, including its x/y limits (from
-    `target_states_gdf`'s total bounds) and clearing its x/y ticks.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to set properties on
-
-    target_states_gdf : :class:`geopandas.GeoDataFrame`
-        The target states
-
-    Returns
-    -------
-    None.
-    """
-    set_ax_xlim_to_gdf_total_bounds(
-        ax,
-        target_states_gdf
-    )
-    set_ax_ylim_to_gdf_total_bounds(
-        ax,
-        target_states_gdf
-    )
-    set_ax_xticks_to_empty_list(ax)
-    set_ax_yticks_to_empty_list(ax)
-
-
-# ==================================================================================================
-
-
-# Read functions
-# ==================================================================================================
-def get_lakes_gdf(
-    connection: sqlalchemy.Connection
-) -> gpd.GeoDataFrame:
-    """
-    Returns a :class:`geopandas.GeoDataFrame` of all lakes.
-
-    Parameters
-    ----------
-    connection : :class:`sqlalchemy.Connection`
-        The connection
-
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-    """
-    query = """
-        SELECT
-            l.id,
-            l.geom
-        FROM lakes_points AS l
-        """
-
-    return get_gdf_from_postgis(query, connection)
-
-
-def get_states_gdf(
-    connection: sqlalchemy.Connection
-) -> gpd.GeoDataFrame:
-    """
-    Returns a :class:`geopandas.GeoDataFrame` of all states.
-
-    Parameters
-    ----------
-    connection : :class:`sqlalchemy.Connection`
-        The connection
-
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-    """
-    query = """
-        SELECT
-            s.stusps,
-            s.geom
-        FROM states AS s
-        """
-
-    return get_gdf_from_postgis(query, connection)
 
 
 # ==================================================================================================
@@ -365,7 +146,8 @@ def arguments_are_valid(
 
     Returns
     -------
-    `True` if all arguments are successfully validated. `False` otherwise.
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
     """
     return _arguments_are_valid(
         args,
@@ -379,6 +161,221 @@ def arguments_are_valid(
                 "output"
             )
         ]
+    )
+
+
+# ==================================================================================================
+
+
+# Plot functions
+# ==================================================================================================
+def plot_on_ax(
+    ax: Axes,
+    *,
+    states_gdf:        gpd.GeoDataFrame,
+    target_states_gdf: gpd.GeoDataFrame,
+    target_lakes_gdf:  gpd.GeoDataFrame
+) -> None:
+    """
+    Plots onto `ax`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    states_gdf : :class:`geopandas.GeoDataFrame`
+        The states geodataframe
+
+    target_states_gdf : :class:`geopandas.GeoDataFrame`
+        The target states geodataframe
+
+    target_lakes_gdf : :class:`geopandas.GeoDataFrame`
+        The target lakes geodataframe
+
+    Returns
+    -------
+    None.
+    """
+    plot_states_gdf(
+        ax,
+        states_gdf
+    )
+    plot_target_states_gdf(
+        ax,
+        target_states_gdf
+    )
+    plot_target_lakes_gdf(
+        ax,
+        target_lakes_gdf
+    )
+
+
+def plot_states_gdf(
+    ax:         Axes,
+    states_gdf: gpd.GeoDataFrame
+) -> None:
+    """
+    Plots `states_gdf` onto `ax`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    states_gdf : :class:`geopandas.GeoDataFrame`
+        The states geodataframe
+
+    Returns
+    -------
+    None.
+    """
+    states_gdf.plot(
+        ax        = ax,
+        facecolor = "#FFFFFF",
+        edgecolor = "#000000"
+    )
+
+
+def plot_target_lakes_gdf(
+    ax:               Axes,
+    target_lakes_gdf: gpd.GeoDataFrame
+) -> None:
+    """
+    Plots `target_lakes_gdf` onto `ax`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    target_lakes_gdf : :class:`geopandas.GeoDataFrame`
+        The target lakes geodataframe
+
+    Returns
+    -------
+    None.
+    """
+    target_lakes_gdf.plot(
+        ax         = ax,
+        color      = "#000000",
+        markersize = 2
+    )
+
+
+def plot_target_states_gdf(
+    ax:                Axes,
+    target_states_gdf: gpd.GeoDataFrame
+) -> None:
+    """
+    Plots `target_states_gdf` onto `ax`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    target_states_gdf : :class:`geopandas.GeoDataFrame`
+        The target states geodataframe
+
+    Returns
+    -------
+    None.
+    """
+    target_states_gdf.plot(
+        ax        = ax,
+        facecolor = "#A9C8E9",
+        edgecolor = "#000000"
+    )
+
+
+def set_ax_properties(
+    ax:                Axes,
+    target_states_gdf: gpd.GeoDataFrame
+) -> None:
+    """
+    Sets `ax`'s properties.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    target_states_gdf : :class:`geopandas.GeoDataFrame`
+        The target states geodataframe
+
+    Returns
+    -------
+    None.
+    """
+    set_ax_xlim_to_gdf_total_bounds(
+        ax,
+        target_states_gdf
+    )
+    set_ax_ylim_to_gdf_total_bounds(
+        ax,
+        target_states_gdf
+    )
+    set_ax_xticks_to_empty_list(ax)
+    set_ax_yticks_to_empty_list(ax)
+
+
+# ==================================================================================================
+
+
+# Read functions
+# ==================================================================================================
+def get_lakes_gdf(
+    connection: sqlalchemy.Connection
+) -> gpd.GeoDataFrame:
+    """
+    Returns a :class:`geopandas.GeoDataFrame` of all lakes.
+
+    Parameters
+    ----------
+    connection : :class:`sqlalchemy.Connection`
+        The connection
+
+    Returns
+    -------
+    A :class:`geopandas.GeoDataFrame`.
+    """
+    query = """
+        SELECT
+            l.id, l.geom
+        FROM lakes_points AS l
+        """
+
+    return get_gdf_from_postgis(
+        query,
+        connection
+    )
+
+
+def get_states_gdf(
+    connection: sqlalchemy.Connection
+) -> gpd.GeoDataFrame:
+    """
+    Returns a :class:`geopandas.GeoDataFrame` of all states.
+
+    Parameters
+    ----------
+    connection : :class:`sqlalchemy.Connection`
+        The connection
+
+    Returns
+    -------
+    A :class:`geopandas.GeoDataFrame`.
+    """
+    query = """
+        SELECT
+            s.stusps, s.geom
+        FROM states AS s
+        """
+
+    return get_gdf_from_postgis(
+        query,
+        connection
     )
 
 
@@ -414,7 +411,10 @@ def main(
         args.stusps
     )
 
-    fig, ax = plt.subplots()
+    (
+        fig,
+        ax
+    ) = plt.subplots()
 
     plot_on_ax(
         ax,

@@ -47,13 +47,7 @@ from lib.proc.vars               import (
     RETURN_SUCCESS
 )
 
-
-# Constants
-# ==================================================================================================
 PROG = "view_distribution_of_esacci_lakes_hylak_field.py"
-
-
-# ==================================================================================================
 
 
 # Parser functions
@@ -95,341 +89,16 @@ def build_parser(
     """
     return _build_parser(
         PROG,
-        "Produces a distribution visualisation of a HydroLAKES field of all lakes in spatial.esacci_lakes (Same lakes as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0)",
-        positional_arguments = [
+        "Produces a distribution visualisation of a HydroLAKES field of all lakes in spatial.esacci_lakes (Same lakes as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0).",
+        positional_args = [
             add_argument_hylak_field,
             add_argument_esacci_lakes_hylak_fields_csv_path,
             add_argument_scale
         ],
-        optional_arguments   = [
+        optional_args   = [
             add_argument_output
         ]
     )
-
-
-# ==================================================================================================
-
-
-# Plot functions
-# ==================================================================================================
-def plot_on_box_ax(
-    box_ax:                Axes,
-    hylak_field_ser:       pd.Series,
-    hylak_field_quantiles: list[float]
-) -> None:
-    """
-    Plots a box and whisker plot and quantile lines of
-    `hylak_field_ser` onto `box_ax`.
-
-    Parameters
-    ----------
-    box_ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    hylak_field_ser : :class:`pandas.Series`
-        The series
-
-    hylak_field_quantiles : list[:class:`float`]
-        The quantile values to draw lines at
-
-    Returns
-    -------
-    None.
-    """
-    plot_ser_boxplot(
-        box_ax,
-        hylak_field_ser
-    )
-    plot_quantile_lines(
-        box_ax,
-        hylak_field_quantiles,
-        [
-            "Q1",
-            "Q2",
-            "Q3"
-        ]
-    )
-
-
-def plot_on_hist_ax(
-    hist_ax:               Axes,
-    hylak_field_ser:       pd.Series,
-    hylak_field_quantiles: list[float],
-    scale:                 str
-) -> None:
-    """
-    Plots a histogram and quantile lines of `hylak_field_ser` onto
-    `hist_ax`, using `scale`.
-
-    Parameters
-    ----------
-    hist_ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    hylak_field_ser : :class:`pandas.Series`
-        The series
-
-    hylak_field_quantiles : list[:class:`float`]
-        The quantile values to draw lines at
-
-    scale : :class:`str`
-        One of `AXIS_SCALES`
-
-    Returns
-    -------
-    None.
-
-    Raises
-    ------
-    ValueError
-        If `scale` is not in `AXIS_SCALES`.
-    """
-    if scale == "linear":
-        plot_ser_histogram_linear(
-            hist_ax,
-            hylak_field_ser
-        )
-    elif scale == "log":
-        plot_ser_histogram_log(
-            hist_ax,
-            hylak_field_ser
-        )
-    else:
-        raise ValueError(f"expected `scale` to be one of {", ".join(AXIS_SCALES)}: {scale}")
-
-    plot_quantile_lines(
-        hist_ax,
-        hylak_field_quantiles,
-        [
-            "Q1",
-            "Q2",
-            "Q3"
-        ]
-    )
-
-
-def plot_quantile_lines(
-    ax:        Axes,
-    quantiles: list[float],
-    labels:    list[str]
-) -> None:
-    """
-    Plots vertical dotted lines on `ax` at each of `quantiles`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    quantiles : list[:class:`float`]
-        The values to draw lines at
-
-    labels : list[:class:`str`]
-        The label for each of `quantiles`
-
-    Returns
-    -------
-    None.
-    """
-    cmap = plt.get_cmap("tab10")
-
-    for (
-        i,
-        (
-            quantile,
-            label
-        )
-    ) in enumerate(
-        zip(
-            quantiles,
-            labels
-        )
-    ):
-        ax.axvline(
-            x         = quantile,
-            color     = cmap(i),
-            linestyle = ":",
-            label     = f"{label}: {quantile:.3e}"
-        )
-
-
-def plot_ser_boxplot(
-    ax:  Axes,
-    ser: pd.Series
-) -> None:
-    """
-    Plots a box and whisker plot of `ser` onto `ax`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    ser : :class:`pandas.Series`
-        The series
-
-    Returns
-    -------
-    None.
-    """
-    ax.boxplot(
-        x           = ser.dropna(),
-        orientation = "horizontal"
-    )
-
-
-def plot_ser_histogram_linear(
-    ax:  Axes,
-    ser: pd.Series
-) -> None:
-    """
-    Plots a histogram of `ser` onto `ax` with linearly spaced bins.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    ser : :class:`pandas.Series`
-        The series
-
-    Returns
-    -------
-    None.
-    """
-    ser  = ser.dropna()
-    bins = 30
-
-    ax.hist(
-        x         = ser,
-        bins      = bins,
-        facecolor = "#FFFFFF",
-        edgecolor = "#000000"
-    )
-
-
-def plot_ser_histogram_log(
-    ax:  Axes,
-    ser: pd.Series
-) -> None:
-    """
-    Plots a histogram of `ser` onto `ax` with logarithmically spaced bins.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes to plot onto
-
-    ser : :class:`pandas.Series`
-        The series
-
-    Returns
-    -------
-    None.
-    """
-    ser  = ser.dropna()
-    bins = np.logspace(
-        np.log10(ser.min()),
-        np.log10(ser.max()),
-        30
-    )
-
-    ax.hist(
-        x         = ser,
-        bins      = bins,
-        facecolor = "#FFFFFF",
-        edgecolor = "#000000"
-    )
-
-
-def set_box_ax_properties(
-    box_ax: Axes,
-    scale:  str
-) -> None:
-    """
-    Sets `box_ax`'s x-axis scale to `scale`.
-
-    Parameters
-    ----------
-    box_ax : :class:`matplotlib.axes.Axes`
-        The axes to set properties on
-
-    scale : :class:`str`
-        One of `AXIS_SCALES`
-
-    Returns
-    -------
-    None.
-
-    Raises
-    ------
-    ValueError
-        If `scale` is not in `AXIS_SCALES`.
-    """
-    if scale == "linear":
-        set_ax_xscale_to_linear(box_ax)
-    elif scale == "log":
-        set_ax_xscale_to_log(box_ax)
-    else:
-        raise ValueError(f"expected `scale` to be one of {", ".join(AXIS_SCALES)}: {scale}")
-
-
-def set_fig_properties(
-    fig:         Figure,
-    hylak_field: str,
-    scale:       str
-) -> None:
-    """
-    Sets `fig`'s title from `hylak_field` and `scale`.
-
-    Parameters
-    ----------
-    fig : :class:`matplotlib.figure.Figure`
-        The figure to set properties on
-
-    hylak_field : :class:`str`
-        The HydroLAKES field id
-
-    scale : :class:`str`
-        One of `AXIS_SCALES`
-
-    Returns
-    -------
-    None.
-    """
-    fig.suptitle(f"{scale.capitalize()} Distribution of {HYLAK_FIELDS[hylak_field].long_name}")
-
-
-def set_hist_ax_properties(
-    hist_ax: Axes,
-    scale:   str
-) -> None:
-    """
-    Sets `hist_ax`'s x-axis scale to `scale`.
-
-    Parameters
-    ----------
-    hist_ax : :class:`matplotlib.axes.Axes`
-        The axes to set properties on
-
-    scale : :class:`str`
-        One of `AXIS_SCALES`
-
-    Returns
-    -------
-    None.
-
-    Raises
-    ------
-    ValueError
-        If `scale` is not in `AXIS_SCALES`.
-    """
-    if scale == "linear":
-        set_ax_xscale_to_linear(hist_ax)
-    elif scale == "log":
-        set_ax_xscale_to_log(hist_ax)
-    else:
-        raise ValueError(f"expected `scale` to be one of {", ".join(AXIS_SCALES)}: {scale}")
 
 
 # ==================================================================================================
@@ -482,7 +151,8 @@ def arguments_are_valid(
 
     Returns
     -------
-    `True` if all arguments are successfully validated. `False` otherwise.
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
     """
     return _arguments_are_valid(
         args,
@@ -505,6 +175,330 @@ def arguments_are_valid(
             )
         ]
     )
+
+
+# ==================================================================================================
+
+
+# Plot functions
+# ==================================================================================================
+def plot_on_box_ax(
+    box_ax:                Axes,
+    hylak_field_ser:       pd.Series,
+    hylak_field_quantiles: list[float]
+) -> None:
+    """
+    Plots onto `box_ax`.
+
+    Parameters
+    ----------
+    box_ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    hylak_field_ser : :class:`pandas.Series`
+        The series
+
+    hylak_field_quantiles : list[:class:`float`]
+        The quantiles
+
+    Returns
+    -------
+    None.
+    """
+    plot_ser_boxplot(
+        box_ax,
+        hylak_field_ser
+    )
+    plot_quantile_lines(
+        box_ax,
+        hylak_field_quantiles,
+        [
+            "Q1",
+            "Q2",
+            "Q3"
+        ]
+    )
+
+
+def plot_on_hist_ax(
+    hist_ax:               Axes,
+    hylak_field_ser:       pd.Series,
+    hylak_field_quantiles: list[float],
+    scale:                 str
+) -> None:
+    """
+    Plots onto `hist_ax`.
+
+    Parameters
+    ----------
+    hist_ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    hylak_field_ser : :class:`pandas.Series`
+        The series
+
+    hylak_field_quantiles : list[:class:`float`]
+        The quantiles
+
+    scale : :class:`str`
+        One of `AXIS_SCALES`
+
+    Returns
+    -------
+    None.
+
+    Raises
+    ------
+    ValueError
+        If `scale` is not in `AXIS_SCALES`.
+    """
+    if scale == "linear":
+        plot_ser_histogram_linear(
+            hist_ax,
+            hylak_field_ser
+        )
+    elif scale == "log":
+        plot_ser_histogram_log(
+            hist_ax,
+            hylak_field_ser
+        )
+    else:
+        raise ValueError(f"expected `scale` to be one of {", ".join(AXIS_SCALES)}: {scale}")
+
+    plot_quantile_lines(
+        hist_ax,
+        hylak_field_quantiles,
+        [
+            "Q1",
+            "Q2",
+            "Q3"
+        ]
+    )
+
+
+def plot_quantile_lines(
+    ax:        Axes,
+    quantiles: list[float],
+    labels:    list[str]
+) -> None:
+    """
+    Plots vertical dotted lines on `ax` at each of `quantiles`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    quantiles : list[:class:`float`]
+        The quantile values
+
+    labels : list[:class:`str`]
+        The quantile labels
+
+    Returns
+    -------
+    None.
+    """
+    cmap = plt.get_cmap("tab10")
+
+    for (
+        i,
+        (
+            quantile,
+            label
+        )
+    ) in enumerate(
+        zip(
+            quantiles,
+            labels
+        )
+    ):
+        ax.axvline(
+            x         = quantile,
+            color     = cmap(i),
+            linestyle = ":",
+            label     = f"{label}: {quantile:.3e}"
+        )
+
+
+def plot_ser_boxplot(
+    ax:  Axes,
+    ser: pd.Series
+) -> None:
+    """
+    Plots a box and whisker plot of `ser` onto `ax`.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    ser : :class:`pandas.Series`
+        The series
+
+    Returns
+    -------
+    None.
+    """
+    ax.boxplot(
+        x           = ser.dropna(),
+        orientation = "horizontal"
+    )
+
+
+def plot_ser_histogram_linear(
+    ax:  Axes,
+    ser: pd.Series
+) -> None:
+    """
+    Plots a histogram of `ser` onto `ax` with linearly spaced bins.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    ser : :class:`pandas.Series`
+        The series
+
+    Returns
+    -------
+    None.
+    """
+    ser  = ser.dropna()
+    bins = 30
+
+    ax.hist(
+        x         = ser,
+        bins      = bins,
+        facecolor = "#FFFFFF",
+        edgecolor = "#000000"
+    )
+
+
+def plot_ser_histogram_log(
+    ax:  Axes,
+    ser: pd.Series
+) -> None:
+    """
+    Plots a histogram of `ser` onto `ax` with logarithmically spaced
+    bins.
+
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    ser : :class:`pandas.Series`
+        The series
+
+    Returns
+    -------
+    None.
+    """
+    ser  = ser.dropna()
+    bins = np.logspace(
+        np.log10(ser.min()),
+        np.log10(ser.max()),
+        30
+    )
+
+    ax.hist(
+        x         = ser,
+        bins      = bins,
+        facecolor = "#FFFFFF",
+        edgecolor = "#000000"
+    )
+
+
+def set_box_ax_properties(
+    box_ax: Axes,
+    scale:  str
+) -> None:
+    """
+    Sets `box_ax`'s properties.
+
+    Parameters
+    ----------
+    box_ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    scale : :class:`str`
+        One of `AXIS_SCALES`
+
+    Returns
+    -------
+    None.
+
+    Raises
+    ------
+    ValueError
+        If `scale` is not in `AXIS_SCALES`.
+    """
+    if scale == "linear":
+        set_ax_xscale_to_linear(box_ax)
+    elif scale == "log":
+        set_ax_xscale_to_log(box_ax)
+    else:
+        raise ValueError(f"expected `scale` to be one of {", ".join(AXIS_SCALES)}: {scale}")
+
+
+def set_fig_properties(
+    fig:         Figure,
+    hylak_field: str,
+    scale:       str
+) -> None:
+    """
+    Sets `fig`'s properties.
+
+    Parameters
+    ----------
+    fig : :class:`matplotlib.figure.Figure`
+        The figure
+
+    hylak_field : :class:`str`
+        The HydroLAKES field
+
+    scale : :class:`str`
+        One of `AXIS_SCALES`
+
+    Returns
+    -------
+    None.
+    """
+    fig.suptitle(f"{scale.capitalize()} Distribution of {HYLAK_FIELDS[hylak_field].long_name}")
+
+
+def set_hist_ax_properties(
+    hist_ax: Axes,
+    scale:   str
+) -> None:
+    """
+    Sets `hist_ax`'s properties.
+
+    Parameters
+    ----------
+    hist_ax : :class:`matplotlib.axes.Axes`
+        The axes
+
+    scale : :class:`str`
+        One of `AXIS_SCALES`
+
+    Returns
+    -------
+    None.
+
+    Raises
+    ------
+    ValueError
+        If `scale` is not in `AXIS_SCALES`.
+    """
+    if scale == "linear":
+        set_ax_xscale_to_linear(hist_ax)
+    elif scale == "log":
+        set_ax_xscale_to_log(hist_ax)
+    else:
+        raise ValueError(f"expected `scale` to be one of {", ".join(AXIS_SCALES)}: {scale}")
 
 
 # ==================================================================================================
@@ -534,11 +528,20 @@ def main(
         ]
     )
 
-    fig, (hist_ax, box_ax) = plt.subplots(
+    (
+        fig,
+        (
+            hist_ax,
+            box_ax
+        )
+    ) = plt.subplots(
         nrows       = 2,
         ncols       = 1,
         sharex      = True,
-        gridspec_kw = {"height_ratios": [3, 1]}
+        gridspec_kw = {"height_ratios": [
+            3,
+            1
+        ]}
     )
 
     plot_on_hist_ax(

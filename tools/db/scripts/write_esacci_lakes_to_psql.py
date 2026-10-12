@@ -16,10 +16,7 @@ import xarray as xr
 from psycopg import sql
 
 # Local Application/Library Specific Imports
-from lib.esacci_lakes.utils.geo  import (
-    get_esacci_lakes_id_mask,
-    get_geo_bounding_box_from_esacci_lakes_static_lake_mask
-)
+from lib.esacci_lakes.utils.geo  import get_esacci_lakes_id_mask
 from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_metadata_csv_path,
     add_argument_esacci_lakes_static_lake_mask_nc_path,
@@ -29,7 +26,8 @@ from lib.esacci_lakes.utils.proc import (
 )
 from lib.geo.utils               import (
     get_da_geometry_as_wkb,
-    select_ds_by_geo_bounding_box
+    get_geo_bounding_box_from_ds,
+    select_ds_window_by_geo_bounding_box
 )
 from lib.proc.utils              import (
     arguments_are_valid as _arguments_are_valid,
@@ -40,12 +38,9 @@ from lib.proc.vars               import (
     RETURN_SUCCESS
 )
 
-
-# Constants
-# ==================================================================================================
 PROG  = "write_esacci_lakes_to_psql.py"
 QUERY = sql.SQL("""
-INSERT INTO esacci_lakes_test
+INSERT INTO esacci_lakes
 (
     id,
     short_name,
@@ -89,9 +84,6 @@ INSERT INTO esacci_lakes_test
 """)
 
 
-# ==================================================================================================
-
-
 # Parser functions
 # ==================================================================================================
 def build_parser(
@@ -106,7 +98,7 @@ def build_parser(
     return _build_parser(
         PROG,
         "Writes ESA Lakes Climate Change Initiative (Lakes_cci): Lake products, Version 3.0 metadata and geometries to psql for use with PostGIS.",
-        positional_arguments = [
+        positional_args = [
             add_argument_esacci_lakes_metadata_csv_path,
             add_argument_esacci_lakes_static_lake_mask_nc_path
         ]
@@ -131,7 +123,8 @@ def arguments_are_valid(
 
     Returns
     -------
-    `True` if all arguments are successfully validated. `False` otherwise.
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
     """
     return _arguments_are_valid(
         args,
@@ -157,11 +150,11 @@ def write_esacci_lake_to_psql(
     esacci_lakes_id:                  int,
     esacci_lakes_metadata_df:         pd.DataFrame,
     esacci_lakes_static_lake_mask_ds: xr.Dataset,
-    conn:                             psycopg.Connection
+    connection:                       psycopg.Connection
 ) -> None:
     """
-    Writes `esacci_lakes_id`'s metadata and geometry to the "esacci_lakes"
-    table.
+    Writes `esacci_lakes_id`'s metadata and geometry to the
+    "esacci_lakes" table.
 
     Parameters
     ----------
@@ -174,7 +167,7 @@ def write_esacci_lake_to_psql(
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
         The ESA CCI Lakes static lake mask
 
-    conn : :class:`psycopg.Connection`
+    connection : :class:`psycopg.Connection`
         The connection
 
     Returns
@@ -196,15 +189,15 @@ def write_esacci_lake_to_psql(
         ]
     ]
 
-    geo_bounding_box = get_geo_bounding_box_from_esacci_lakes_static_lake_mask(
+    geo_bounding_box = get_geo_bounding_box_from_ds(
         esacci_lakes_static_lake_mask_ds,
-        lat_max_box = lat_max_box,
-        lat_min_box = lat_min_box,
-        lon_max_box = lon_max_box,
-        lon_min_box = lon_min_box
+        lat_max_box = lat_max_box, # type: ignore
+        lat_min_box = lat_min_box, # type: ignore
+        lon_max_box = lon_max_box, # type: ignore
+        lon_min_box = lon_min_box  # type: ignore
     )
 
-    static_lake_mask_ds_window = select_ds_by_geo_bounding_box(
+    static_lake_mask_ds_window = select_ds_window_by_geo_bounding_box(
         esacci_lakes_static_lake_mask_ds,
         geo_bounding_box
     )
@@ -216,7 +209,7 @@ def write_esacci_lake_to_psql(
 
     row = esacci_lakes_metadata_df.loc[esacci_lakes_id]
 
-    with conn.cursor() as cur:
+    with connection.cursor() as cur:
         cur.execute(
             QUERY,
             params = {
@@ -245,11 +238,11 @@ def write_esacci_lake_to_psql(
 def write_esacci_lakes_to_psql(
     esacci_lakes_metadata_df:         pd.DataFrame,
     esacci_lakes_static_lake_mask_ds: xr.Dataset,
-    conn:                             psycopg.Connection
+    connection:                       psycopg.Connection
 ) -> None:
     """
-    Writes each of `esacci_lakes_metadata_df`'s lakes to the "esacci_lakes"
-    table.
+    Writes each of `esacci_lakes_metadata_df`'s lakes to the
+    "esacci_lakes" table.
 
     Parameters
     ----------
@@ -259,7 +252,7 @@ def write_esacci_lakes_to_psql(
     esacci_lakes_static_lake_mask_ds : :class:`xarray.Dataset`
         The ESA CCI Lakes static lake mask
 
-    conn : :class:`psycopg.Connection`
+    connection : :class:`psycopg.Connection`
         The connection
 
     Returns
@@ -271,7 +264,7 @@ def write_esacci_lakes_to_psql(
             esacci_lakes_id,
             esacci_lakes_metadata_df,
             esacci_lakes_static_lake_mask_ds,
-            conn
+            connection
         )
 
 
@@ -292,12 +285,12 @@ def main(
 
     with (
         xr.open_dataset(args.esacci_lakes_static_lake_mask_nc_path) as esacci_lakes_static_lake_mask_ds,
-        psycopg.connect("dbname=spatial")                           as conn
+        psycopg.connect("dbname=spatial")                           as connection
     ):
         write_esacci_lakes_to_psql(
             esacci_lakes_metadata_df,
             esacci_lakes_static_lake_mask_ds,
-            conn
+            connection
         )
 
     return RETURN_SUCCESS
