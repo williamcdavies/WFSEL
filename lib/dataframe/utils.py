@@ -19,7 +19,7 @@ from lib.phys.vars import FREEZING_POINT_OF_WATER_K
 
 # DataFrame functions
 # ==================================================================================================
-def convert_df_from_kelvin_to_celsius(
+def convert_df_units_from_kelvin_to_celsius(
     df: pd.DataFrame
 ) -> pd.DataFrame:
     """
@@ -42,7 +42,7 @@ def drop_column_from_df(
     column: str
 ) -> pd.DataFrame:
     """
-    Returns `df` with `column` dropped.
+    Drops `column` from `df`.
 
     Parameters
     ----------
@@ -69,7 +69,7 @@ def filter_df_by_column_bounds(
     upper_inclusive: bool = True
 ) -> pd.DataFrame:
     """
-    Filters `df` to rows whose `column` value(s) lie between `lower` and
+    Filters `df` to rows whose `column` values lie between `lower` and
     `upper`.
 
     Parameters
@@ -81,12 +81,12 @@ def filter_df_by_column_bounds(
         The column
 
     lower : :class:`float` | `None`
-        Lower bound, inclusive if `lower_inclusive`. If `None`, no lower bound
-        is applied. default=None
+        Lower bound, inclusive if `lower_inclusive`. If `None`, no lower
+        bound is applied. default=None
 
     upper : :class:`float` | `None`
-        Upper bound, inclusive if `upper_inclusive`. If `None`, no upper bound
-        is applied. default=None
+        Upper bound, inclusive if `upper_inclusive`. If `None`, no upper
+        bound is applied. default=None
 
     lower_inclusive : :class:`bool`
         If `True`, rows where `column` equals `lower` pass. default=True
@@ -118,8 +118,8 @@ def intersect_dfs_by_cells(
     right_df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Returns `left_df` and `right_df` with (NaN, not NaN) and (not NaN, NaN)
-    pairs set to (NaN, NaN).
+    Sets (NaN, not NaN), (not NaN, NaN), and (NaN, NaN) pairs across
+    `left_df` and `right_df` to (NaN, NaN).
 
     Parameters
     ----------
@@ -136,8 +136,8 @@ def intersect_dfs_by_cells(
     Raises
     ------
     ValueError
-        If `left_df` and `right_df` are not of similar shape, columns, and
-        index.
+        If `left_df` and `right_df` are not of similar shape, columns,
+        and index.
     """
     if left_df.shape != right_df.shape:
         raise ValueError("expected `left_df` and `right_df` to be of similar shape")
@@ -161,7 +161,7 @@ def intersect_dfs_by_columns(
     right_df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Returns `left_df` and `right_df` restricted to their shared columns.
+    Restricts `left_df` and `right_df` to their shared columns.
 
     Parameters
     ----------
@@ -188,7 +188,7 @@ def intersect_dfs_by_rows(
     right_df: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Returns `left_df` and `right_df` restricted to their shared rows.
+    Restricts `left_df` and `right_df` to their shared rows.
 
     Parameters
     ----------
@@ -214,7 +214,7 @@ def sort_df_columns_alphabetically(
     df: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Returns `df` with columns sorted alphabetically.
+    Sorts `df`'s columns alphabetically.
 
     Parameters
     ----------
@@ -232,7 +232,7 @@ def sort_df_columns_numerically(
     df: pd.DataFrame
 ) -> pd.DataFrame:
     """
-    Returns `df` with columns sorted numerically.
+    Sorts `df`'s columns numerically.
 
     Parameters
     ----------
@@ -272,8 +272,7 @@ def subtract_columns_mean_from_df(
     columns: list[str]
 ) -> pd.DataFrame:
     """
-    Returns `df` with the row-wise mean of `columns` subtracted from every
-    column.
+    Subtracts the row-wise mean of `columns` from `df`.
 
     Parameters
     ----------
@@ -359,7 +358,8 @@ def ser_is_strictly_positive(
 
     Returns
     -------
-    `True` if every non-NaN value in `ser` is greater than 0. `False` otherwise.
+    `True` if every non-NaN value in `ser` is greater than 0. `False`
+    otherwise.
 
     Raises
     ------
