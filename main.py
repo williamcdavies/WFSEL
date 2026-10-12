@@ -208,17 +208,12 @@ def get_esacci_lakes_merged_product_record(
         ]
     ]
 
-    assert isinstance(lat_max_box, float)
-    assert isinstance(lat_min_box, float)
-    assert isinstance(lon_max_box, float)
-    assert isinstance(lon_min_box, float)
-
     geo_bounding_box = get_geo_bounding_box_from_ds(
         esacci_lakes_static_lake_mask_ds,
-        lat_max_box = lat_max_box,
-        lat_min_box = lat_min_box,
-        lon_max_box = lon_max_box,
-        lon_min_box = lon_min_box
+        lat_max_box = lat_max_box, # type: ignore
+        lat_min_box = lat_min_box, # type: ignore
+        lon_max_box = lon_max_box, # type: ignore
+        lon_min_box = lon_min_box  # type: ignore
     )
 
     static_lake_mask_ds_window = select_ds_window_by_geo_bounding_box(
