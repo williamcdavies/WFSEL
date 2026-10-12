@@ -131,10 +131,10 @@ def arguments_are_valid(
 def get_main_py_future(
     executor: ThreadPoolExecutor,
     *,
-    esacci_lakes_metadata_csv_path:               Path,
-    esacci_lakes_static_lake_mask_nc_path:        Path,
-    esacci_lakes_merged_product_nc_path:          Path,
-    esacci_lakes_merged_product_output_file_path: Path
+    esacci_lakes_metadata_csv_path:              Path,
+    esacci_lakes_static_lake_mask_nc_path:       Path,
+    esacci_lakes_merged_product_nc_path:         Path,
+    esacci_lakes_merged_product_output_csv_path: Path
 ) -> Future:
     """
     Submits a `main.py` subprocess and returns its future.
@@ -160,8 +160,8 @@ def get_main_py_future(
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
         Lake products, Version 3.0
 
-    esacci_lakes_merged_product_output_file_path : :class:`pathlib.Path`
-        The output file path for some
+    esacci_lakes_merged_product_output_csv_path : :class:`pathlib.Path`
+        The output csv path for some
         `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` file
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
         Lake products, Version 3.0
@@ -172,20 +172,20 @@ def get_main_py_future(
     """
     return executor.submit(
         main_py,
-        esacci_lakes_metadata_csv_path               = esacci_lakes_metadata_csv_path,
-        esacci_lakes_static_lake_mask_nc_path        = esacci_lakes_static_lake_mask_nc_path,
-        esacci_lakes_merged_product_nc_path          = esacci_lakes_merged_product_nc_path,
-        esacci_lakes_merged_product_output_file_path = esacci_lakes_merged_product_output_file_path
+        esacci_lakes_metadata_csv_path              = esacci_lakes_metadata_csv_path,
+        esacci_lakes_static_lake_mask_nc_path       = esacci_lakes_static_lake_mask_nc_path,
+        esacci_lakes_merged_product_nc_path         = esacci_lakes_merged_product_nc_path,
+        esacci_lakes_merged_product_output_csv_path = esacci_lakes_merged_product_output_csv_path
     )
 
 
 def get_main_py_futures(
     executor: ThreadPoolExecutor,
     *,
-    esacci_lakes_metadata_csv_path:                Path,
-    esacci_lakes_static_lake_mask_nc_path:         Path,
-    esacci_lakes_merged_product_nc_paths:          list[Path],
-    esacci_lakes_merged_product_output_file_paths: list[Path]
+    esacci_lakes_metadata_csv_path:               Path,
+    esacci_lakes_static_lake_mask_nc_path:        Path,
+    esacci_lakes_merged_product_nc_paths:         list[Path],
+    esacci_lakes_merged_product_output_csv_paths: list[Path]
 ) -> list[Future]:
     """
     Submits a `main.py` subprocess for all ESA CCI Lakes merged product
@@ -206,14 +206,14 @@ def get_main_py_futures(
         by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
         products, Version 3.0
 
-    esacci_lakes_merged_product_nc_paths : list[:class:`pathlib.Path`]
+    esacci_lakes_merged_product_nc_paths: list[:class:`pathlib.Path`]
         The paths to some
         `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` files
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
         Lake products, Version 3.0
 
-    esacci_lakes_merged_product_output_file_paths : list[:class:`pathlib.Path`]
-        The output file paths for some
+    esacci_lakes_merged_product_output_csv_paths: list[:class:`pathlib.Path`]
+        The output csv paths for some
         `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` files
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
         Lake products, Version 3.0
@@ -225,28 +225,28 @@ def get_main_py_futures(
     Raises
     ------
     ValueError
-        If `esacci_lakes_merged_product_output_file_paths` and
+        If `esacci_lakes_merged_product_output_csv_paths` and
         `esacci_lakes_merged_product_nc_paths` are not of similar
         length.
     """
-    if len(esacci_lakes_merged_product_output_file_paths) != len(esacci_lakes_merged_product_nc_paths):
-        raise ValueError("expected `esacci_lakes_merged_product_output_file_paths` and `esacci_lakes_merged_product_nc_paths` to be of similar length")
+    if len(esacci_lakes_merged_product_output_csv_paths) != len(esacci_lakes_merged_product_nc_paths):
+        raise ValueError("expected `esacci_lakes_merged_product_output_csv_paths` and `esacci_lakes_merged_product_nc_paths` to be of similar length")
 
     futures = []
 
     for (
         esacci_lakes_merged_product_nc_path,
-        esacci_lakes_merged_product_output_file_path
+        esacci_lakes_merged_product_output_csv_path
     ) in zip(
         esacci_lakes_merged_product_nc_paths,
-        esacci_lakes_merged_product_output_file_paths
+        esacci_lakes_merged_product_output_csv_paths
     ):
         future = get_main_py_future(
             executor,
-            esacci_lakes_metadata_csv_path               = esacci_lakes_metadata_csv_path,
-            esacci_lakes_static_lake_mask_nc_path        = esacci_lakes_static_lake_mask_nc_path,
-            esacci_lakes_merged_product_nc_path          = esacci_lakes_merged_product_nc_path,
-            esacci_lakes_merged_product_output_file_path = esacci_lakes_merged_product_output_file_path
+            esacci_lakes_metadata_csv_path              = esacci_lakes_metadata_csv_path,
+            esacci_lakes_static_lake_mask_nc_path       = esacci_lakes_static_lake_mask_nc_path,
+            esacci_lakes_merged_product_nc_path         = esacci_lakes_merged_product_nc_path,
+            esacci_lakes_merged_product_output_csv_path = esacci_lakes_merged_product_output_csv_path
         )
 
         futures.append(future)
@@ -256,10 +256,10 @@ def get_main_py_futures(
 
 def main_py(
     *,
-    esacci_lakes_metadata_csv_path:               Path,
-    esacci_lakes_static_lake_mask_nc_path:        Path,
-    esacci_lakes_merged_product_nc_path:          Path,
-    esacci_lakes_merged_product_output_file_path: Path
+    esacci_lakes_metadata_csv_path:              Path,
+    esacci_lakes_static_lake_mask_nc_path:       Path,
+    esacci_lakes_merged_product_nc_path:         Path,
+    esacci_lakes_merged_product_output_csv_path: Path
 ) -> CompletedProcessLog:
     """
     Runs a `main.py` subprocess and returns its completed process log.
@@ -282,8 +282,8 @@ def main_py(
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
         Lake products, Version 3.0
 
-    esacci_lakes_merged_product_output_file_path : :class:`pathlib.Path`
-        The output file path for some
+    esacci_lakes_merged_product_output_csv_path : :class:`pathlib.Path`
+        The output csv path for some
         `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` file
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
         Lake products, Version 3.0
@@ -299,7 +299,7 @@ def main_py(
             str(esacci_lakes_metadata_csv_path),
             str(esacci_lakes_static_lake_mask_nc_path),
             str(esacci_lakes_merged_product_nc_path),
-            "-o", str(esacci_lakes_merged_product_output_file_path)
+            "-o", str(esacci_lakes_merged_product_output_csv_path)
         ],
         capture_output = True,
         text           = True
@@ -318,12 +318,12 @@ def main_py(
 
 # System functions
 # ==================================================================================================
-def get_esacci_lakes_merged_product_output_file_path(
+def get_esacci_lakes_merged_product_output_csv_path(
     esacci_lakes_merged_product_nc_path:         Path,
     esacci_lakes_merged_product_output_dir_path: Path
 ) -> Path:
     """
-    Returns the output file path for an ESA CCI Lakes merged product
+    Returns the output csv path for an ESA CCI Lakes merged product
     netCDF file.
 
     Parameters
@@ -352,17 +352,17 @@ def get_esacci_lakes_merged_product_output_file_path(
     return esacci_lakes_merged_product_output_dir_path / year / month / f"{stem}.csv"
 
 
-def get_esacci_lakes_merged_product_output_file_paths(
+def get_esacci_lakes_merged_product_output_csv_paths(
     esacci_lakes_merged_product_nc_paths:        list[Path],
     esacci_lakes_merged_product_output_dir_path: Path
 ) -> list[Path]:
     """
-    Returns the output file paths for all ESA CCI Lakes merged product
+    Returns the output csv paths for all ESA CCI Lakes merged product
     netCDF files.
 
     Parameters
     ----------
-    esacci_lakes_merged_product_nc_paths : list[:class:`pathlib.Path`]
+    esacci_lakes_merged_product_nc_paths: list[:class:`pathlib.Path`]
         The paths to some
         `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-YYYYMMDD-fv3.0.0.nc` files
         as provided by ESA Lakes Climate Change Initiative (Lakes_cci):
@@ -379,7 +379,7 @@ def get_esacci_lakes_merged_product_output_file_paths(
     A list of :class:`pathlib.Path`.
     """
     return [
-        get_esacci_lakes_merged_product_output_file_path(
+        get_esacci_lakes_merged_product_output_csv_path(
             esacci_lakes_merged_product_nc_path,
             esacci_lakes_merged_product_output_dir_path
         )
@@ -406,11 +406,11 @@ def main(
         exist_ok = True
     )
 
-    merged_product_nc_paths          = get_file_paths_from_dir_path_by_extension(
+    merged_product_nc_paths         = get_file_paths_from_dir_path_by_extension(
         args.esacci_lakes_merged_product_dir_path,
         "nc"
     )
-    merged_product_output_file_paths = get_esacci_lakes_merged_product_output_file_paths(
+    merged_product_output_csv_paths = get_esacci_lakes_merged_product_output_csv_paths(
         merged_product_nc_paths,
         args.output
     )
@@ -421,10 +421,10 @@ def main(
     ):
         futures = get_main_py_futures(
             executor,
-            esacci_lakes_metadata_csv_path                = args.esacci_lakes_metadata_csv_path,
-            esacci_lakes_static_lake_mask_nc_path         = args.esacci_lakes_static_lake_mask_nc_path,
-            esacci_lakes_merged_product_nc_paths          = merged_product_nc_paths,
-            esacci_lakes_merged_product_output_file_paths = merged_product_output_file_paths
+            esacci_lakes_metadata_csv_path               = args.esacci_lakes_metadata_csv_path,
+            esacci_lakes_static_lake_mask_nc_path        = args.esacci_lakes_static_lake_mask_nc_path,
+            esacci_lakes_merged_product_nc_paths         = merged_product_nc_paths,
+            esacci_lakes_merged_product_output_csv_paths = merged_product_output_csv_paths
         )
 
         for future in tqdm(
