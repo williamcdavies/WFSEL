@@ -32,9 +32,6 @@ from lib.proc.vars               import (
     RETURN_SUCCESS
 )
 
-
-# Constants
-# ==================================================================================================
 PROG       = "summary.py"
 ENTRIES    = [
     (
@@ -124,6 +121,128 @@ VARIATIONS = [
 ]
 
 
+# Parser functions
+# ==================================================================================================
+def add_argument_variation(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `variation` argument to a :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None.
+
+    Notes
+    -----
+    Argument `variation` is of type :class:`str`.
+    """
+    parser.add_argument(
+        "variation",
+        type = str,
+        help = f"one of {", ".join(VARIATIONS)}"
+    )
+
+
+def build_parser(
+) -> argparse.ArgumentParser:
+    """
+    Builds a :class:`argparse.ArgumentParser`.
+
+    Returns
+    -------
+    A :class:`argparse.ArgumentParser`.
+    """
+    return _build_parser(
+        PROG,
+        "Produces a .csv file containing results summary for one variation of strategies A-D.",
+        positional_args = [
+            add_argument_local_data_dir_path,
+            add_argument_variation
+        ],
+        optional_args   = [
+            add_argument_output
+        ]
+    )
+
+
+# ==================================================================================================
+
+
+# Validator functions
+# ==================================================================================================
+def argument_variation_is_in_variations(
+    variation: str,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `variation`.
+
+    Parameters
+    ----------
+    variation : :class:`str`
+        The argument `variation`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stderr. default=False
+
+    Returns
+    -------
+    `True` if `variation` is in `VARIATIONS`. `False` otherwise.
+    """
+    if variation in VARIATIONS:
+        return True
+
+    if loud:
+        print(
+            f"error: argument variation: not in {", ".join(VARIATIONS)}: {variation}",
+            file = sys.stderr
+        )
+
+    return False
+
+
+def arguments_are_valid(
+    args: argparse.Namespace
+) -> bool:
+    """
+    Validates `args`.
+
+    Parameters
+    ----------
+    args : :class:`argparse.Namespace`
+        The arguments
+
+    Returns
+    -------
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
+    """
+    return _arguments_are_valid(
+        args,
+        [
+            (
+                argument_local_data_dir_path_is_dir,
+                "local_data_dir_path"
+            ),
+            (
+                argument_variation_is_in_variations,
+                "variation"
+            ),
+            (
+                argument_output_is_file_or_missing,
+                "output"
+            )
+        ]
+    )
+
+
 # ==================================================================================================
 
 
@@ -133,7 +252,8 @@ def get_summary_df(
     results_dir_path: Path
 ) -> pd.DataFrame:
     """
-    Returns a :class:`pandas.DataFrame` of the `ENTRIES` summary.
+    Returns a :class:`pandas.DataFrame` summarising the results of
+    `folder` and `subfolder`, labelled with `variable` and `group`.
 
     Parameters
     ----------
@@ -167,14 +287,14 @@ def get_summary_df(
 def get_summary_record(
     results_dir_path: Path,
     *,
-    folder:           str,
-    subfolder:        str,
-    variable:         str,
-    group:            str
+    folder:    str,
+    subfolder: str,
+    variable:  str,
+    group:     str
 ) -> dict[str, Any]:
     """
-    Returns a record summarising the results of `folder` and `subfolder`,
-    labelled with `variable` and `group`.
+    Returns a record summarising the results of `folder` and
+    `subfolder`, labelled with `variable` and `group`.
 
     Parameters
     ----------
@@ -197,14 +317,14 @@ def get_summary_record(
     -------
     A :class:`dict`.
     """
-    directory = results_dir_path / folder / subfolder
+    dir_path = results_dir_path / folder / subfolder
 
     results_df = pd.read_csv(
-        directory / "results.csv",
+        dir_path / "results.csv",
         index_col = "w"
     )
     summary_df = pd.read_csv(
-        directory / "summary.csv",
+        dir_path / "summary.csv",
         index_col = 0
     )
 
@@ -249,59 +369,6 @@ def get_summary_record(
 # ==================================================================================================
 
 
-# Parser functions
-# ==================================================================================================
-def add_argument_variation(
-    parser: argparse.ArgumentParser
-) -> None:
-    """
-    Adds a `variation` argument to a :class:`argparse.ArgumentParser`.
-
-    Parameters
-    ----------
-    parser : :class:`argparse.ArgumentParser`
-        The parser
-
-    Returns
-    -------
-    None.
-
-    Notes
-    -----
-    Argument `variation` is of type :class:`str`.
-    """
-    parser.add_argument(
-        "variation",
-        type = str,
-        help = f"one of {", ".join(VARIATIONS)}"
-    )
-
-
-def build_parser(
-) -> argparse.ArgumentParser:
-    """
-    Builds a :class:`argparse.ArgumentParser`.
-
-    Returns
-    -------
-    A :class:`argparse.ArgumentParser`.
-    """
-    return _build_parser(
-        PROG,
-        "Produces a .csv file containing results summary for one variation of strategies A-D.",
-        positional_arguments = [
-            add_argument_local_data_dir_path,
-            add_argument_variation
-        ],
-        optional_arguments   = [
-            add_argument_output
-        ]
-    )
-
-
-# ==================================================================================================
-
-
 # System functions
 # ==================================================================================================
 def get_results_dir_path(
@@ -324,77 +391,6 @@ def get_results_dir_path(
     A :class:`pathlib.Path`.
     """
     return local_data_dir_path / "results" / variation / "results"
-
-
-# ==================================================================================================
-
-
-# Validator functions
-# ==================================================================================================
-def argument_variation_is_in_variations(
-    variation: str,
-    *,
-    loud: bool = False
-) -> bool:
-    """
-    Validates `variation`.
-
-    Parameters
-    ----------
-    variation : :class:`str`
-        The argument `variation`
-
-    loud : :class:`bool`
-        If `True`, prints an error message to stderr. default=False
-
-    Returns
-    -------
-    `True` if `variation` is in `VARIATIONS`. `False` otherwise.
-    """
-    if variation in VARIATIONS:
-        return True
-
-    if loud:
-        print(
-            f"error: argument variation: not in {VARIATIONS}: {variation}",
-            file = sys.stderr
-        )
-
-    return False
-
-
-def arguments_are_valid(
-    args: argparse.Namespace
-) -> bool:
-    """
-    Validates `args`.
-
-    Parameters
-    ----------
-    args : :class:`argparse.Namespace`
-        The arguments
-
-    Returns
-    -------
-    `True` if all arguments are successfully validated. `False` otherwise.
-    """
-    return _arguments_are_valid(
-        args,
-        [
-            (
-                argument_local_data_dir_path_is_dir,
-                "local_data_dir_path"
-            ),
-            (
-                argument_variation_is_in_variations,
-                "variation"
-            ),
-            (
-                argument_output_is_file_or_missing,
-                "output"
-            )
-        ]
-    )
 
 
 # ==================================================================================================
