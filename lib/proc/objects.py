@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 # Dataclasses
 # ==================================================================================================
-@dataclass
+@dataclass(kw_only = True)
 class CompletedProcessLog:
     """
     Encapsulates the output of a subprocess.
