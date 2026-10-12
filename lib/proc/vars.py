@@ -7,5 +7,5 @@ Description:
 Written by William Chuter-Davies
 """
 
-RETURN_SUCCESS = 0
 RETURN_FAILURE = 1
+RETURN_SUCCESS = 0

@@ -19,16 +19,17 @@ from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_id,
     add_argument_local_data_dir_path,
     argument_local_data_dir_path_is_dir,
-    get_esacci_lakes_filename_time,
+    get_esacci_lakes_merged_product_datetime,
     read_local_data_csv
 )
+from lib.esacci_lakes.vars       import LOCAL_DATA_RUN_DATE
 from lib.proc.utils              import (
     arguments_are_valid as _arguments_are_valid,
     build_parser        as _build_parser,
 
     add_argument_output,
     argument_output_is_file_or_missing,
-    get_file_paths_from_dir_by_extension,
+    get_file_paths_from_dir_path_by_extension,
     write_df_to_csv
 )
 from lib.proc.vars               import (
@@ -36,11 +37,67 @@ from lib.proc.vars               import (
     RETURN_SUCCESS
 )
 
+PROG = "get_esacci_lakes_data_for_one_lake.py"
 
-# Constants
+
+# Parser functions
 # ==================================================================================================
-PROG                = "get_esacci_lakes_data_for_one_lake.py"
-LOCAL_DATA_RUN_DATE = "22-09-26"
+def build_parser(
+) -> argparse.ArgumentParser:
+    """
+    Builds a :class:`argparse.ArgumentParser`.
+
+    Returns
+    -------
+    A :class:`argparse.ArgumentParser`.
+    """
+    return _build_parser(
+        PROG,
+        "Produces a .csv file containing all of one lake's local data records, indexed by date.",
+        positional_args = [
+            add_argument_esacci_lakes_id,
+            add_argument_local_data_dir_path
+        ],
+        optional_args   = [
+            add_argument_output
+        ]
+    )
+
+
+# ==================================================================================================
+
+
+# Validator functions
+# ==================================================================================================
+def arguments_are_valid(
+    args: argparse.Namespace
+) -> bool:
+    """
+    Validates `args`.
+
+    Parameters
+    ----------
+    args : :class:`argparse.Namespace`
+        The arguments
+
+    Returns
+    -------
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
+    """
+    return _arguments_are_valid(
+        args,
+        [
+            (
+                argument_local_data_dir_path_is_dir,
+                "local_data_dir_path"
+            ),
+            (
+                argument_output_is_file_or_missing,
+                "output"
+            )
+        ]
+    )
 
 
 # ==================================================================================================
@@ -100,76 +157,16 @@ def get_lake_data_record(
     A :class:`dict` with keys "esacci_lakes_id", "date", and
     `local_data_csv_path`'s columns.
     """
-    local_data_datetime = get_esacci_lakes_filename_time(local_data_csv_path)
+    local_data_datetime = get_esacci_lakes_merged_product_datetime(local_data_csv_path)
     local_data_df       = read_local_data_csv(local_data_csv_path)
 
-    record         = {"esacci_lakes_id": esacci_lakes_id}
-    record["date"] = local_data_datetime.strftime("%Y-%m-%d")
+    record                    = {}
+    record["esacci_lakes_id"] = esacci_lakes_id
+    record["date"]            = local_data_datetime.strftime("%Y-%m-%d")
+    
     record.update(local_data_df.loc[esacci_lakes_id].to_dict())
 
     return record
-
-
-# ==================================================================================================
-
-
-# Parser functions
-# ==================================================================================================
-def build_parser(
-) -> argparse.ArgumentParser:
-    """
-    Builds a :class:`argparse.ArgumentParser`.
-
-    Returns
-    -------
-    A :class:`argparse.ArgumentParser`.
-    """
-    return _build_parser(
-        PROG,
-        "Produces a csv file containing all of one lake's local data records, indexed by date.",
-        positional_arguments = [
-            add_argument_esacci_lakes_id,
-            add_argument_local_data_dir_path
-        ],
-        optional_arguments   = [
-            add_argument_output
-        ]
-    )
-
-
-# ==================================================================================================
-
-
-# Validator functions
-# ==================================================================================================
-def arguments_are_valid(
-    args: argparse.Namespace
-) -> bool:
-    """
-    Validates `args`.
-
-    Parameters
-    ----------
-    args : :class:`argparse.Namespace`
-        The arguments
-
-    Returns
-    -------
-    `True` if all arguments are successfully validated. `False` otherwise.
-    """
-    return _arguments_are_valid(
-        args,
-        [
-            (
-                argument_local_data_dir_path_is_dir,
-                "local_data_dir_path"
-            ),
-            (
-                argument_output_is_file_or_missing,
-                "output"
-            )
-        ]
-    )
 
 
 # ==================================================================================================
@@ -185,7 +182,7 @@ def main(
     if not arguments_are_valid(args):
         return RETURN_FAILURE
 
-    local_data_csv_paths = get_file_paths_from_dir_by_extension(
+    local_data_csv_paths = get_file_paths_from_dir_path_by_extension(
         args.local_data_dir_path / "main.py" / LOCAL_DATA_RUN_DATE,
         "csv"
     )

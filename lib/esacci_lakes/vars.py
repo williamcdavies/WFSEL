@@ -71,6 +71,11 @@ ESACCI_LAKES_VARIABLES = {
     )
 }
 
+FORMS = [
+    "absolute",
+    "anomaly"
+]
+
 HYLAK_FIELDS = {
     "lake_area_m2":
     HylakField(
@@ -140,7 +145,4 @@ HYLAK_FIELDS = {
     )
 }
 
-FORMS = [
-    "absolute",
-    "anomaly"
-]
+LOCAL_DATA_RUN_DATE = "22-09-26"

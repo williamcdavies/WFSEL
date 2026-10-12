@@ -23,13 +23,7 @@ from lib.proc.vars  import (
     RETURN_SUCCESS
 )
 
-
-# Constants
-# ==================================================================================================
 PROG = "print_shp.py"
-
-
-# ==================================================================================================
 
 
 # Parser functions
@@ -72,35 +66,10 @@ def build_parser(
     return _build_parser(
         PROG,
         "Prints Shapefile metadata to `sys.stdout`.",
-        positional_arguments = [
+        positional_args = [
             add_argument_shp_path
         ]
     )
-
-
-# ==================================================================================================
-
-
-# Print functions
-# ==================================================================================================
-def print_shp(
-    shp_path: Path
-) -> None:
-    """
-    Prints a Shapefile's metadata to `sys.stdout`.
-
-    Parameters
-    ----------
-    shp_path : :class:`pathlib.Path`
-        The path to some Shapefile
-
-    Returns
-    -------
-    None.
-    """
-    gdf = gpd.read_file(shp_path)
-
-    print(gdf)
 
 
 # ==================================================================================================
@@ -153,7 +122,8 @@ def arguments_are_valid(
 
     Returns
     -------
-    `True` if all arguments are successfully validated. `False` otherwise.
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
     """
     return _arguments_are_valid(
         args,
@@ -164,6 +134,31 @@ def arguments_are_valid(
             )
         ]
     )
+
+
+# ==================================================================================================
+
+
+# Print functions
+# ==================================================================================================
+def print_shp(
+    shp_path: Path
+) -> None:
+    """
+    Prints a Shapefile's metadata to `sys.stdout`.
+
+    Parameters
+    ----------
+    shp_path : :class:`pathlib.Path`
+        The path to some Shapefile
+
+    Returns
+    -------
+    None.
+    """
+    gdf = gpd.read_file(shp_path)
+
+    print(gdf)
 
 
 # ==================================================================================================

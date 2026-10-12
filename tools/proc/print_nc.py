@@ -23,13 +23,7 @@ from lib.proc.vars  import (
     RETURN_SUCCESS
 )
 
-
-# Constants
-# ==================================================================================================
 PROG = "print_nc.py"
-
-
-# ==================================================================================================
 
 
 # Parser functions
@@ -72,34 +66,10 @@ def build_parser(
     return _build_parser(
         PROG,
         "Prints netCDF file metadata to `sys.stdout`.",
-        positional_arguments = [
+        positional_args = [
             add_argument_nc_path
         ]
     )
-
-
-# ==================================================================================================
-
-
-# Print functions
-# ==================================================================================================
-def print_nc(
-    nc_path: Path
-) -> None:
-    """
-    Prints a netCDF file's metadata to `sys.stdout`.
-
-    Parameters
-    ----------
-    nc_path : :class:`pathlib.Path`
-        The path to some netCDF file
-
-    Returns
-    -------
-    None.
-    """
-    with xr.open_dataset(nc_path) as ds:
-        print(ds)
 
 
 # ==================================================================================================
@@ -152,7 +122,8 @@ def arguments_are_valid(
 
     Returns
     -------
-    `True` if all arguments are successfully validated. `False` otherwise.
+    `True` if all arguments are successfully validated. `False`
+    otherwise.
     """
     return _arguments_are_valid(
         args,
@@ -163,6 +134,30 @@ def arguments_are_valid(
             )
         ]
     )
+
+
+# ==================================================================================================
+
+
+# Print functions
+# ==================================================================================================
+def print_nc(
+    nc_path: Path
+) -> None:
+    """
+    Prints a netCDF file's metadata to `sys.stdout`.
+
+    Parameters
+    ----------
+    nc_path : :class:`pathlib.Path`
+        The path to some netCDF file
+
+    Returns
+    -------
+    None.
+    """
+    with xr.open_dataset(nc_path) as ds:
+        print(ds)
 
 
 # ==================================================================================================
