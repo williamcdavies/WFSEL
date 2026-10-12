@@ -24,77 +24,59 @@ import xarray    as xr
 from lib.geo.objects import GeoBoundingBox
 
 
-# DataArray functions
+# GeoDataFrame functions
 # ==================================================================================================
-def get_da_geometry_as_wkb(
-    da: xr.DataArray
-) -> bytes:
+def filter_gdf_by_column_membership(
+    gdf:    gpd.GeoDataFrame,
+    column: str,
+    values: list[str]
+) -> gpd.GeoDataFrame:
     """
-    Returns the geometry of `da`'s `True` pixels in well-known binary, as a
-    MultiPolygon.
+    Filters `gdf` to rows whose `column` values are in `values`.
 
     Parameters
     ----------
-    da : :class:`xarray.DataArray`
-        The boolean mask
+    gdf : :class:`geopandas.GeoDataFrame`
+        The geodataframe
+
+    column : :class:`str`
+        The column
+
+    values : list[:class:`str`]
+        The values
 
     Returns
     -------
-    A :class:`bytes`.
-
-    Raises
-    ------
-    ValueError
-        If `da` has fewer than two `lon` or `lat` coordinates, or no `True`
-        pixels.
+    A :class:`geopandas.GeoDataFrame`.
     """
-    da   = da.sortby([
-        "lon",
-        "lat"
-    ])
-    lons = da["lon"].values
-    lats = da["lat"].values
+    return gdf[gdf[column].isin(values)]
 
-    if len(lons) < 2 or len(lats) < 2:
-        raise ValueError("expected `da` to have at least two `lon` and two `lat` coordinates")
 
-    mask = np.flipud(da.values.astype(bool))
+def join_gdfs_on_within(
+    left_gdf:  gpd.GeoDataFrame,
+    right_gdf: gpd.GeoDataFrame
+) -> gpd.GeoDataFrame:
+    """
+    Joins `left_gdf` to `right_gdf` where `left_gdf` geometries fall
+    within `right_gdf` geometries.
 
-    if not mask.any():
-        raise ValueError("expected `da` to have at least one `True` pixel")
+    Parameters
+    ----------
+    left_gdf : :class:`geopandas.GeoDataFrame`
+        The left geodataframe
 
-    half_pixel_lon = (lons.max() - lons.min()) / (len(lons) - 1) / 2
-    half_pixel_lat = (lats.max() - lats.min()) / (len(lats) - 1) / 2
+    right_gdf : :class:`geopandas.GeoDataFrame`
+        The right geodataframe
 
-    transform = rasterio.transform.from_bounds(
-        west   = lons.min() - half_pixel_lon,
-        south  = lats.min() - half_pixel_lat,
-        east   = lons.max() + half_pixel_lon,
-        north  = lats.max() + half_pixel_lat,
-        width  = len(lons),
-        height = len(lats)
+    Returns
+    -------
+    A :class:`geopandas.GeoDataFrame`.
+    """
+    return gpd.sjoin(
+        left_gdf,
+        right_gdf,
+        predicate = "within"
     )
-
-    shapes   = rasterio.features.shapes(
-        mask.astype(np.uint8),
-        mask      = mask,
-        transform = transform
-    )
-    geometry = shapely.ops.unary_union(
-        [
-            shapely.geometry.shape(polygon)
-            for (
-                polygon,
-                _
-            )
-            in shapes
-        ]
-    )
-
-    if isinstance(geometry, shapely.Polygon):
-        geometry = shapely.MultiPolygon([geometry])
-
-    return shapely.to_wkb(geometry)
 
 
 # ==================================================================================================
@@ -108,8 +90,8 @@ def get_ds_variable_coverage(
     mask:     xr.DataArray
 ) -> float:
     """
-    Returns the fraction of `mask`'s pixels with a non-null `variable` value in
-    `ds`.
+    Returns the fraction of `mask`'s pixels with a non-null `variable`
+    value in `ds`.
 
     Parameters
     ----------
@@ -131,7 +113,11 @@ def get_ds_variable_coverage(
     ZeroDivisionError
         If `mask` has no `True` values.
     """
-    if mask.sum().item() == 0:
+    if (
+        mask
+        .sum()
+        .item()
+    ) == 0:
         raise ZeroDivisionError("expected `mask` to have at least one `True` value")
 
     num = (
@@ -154,8 +140,8 @@ def get_ds_variable_mean(
     variable: str
 ) -> float:
     """
-    Returns the mean of `variable` for `ds` over dimensions `time`, `lat`, and
-    `lon`.
+    Returns the mean of `variable` for `ds` over dimensions `time`,
+    `lat`, and `lon`.
 
     Parameters
     ----------
@@ -218,12 +204,12 @@ def mask_ds(
     return ds.where(mask)
 
 
-def select_ds_by_geo_bounding_box(
+def select_ds_window_by_geo_bounding_box(
     ds:               xr.Dataset,
     geo_bounding_box: GeoBoundingBox
 ) -> xr.Dataset:
     """
-    Selects the window of `ds` defined by `geo_bounding_box`.
+    Selects the window of `ds` given by `geo_bounding_box`.
 
     Parameters
     ----------
@@ -252,59 +238,79 @@ def select_ds_by_geo_bounding_box(
 # ==================================================================================================
 
 
-# GeoDataFrame functions
+# DataArray functions
 # ==================================================================================================
-def filter_gdf_by_column_membership(
-    gdf:    gpd.GeoDataFrame,
-    column: str,
-    values: list[str]
-) -> gpd.GeoDataFrame:
+def get_da_geometry_as_wkb(
+    da: xr.DataArray
+) -> bytes:
     """
-    Filters `gdf` to rows whose `column` value(s) is in `values`.
+    Returns the geometry of `da`'s `True` pixels in well-known binary.
 
     Parameters
     ----------
-    gdf : :class:`geopandas.GeoDataFrame`
-        The geodataframe
-
-    column : :class:`str`
-        The column
-
-    values : list[:class:`str`]
-        The values
+    da : :class:`xarray.DataArray`
+        The dataarray
 
     Returns
     -------
-    A :class:`geopandas.GeoDataFrame`.
+    A :class:`bytes`.
+
+    Raises
+    ------
+    ValueError
+        If `da` has fewer than two `lon` or `lat` coordinates, or no
+        `True` pixels.
     """
-    return gdf[gdf[column].isin(values)]
+    da   = da.sortby([
+        "lon",
+        "lat"
+    ])
+    lons = da["lon"].values
+    lats = da["lat"].values
 
+    if (
+        len(lons) < 2 or
+        len(lats) < 2
+    ):
+        raise ValueError("expected `da` to have at least two `lon` and two `lat` coordinates")
 
-def join_gdfs_on_within(
-    left_gdf:  gpd.GeoDataFrame,
-    right_gdf: gpd.GeoDataFrame
-) -> gpd.GeoDataFrame:
-    """
-    Joins `left_gdf` to `right_gdf` where `left_gdf` geometries fall within
-    `right_gdf` geometries.
+    mask = np.flipud(da.values.astype(bool))
 
-    Parameters
-    ----------
-    left_gdf : :class:`geopandas.GeoDataFrame`
-        The left geodataframe
+    if not mask.any():
+        raise ValueError("expected `da` to have at least one `True` pixel")
 
-    right_gdf : :class:`geopandas.GeoDataFrame`
-        The right geodataframe
+    pixel_width  = (lons.max() - lons.min()) / (len(lons) - 1)
+    pixel_height = (lats.max() - lats.min()) / (len(lats) - 1)
 
-    Returns
-    -------
-    A :class:`geopandas.GeoDataFrame`.
-    """
-    return gpd.sjoin(
-        left_df   = left_gdf,
-        right_df  = right_gdf,
-        predicate = "within"
+    transform = rasterio.transform.from_bounds(
+        west   = lons.min() - (pixel_width  / 2),
+        south  = lats.min() - (pixel_height / 2),
+        east   = lons.max() + (pixel_width  / 2),
+        north  = lats.max() + (pixel_height / 2),
+        width  = len(lons),
+        height = len(lats)
     )
+
+    shapes   = rasterio.features.shapes(
+        mask.astype(np.uint8),
+        mask      = mask,
+        transform = transform
+    )
+    geometry = shapely.ops.unary_union(
+        [
+            shapely.geometry.shape(polygon)
+            for (
+                polygon,
+                _
+            )
+            in shapes
+        ]
+    )
+
+    if isinstance(geometry, shapely.Polygon):
+        geometry = shapely.MultiPolygon([geometry])
+
+    return shapely.to_wkb(geometry)
 
 
 # ==================================================================================================
