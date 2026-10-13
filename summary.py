@@ -380,24 +380,24 @@ def get_summary_record(
 # ==================================================================================================
 def get_results_dir_path(
     local_data_dir_path: Path,
-    variation:           str
+    strategy:            str
 ) -> Path:
     """
-    Returns the results directory path for `variation`.
+    Returns the results directory path for `strategy`.
 
     Parameters
     ----------
     local_data_dir_path : :class:`pathlib.Path`
         The local data directory path
 
-    variation : :class:`str`
-        One of `VARIATIONS`
+    strategy : :class:`str`
+        One of `STRATEGIES`
 
     Returns
     -------
     A :class:`pathlib.Path`.
     """
-    return local_data_dir_path / "results" / variation / "results"
+    return local_data_dir_path / "results" / strategy / "results"
 
 
 # ==================================================================================================
@@ -415,7 +415,7 @@ def main(
 
     results_dir_path = get_results_dir_path(
         args.local_data_dir_path,
-        args.variation
+        args.strategy
     )
 
     summary_df = get_summary_records_df(results_dir_path)
