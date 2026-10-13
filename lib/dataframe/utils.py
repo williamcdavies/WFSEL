@@ -113,6 +113,32 @@ def filter_df_by_column_bounds(
     return df
 
 
+def filter_df_by_column_values(
+    df:     pd.DataFrame,
+    column: str,
+    values: list[float]
+) -> pd.DataFrame:
+    """
+    Filters `df` to rows whose `column` values are not in `values`.
+
+    Parameters
+    ----------
+    df : :class:`pandas.DataFrame`
+        The dataframe
+
+    column : :class:`str`
+        The column
+
+    values : list[:class:`float`]
+        The values
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+    """
+    return df[~df[column].isin(values)]
+
+
 def intersect_dfs_by_cells(
     left_df:  pd.DataFrame,
     right_df: pd.DataFrame
@@ -267,7 +293,7 @@ def sort_df_columns_numerically(
     return df.reindex(columns = columns)
 
 
-def subtract_columns_row_wise_mean_from_df(
+def subtract_row_wise_mean_from_df(
     df:      pd.DataFrame,
     columns: list[str]
 ) -> pd.DataFrame:
