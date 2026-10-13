@@ -65,7 +65,7 @@ def build_parser(
     """
     return _build_parser(
         PROG,
-        "Produces a .csv file containing the mean lake surface skin temperature and lake surface skin temperature coverage for each lake within the candidate set.",
+        "Produces a .csv file containing the mean lake surface skin temperature and lake surface skin temperature coverage for each lake in the candidate set.",
         positional_args = [
             add_argument_esacci_lakes_metadata_csv_path,
             add_argument_esacci_lakes_static_lake_mask_nc_path,
@@ -126,7 +126,7 @@ def arguments_are_valid(
 
 # Data functions
 # ==================================================================================================
-def get_esacci_lakes_merged_product_df(
+def get_esacci_lakes_merged_product_records_df(
     esacci_lakes_metadata_df:         pd.DataFrame,
     esacci_lakes_static_lake_mask_ds: xr.Dataset,
     esacci_lakes_merged_product_ds:   xr.Dataset
@@ -276,7 +276,7 @@ def main(
         xr.open_dataset(args.esacci_lakes_static_lake_mask_nc_path) as static_lake_mask_ds,
         xr.open_dataset(args.esacci_lakes_merged_product_nc_path)   as merged_product_ds
     ):
-        merged_product_df = get_esacci_lakes_merged_product_df(
+        merged_product_df = get_esacci_lakes_merged_product_records_df(
             metadata_df,
             static_lake_mask_ds,
             merged_product_ds
