@@ -84,7 +84,7 @@ def build_parser(
     """
     return _build_parser(
         PROG,
-        "Produces a map visualisation of all lakes in spatial.lakes_points (Same lakes as provided by HydroLAKES v1.0) within a set of U.S. states.",
+        "Produces a map visualisation of all lakes in spatial.lakes_points (Same lakes as provided by HydroLAKES v1.0) in a set of U.S. states.",
         positional_args = [
             add_argument_stusps
         ],
