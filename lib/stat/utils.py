@@ -52,7 +52,7 @@ def get_ttest_result(
         If `sample_a` and `sample_b` are not of equal index.
     """
     if not sample_a.index.equals(sample_b.index):
-        raise ValueError("expected `sample_a` and `sample_b` to be of equal index")
+        raise ValueError("expected `sample_a` and `sample_b` to be of similar index")
 
     return ttest_rel(
         sample_a,
