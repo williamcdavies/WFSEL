@@ -34,7 +34,7 @@ from lib.plot.utils              import (
     set_ax_xscale_to_linear,
     set_ax_xscale_to_log
 )
-from lib.plot.vars               import AXIS_SCALES
+from lib.plot.vars               import SCALES
 from lib.proc.utils              import (
     arguments_are_valid as _arguments_are_valid,
     build_parser        as _build_parser,
@@ -74,7 +74,7 @@ def add_argument_scale(
     parser.add_argument(
         "scale",
         type = str,
-        help = f"one of {", ".join(AXIS_SCALES)}"
+        help = f"one of {", ".join(SCALES)}"
     )
 
 
@@ -124,14 +124,14 @@ def argument_scale_is_in_axis_scales(
 
     Returns
     -------
-    `True` if `scale` is in `AXIS_SCALES`. `False` otherwise.
+    `True` if `scale` is in `SCALES`. `False` otherwise.
     """
-    if scale in AXIS_SCALES:
+    if scale in SCALES:
         return True
 
     if loud:
         print(
-            f"error: argument scale: not in {", ".join(AXIS_SCALES)}: {scale}",
+            f"error: argument scale: not in {", ".join(SCALES)}: {scale}",
             file = sys.stderr
         )
 
@@ -241,7 +241,7 @@ def plot_on_hist_ax(
         The quantiles
 
     scale : :class:`str`
-        One of `AXIS_SCALES`
+        One of `SCALES`
 
     Returns
     -------
@@ -250,7 +250,7 @@ def plot_on_hist_ax(
     Raises
     ------
     ValueError
-        If `scale` is not in `AXIS_SCALES`.
+        If `scale` is not in `SCALES`.
     """
     if scale == "linear":
         plot_ser_histogram_linear(
@@ -263,7 +263,7 @@ def plot_on_hist_ax(
             hylak_field_ser
         )
     else:
-        raise ValueError(f"expected `scale` to be one of {", ".join(AXIS_SCALES)}: {scale}")
+        raise ValueError(f"expected `scale` to be one of {", ".join(SCALES)}: {scale}")
 
     plot_quantile_lines(
         hist_ax,
@@ -424,7 +424,7 @@ def set_box_ax_properties(
         The axes
 
     scale : :class:`str`
-        One of `AXIS_SCALES`
+        One of `SCALES`
 
     Returns
     -------
@@ -433,14 +433,14 @@ def set_box_ax_properties(
     Raises
     ------
     ValueError
-        If `scale` is not in `AXIS_SCALES`.
+        If `scale` is not in `SCALES`.
     """
     if scale == "linear":
         set_ax_xscale_to_linear(box_ax)
     elif scale == "log":
         set_ax_xscale_to_log(box_ax)
     else:
-        raise ValueError(f"expected `scale` to be one of {", ".join(AXIS_SCALES)}: {scale}")
+        raise ValueError(f"expected `scale` to be one of {", ".join(SCALES)}: {scale}")
 
 
 def set_fig_properties(
@@ -460,7 +460,7 @@ def set_fig_properties(
         The HydroLAKES field
 
     scale : :class:`str`
-        One of `AXIS_SCALES`
+        One of `SCALES`
 
     Returns
     -------
@@ -482,7 +482,7 @@ def set_hist_ax_properties(
         The axes
 
     scale : :class:`str`
-        One of `AXIS_SCALES`
+        One of `SCALES`
 
     Returns
     -------
@@ -491,14 +491,14 @@ def set_hist_ax_properties(
     Raises
     ------
     ValueError
-        If `scale` is not in `AXIS_SCALES`.
+        If `scale` is not in `SCALES`.
     """
     if scale == "linear":
         set_ax_xscale_to_linear(hist_ax)
     elif scale == "log":
         set_ax_xscale_to_log(hist_ax)
     else:
-        raise ValueError(f"expected `scale` to be one of {", ".join(AXIS_SCALES)}: {scale}")
+        raise ValueError(f"expected `scale` to be one of {", ".join(SCALES)}: {scale}")
 
 
 # ==================================================================================================
