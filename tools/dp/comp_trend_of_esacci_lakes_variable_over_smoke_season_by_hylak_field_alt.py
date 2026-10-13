@@ -16,7 +16,7 @@ import pandas as pd
 # Local Application/Library Specific Imports
 from lib.dataframe.utils              import (
     filter_df_by_column_bounds,
-    convert_df_from_kelvin_to_celsius
+    convert_df_units_from_kelvin_to_celsius
 )
 from lib.esacci_lakes.utils.dataframe import (
     drop_hylak_field_columns_from_df,
@@ -33,7 +33,7 @@ from lib.esacci_lakes.utils.proc      import (
 )
 from lib.proc.utils                   import (
     add_argument_output,
-    argument_output_is_a_directory,
+    argument_output_is_dir_or_missing,
     write_df_to_csv
 )
 from lib.proc.vars                    import (
@@ -334,7 +334,7 @@ def arguments_are_valid(
     ):
         return False
 
-    if not argument_output_is_a_directory(
+    if not argument_output_is_dir_or_missing(
         args.output,
         loud = True
     ):
@@ -489,8 +489,8 @@ def main(
         args.form == "Absolute"
         and args.esacci_lakes_variable == "lake_surface_water_temperature"
     ):
-        variable_over_high_smoke_season_df = convert_df_from_kelvin_to_celsius(variable_over_high_smoke_season_df)
-        variable_over_low_smoke_season_df  = convert_df_from_kelvin_to_celsius(variable_over_low_smoke_season_df)
+        variable_over_high_smoke_season_df = convert_df_units_from_kelvin_to_celsius(variable_over_high_smoke_season_df)
+        variable_over_low_smoke_season_df  = convert_df_units_from_kelvin_to_celsius(variable_over_low_smoke_season_df)
 
     variable_over_high_smoke_season_hylak_fields_df = merge_dfs_on_esacci_lakes_id(
         variable_over_high_smoke_season_df,
@@ -524,23 +524,19 @@ def main(
 
     write_df_to_csv(
         above_high_lakes_df,
-        args.output,
-        name = "above_high_lakes"
+        args.output / "above_high_lakes.csv"
     )
     write_df_to_csv(
         above_low_lakes_df,
-        args.output,
-        name = "above_low_lakes"
+        args.output / "above_low_lakes.csv"
     )
     write_df_to_csv(
         below_high_lakes_df,
-        args.output,
-        name = "below_high_lakes"
+        args.output / "below_high_lakes.csv"
     )
     write_df_to_csv(
         below_low_lakes_df,
-        args.output,
-        name = "below_low_lakes"
+        args.output / "below_low_lakes.csv"
     )
 
     return RETURN_SUCCESS

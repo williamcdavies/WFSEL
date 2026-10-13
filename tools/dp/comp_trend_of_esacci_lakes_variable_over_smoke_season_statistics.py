@@ -18,7 +18,7 @@ import pandas as pd
 from lib.dataframe.utils import get_ser_from_df
 from lib.proc.utils      import (
     add_argument_output,
-    argument_output_is_a_directory
+    argument_output_is_dir_or_missing
 )
 from lib.proc.vars       import (
     RETURN_SUCCESS,
@@ -26,7 +26,7 @@ from lib.proc.vars       import (
 )
 from lib.stat.utils      import get_ttest_result
 from lib.stat.vars       import (
-    ALPHA,
+    SIGNIFICANCE_LEVEL,
     MINIMUM_SAMPLE_SIZE_FOR_ONE_TAILED_PAIRED_TTEST
 )
 
@@ -201,7 +201,7 @@ def arguments_are_valid(
     ):
         return False
 
-    if not argument_output_is_a_directory(
+    if not argument_output_is_dir_or_missing(
         args.output,
         loud = True
     ):
@@ -490,7 +490,7 @@ def get_longest_cluster(
 ) -> list[int]:
     """
     Returns the longest cluster of consecutive weeks with `p_ser`
-    below `ALPHA`.
+    below `SIGNIFICANCE_LEVEL`.
 
     Parameters
     ----------
@@ -504,7 +504,7 @@ def get_longest_cluster(
     -------
     A sorted list of :class:`int`.
     """
-    significant_weeks = sorted(w_ser[p_ser < ALPHA])
+    significant_weeks = sorted(w_ser[p_ser < SIGNIFICANCE_LEVEL])
 
     if not significant_weeks:
         return []

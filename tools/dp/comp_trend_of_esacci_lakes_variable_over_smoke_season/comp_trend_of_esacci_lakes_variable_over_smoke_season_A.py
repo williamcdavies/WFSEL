@@ -21,7 +21,7 @@ from tqdm    import tqdm
 
 # Local Application/Library Specific Imports
 from lib.dataframe.utils         import (
-    subtract_columns_from_df,
+    subtract_row_wise_mean_from_df,
     filter_df_by_column_bounds,
     intersect_dfs_by_columns,
     intersect_dfs_by_cells,
@@ -33,7 +33,7 @@ from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_metadata_csv_path,
     add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path,
     argument_esacci_lakes_variable_is_in_esacci_lakes_variables,
-    argument_local_data_dir_path_exists,
+    argument_local_data_dir_path_is_dir,
     argument_esacci_lakes_metadata_csv_path_exists,
     argument_esacci_lakes_counts_of_distinct_start_days_csv_path_exists,
     read_local_data_csv,
@@ -44,10 +44,10 @@ from lib.esacci_lakes.vars       import (
     COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND,
     COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
 )
-from lib.esacci_lakes.queries    import COUNT_OF_DISTINCT_START_DAYS_QUERY
+from lib.esacci_lakes.queries    import DISTINCT_START_DAYS_QUERY
 from lib.proc.utils              import (
     add_argument_output,
-    argument_output_is_a_directory
+    argument_output_is_dir_or_missing
 )
 from lib.proc.vars               import (
     RETURN_FAILURE,
@@ -58,6 +58,9 @@ PROG                     = "comp_trend_of_esacci_lakes_variable_over_smoke_seaso
 LOCAL_DATA_RUN_DATE      = "22-09-26"
 NUMBER_OF_LOOKBACK_WEEKS = 3
 NUMBER_OF_DAYS_IN_A_WEEK = 7
+
+WINDOW_SIZE     = 4
+WINDOW_POSITION = "early"  # "early" or "late"
 
 
 # Argument functions
@@ -112,7 +115,7 @@ def arguments_are_valid(
     ):
         return False
 
-    if not argument_local_data_dir_path_exists(
+    if not argument_local_data_dir_path_is_dir(
         args.local_data_dir_path,
         loud = True
     ):
@@ -130,7 +133,7 @@ def arguments_are_valid(
     ):
         return False
 
-    if not argument_output_is_a_directory(
+    if not argument_output_is_dir_or_missing(
         args.output,
         loud = True
     ):
@@ -489,7 +492,7 @@ def get_esacci_lakes_distinct_start_days_ser(
     -------
     A :class:`pandas.Series`.
     """
-    query = COUNT_OF_DISTINCT_START_DAYS_QUERY.format(table = sql.Identifier(f"hms_smokes{year}"))
+    query = DISTINCT_START_DAYS_QUERY.format(table = sql.Identifier(f"hms_smokes{year}"))
 
     cursor.execute(
         query,
@@ -538,8 +541,8 @@ def get_first_day_of_smoke_season(
     distinct_start_days_ser: pd.Series
 ) -> int:
     """
-    Returns the earliest day of the first 4-day window in
-    `distinct_start_days_ser` that spans less than 7 days.
+    Returns the `WINDOW_POSITION` day of the first `WINDOW_SIZE`-day
+    window in `distinct_start_days_ser` that spans less than 7 days.
 
     Parameters
     ----------
@@ -548,20 +551,25 @@ def get_first_day_of_smoke_season(
 
     Returns
     -------
-    `distinct_start_days_ser[i - 3]` for the smallest `i` satisfying the
-    condition in `Notes`, or `-1` if no such `i` exists.
+    `distinct_start_days_ser[i - (WINDOW_SIZE - 1)]` if `WINDOW_POSITION`
+    is "early", or `distinct_start_days_ser[i]` if it is "late", for the
+    smallest `i` satisfying the condition in `Notes`, or `-1` if no such
+    `i` exists.
 
     Notes
     -----
     A day at index `i` qualifies if `distinct_start_days_ser[i] -
-    distinct_start_days_ser[i - 3] < 7`, i.e. it and the 3 preceding
-    entries span less than 7 days. Searches `distinct_start_days_ser`
-    forward, so the earliest qualifying window is found, and returns
-    that window's earliest day.
+    distinct_start_days_ser[i - (WINDOW_SIZE - 1)] < 7`, i.e. it and the
+    `WINDOW_SIZE - 1` preceding entries span less than 7 days. Searches
+    `distinct_start_days_ser` forward, so the earliest qualifying window
+    is found.
     """
-    for i in range(3, len(distinct_start_days_ser)):
-        if distinct_start_days_ser[i] - distinct_start_days_ser[i - 3] < 7:
-            return distinct_start_days_ser[i - 3]
+    for i in range(WINDOW_SIZE - 1, len(distinct_start_days_ser)):
+        window_first_day = distinct_start_days_ser[i - (WINDOW_SIZE - 1)]
+        window_last_day  = distinct_start_days_ser[i]
+
+        if window_last_day - window_first_day < 7:
+            return window_first_day if WINDOW_POSITION == "early" else window_last_day
 
     return -1
 
@@ -570,7 +578,7 @@ def get_last_day_of_smoke_season(
     distinct_start_days_ser: pd.Series
 ) -> int:
     """
-    Returns the latest day of the last 4-day window in
+    Returns the latest day of the last `WINDOW_SIZE`-day window in
     `distinct_start_days_ser` that spans less than 7 days.
 
     Parameters
@@ -585,13 +593,13 @@ def get_last_day_of_smoke_season(
     Notes
     -----
     A day at index `i` qualifies if `distinct_start_days_ser[i] -
-    distinct_start_days_ser[i - 3] < 7`, i.e. it and the 3 preceding
-    entries span less than 7 days. Searches `distinct_start_days_ser` in
-    reverse, so the latest qualifying window is found, and returns that
-    window's latest day.
+    distinct_start_days_ser[i - (WINDOW_SIZE - 1)] < 7`, i.e. it and the
+    `WINDOW_SIZE - 1` preceding entries span less than 7 days. Searches
+    `distinct_start_days_ser` in reverse, so the latest qualifying window
+    is found, and returns that window's latest day.
     """
-    for i in reversed(range(3, len(distinct_start_days_ser))):
-        if distinct_start_days_ser[i] - distinct_start_days_ser[i - 3] < 7:
+    for i in reversed(range(WINDOW_SIZE - 1, len(distinct_start_days_ser))):
+        if distinct_start_days_ser[i] - distinct_start_days_ser[i - (WINDOW_SIZE - 1)] < 7:
             return distinct_start_days_ser[i]
 
     return -1
@@ -1351,13 +1359,13 @@ def main(
     post_cell_intersect_high_all_nan = variable_over_high_smoke_season_df.isna().all(axis = 1)
     # post_cell_intersect_low_all_nan  = variable_over_low_smoke_season_df.isna().all(axis = 1)
 
-    variable_anomaly_over_high_smoke_season_df = subtract_columns_from_df(
+    variable_anomaly_over_high_smoke_season_df = subtract_row_wise_mean_from_df(
         variable_over_high_smoke_season_df,
         [
             "w_-1"
         ]
     )
-    variable_anomaly_over_low_smoke_season_df  = subtract_columns_from_df(
+    variable_anomaly_over_low_smoke_season_df  = subtract_row_wise_mean_from_df(
         variable_over_low_smoke_season_df,
         [
             "w_-1"

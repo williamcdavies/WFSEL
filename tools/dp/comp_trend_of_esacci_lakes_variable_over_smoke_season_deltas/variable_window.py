@@ -25,7 +25,7 @@ from lib.esacci_lakes.utils.proc import (
 )
 from lib.proc.utils               import (
     add_argument_output,
-    argument_output_is_a_file,
+    argument_output_is_file_or_missing,
     write_df_to_csv
 )
 from lib.proc.vars                import (
@@ -288,7 +288,7 @@ def arguments_are_valid(
     ):
         return False
 
-    if not argument_output_is_a_file(
+    if not argument_output_is_file_or_missing(
         args.output,
         loud = True
     ):
