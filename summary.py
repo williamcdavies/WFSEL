@@ -113,7 +113,7 @@ ENTRIES    = [
         "High"
     )
 ]
-VARIATIONS = [
+STRATEGIES = [
     "A",
     "B",
     "C",
@@ -123,11 +123,11 @@ VARIATIONS = [
 
 # Parser functions
 # ==================================================================================================
-def add_argument_variation(
+def add_argument_strategy(
     parser: argparse.ArgumentParser
 ) -> None:
     """
-    Adds a `variation` argument to a :class:`argparse.ArgumentParser`.
+    Adds a `strategy` argument to a :class:`argparse.ArgumentParser`.
 
     Parameters
     ----------
@@ -140,12 +140,12 @@ def add_argument_variation(
 
     Notes
     -----
-    Argument `variation` is of type :class:`str`.
+    Argument `strategy` is of type :class:`str`.
     """
     parser.add_argument(
-        "variation",
+        "strategy",
         type = str,
-        help = f"one of {", ".join(VARIATIONS)}"
+        help = f"one of {", ".join(STRATEGIES)}"
     )
 
 
@@ -160,10 +160,10 @@ def build_parser(
     """
     return _build_parser(
         PROG,
-        "Produces a .csv file containing results summary for one variation of strategies A-D.",
+        "Produces a .csv file containing results summary for one of strategies A-D.",
         positional_args = [
             add_argument_local_data_dir_path,
-            add_argument_variation
+            add_argument_strategy
         ],
         optional_args   = [
             add_argument_output
@@ -176,32 +176,32 @@ def build_parser(
 
 # Validator functions
 # ==================================================================================================
-def argument_variation_is_in_variations(
-    variation: str,
+def argument_strategy_is_in_strategies(
+    strategy: str,
     *,
     loud: bool = False
 ) -> bool:
     """
-    Validates `variation`.
+    Validates `strategy`.
 
     Parameters
     ----------
-    variation : :class:`str`
-        The argument `variation`
+    strategy : :class:`str`
+        The argument `strategy`
 
     loud : :class:`bool`
         If `True`, prints an error message to stderr. default=False
 
     Returns
     -------
-    `True` if `variation` is in `VARIATIONS`. `False` otherwise.
+    `True` if `strategy` is in `STRATEGIES`. `False` otherwise.
     """
-    if variation in VARIATIONS:
+    if strategy in STRATEGIES:
         return True
 
     if loud:
         print(
-            f"error: argument variation: not in {", ".join(VARIATIONS)}: {variation}",
+            f"error: argument strategy: not in {", ".join(STRATEGIES)}: {strategy}",
             file = sys.stderr
         )
 
@@ -232,8 +232,8 @@ def arguments_are_valid(
                 "local_data_dir_path"
             ),
             (
-                argument_variation_is_in_variations,
-                "variation"
+                argument_strategy_is_in_strategies,
+                "strategy"
             ),
             (
                 argument_output_is_file_or_missing,
@@ -248,12 +248,12 @@ def arguments_are_valid(
 
 # DataFrame functions
 # ==================================================================================================
-def get_summary_df(
+def get_summary_records_df(
     results_dir_path: Path
 ) -> pd.DataFrame:
     """
-    Returns a :class:`pandas.DataFrame` summarising the results of
-    `folder` and `subfolder`, labelled with `variable` and `group`.
+    Returns a :class:`pandas.DataFrame` summarising the results of all
+    items in `ENTRIES`.
 
     Parameters
     ----------
@@ -293,8 +293,7 @@ def get_summary_record(
     group:     str
 ) -> dict[str, Any]:
     """
-    Returns a record summarising the results of `folder` and
-    `subfolder`, labelled with `variable` and `group`.
+    Returns a record summarising the results of one item in `ENTRIES`.
 
     Parameters
     ----------
@@ -316,8 +315,16 @@ def get_summary_record(
     Returns
     -------
     A :class:`dict`.
+
+    Raises
+    ------
+    NotADirectoryError
+        If `results_dir_path / folder / subfolder` does not exist.
     """
     dir_path = results_dir_path / folder / subfolder
+
+    if not dir_path.is_dir():
+        raise NotADirectoryError(f"expected `{dir_path}` to be an existing directory")
 
     results_df = pd.read_csv(
         dir_path / "results.csv",
@@ -411,15 +418,7 @@ def main(
         args.variation
     )
 
-    if not results_dir_path.is_dir():
-        print(
-            f"error: no such directory: {results_dir_path}",
-            file = sys.stderr
-        )
-
-        return RETURN_FAILURE
-
-    summary_df = get_summary_df(results_dir_path)
+    summary_df = get_summary_records_df(results_dir_path)
 
     args.output.parent.mkdir(
         parents  = True,
