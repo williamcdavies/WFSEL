@@ -20,6 +20,7 @@ import pandas as pd
 # Local Application/Library Specific Imports
 from lib.esacci_lakes.vars import (
     ESACCI_LAKES_VARIABLES,
+    FORMS,
     HYLAK_FIELDS
 )
 
@@ -245,6 +246,32 @@ def add_argument_esacci_lakes_variable(
         "esacci_lakes_variable",
         type = str,
         help = f"one of {", ".join(ESACCI_LAKES_VARIABLES)}"
+    )
+
+
+def add_argument_form(
+    parser: argparse.ArgumentParser
+) -> None:
+    """
+    Adds a `form` argument to a :class:`argparse.ArgumentParser`.
+
+    Parameters
+    ----------
+    parser : :class:`argparse.ArgumentParser`
+        The parser
+
+    Returns
+    -------
+    None.
+
+    Notes
+    -----
+    Argument `form` is of type :class:`str`.
+    """
+    parser.add_argument(
+        "form",
+        type = str,
+        help = f"one of {", ".join(FORMS)}"
     )
 
 
@@ -538,6 +565,38 @@ def argument_esacci_lakes_variable_is_in_esacci_lakes_variables(
     return False
 
 
+def argument_form_is_in_forms(
+    form: str,
+    *,
+    loud: bool = False
+) -> bool:
+    """
+    Validates `form`.
+
+    Parameters
+    ----------
+    form : :class:`str`
+        The argument `form`
+
+    loud : :class:`bool`
+        If `True`, prints an error message to stderr. default=False
+
+    Returns
+    -------
+    `True` if `form` is in `FORMS`. `False` otherwise.
+    """
+    if form in FORMS:
+        return True
+
+    if loud:
+        print(
+            f"error: argument form: not in {", ".join(FORMS)}: {form}",
+            file = sys.stderr
+        )
+
+    return False
+
+
 def argument_hylak_field_is_in_hylak_fields(
     hylak_field: str,
     *,
@@ -706,6 +765,29 @@ def read_esacci_lakes_metadata_csv(
         esacci_lakes_metadata_csv_path,
         delimiter = ";",
         index_col = "id"
+    )
+
+
+def read_esacci_lakes_variable_over_smoke_season_csv(
+    esacci_lakes_variable_over_smoke_season_csv_path: Path
+) -> pd.DataFrame:
+    """
+    Reads `esacci_lakes_variable_over_smoke_season_csv_path` into a
+    :class:`pandas.DataFrame` indexed by "esacci_lakes_id".
+
+    Parameters
+    ----------
+    esacci_lakes_variable_over_smoke_season_csv_path : :class:`pathlib.Path`
+        The path to some csv file containing the weekly values of some
+        ESA CCI Lakes variable over some smoke seasons
+
+    Returns
+    -------
+    A :class:`pandas.DataFrame`.
+    """
+    return pd.read_csv(
+        esacci_lakes_variable_over_smoke_season_csv_path,
+        index_col = "esacci_lakes_id"
     )
 
 
