@@ -1,15 +1,10 @@
--- query_esacci_lakes_for_counts_of_distinct_start_days.sql
+-- query_table_esacci_lakes_for_counts_of_distinct_start_days.sql
 
--- Description: Queries counts of distinct start days for all smoke observations
---     in spatial.hms_smokes over all lakes in spatial.esacci_lakes (Same lakes
---     as provided by ESA Lakes Climate Change Initiative (Lakes_cci): Lake
---     products, Version 3.0) for each year between 2011--2023 inclusive.
-
--- | esacci_lakes_id | 2011     | $\cdots$ | 2023     |
--- |:--------------- |:-------- |:-------- |:-------- |
--- | $i_1$           | $d_{11}$ | $\cdots$ | $d_{1n}$ |
--- | $\vdots$        | $\vdots$ | $\ddots$ | $\vdots$ |
--- | $i_m$           | $d_{m1}$ | $\cdots$ | $d_{mn}$ |
+-- Description: 
+--      Queries spatial.esacci_lakes and spatial.hms_smokes for counts
+--      of distinct start days for all lakes in the candidate set (as
+--      provided by ESA Lakes Climate Change Initiative (Lakes_cci):
+--      Lake products, Version 3.0) for each in [2011-2023].
 
 -- Written by William Chuter-Davies
 
@@ -32,7 +27,10 @@ COPY (
     FROM esacci_lakes AS l
     LEFT JOIN hms_smokes AS s
         ON
-            ST_INTERSECTS(s.geom, l.geom)
+            ST_INTERSECTS(
+                s.geom,
+                l.geom
+            )
             AND s.density > 1
             AND s.start_year BETWEEN 2011 AND 2023
     GROUP BY l.id
