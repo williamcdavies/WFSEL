@@ -73,10 +73,10 @@ COPY (
         x1.dis_avg_m3_per_s AS "dis_avg_m3_per_s",
         x1.res_time_days    AS "res_time_days",
         x1.elevation_m      AS "elevation_m",
-        x1.slope_deg        AS "slope_100_m_per_km",
+        x1.slope_deg        AS "slope_deg",
         x1.wshd_area_m2     AS "wshd_area_m2",
-        x1.pour_long_deg    AS "pour_long",
-        x1.pour_lat_deg     AS "pour_lat"
+        x1.pour_long_deg    AS "pour_long_deg",
+        x1.pour_lat_deg     AS "pour_lat_deg"
     FROM x2
     LEFT JOIN x1
         ON

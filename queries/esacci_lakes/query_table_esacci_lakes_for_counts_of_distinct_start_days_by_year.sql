@@ -1,4 +1,4 @@
--- query_table_esacci_lakes_for_counts_of_distinct_start_days.sql
+-- query_table_esacci_lakes_for_counts_of_distinct_start_days_by_year.sql
 
 -- Description: 
 --      Queries spatial.esacci_lakes and spatial.hms_smokes for counts
