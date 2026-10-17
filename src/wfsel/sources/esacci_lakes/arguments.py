@@ -6,7 +6,7 @@ Written by William Chuter-Davies
 
 # Standard Library Imports
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing  import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from argparse import ArgumentParser
