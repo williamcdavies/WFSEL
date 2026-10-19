@@ -1,22 +1,18 @@
 """
-wfsel.core.arguments.
+wfsel.math.arguments.
 
 Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-from pathlib import Path
-from typing  import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from argparse import ArgumentParser
+from argparse import ArgumentParser
 
 
-def add_argument_output(
+def add_argument_scale(
     parser: ArgumentParser,
 ) -> None:
     """
-    Add a `output` argument to a parser.
+    Add a 'scale' argument to a parser.
 
     Parameters
     ----------
@@ -24,7 +20,7 @@ def add_argument_output(
         The parser
     """
     parser.add_argument(
-        "-o", "--output",
-        type     = Path,
+        "-s", "--scale",
+        type     = str,
         required = True,
     )

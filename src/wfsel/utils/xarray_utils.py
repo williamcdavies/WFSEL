@@ -1,18 +1,14 @@
 """
-wfsel.core.xarray_utils.
+wfsel.utils.xarray_utils.
 
 Written by William Chuter-Davies
 """
 
-# Standard Library Imports
-from typing import TYPE_CHECKING
-
 # Related Third-party Imports
-if TYPE_CHECKING:
-    import xarray as xr
+import xarray as xr
 
 # Local Application/Library Specific Imports
-from wfsel.core.geo import GeographicBoundingBox
+from wfsel.geo.models import GeographicBoundingBox
 
 
 def build_geographic_bounding_box(
@@ -24,7 +20,7 @@ def build_geographic_bounding_box(
     lon_min: float,
 ) -> GeographicBoundingBox:
     """
-    Build a geographic bounding box.
+    Build a GeographicBoundingBox.
 
     Parameters
     ----------
@@ -87,14 +83,14 @@ def window(
     geographic_bounding_box: GeographicBoundingBox,
 ) -> xr.Dataset:
     """
-    Window a Dataset using a geographic bounding box.
+    Window a Dataset by a GeographicBoundingBox.
 
     Parameters
     ----------
     ds : xr.Dataset
         The Dataset
     geographic_bounding_box : GeographicBoundingBox
-        The geographic bounding box
+        The GeographicBoundingBox
 
     Returns
     -------

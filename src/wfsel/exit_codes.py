@@ -1,5 +1,5 @@
 """
-wfsel.core.exit_codes.
+wfsel.exit_codes.
 
 Written by William Chuter-Davies
 """

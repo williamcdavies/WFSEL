@@ -5,10 +5,7 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from argparse import ArgumentParser
+from argparse import ArgumentParser
 
 
 def add_argument_hylak_field(

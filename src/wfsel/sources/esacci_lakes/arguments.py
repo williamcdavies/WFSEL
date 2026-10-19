@@ -5,11 +5,8 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-from pathlib import Path
-from typing  import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from argparse import ArgumentParser
+from argparse import ArgumentParser
+from pathlib  import Path
 
 
 def add_argument_esacci_lakes_metadata_csv_path(
@@ -80,6 +77,25 @@ def add_argument_esacci_lakes_merged_product_dir_path(
     """
     parser.add_argument(
         "esacci_lakes_merged_product_dir_path",
+        type = Path,
+    )
+
+
+def add_argument_esacci_lakes_counts_of_distinct_start_days_by_year_csv_path(
+    parser: ArgumentParser,
+) -> None:
+    """
+    Add a `esacci_lakes_counts_of_distinct_start_days_by_year_csv_path`
+    argument to a parser.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        The parser
+
+    """
+    parser.add_argument(
+        "esacci_lakes_counts_of_distinct_start_days_by_year_csv_path",
         type = Path,
     )
 
