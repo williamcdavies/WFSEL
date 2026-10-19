@@ -55,11 +55,10 @@ from lib.proc.vars               import (
 )
 
 PROG                     = "comp_trend_of_esacci_lakes_variable_over_smoke_season.py"
-LOCAL_DATA_RUN_DATE      = "22-09-26"
 NUMBER_OF_LOOKBACK_WEEKS = 3
 NUMBER_OF_DAYS_IN_A_WEEK = 7
 
-WINDOW_SIZE     = 6
+WINDOW_SIZE     = 4
 WINDOW_POSITION = "late"  # "early" or "late"
 
 
@@ -820,7 +819,7 @@ def get_local_data_csv_paths_by_year(
         If `local_data_dir_path / "main.py" / LOCAL_DATA_RUN_DATE /
         year` does not exist.
     """
-    year_dir_path = local_data_dir_path / "main.py" / LOCAL_DATA_RUN_DATE / year
+    year_dir_path = local_data_dir_path / "esacci_lakes" / "main" / year
 
     if not year_dir_path.is_dir():
         raise NotADirectoryError(f"expected `{year_dir_path}` to be an existing directory")
