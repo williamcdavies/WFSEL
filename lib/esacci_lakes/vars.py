@@ -121,7 +121,7 @@ HYLAK_FIELDS = {
         display_units = "m",
         scale         = 1e0,
         display_scale = 1e0,
-        lower_bound   = 100e0,
+        lower_bound   = None,
         upper_bound   = 500e0
     ),
     "pour_long":
@@ -143,9 +143,9 @@ HYLAK_FIELDS = {
         display_units = "degrees",
         scale         = 1e0,
         display_scale = 1e0,
-        lower_bound   = 35e0,
-        upper_bound   = 50e0
-    )
+        lower_bound   = None,
+        upper_bound   = 55e0
+    ),
 }
 
 LOCAL_DATA_RUN_DATE = "22-09-26"
