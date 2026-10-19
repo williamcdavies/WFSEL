@@ -20,7 +20,7 @@ import psycopg
 from psycopg import sql
 
 # Local Application/Library Specific Imports
-from lib.dataframe.utils         import filter_df_by_column_bounds
+from lib.structures.utils         import filter_df_by_column_bounds
 from lib.esacci_lakes.queries    import DISTINCT_START_DAYS_QUERY
 from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_counts_of_distinct_start_days_csv_path,
@@ -45,9 +45,9 @@ from lib.proc.utils              import (
     argument_output_is_dir_or_missing,
     get_file_paths_from_dir_path_by_extension
 )
-from lib.time.vars               import (
-    NUMBER_OF_DAYS_IN_A_LEAP_YEAR,
-    NUMBER_OF_DAYS_IN_A_WEEK
+from wfsel.time.constants               import (
+    NUMBER_OF_DAYS_IN_YEAR_LEAP,
+    NUMBER_OF_DAYS_IN_WEEK
 )
 
 PROG                      = "comp_trend_of_esacci_lakes_variable_over_smoke_season.py"
@@ -412,7 +412,7 @@ def get_first_day_of_smoke_season(
         WINDOW_SIZE - 1,
         len(distinct_start_days_ser)
     ):
-        if distinct_start_days_ser[i] - distinct_start_days_ser[i - (WINDOW_SIZE - 1)] < NUMBER_OF_DAYS_IN_A_WEEK:
+        if distinct_start_days_ser[i] - distinct_start_days_ser[i - (WINDOW_SIZE - 1)] < NUMBER_OF_DAYS_IN_WEEK:
             return distinct_start_days_ser[i - (WINDOW_SIZE - 1)]
 
     return -1
@@ -448,7 +448,7 @@ def get_last_day_of_smoke_season(
             len(distinct_start_days_ser)
         )
     ):
-        if distinct_start_days_ser[i] - distinct_start_days_ser[i - (WINDOW_SIZE - 1)] < NUMBER_OF_DAYS_IN_A_WEEK:
+        if distinct_start_days_ser[i] - distinct_start_days_ser[i - (WINDOW_SIZE - 1)] < NUMBER_OF_DAYS_IN_WEEK:
             return distinct_start_days_ser[i]
 
     return -1
@@ -475,7 +475,7 @@ def get_week_index(
     The week index, such that 0 is the week index containing
     `first_day`.
     """
-    return (day - first_day) // NUMBER_OF_DAYS_IN_A_WEEK
+    return (day - first_day) // NUMBER_OF_DAYS_IN_WEEK
 
 
 # ==================================================================================================
@@ -594,11 +594,11 @@ def get_first_day_of_interest(
     """
     if (
         first_day_of_smoke_season < 1 or
-        first_day_of_smoke_season > NUMBER_OF_DAYS_IN_A_LEAP_YEAR
+        first_day_of_smoke_season > NUMBER_OF_DAYS_IN_YEAR_LEAP
     ):
         return -1
 
-    number_of_lookback_days = NUMBER_OF_LOOKBACK_WEEKS * NUMBER_OF_DAYS_IN_A_WEEK
+    number_of_lookback_days = NUMBER_OF_LOOKBACK_WEEKS * NUMBER_OF_DAYS_IN_WEEK
     first_day_of_interest   = first_day_of_smoke_season - number_of_lookback_days
 
     if first_day_of_interest < 1:
@@ -631,9 +631,9 @@ def get_last_day_of_interest(
     """
     if (
         first_day_of_smoke_season < 1 or
-        first_day_of_smoke_season > NUMBER_OF_DAYS_IN_A_LEAP_YEAR or
+        first_day_of_smoke_season > NUMBER_OF_DAYS_IN_YEAR_LEAP or
         last_day_of_smoke_season < 1 or
-        last_day_of_smoke_season > NUMBER_OF_DAYS_IN_A_LEAP_YEAR
+        last_day_of_smoke_season > NUMBER_OF_DAYS_IN_YEAR_LEAP
     ):
         return -1
 
@@ -643,10 +643,10 @@ def get_last_day_of_interest(
     )
     week_number = week_index + 1
 
-    number_of_lookahead_days = week_number * NUMBER_OF_DAYS_IN_A_WEEK - 1
+    number_of_lookahead_days = week_number * NUMBER_OF_DAYS_IN_WEEK - 1
     last_day_of_interest     = first_day_of_smoke_season + number_of_lookahead_days
 
-    if last_day_of_interest > NUMBER_OF_DAYS_IN_A_LEAP_YEAR:
+    if last_day_of_interest > NUMBER_OF_DAYS_IN_YEAR_LEAP:
         return -1
 
     return last_day_of_interest

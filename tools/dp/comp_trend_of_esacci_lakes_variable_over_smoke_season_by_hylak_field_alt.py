@@ -14,7 +14,7 @@ from pathlib import Path
 import pandas as pd
 
 # Local Application/Library Specific Imports
-from lib.dataframe.utils              import (
+from lib.structures.utils              import (
     filter_df_by_column_bounds,
     convert_df_units_from_kelvin_to_celsius
 )

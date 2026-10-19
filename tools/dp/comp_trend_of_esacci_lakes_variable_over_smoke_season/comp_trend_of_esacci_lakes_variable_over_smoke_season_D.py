@@ -20,7 +20,7 @@ from psycopg import sql
 from tqdm    import tqdm
 
 # Local Application/Library Specific Imports
-from lib.dataframe.utils         import (
+from lib.structures.utils         import (
     subtract_row_wise_mean_from_df,
     filter_df_by_column_bounds,
     intersect_dfs_by_columns,

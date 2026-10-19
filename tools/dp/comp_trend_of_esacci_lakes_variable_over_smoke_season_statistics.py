@@ -15,7 +15,7 @@ import numpy  as np
 import pandas as pd
 
 # Local Application/Library Specific Imports
-from lib.dataframe.utils import get_ser_from_df
+from lib.structures.utils import get_ser_from_df
 from lib.proc.utils      import (
     add_argument_output,
     argument_output_is_dir_or_missing
@@ -24,8 +24,8 @@ from lib.proc.vars       import (
     RETURN_SUCCESS,
     RETURN_FAILURE
 )
-from lib.stat.utils      import get_ttest_result
-from lib.stat.vars       import (
+from lib.statistics.utilities      import get_ttest_result
+from lib.statistics.constants       import (
     SIGNIFICANCE_LEVEL,
     MINIMUM_SAMPLE_SIZE_FOR_ONE_TAILED_PAIRED_TTEST
 )

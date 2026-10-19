@@ -19,7 +19,7 @@ from _shared                     import (
     get_esacci_lakes_smoke_season_ranges_df,
     get_esacci_lakes_years_df
 )
-from lib.dataframe.utils         import filter_df_by_column_bounds
+from lib.structures.utils         import filter_df_by_column_bounds
 from lib.esacci_lakes.utils.proc import read_esacci_lakes_counts_of_distinct_start_days_csv
 from lib.esacci_lakes.vars       import (
     COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND,
