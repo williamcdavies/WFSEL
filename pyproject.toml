@@ -1,28 +1,80 @@
 [build-system]
-requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
+requires      = [
+  "hatchling >= 1.26",
+]
 
 [project]
-name = "WFSEL"
-version = "1.0"
-authors = [
-  { name="William Chuter-Davies", email="wchuterdavies@unr.edu" },
+authors         = [
+  {
+    name  = "William Chuter-Davies",
+    email = "wchuterdavies@unr.edu",
+  }
 ]
-dependencies = [
-  "geopandas    >= 1.1.4",
-  "matplotlib   >= 3.11.2",
-  "netcdf4      >= 1.7.4",
-  "numpy        >= 2.5.3",
-  "pandas       >= 3.0.6",
-  "psycopg      >= 3.3.6",
-  "pygam        >= 0.12.0",
-  "rasterio     >= 1.5.1",
-  "scipy        >= 1.16.3",
-  "shapely      >= 2.1.2",
-  "sqlalchemy   >= 2.1.1",
-  "tqdm         >= 4.68.3",
-  "xarray       >= 2026.4.0"
+dependencies    = [
+  "geopandas",
+  "matplotlib",
+  "netcdf4",
+  "numpy",
+  "pandas",
+  "psycopg",
+  "rasterio",
+  "scipy",
+  "shapely",
+  "sqlalchemy",
+  "tqdm",
+  "xarray",
+]
+name            = "WFSEL"
+readme          = "README.md"
+requires-python = ">= 3.14"
+version         = "1.0"
+
+[dependency-groups]
+all     = [
+  {include-group = "linting"},
+  {include-group = "testing"},
+]
+linting = [
+  "ruff",
+  "sqlfluff",
+]
+testing = [
+  "pytest",
 ]
 
-[tool.hatch.build.targets.wheel]
-packages = ["lib"]
+[tool.sqlfluff.core]
+dialect       = "postgres"
+exclude_rules = [
+  "layout.spacing",
+  "references.quoting",
+]
+warnings      = [
+  "layout.long_lines",
+]
+
+[tool.ruff]
+line-length  = 72
+indent-width = 4
+
+[tool.ruff.lint]
+ignore = [
+  "CPY001",
+  "D205",
+  "D104",
+  "E501",
+  "I001",
+  "INP001",
+  "PD004",
+  "RET504",
+  "S603",
+  "TC001",
+  "TC002",
+  "TC003",
+]
+select = [
+  "ALL",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
