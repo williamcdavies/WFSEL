@@ -15,12 +15,12 @@ def read_esacci_lakes_metadata_csv(
     esacci_lakes_metadata_csv_path: Path,
 ) -> pd.DataFrame:
     """
-    Read `lakescci_v2.1.0_metadata.csv` (or similar) into a DataFrame.
+    Read "metadata.csv" (or similar) into a DataFrame.
 
     Parameters
     ----------
     esacci_lakes_metadata_csv_path : Path
-        The path to `lakescci_v2.1.0_metadata.csv` (or similar)
+        The path to "metadata.csv" (or similar)
 
     Returns
     -------
@@ -29,8 +29,35 @@ def read_esacci_lakes_metadata_csv(
     """
     df = pd.read_csv(
         esacci_lakes_metadata_csv_path,
-        delimiter = ";",
-        index_col = "id",
+        delimiter   = ";",
+        index_col   = "id",
+    )
+
+    return df
+
+
+def read_esacci_lakes_merged_product_csv(
+    esacci_lakes_merged_product_csv_path: Path,
+) -> pd.DataFrame:
+    """
+    Read "ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20110101-fv3.0.0.csv" (or
+    similar) into a DataFrame.
+
+    Parameters
+    ----------
+    esacci_lakes_merged_product_csv_path : Path
+        The path to
+        "ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20110101-fv3.0.0.csv" (or
+        similar)
+
+    Returns
+    -------
+    pd.DataFrame
+
+    """
+    df = pd.read_csv(
+        esacci_lakes_merged_product_csv_path,
+        index_col = "esacci_lakes_id",
     )
 
     return df
@@ -40,14 +67,13 @@ def read_esacci_lakes_counts_of_distinct_start_days_by_year_csv(
     esacci_lakes_counts_of_distinct_start_days_by_year_csv_path: Path,
 ) -> pd.DataFrame:
     """
-    Read `esacci_lakes_counts_of_distinct_start_days_by_year.csv` (or
-    similar) into a DataFrame.
+    Read "counts_of_distinct_start_days_by_year.csv" (or similar) into a
+    DataFrame.
 
     Parameters
     ----------
     esacci_lakes_counts_of_distinct_start_days_by_year_csv_path : Path
-        The path to
-        `esacci_lakes_counts_of_distinct_start_days_by_year.csv` (or
+        The path to "counts_of_distinct_start_days_by_year.csv" (or
         similar)
 
     Returns
@@ -67,13 +93,12 @@ def read_esacci_lakes_hylak_field_values_csv(
     esacci_lakes_hylak_field_values_csv_path: Path,
 ) -> pd.DataFrame:
     """
-    Read `esacci_lakes_hylak_field_values.csv` (or similar) into a
-    DataFrame.
+    Read "hylak_field_values.csv" (or similar) into a DataFrame.
 
     Parameters
     ----------
     esacci_lakes_hylak_field_values_csv_path : Path
-        The path to `esacci_lakes_hylak_field_values.csv` (or similar)
+        The path to "hylak_field_values.csv" (or similar)
 
     Returns
     -------
@@ -82,33 +107,6 @@ def read_esacci_lakes_hylak_field_values_csv(
     """
     df = pd.read_csv(
         esacci_lakes_hylak_field_values_csv_path,
-        index_col = "esacci_lakes_id",
-    )
-
-    return df
-
-
-def read_esacci_lakes_merged_product_csv(
-    esacci_lakes_merged_product_csv_path: Path,
-) -> pd.DataFrame:
-    """
-    Read `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20110101-fv3.0.0.csv` (or
-    similar) into a DataFrame.
-
-    Parameters
-    ----------
-    esacci_lakes_merged_product_csv_path : Path
-        The path to
-        `ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20110101-fv3.0.0.csv` (or
-        similar)
-
-    Returns
-    -------
-    pd.DataFrame
-
-    """
-    df = pd.read_csv(
-        esacci_lakes_merged_product_csv_path,
         index_col = "esacci_lakes_id",
     )
 
