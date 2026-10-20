@@ -15,8 +15,6 @@ dependencies    = [
                     "pandas",
                     "psycopg",
                     "rasterio",
-                    "scipy",
-                    "shapely",
                     "sqlalchemy",
                     "tqdm",
                     "xarray",
@@ -25,7 +23,6 @@ dependencies    = [
 [dependency-groups]
 linting = ["ruff", "sqlfluff"]
 all     = [{include-group = "linting"}]
-
 
 [tool.ruff]
 indent-width    = 4
@@ -49,7 +46,7 @@ ignore  = [
         ]
 
 [tool.ruff.lint.pydocstyle]
-convention = "numpy"
+convention  = "numpy"
 
 [tool.sqlfluff.core]
 dialect         = "postgres"
