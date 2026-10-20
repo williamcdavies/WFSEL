@@ -9,6 +9,24 @@ from argparse   import ArgumentParser
 from pathlib    import Path
 
 
+def add_argument_esacci_lakes_id(
+    parser: ArgumentParser,
+) -> None:
+    """
+    Add a "esacci_lakes_id" argument to a parser.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        The parser
+
+    """
+    parser.add_argument(
+        "esacci_lakes_id",
+        type = int,
+    )
+
+
 def add_argument_esacci_lakes_metadata_csv_path(
     parser: ArgumentParser,
 ) -> None:
