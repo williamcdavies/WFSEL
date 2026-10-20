@@ -1,80 +1,57 @@
 [build-system]
-build-backend = "hatchling.build"
-requires      = [
-  "hatchling >= 1.26",
-]
+requires        = ["hatchling >= 1.26"]
+build-backend   = "hatchling.build"
 
 [project]
-authors         = [
-  {
-    name  = "William Chuter-Davies",
-    email = "wchuterdavies@unr.edu",
-  }
-]
-dependencies    = [
-  "geopandas",
-  "matplotlib",
-  "netcdf4",
-  "numpy",
-  "pandas",
-  "psycopg",
-  "rasterio",
-  "scipy",
-  "shapely",
-  "sqlalchemy",
-  "tqdm",
-  "xarray",
-]
 name            = "WFSEL"
-readme          = "README.md"
-requires-python = ">= 3.14"
 version         = "1.0"
+authors         = [{name = "William Chuter-Davies", email = "wchuterdavies@unr.edu"}]
+requires-python = ">= 3.14"
+dependencies    = [
+                    "geopandas",
+                    "matplotlib",
+                    "netcdf4",
+                    "numpy",
+                    "pandas",
+                    "psycopg",
+                    "rasterio",
+                    "scipy",
+                    "shapely",
+                    "sqlalchemy",
+                    "tqdm",
+                    "xarray",
+                ]
 
 [dependency-groups]
-all     = [
-  {include-group = "linting"},
-  {include-group = "testing"},
-]
-linting = [
-  "ruff",
-  "sqlfluff",
-]
-testing = [
-  "pytest",
-]
+linting = ["ruff", "sqlfluff"]
+all     = [{include-group = "linting"}]
 
-[tool.sqlfluff.core]
-dialect       = "postgres"
-exclude_rules = [
-  "layout.spacing",
-  "references.quoting",
-]
-warnings      = [
-  "layout.long_lines",
-]
 
 [tool.ruff]
-line-length  = 72
-indent-width = 4
+indent-width    = 4
+line-length     = 79
 
 [tool.ruff.lint]
-ignore = [
-  "CPY001",
-  "D205",
-  "D104",
-  "E501",
-  "I001",
-  "INP001",
-  "PD004",
-  "RET504",
-  "S603",
-  "TC001",
-  "TC002",
-  "TC003",
-]
-select = [
-  "ALL",
-]
+select  = ["ALL"]
+ignore  = [
+            "CPY001",
+            "D205",
+            "D104",
+            "E501",
+            "I001",
+            "INP001",
+            "PD004",
+            "RET504",
+            "S603",
+            "TC001",
+            "TC002",
+            "TC003",
+        ]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+[tool.sqlfluff.core]
+dialect         = "postgres"
+warnings        = ["layout.long_lines"]
+exclude_rules   = ["layout.spacing", "references.quoting"]
