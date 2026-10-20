@@ -17,10 +17,7 @@ from matplotlib.axes   import Axes
 from matplotlib.figure import Figure
 
 # Local Application/Library Specific Imports
-from lib.dataframe.utils         import (
-    get_quantiles_from_ser,
-    get_ser_from_df
-)
+from lib.dataframe.utils         import get_ser_from_df
 from lib.esacci_lakes.utils.proc import (
     add_argument_esacci_lakes_hylak_fields_csv_path,
     add_argument_hylak_field,
@@ -49,6 +46,7 @@ from lib.proc.vars               import (
 
 PROG = "view_distribution_of_esacci_lakes_hylak_field.py"
 
+plt.rcParams["font.family"] = "Arial"
 
 # Parser functions
 # ==================================================================================================
@@ -183,48 +181,28 @@ def arguments_are_valid(
 # Plot functions
 # ==================================================================================================
 def plot_on_box_ax(
-    box_ax:                Axes,
-    hylak_field_ser:       pd.Series,
-    hylak_field_quantiles: list[float]
+    box_ax:          Axes,
+    hylak_field_ser: pd.Series,
+    scale:           str
 ) -> None:
-    """
-    Plots onto `box_ax`.
-
-    Parameters
-    ----------
-    box_ax : :class:`matplotlib.axes.Axes`
-        The axes
-
-    hylak_field_ser : :class:`pandas.Series`
-        The series
-
-    hylak_field_quantiles : list[:class:`float`]
-        The quantiles
-
-    Returns
-    -------
-    None.
-    """
-    plot_ser_boxplot(
-        box_ax,
-        hylak_field_ser
-    )
-    plot_quantile_lines(
-        box_ax,
-        hylak_field_quantiles,
-        [
-            "Q1",
-            "Q2",
-            "Q3"
-        ]
-    )
+    if scale == "linear":
+        plot_ser_boxplot_linear(
+            box_ax,
+            hylak_field_ser
+        )
+    elif scale == "log":
+        plot_ser_boxplot_log(
+            box_ax,
+            hylak_field_ser
+        )
+    else:
+        raise ValueError(f"expected `scale` to be one of {", ".join(SCALES)}: {scale}")
 
 
 def plot_on_hist_ax(
-    hist_ax:               Axes,
-    hylak_field_ser:       pd.Series,
-    hylak_field_quantiles: list[float],
-    scale:                 str
+    hist_ax:         Axes,
+    hylak_field_ser: pd.Series,
+    scale:           str
 ) -> None:
     """
     Plots onto `hist_ax`.
@@ -236,9 +214,6 @@ def plot_on_hist_ax(
 
     hylak_field_ser : :class:`pandas.Series`
         The series
-
-    hylak_field_quantiles : list[:class:`float`]
-        The quantiles
 
     scale : :class:`str`
         One of `SCALES`
@@ -264,16 +239,6 @@ def plot_on_hist_ax(
         )
     else:
         raise ValueError(f"expected `scale` to be one of {", ".join(SCALES)}: {scale}")
-
-    plot_quantile_lines(
-        hist_ax,
-        hylak_field_quantiles,
-        [
-            "Q1",
-            "Q2",
-            "Q3"
-        ]
-    )
 
 
 def plot_quantile_lines(
@@ -313,36 +278,48 @@ def plot_quantile_lines(
             labels
         )
     ):
-        ax.axvline(
-            x         = quantile,
-            color     = cmap(i),
-            linestyle = ":",
-            label     = f"{label}: {quantile:.3e}"
-        )
+        if label is not None and quantile is not None:
+            ax.axvline(
+                x         = quantile,
+                color     = cmap(i),
+                linestyle = ":",
+                label     = f"{label}: {quantile:.1f}"
+            )
 
 
-def plot_ser_boxplot(
+def plot_ser_boxplot_linear(
     ax:  Axes,
     ser: pd.Series
-) -> None:
-    """
-    Plots a box and whisker plot of `ser` onto `ax`.
-
-    Parameters
-    ----------
-    ax : :class:`matplotlib.axes.Axes`
-        The axes
-
-    ser : :class:`pandas.Series`
-        The series
-
-    Returns
-    -------
-    None.
-    """
+):
     ax.boxplot(
         x           = ser.dropna(),
-        orientation = "horizontal"
+        orientation = "horizontal",
+    )
+
+
+def plot_ser_boxplot_log(
+    ax:  Axes,
+    ser: pd.Series
+):
+    q1 = np.quantile(ser.dropna(), 0.25)
+    q3 = np.quantile(ser.dropna(), 0.75)
+
+    IQR = q3 / q1
+    OUT = IQR ** 1.5
+
+    UPPER_LIMIT = q3 * OUT
+    LOWER_LIMIT = q1 / OUT
+
+    count_less_q1    = sum(1 for x in ser.dropna() if x < LOWER_LIMIT)
+    count_greater_q3 = sum(1 for x in ser.dropna() if x > UPPER_LIMIT)
+
+    percent_less_q1    = (count_less_q1 / len(ser.dropna())) 
+    percent_greater_q3 = (count_greater_q3 / len(ser.dropna())) 
+
+    ax.boxplot(
+        x           = ser.dropna(),
+        whis        = [percent_less_q1 * 100, (1 - percent_greater_q3) * 100],
+        orientation = "horizontal",
     )
 
 
@@ -351,7 +328,7 @@ def plot_ser_histogram_linear(
     ser: pd.Series
 ) -> None:
     """
-    Plots a histogram of `ser` onto `ax` with linearly spaced bins.
+    Plots a histogram of `ser` onto `ax` with linearlyß spaced bins.
 
     Parameters
     ----------
@@ -412,8 +389,9 @@ def plot_ser_histogram_log(
 
 
 def set_box_ax_properties(
-    box_ax: Axes,
-    scale:  str
+    box_ax:    Axes,
+    scale:     str,
+    xlabel:    str
 ) -> None:
     """
     Sets `box_ax`'s properties.
@@ -425,6 +403,9 @@ def set_box_ax_properties(
 
     scale : :class:`str`
         One of `SCALES`
+
+    xlabel : :class:`str`
+        The x-axis label
 
     Returns
     -------
@@ -442,36 +423,18 @@ def set_box_ax_properties(
     else:
         raise ValueError(f"expected `scale` to be one of {", ".join(SCALES)}: {scale}")
 
-
-def set_fig_properties(
-    fig:         Figure,
-    hylak_field: str,
-    scale:       str
-) -> None:
-    """
-    Sets `fig`'s properties.
-
-    Parameters
-    ----------
-    fig : :class:`matplotlib.figure.Figure`
-        The figure
-
-    hylak_field : :class:`str`
-        The HydroLAKES field
-
-    scale : :class:`str`
-        One of `SCALES`
-
-    Returns
-    -------
-    None.
-    """
-    fig.suptitle(f"{scale.capitalize()} Distribution of {HYLAK_FIELDS[hylak_field].long_name}")
+    box_ax.set_xlabel(
+        xlabel,
+        fontsize = 12
+    )
+    box_ax.tick_params(labelsize = 9)
+    box_ax.set_yticks([])
 
 
 def set_hist_ax_properties(
     hist_ax: Axes,
-    scale:   str
+    scale:   str,
+    ylabel:  str
 ) -> None:
     """
     Sets `hist_ax`'s properties.
@@ -483,6 +446,9 @@ def set_hist_ax_properties(
 
     scale : :class:`str`
         One of `SCALES`
+
+    xlabel : :class:`str`
+        The y-axis label
 
     Returns
     -------
@@ -500,6 +466,17 @@ def set_hist_ax_properties(
     else:
         raise ValueError(f"expected `scale` to be one of {", ".join(SCALES)}: {scale}")
 
+    hist_ax.set_ylabel(
+        ylabel,
+        fontsize = 12
+    )
+    hist_ax.tick_params(labelsize = 9)
+    hist_ax.set_ylim(
+        0,
+        130
+    )
+    hist_ax.legend(fontsize = 12)
+
 
 # ==================================================================================================
 
@@ -514,19 +491,23 @@ def main(
     if not arguments_are_valid(args):
         return RETURN_FAILURE
 
-    hylak_fields_df       = read_esacci_lakes_hylak_fields_csv(args.esacci_lakes_hylak_fields_csv_path)
-    hylak_field_ser       = get_ser_from_df(
+    hylak_fields_df = read_esacci_lakes_hylak_fields_csv(args.esacci_lakes_hylak_fields_csv_path)
+    hylak_field_ser = get_ser_from_df(
         hylak_fields_df,
         args.hylak_field
     )
-    hylak_field_quantiles = get_quantiles_from_ser(
-        hylak_field_ser,
-        [
-            0.25,
-            0.5,
-            0.75
-        ]
-    )
+
+    hylak_field   = HYLAK_FIELDS[args.hylak_field]
+    display_scale = hylak_field.display_scale
+    lower_bound   = hylak_field.lower_bound
+    upper_bound   = hylak_field.upper_bound
+
+    hylak_field_ser     = hylak_field_ser / display_scale
+    lower_bound_display = lower_bound / display_scale if lower_bound is not None else None
+    upper_bound_display = upper_bound / display_scale if upper_bound is not None else None
+
+    fig_width  = 8.27 / 2
+    fig_height = 11.69 / 3
 
     (
         fig,
@@ -539,39 +520,68 @@ def main(
         ncols       = 1,
         sharex      = True,
         gridspec_kw = {"height_ratios": [
-            3,
+            4,
             1
-        ]}
+        ]},
+        figsize = (
+            fig_width,
+            fig_height
+        )
     )
 
     plot_on_hist_ax(
         hist_ax,
         hylak_field_ser,
-        hylak_field_quantiles,
         args.scale
     )
     plot_on_box_ax(
         box_ax,
         hylak_field_ser,
-        hylak_field_quantiles
+        args.scale
+    )
+
+    plot_quantile_lines(
+        hist_ax,
+        [
+            upper_bound_display,
+            lower_bound_display,
+        ],
+        [
+            "Upper Bound",
+            "Lower Bound",
+        ]
+    )
+
+    plot_quantile_lines(
+        box_ax,
+        [
+            upper_bound_display,
+            lower_bound_display,
+        ],
+        [
+            "Upper Bound",
+            "Lower Bound",
+        ]
     )
 
     set_hist_ax_properties(
         hist_ax,
-        args.scale
+        args.scale,
+        ylabel = "Number of Lakes"
     )
     set_box_ax_properties(
         box_ax,
-        args.scale
+        args.scale,
+        xlabel = (
+            hylak_field.long_name
+            + " "
+            + "("
+            + hylak_field.display_units
+            + ")"
+        )
     )
 
-    set_fig_properties(
-        fig,
-        args.hylak_field,
-        args.scale
-    )
-
-    hist_ax.legend()
+    fig.tight_layout()
 
     save_figure(
         fig,

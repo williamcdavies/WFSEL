@@ -46,6 +46,8 @@ FORMS = [
     "Anomaly"
 ]
 
+plt.rcParams["font.family"] = "Arial"
+
 
 # Argument functions
 # ==================================================================================================
@@ -1158,16 +1160,16 @@ def set_above_threshold_lakes_ax_properties(
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     above_threshold_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} > {threshold_display:g} {hylak_field_display_units}""",
-        fontsize = 10
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} > {threshold_display:g} {hylak_field_display_units}""",
+        fontsize = 13
     )
     above_threshold_lakes_ax.set_xlabel(
         "Week relative to start of smoke season",
-        fontsize = 10
+        fontsize = 12
     )
     above_threshold_lakes_ax.set_ylabel(
         f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 10
+        fontsize = 12
     )
     above_threshold_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1215,16 +1217,16 @@ def set_below_threshold_lakes_ax_properties(
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     below_threshold_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} <= {threshold_display:g} {hylak_field_display_units}""",
-        fontsize = 10
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} <= {threshold_display:g} {hylak_field_display_units}""",
+        fontsize = 14
     )
     below_threshold_lakes_ax.set_xlabel(
         "Week relative to start of smoke season",
-        fontsize = 10
+        fontsize = 12
     )
     below_threshold_lakes_ax.set_ylabel(
         f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 10
+        fontsize = 12
     )
     below_threshold_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1307,8 +1309,10 @@ def main(
         form                  = args.form
     )
 
-    above_threshold_lakes_ax.legend(loc = "upper left")
-    below_threshold_lakes_ax.legend(loc = "upper left")
+    above_threshold_lakes_ax.legend(loc = "upper left", fontsize = 12)
+    below_threshold_lakes_ax.legend(loc = "upper left", fontsize = 12)
+    above_threshold_lakes_ax.tick_params(labelsize = 9)
+    below_threshold_lakes_ax.tick_params(labelsize = 9)
 
     save_figure(
         fig,

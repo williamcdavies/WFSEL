@@ -46,6 +46,8 @@ FORMS = [
     "Anomaly"
 ]
 
+plt.rcParams["font.family"] = "Arial"
+
 
 # Argument functions
 # ==================================================================================================
@@ -1454,16 +1456,16 @@ def set_upper_bounds_lakes_ax_properties(
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     upper_bounds_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} >= {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
-        fontsize = 10
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} >= {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
+        fontsize = 13
     )
     upper_bounds_lakes_ax.set_xlabel(
         "Week relative to start of smoke season",
-        fontsize = 10
+        fontsize = 12
     )
     upper_bounds_lakes_ax.set_ylabel(
         f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 10
+        fontsize = 12
     )
     upper_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1510,16 +1512,16 @@ def set_middle_bounds_lakes_ax_properties(
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     middle_bounds_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} between {hylak_field_lower_bound_display:g} {hylak_field_display_units} and {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
-        fontsize = 10
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} between {hylak_field_lower_bound_display:g} {hylak_field_display_units} and {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
+        fontsize = 13
     )
     middle_bounds_lakes_ax.set_xlabel(
         "Week relative to start of smoke season",
-        fontsize = 10
+        fontsize = 12
     )
     middle_bounds_lakes_ax.set_ylabel(
         f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 10
+        fontsize = 12
     )
     middle_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1564,16 +1566,16 @@ def set_lower_bounds_lakes_ax_properties(
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     lower_bounds_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for lakes with {hylak_field_long_name} <= {hylak_field_lower_bound_display:g} {hylak_field_display_units}""",
-        fontsize = 10
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} <= {hylak_field_lower_bound_display:g} {hylak_field_display_units}""",
+        fontsize = 13
     )
     lower_bounds_lakes_ax.set_xlabel(
         "Week relative to start of smoke season",
-        fontsize = 10
+        fontsize = 12
     )
     lower_bounds_lakes_ax.set_ylabel(
         f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 10
+        fontsize = 12
     )
     lower_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1676,9 +1678,12 @@ def main(
         form                  = args.form
     )
 
-    upper_bounds_lakes_ax.legend(loc = "upper left")
-    middle_bounds_lakes_ax.legend(loc = "upper left")
-    lower_bounds_lakes_ax.legend(loc = "upper left")
+    upper_bounds_lakes_ax.legend(loc = "upper left", fontsize = 12)
+    middle_bounds_lakes_ax.legend(loc = "upper left", fontsize = 12)
+    lower_bounds_lakes_ax.legend(loc = "upper left", fontsize = 12)
+    upper_bounds_lakes_ax.tick_params(labelsize = 9)
+    middle_bounds_lakes_ax.tick_params(labelsize = 9)
+    lower_bounds_lakes_ax.tick_params(labelsize = 9)
 
     save_figure(
         fig,

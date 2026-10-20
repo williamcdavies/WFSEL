@@ -63,7 +63,7 @@ ESACCI_LAKES_VARIABLES = {
     "lake_surface_water_temperature":
     ESACCILakesVariable(
         var_id    = "lake_surface_water_temperature",
-        long_name = "Lake Surface Skin Temperature",
+        long_name = "Surface Temperature",
         units     = "°C"
     ),
     "lake_surface_water_extent":
@@ -84,8 +84,8 @@ HYLAK_FIELDS = {
     HylakField(
         field_id      = "lake_area_m2",
         long_name     = "Lake Area",
-        units         = "m2",
-        display_units = "km2",
+        units         = "m²",
+        display_units = "km²",
         scale         = 1e0,
         display_scale = 1e6,
         lower_bound   = 100e6,
@@ -95,8 +95,8 @@ HYLAK_FIELDS = {
     HylakField(
         field_id      = "vol_total_m3",
         long_name     = "Total Lake Volume",
-        units         = "m3",
-        display_units = "km3",
+        units         = "m³",
+        display_units = "km³",
         scale         = 1e0,
         display_scale = 1e9,
         lower_bound   = 0.5e9,
@@ -127,9 +127,9 @@ HYLAK_FIELDS = {
     "pour_long":
     HylakField(
         field_id      = "pour_long",
-        long_name     = "Pour Point Longitude",
-        units         = "degrees",
-        display_units = "degrees",
+        long_name     = "Longitude",
+        units         = "°W",
+        display_units = "°W",
         scale         = 1e0,
         display_scale = 1e0,
         lower_bound   = None,
@@ -138,13 +138,13 @@ HYLAK_FIELDS = {
     "pour_lat":
     HylakField(
         field_id      = "pour_lat",
-        long_name     = "Pour Point Latitude",
-        units         = "degrees",
-        display_units = "degrees",
+        long_name     = "Latitude",
+        units         = "°N",
+        display_units = "°N",
         scale         = 1e0,
         display_scale = 1e0,
         lower_bound   = None,
-        upper_bound   = 55e0
+        upper_bound   = 50e0
     ),
 }
 

@@ -1361,13 +1361,17 @@ def main(
     variable_anomaly_over_high_smoke_season_df = subtract_row_wise_mean_from_df(
         variable_over_high_smoke_season_df,
         [
-            "w_-1"
+            "w_-1",
+            # "w_-2",
+            # "w_-3"
         ]
     )
     variable_anomaly_over_low_smoke_season_df  = subtract_row_wise_mean_from_df(
         variable_over_low_smoke_season_df,
         [
-            "w_-1"
+            "w_-1",
+            # "w_-2",
+            # "w_-3"
         ]
     )
 
