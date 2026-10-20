@@ -1,4 +1,4 @@
--- query_table_esacci_lakes_for_hylak_field_values.sql
+-- query_esacci_lakes_for_hylak_field_values.sql
 
 -- Description: Queries spatial.esacci_lakes and spatial.hylak_polys for
 --      HydroLAKES field values for all lakes in the candidate set (as
