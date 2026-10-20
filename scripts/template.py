@@ -5,6 +5,8 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
+import sys
+
 from argparse   import (
                     ArgumentParser,
                     Namespace,
@@ -100,3 +102,7 @@ def main(
         return EXIT_FAILURE
 
     return EXIT_SUCCESS
+
+
+if __name__ == "__main__":
+    sys.exit(main())
