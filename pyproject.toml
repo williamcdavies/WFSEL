@@ -21,7 +21,10 @@ dependencies    = [
                 ]
 
 [dependency-groups]
-linting = ["ruff", "sqlfluff"]
+linting = [
+            "ruff",
+            "sqlfluff",
+        ]
 all     = [{include-group = "linting"}]
 
 [tool.ruff]
@@ -51,4 +54,7 @@ convention  = "numpy"
 [tool.sqlfluff.core]
 dialect         = "postgres"
 warnings        = ["layout.long_lines"]
-exclude_rules   = ["layout.spacing", "references.quoting"]
+exclude_rules   = [
+                    "layout.spacing",
+                    "references.quoting",
+                ]
