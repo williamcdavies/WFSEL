@@ -94,7 +94,7 @@ HYLAK_FIELDS = {
     "vol_total_m3":
     HylakField(
         field_id      = "vol_total_m3",
-        long_name     = "Total Lake Volume",
+        long_name     = "Volume",
         units         = "m³",
         display_units = "km³",
         scale         = 1e0,
@@ -105,7 +105,7 @@ HYLAK_FIELDS = {
     "depth_avg_m":
     HylakField(
         field_id      = "depth_avg_m",
-        long_name     = "Average Depth",
+        long_name     = "Depth",
         units         = "m",
         display_units = "m",
         scale         = 1e0,
