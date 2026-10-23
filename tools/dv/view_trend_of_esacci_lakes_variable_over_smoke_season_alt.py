@@ -1033,7 +1033,7 @@ def plot_on_above_threshold_lakes_ax(
         above_threshold_lakes_ax,
         above_high_mean_ser,
         color = "#FF0000",
-        label = "High Smoke Season (Mean)"
+        label = "High Smoke Season"
     )
 
     plot_lakes_df_scatterplot(
@@ -1045,7 +1045,7 @@ def plot_on_above_threshold_lakes_ax(
         above_threshold_lakes_ax,
         above_low_mean_ser,
         color = "#0000FF",
-        label = "Low Smoke Season (Mean)"
+        label = "Low Smoke Season"
     )
 
 
@@ -1103,7 +1103,7 @@ def plot_on_below_threshold_lakes_ax(
         below_threshold_lakes_ax,
         below_high_mean_ser,
         color = "#FF0000",
-        label = "High Smoke Season (Mean)"
+        label = "High Smoke Season"
     )
 
     plot_lakes_df_scatterplot(
@@ -1115,7 +1115,7 @@ def plot_on_below_threshold_lakes_ax(
         below_threshold_lakes_ax,
         below_low_mean_ser,
         color = "#0000FF",
-        label = "Low Smoke Season (Mean)"
+        label = "Low Smoke Season"
     )
 
 
@@ -1161,15 +1161,11 @@ def set_above_threshold_lakes_ax_properties(
 
     above_threshold_lakes_ax.set_title(
         f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} > {threshold_display:g} {hylak_field_display_units}""",
-        fontsize = 13
-    )
-    above_threshold_lakes_ax.set_xlabel(
-        "Week relative to start of smoke season",
-        fontsize = 12
+        fontsize = 16
     )
     above_threshold_lakes_ax.set_ylabel(
         f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 12
+        fontsize = 14
     )
     above_threshold_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1217,16 +1213,16 @@ def set_below_threshold_lakes_ax_properties(
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     below_threshold_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} <= {threshold_display:g} {hylak_field_display_units}""",
-        fontsize = 14
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} ≤ {threshold_display:g} {hylak_field_display_units}""",
+        fontsize = 16
     )
     below_threshold_lakes_ax.set_xlabel(
         "Week relative to start of smoke season",
-        fontsize = 12
+        fontsize = 14
     )
     below_threshold_lakes_ax.set_ylabel(
         f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 12
+        fontsize = 14
     )
     below_threshold_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1273,9 +1269,10 @@ def main(
         ncols   = 1,
         sharex  = True,
         sharey  = True,
-        figsize = (10, 10)
+        figsize = (9.75 * 0.875, 8 * 0.875),
+        constrained_layout = True
     )
-    plt.subplots_adjust(hspace = 0.25)
+    fig.get_layout_engine().set(hspace=0.05)
 
     plot_on_above_threshold_lakes_ax(
         above_threshold_lakes_ax,
@@ -1309,10 +1306,14 @@ def main(
         form                  = args.form
     )
 
-    above_threshold_lakes_ax.legend(loc = "upper left", fontsize = 12)
-    below_threshold_lakes_ax.legend(loc = "upper left", fontsize = 12)
-    above_threshold_lakes_ax.tick_params(labelsize = 9)
-    below_threshold_lakes_ax.tick_params(labelsize = 9)
+    above_threshold_lakes_ax.axvline(x=1, color='black', linestyle=':', label='Smoke Onset')
+    below_threshold_lakes_ax.axvline(x=1, color='black', linestyle=':', label='Smoke Onset')
+
+    above_threshold_lakes_ax.legend(loc = "upper left", fontsize = 14).get_frame().set_alpha(0.5)
+    above_threshold_lakes_ax.xaxis.label.set_visible(False)
+    
+    above_threshold_lakes_ax.tick_params(labelsize = 12, labelbottom = False)
+    below_threshold_lakes_ax.tick_params(labelsize = 12, labelbottom = True)
 
     save_figure(
         fig,

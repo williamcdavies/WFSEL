@@ -1261,7 +1261,7 @@ def plot_on_upper_bounds_lakes_ax(
         upper_bounds_lakes_ax,
         upper_high_mean_ser,
         color = "#FF0000",
-        label = "High Smoke Season (Mean)"
+        label = "High Smoke Season"
     )
 
     plot_lakes_df_scatterplot(
@@ -1273,7 +1273,7 @@ def plot_on_upper_bounds_lakes_ax(
         upper_bounds_lakes_ax,
         upper_low_mean_ser,
         color = "#0000FF",
-        label = "Low Smoke Season (Mean)"
+        label = "Low Smoke Season"
     )
 
 
@@ -1332,7 +1332,7 @@ def plot_on_middle_bounds_lakes_ax(
         middle_bounds_lakes_ax,
         middle_high_mean_ser,
         color = "#FF0000",
-        label = "High Smoke Season (Mean)"
+        label = "High Smoke Season"
     )
 
     plot_lakes_df_scatterplot(
@@ -1344,7 +1344,7 @@ def plot_on_middle_bounds_lakes_ax(
         middle_bounds_lakes_ax,
         middle_low_mean_ser,
         color = "#0000FF",
-        label = "Low Smoke Season (Mean)"
+        label = "Low Smoke Season"
     )
 
 
@@ -1402,7 +1402,7 @@ def plot_on_lower_bounds_lakes_ax(
         lower_bounds_lakes_ax,
         lower_high_mean_ser,
         color = "#FF0000",
-        label = "High Smoke Season (Mean)"
+        label = "High Smoke Season"
     )
 
     plot_lakes_df_scatterplot(
@@ -1414,7 +1414,7 @@ def plot_on_lower_bounds_lakes_ax(
         lower_bounds_lakes_ax,
         lower_low_mean_ser,
         color = "#0000FF",
-        label = "Low Smoke Season (Mean)"
+        label = "Low Smoke Season"
     )
 
 
@@ -1456,16 +1456,12 @@ def set_upper_bounds_lakes_ax_properties(
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     upper_bounds_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} >= {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
-        fontsize = 13
-    )
-    upper_bounds_lakes_ax.set_xlabel(
-        "Week relative to start of smoke season",
-        fontsize = 12
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} ≥ {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
+        fontsize = 16
     )
     upper_bounds_lakes_ax.set_ylabel(
-        f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 12
+        f"""{esacci_lakes_variable_long_name} {form_qualifier} ({esacci_lakes_variable_units})""",
+        fontsize = 14
     )
     upper_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1512,16 +1508,12 @@ def set_middle_bounds_lakes_ax_properties(
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     middle_bounds_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} between {hylak_field_lower_bound_display:g} {hylak_field_display_units} and {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
-        fontsize = 13
-    )
-    middle_bounds_lakes_ax.set_xlabel(
-        "Week relative to start of smoke season",
-        fontsize = 12
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} > {hylak_field_lower_bound_display:g} {hylak_field_display_units} and < {hylak_field_upper_bound_display:g} {hylak_field_display_units}""",
+        fontsize = 16
     )
     middle_bounds_lakes_ax.set_ylabel(
-        f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 12
+        f"""{esacci_lakes_variable_long_name} {form_qualifier} ({esacci_lakes_variable_units})""",
+        fontsize = 14
     )
     middle_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1566,16 +1558,16 @@ def set_lower_bounds_lakes_ax_properties(
     form_qualifier                  = "" if form == "Absolute" else f" {form}"
 
     lower_bounds_lakes_ax.set_title(
-        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} <= {hylak_field_lower_bound_display:g} {hylak_field_display_units}""",
-        fontsize = 13
+        f"""Weekly {esacci_lakes_variable_long_name}{form_qualifier} for Lakes with {hylak_field_long_name} ≤ {hylak_field_lower_bound_display:g} {hylak_field_display_units}""",
+        fontsize = 16
     )
     lower_bounds_lakes_ax.set_xlabel(
         "Week relative to start of smoke season",
-        fontsize = 12
+        fontsize = 14
     )
     lower_bounds_lakes_ax.set_ylabel(
-        f"""{esacci_lakes_variable_long_name} ({esacci_lakes_variable_units}){form_qualifier}""",
-        fontsize = 12
+        f"""{esacci_lakes_variable_long_name} {form_qualifier} ({esacci_lakes_variable_units})""",
+        fontsize = 14
     )
     lower_bounds_lakes_ax.set_xticks(np.arange(-3, 21).tolist())
 
@@ -1630,9 +1622,10 @@ def main(
         ncols   = 1,
         sharex  = True,
         sharey  = True,
-        figsize = (10, 15)
+        figsize = (9.75 * 0.875, 12 * 0.875),
+        constrained_layout = True
     )
-    plt.subplots_adjust(hspace = 0.25)
+    fig.get_layout_engine().set(hspace=0.05)
 
     plot_on_upper_bounds_lakes_ax(
         upper_bounds_lakes_ax,
@@ -1678,12 +1671,17 @@ def main(
         form                  = args.form
     )
 
-    upper_bounds_lakes_ax.legend(loc = "upper left", fontsize = 12)
-    middle_bounds_lakes_ax.legend(loc = "upper left", fontsize = 12)
-    lower_bounds_lakes_ax.legend(loc = "upper left", fontsize = 12)
-    upper_bounds_lakes_ax.tick_params(labelsize = 9)
-    middle_bounds_lakes_ax.tick_params(labelsize = 9)
-    lower_bounds_lakes_ax.tick_params(labelsize = 9)
+    upper_bounds_lakes_ax.axvline(x=1, color='black', linestyle=':', label='Smoke Onset')
+    middle_bounds_lakes_ax.axvline(x=1, color='black', linestyle=':', label='Smoke Onset')
+    lower_bounds_lakes_ax.axvline(x=1, color='black', linestyle=':', label='Smoke Onset')
+
+    upper_bounds_lakes_ax.legend(loc = "upper left", fontsize = 14).get_frame().set_alpha(0.5)
+    upper_bounds_lakes_ax.xaxis.label.set_visible(False)
+    middle_bounds_lakes_ax.xaxis.label.set_visible(False)
+
+    upper_bounds_lakes_ax.tick_params(labelsize = 12, labelbottom = False)
+    middle_bounds_lakes_ax.tick_params(labelsize = 12, labelbottom = False)
+    lower_bounds_lakes_ax.tick_params(labelsize = 12, labelbottom = True)
 
     save_figure(
         fig,
