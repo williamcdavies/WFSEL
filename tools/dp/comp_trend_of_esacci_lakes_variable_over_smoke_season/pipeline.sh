@@ -6,9 +6,9 @@ RAW=$OUT/raw_data
 CAT=$OUT/categorised_data
 RES=$OUT/results
 VIS=$OUT/visuals
-META=data/esacci_lakes/lakescci_v2.1.0_metadata_filtered.csv
-HYLAK=data/esacci_lakes/queries/esacci_lakes_hylak_field_values.csv
-COUNTS=data/esacci_lakes/queries/esacci_lakes_counts_of_distinct_start_days_by_year.csv
+META=data/esacci_lakes/metadata_filtered.csv
+HYLAK=data/esacci_lakes/queries/hylak_field_values.csv
+COUNTS=data/esacci_lakes/queries/counts_of_distinct_start_days_by_year.csv
 
 # ----------------------------------------------------------------------
 # Step 1 — raw data
