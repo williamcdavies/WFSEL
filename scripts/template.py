@@ -39,18 +39,19 @@ def build_parser(
     Returns
     -------
     ArgumentParser
+        A parser
 
     """
     parser  = ArgumentParser(
-        prog        = PROG,
-        description = DESC,
-        usage       = "%(prog)s [options]",
-    )
+                prog        = PROG,
+                description = DESC,
+                usage       = "%(prog)s [options]",
+            )
     parser  = _build_parser(
-        parser,
-        positional_arguments    = None,
-        optional_arguments      = None,
-    )
+                parser,
+                positional_arguments    = None,
+                optional_arguments      = None,
+            )
 
     return parser
 
@@ -64,7 +65,7 @@ def arguments_are_valid(
     Parameters
     ----------
     arguments : Namespace
-        The argument namespace
+        The arguments namespace
 
     Returns
     -------
@@ -75,9 +76,9 @@ def arguments_are_valid(
     argument_name_to_validator = {}
 
     boolean = _arguments_are_valid(
-        arguments,
-        argument_name_to_validator,
-    )
+                arguments,
+                argument_name_to_validator,
+            )
 
     return boolean
 
