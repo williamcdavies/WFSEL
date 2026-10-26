@@ -34,6 +34,7 @@ line-length     = 79
 [tool.ruff.lint]
 select  = ["ALL"]
 ignore  = [
+            "C901",
             "CPY001",
             "D205",
             "D104",
@@ -46,6 +47,7 @@ ignore  = [
             "TC001",
             "TC002",
             "TC003",
+            "PLR0915",
         ]
 
 [tool.ruff.lint.pydocstyle]
