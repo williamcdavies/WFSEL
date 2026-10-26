@@ -14,13 +14,13 @@ from wfsel.geo.models import GeographicBoundingBox
 def build_geographic_bounding_box(
     ds: xr.Dataset,
     *,
-    lat_max: float,
-    lat_min: float,
-    lon_max: float,
-    lon_min: float,
+    lat_max:    float,
+    lat_min:    float,
+    lon_max:    float,
+    lon_min:    float,
 ) -> GeographicBoundingBox:
     """
-    Build a GeographicBoundingBox.
+    Build a geographic bounding box.
 
     Parameters
     ----------
@@ -38,42 +38,43 @@ def build_geographic_bounding_box(
     Returns
     -------
     GeographicBoundingBox
+        A geographic bounding box
     """
     lat_max = float(
-        ds["lat"]
-        .sel(
-            lat    = lat_max,
-            method = "nearest",
-        ),
-    )
+                ds["lat"]
+                .sel(
+                    lat     = lat_max,
+                    method  = "nearest",
+                ),
+            )
     lat_min = float(
-        ds["lat"]
-        .sel(
-            lat    = lat_min,
-            method = "nearest",
-        ),
-    )
+                ds["lat"]
+                .sel(
+                    lat     = lat_min,
+                    method  = "nearest",
+                ),
+            )
     lon_max = float(
-        ds["lon"]
-        .sel(
-            lon    = lon_max,
-            method = "nearest",
-        ),
-    )
+                ds["lon"]
+                .sel(
+                    lon     = lon_max,
+                    method  = "nearest",
+                ),
+            )
     lon_min = float(
-        ds["lon"]
-        .sel(
-            lon    = lon_min,
-            method = "nearest",
-        ),
-    )
+                ds["lon"]
+                .sel(
+                    lon     = lon_min,
+                    method  = "nearest",
+                ),
+            )
 
-    bbox = GeographicBoundingBox(
-        lat_max = lat_max,
-        lat_min = lat_min,
-        lon_max = lon_max,
-        lon_min = lon_min,
-    )
+    bbox    = GeographicBoundingBox(
+                lat_max = lat_max,
+                lat_min = lat_min,
+                lon_max = lon_max,
+                lon_min = lon_min,
+            )
 
     return bbox
 
@@ -83,29 +84,30 @@ def window(
     geographic_bounding_box: GeographicBoundingBox,
 ) -> xr.Dataset:
     """
-    Window a Dataset by a GeographicBoundingBox.
+    Window a dataset by a geographic bounding box.
 
     Parameters
     ----------
     ds : xr.Dataset
-        The Dataset
+        The dataset
     geographic_bounding_box : GeographicBoundingBox
-        The GeographicBoundingBox
+        The geographic bounding box
 
     Returns
     -------
     xr.Dataset
+        A dataset
     """
-    window = ds.sel(
-        lat = slice(
-            geographic_bounding_box.lat_min,
-            geographic_bounding_box.lat_max,
-        ),
-        lon = slice(
-            geographic_bounding_box.lon_min,
-            geographic_bounding_box.lon_max,
-        ),
-    )
+    window  = ds.sel(
+                lat = slice(
+                    geographic_bounding_box.lat_min,
+                    geographic_bounding_box.lat_max,
+                ),
+                lon = slice(
+                    geographic_bounding_box.lon_min,
+                    geographic_bounding_box.lon_max,
+                ),
+            )
 
     return window
 
@@ -114,28 +116,29 @@ def compute_spatial_mean(
     da: xr.DataArray,
 ) -> float:
     """
-    Compute the spatial mean of a Dataset.
+    Compute the spatial mean of a dataset.
 
     Parameters
     ----------
     da : xr.DataArray
-        The Dataset
+        The dataset
 
     Returns
     -------
     float
+        A spatial mean
     """
     spatial_mean = float(
-        da
-        .mean(
-            [
-                "lat",
-                "lon",
-                "time",
-            ],
-        )
-        .item(),
-    )
+                    da
+                    .mean(
+                        [
+                            "lat",
+                            "lon",
+                            "time",
+                        ],
+                    )
+                    .item(),
+                )
 
     return spatial_mean
 
@@ -145,7 +148,7 @@ def compute_spatial_coverage(
     denominator_mask: xr.DataArray,
 ) -> float:
     """
-    Compute the spatial coverage of a Dataset.
+    Compute the spatial coverage of a dataset.
 
     Parameters
     ----------
@@ -157,6 +160,7 @@ def compute_spatial_coverage(
     Returns
     -------
     float
+        A spatial coverage
 
     Raises
     ------
@@ -176,22 +180,22 @@ def compute_spatial_coverage(
         raise TypeError(message)
 
     numerator_sum   = int(
-        numerator_mask
-        .sum()
-        .item(),
-    )
+                        numerator_mask
+                        .sum()
+                        .item(),
+                    )
     denominator_sum = int(
-        denominator_mask
-        .sum()
-        .item(),
-    )
+                        denominator_mask
+                        .sum()
+                        .item(),
+                    )
 
     if denominator_sum == 0:
         spatial_coverage = float("nan")
     else:
-        spatial_coverage = (
-            numerator_sum /
-            denominator_sum
-        )
+        spatial_coverage    = (
+                                numerator_sum /
+                                denominator_sum
+                            )
 
     return spatial_coverage

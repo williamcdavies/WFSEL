@@ -5,7 +5,9 @@ Written by William Chuter-Davies
 """
 
 
-def to_index(julian: int) -> int:
+def to_index(
+    julian: int,
+) -> int:
     """
     Convert a julian to an index.
 
@@ -21,7 +23,9 @@ def to_index(julian: int) -> int:
     return julian - 1
 
 
-def to_day(index: int) -> int:
+def to_day(
+    index: int,
+) -> int:
     """
     Convert an index to a julian.
 

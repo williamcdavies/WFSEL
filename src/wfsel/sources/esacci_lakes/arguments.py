@@ -19,7 +19,6 @@ def add_argument_esacci_lakes_id(
     ----------
     parser : ArgumentParser
         The parser
-
     """
     parser.add_argument(
         "esacci_lakes_id",
@@ -37,7 +36,6 @@ def add_argument_esacci_lakes_metadata_csv_path(
     ----------
     parser : ArgumentParser
         The parser
-
     """
     parser.add_argument(
         "esacci_lakes_metadata_csv_path",
@@ -55,7 +53,6 @@ def add_argument_esacci_lakes_static_lake_mask_nc_path(
     ----------
     parser : ArgumentParser
         The parser
-
     """
     parser.add_argument(
         "esacci_lakes_static_lake_mask_nc_path",
@@ -73,7 +70,6 @@ def add_argument_esacci_lakes_merged_product_nc_path(
     ----------
     parser : ArgumentParser
         The parser
-
     """
     parser.add_argument(
         "esacci_lakes_merged_product_nc_path",
@@ -91,7 +87,6 @@ def add_argument_esacci_lakes_merged_product_csv_path(
     ----------
     parser : ArgumentParser
         The parser
-
     """
     parser.add_argument(
         "esacci_lakes_merged_product_csv_path",
@@ -109,7 +104,6 @@ def add_argument_esacci_lakes_merged_product_dir_path(
     ----------
     parser : ArgumentParser
         The parser
-
     """
     parser.add_argument(
         "esacci_lakes_merged_product_dir_path",
@@ -128,7 +122,6 @@ def add_argument_esacci_lakes_counts_of_distinct_start_days_by_year_csv_path(
     ----------
     parser : ArgumentParser
         The parser
-
     """
     parser.add_argument(
         "esacci_lakes_counts_of_distinct_start_days_by_year_csv_path",
@@ -147,7 +140,6 @@ def add_argument_esacci_lakes_hylak_field_values_csv_path(
     ----------
     parser : ArgumentParser
         The parser
-
     """
     parser.add_argument(
         "esacci_lakes_hylak_field_values_csv_path",

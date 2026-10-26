@@ -5,20 +5,20 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-from argparse        import (
-    ArgumentParser,
-    Namespace,
-)
-from collections.abc import Callable
-from pathlib         import Path
-from typing          import Any
+from argparse           import (
+                            ArgumentParser,
+                            Namespace,
+                        )
+from collections.abc    import Callable
+from pathlib            import Path
+from typing             import Any
 
 
 def build_parser(
     parser: ArgumentParser,
     *,
-    positional_arguments: list[Callable[[ArgumentParser], None]] | None = None,
-    optional_arguments:   list[Callable[[ArgumentParser], None]] | None = None,
+    positional_arguments:   list[Callable[[ArgumentParser], None]] | None = None,
+    optional_arguments:     list[Callable[[ArgumentParser], None]] | None = None,
 ) -> ArgumentParser:
     """
     Build a parser.
@@ -35,9 +35,10 @@ def build_parser(
     Returns
     -------
     ArgumentParser
+        A parser
     """
     for f in (
-        *(positional_arguments or []), # if None, unpack empty list
+        *(positional_arguments or []),  # if None, unpack empty list
         *(optional_arguments   or []),  # if None, unpack empty list
     ):
         f(parser)
@@ -62,15 +63,16 @@ def arguments_are_valid(
     Returns
     -------
     bool
+        True if all arguments are valid, False otherwise
     """
     for (
         argument_name,
         validator,
     ) in argument_name_to_validator.items():
-        argument_value = getattr(
-            arguments,
-            argument_name,
-        )
+        argument_value  = getattr(
+                            arguments,
+                            argument_name,
+                        )
 
         if not validator(
             argument_name,
@@ -98,6 +100,7 @@ def argument_is_directory(
     Returns
     -------
     bool
+        True if argument is a directory, False otherwise
     """
     if not argument_value.is_dir():
         message = f"expected argument {argument_name} to be a directory"
@@ -124,6 +127,7 @@ def argument_is_file(
     Returns
     -------
     bool
+        True if argument is a file, False otherwise
     """
     if not argument_value.is_file():
         message = f"expected argument {argument_name} to be a file"
@@ -131,63 +135,3 @@ def argument_is_file(
         raise ValueError(message)
 
     return True
-
-
-def argument_is_member_of_set(
-    values: list[str],
-) -> Callable[[str, str], bool]:
-    """
-    Validate an argument as a member of a set.
-
-    Parameters
-    ----------
-    values : list[str]
-        The values
-
-    Returns
-    -------
-    Callable[[str, str], bool]
-    """
-    def _validator(
-        argument_name:  str,
-        argument_value: str,
-    ) -> bool:
-        if argument_value not in values:
-            message = f"expected argument {argument_name} to be a member of {values}"
-
-            raise ValueError(message)
-
-        return True
-
-    return _validator
-
-
-def argument_is_subset_of_set(
-    values: list[str],
-) -> Callable[[str, list[str]], bool]:
-    """
-    Validate an argument as a subset of a set.
-
-    Parameters
-    ----------
-    values : list[str]
-        _description_
-
-    Returns
-    -------
-    Callable[[str, list[str]], bool]
-        _description_
-    """
-    def _validator(
-        argument_name:  str,
-        argument_value: list[str],
-    ) -> bool:
-        for element in argument_value:
-            if element not in values:
-                message = f"expected argument {argument_name} to be a subset of {values}"
-
-                raise ValueError(message)
-
-        return True
-
-    return _validator

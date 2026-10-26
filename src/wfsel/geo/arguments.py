@@ -18,7 +18,6 @@ def add_argument_stusps(
     ----------
     parser : ArgumentParser
         The parser
-
     """
     parser.add_argument(
         "stusps",

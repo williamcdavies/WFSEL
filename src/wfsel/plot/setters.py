@@ -15,18 +15,18 @@ def set_ax_xlim_to_gdf_total_bounds(
     gdf: gpd.GeoDataFrame,
 ) -> None:
     """
-    Set xlim to the bounds of a GeoDataFrame.
+    Set xlim to the bounds of a geodataframe.
 
     Parameters
     ----------
     ax : Axes
-        The Axes
+        The axes
     gdf : gpd.GeoDataFrame
-        The GeoDataFrame
+        The geodataframe
     """
     ax.set_xlim(
-        gdf.total_bounds[0] - 1, # minx
-        gdf.total_bounds[2] + 1,  # maxx
+        gdf.total_bounds[0] - 1,    # minx
+        gdf.total_bounds[2] + 1,    # maxx
     )
 
 
@@ -35,16 +35,16 @@ def set_ax_ylim_to_gdf_total_bounds(
     gdf: gpd.GeoDataFrame,
 ) -> None:
     """
-    Set ylim to the bounds of a GeoDataFrame.
+    Set ylim to the bounds of a geodataframe.
 
     Parameters
     ----------
     ax : Axes
-        The Axes
+        The axes
     gdf : gpd.GeoDataFrame
-        The GeoDataFrame
+        The geodataframe
     """
     ax.set_ylim(
-        gdf.total_bounds[1] - 1, # miny
-        gdf.total_bounds[3] + 1,  # maxy
+        gdf.total_bounds[1] - 1,    # miny
+        gdf.total_bounds[3] + 1,    # maxy
     )

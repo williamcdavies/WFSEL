@@ -12,7 +12,7 @@ def add_argument_scale(
     parser: ArgumentParser,
 ) -> None:
     """
-    Add a 'scale' argument to a parser.
+    Add a "scale" argument to a parser.
 
     Parameters
     ----------
@@ -21,6 +21,6 @@ def add_argument_scale(
     """
     parser.add_argument(
         "-s", "--scale",
-        type     = str,
-        required = True,
+        type        = str,
+        required    = True,
     )

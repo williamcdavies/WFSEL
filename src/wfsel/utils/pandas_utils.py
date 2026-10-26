@@ -13,23 +13,24 @@ def compute_quantiles(
     levels: list[float],
 ) -> list[float]:
     """
-    Compute the quantiles of a Series.
+    Compute the quantiles of a series.
 
     Parameters
     ----------
     ser : pd.Series
-        The Series
+        The series
     levels : list[float]
         The levels
 
     Returns
     -------
     list[float]
+        A list of quantiles
     """
-    quantiles = [
-        float(ser.quantile(level))
-        for level
-        in levels
-    ]
+    quantiles   = [
+                    float(ser.quantile(level))
+                    for level
+                    in levels
+                ]
 
     return quantiles

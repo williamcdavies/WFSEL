@@ -43,7 +43,7 @@ def to_csv(
     df.to_csv(output_file_path)
 
 
-def to_png(
+def to_svg(
     fig:                Figure,
     output_file_path:   Path,
 ) -> None:

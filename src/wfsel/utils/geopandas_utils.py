@@ -9,17 +9,17 @@ import geopandas as gpd
 
 
 def filter_gdf_rows_by_values(
-    gdf:     gpd.GeoDataFrame,
-    colname: str,
-    values:  list[str],
+    gdf:        gpd.GeoDataFrame,
+    colname:    str,
+    values:     list[str],
 ) -> gpd.GeoDataFrame:
     """
-    Filter a GeoDataFrame by values.
+    Filter a geodataframe by values.
 
     Parameters
     ----------
     gdf : gpd.GeoDataFrame
-        The GeoDataFrame
+        The geodataframe
     colname : str
         The column name
     values : list[str]
@@ -28,6 +28,7 @@ def filter_gdf_rows_by_values(
     Returns
     -------
     gpd.GeoDataFrame
+        A geodataframe
     """
     gdf = gdf[gdf[colname].isin(values)]
 

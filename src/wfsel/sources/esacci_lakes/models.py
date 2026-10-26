@@ -6,63 +6,91 @@ Written by William Chuter-Davies
 # Standard Library Imports
 from dataclasses import dataclass
 
+# Related Third-party Imports
+import pandas as pd
+
 
 @dataclass(kw_only = True)
 class ESACCILakesVariable:
     """Encapsulates ESACCILakesVariable."""
 
-    var_id:    str
-    long_name: str
-    units:     str
+    var_id:     str
+    long_name:  str
+    units:      str
 
 
-ESACCI_LAKES_VARIABLES = {
-    "chla":
-    ESACCILakesVariable(
-        var_id    = "chla",
-        long_name = "Concentration of Chlorophyll-a",
-        units     = "mg.m-3",
-    ),
-    "tsm":
-    ESACCILakesVariable(
-        var_id    = "tsm",
-        long_name = "Concentration of Total Suspended Matter",
-        units     = "g.m-3",
-    ),
-    "acdom440":
-    ESACCILakesVariable(
-        var_id    = "acdom440",
-        long_name = "Absorption Coefficient of Coloured Dissolved Organic Matter at 440 nm",
-        units     = "m-1",
-    ),
-    "Kd490":
-    ESACCILakesVariable(
-        var_id    = "Kd490",
-        long_name = "Vertical Diffuse Downwelling Attenuation Coefficient at 490 nm",
-        units     = "m-1",
-    ),
-    "KdPAR":
-    ESACCILakesVariable(
-        var_id    = "KdPAR",
-        long_name = "Vertical Diffuse Downwelling Attenuation Coefficient Aggregated Over PAR",
-        units     = "m-1",
-    ),
-    "phycocyanin":
-    ESACCILakesVariable(
-        var_id    = "phycocyanin",
-        long_name = "Concentration of Phycocyanin Calculated From MDN Algorithm by O'Shea et al. 2021",
-        units     = "mg.m-3",
-    ),
-    "lake_surface_water_temperature":
-    ESACCILakesVariable(
-        var_id    = "lake_surface_water_temperature",
-        long_name = "Lake Surface Skin Temperature",
-        units     = "°C",
-    ),
-    "lake_surface_water_extent":
-    ESACCILakesVariable(
-        var_id    = "lake_surface_water_extent",
-        long_name = "Lake Water Extent",
-        units     = "km2",
-    ),
-}
+ESACCI_LAKES_VARIABLES  = {
+                            "lake_surface_water_temperature":
+                            ESACCILakesVariable(
+                                var_id      = "lake_surface_water_temperature",
+                                long_name   = "Lake Surface Skin Temperature",
+                                units       = "K",
+                            ),
+                        }
+
+
+@dataclass(kw_only = True)
+class Season:
+    """
+    Encapsulate a Season.
+
+    Raises
+    ------
+    ValueError
+        If the index of the observations series is not [1,
+        len(observations series)]
+    ValueError
+        If first is not in [1, len(observations series)]
+    ValueError
+        If last is not in [1, len(observations series)]
+    ValueError
+        If first is greater than last
+    """
+
+    observations_ser:   pd.Series[float]
+    first:              int
+    last:               int
+
+    def __post_init__(
+        self,
+    ) -> None:
+        """
+        Post initialisation checks.
+
+        Raises
+        ------
+        ValueError
+            If the index of the observations series is not [1,
+            len(observations series)]
+        ValueError
+            If first is not in [1, len(observations series)]
+        ValueError
+            If last is not in [1, len(observations series)]
+        ValueError
+            If first is greater than last
+        """
+        actual      = self.observations_ser.index
+        expected    = pd.RangeIndex(
+                        1,
+                        len(self.observations_ser) + 1,
+                    )
+
+        if not actual.equals(expected):
+            message = f"expected index to be [1, {len(self.observations_ser)}]: got {actual.tolist()}"
+
+            raise ValueError(message)
+
+        if self.first not in actual:
+            message = f"expected first ({self.first}) to be in [1, {len(self.observations_ser)}]"
+
+            raise ValueError(message)
+
+        if self.last not in actual:
+            message = f"expected last ({self.last}) to be in [1, {len(self.observations_ser)}]"
+
+            raise ValueError(message)
+
+        if self.first > self.last:
+            message =  f"expected first ({self.first}) to be less than or equal to last ({self.last})"
+
+            raise ValueError(message)
