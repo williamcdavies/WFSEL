@@ -13,7 +13,7 @@ def add_argument_output(
     parser: ArgumentParser,
 ) -> None:
     """
-    Add a `output` argument to a parser.
+    Add a "output" argument to a parser.
 
     Parameters
     ----------
@@ -22,6 +22,6 @@ def add_argument_output(
     """
     parser.add_argument(
         "-o", "--output",
-        type     = Path,
-        required = True,
+        type        = Path,
+        required    = True,
     )

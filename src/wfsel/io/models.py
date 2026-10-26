@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 @dataclass(kw_only = True)
 class CompletedProcessLog:
-    """Encapsualtes CompletedProcessLog."""
+    """Encapsulate a CompletedProcessLog."""
 
     args:       list[str]
     returncode: int

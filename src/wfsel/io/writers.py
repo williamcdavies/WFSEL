@@ -5,12 +5,12 @@ Written by William Chuter-Davies
 """
 
 # Standard Library Imports
-from datetime import (
+from datetime   import (
     UTC,
     datetime,
 )
-from pathlib  import Path
-from typing   import TextIO
+from pathlib    import Path
+from typing     import TextIO
 
 # Related Third-party Imports
 import pandas as pd
@@ -22,64 +22,64 @@ from wfsel.io.models import CompletedProcessLog
 
 
 def to_csv(
-    df:               pd.DataFrame,
-    output_file_path: Path,
+    df:                 pd.DataFrame,
+    output_file_path:   Path,
 ) -> None:
     """
-    Write a DataFrame to a .csv file.
+    Write a dataframe to a .csv file.
 
     Parameters
     ----------
     df : pd.DataFrame
-        The DataFrame
+        The dataframe
     output_file_path : Path
         The output file path
     """
     output_file_path.parent.mkdir(
-        parents  = True,
-        exist_ok = True,
+        parents     = True,
+        exist_ok    = True,
     )
 
     df.to_csv(output_file_path)
 
 
 def to_png(
-    fig:              Figure,
-    output_file_path: Path,
+    fig:                Figure,
+    output_file_path:   Path,
 ) -> None:
     """
-    Write a Figure to a .png file.
+    Write a figure to a .png file.
 
     Parameters
     ----------
     fig : Figure
-        The Figure
+        The figure
     output_file_path : Path
         The output file path
     """
     output_file_path.parent.mkdir(
-        parents  = True,
-        exist_ok = True,
+        parents     = True,
+        exist_ok    = True,
     )
 
     fig.savefig(
         output_file_path,
-        dpi         = 300,
+        format      = "svg",
         bbox_inches = "tight",
     )
 
 
 def to_logstream(
-    completed_process_log: CompletedProcessLog,
-    logstream:             TextIO,
+    completed_process_log:  CompletedProcessLog,
+    logstream:              TextIO,
 ) -> None:
     """
-    Write a CompletedProcessLog to a logstream.
+    Write a completed process log to a logstream.
 
     Parameters
     ----------
     completed_process_log : CompletedProcessLog
-        The CompletedProcessLog
+        The completed process log
     logstream : TextIO
         The logstream
     """
