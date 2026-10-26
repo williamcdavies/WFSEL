@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 @dataclass(kw_only = True)
 class GeographicBoundingBox:
-    """Encapsulates a GeographicBoundingBox."""
+    """Encapsulate a GeographicBoundingBox."""
 
     lat_max:    float
     lat_min:    float
