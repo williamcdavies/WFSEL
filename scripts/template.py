@@ -40,7 +40,6 @@ def build_parser(
     -------
     ArgumentParser
         A parser
-
     """
     parser  = ArgumentParser(
                 prog        = PROG,
@@ -71,7 +70,6 @@ def arguments_are_valid(
     -------
     bool
         True if all arguments are valid, False otherwise
-
     """
     argument_name_to_validator = {}
 
@@ -95,7 +93,6 @@ def main(
     -------
     int
         0 if program runs successfully, 1 otherwise
-
     """
     args = build_parser().parse_args()
 
