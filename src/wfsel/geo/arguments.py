@@ -12,15 +12,16 @@ def add_argument_stusps(
     parser: ArgumentParser,
 ) -> None:
     """
-    Add a `stusps` argument to a parser.
+    Add a "stusps" argument to a parser.
 
     Parameters
     ----------
     parser : ArgumentParser
         The parser
+
     """
     parser.add_argument(
         "stusps",
-        nargs = "+",
-        type  = str,
+        nargs   = "+",
+        type    = str,
     )
