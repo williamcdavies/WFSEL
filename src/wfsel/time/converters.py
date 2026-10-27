@@ -19,6 +19,7 @@ def to_index(
     Returns
     -------
     int
+        An index
     """
     return julian - 1
 
@@ -37,5 +38,6 @@ def to_day(
     Returns
     -------
     int
+        A julian
     """
     return index + 1

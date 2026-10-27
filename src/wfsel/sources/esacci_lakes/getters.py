@@ -57,7 +57,7 @@ def get_most_recent_year(
     esacci_lakes_counts_of_distinct_start_days_by_year_df_long: pd.DataFrame,
 ) -> int:
     """
-    Get the most recent year of a lake by its id.
+    Get a most recent year of a lake by its id.
 
     Parameters
     ----------
@@ -108,7 +108,7 @@ def get_most_smoke_year(
     esacci_lakes_counts_of_distinct_start_days_by_year_df_long: pd.DataFrame,
 ) -> int:
     """
-    Get the most smoke year of a lake by its id.
+    Get a most smoke year of a lake by its id.
 
     Parameters
     ----------
@@ -160,7 +160,7 @@ def get_observations_ser(
     esacci_lakes_merged_product_dir_path:   Path,
 ) -> pd.Series[float]:
     """
-    Get the observations series of a lake by its id and a year.
+    Get an observations series of a lake by its id and a year.
 
     Parameters
     ----------

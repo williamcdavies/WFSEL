@@ -12,12 +12,12 @@ def mean_observations(
     observations: list[pd.Series[float]],
 ) -> pd.Series[float]:
     """
-    Compute the element-wise mean across a list of observation series.
+    Compute an element-wise mean across a list of observation series.
 
     Parameters
     ----------
     observations : list[pd.Series[float]]
-        A list of observation series
+        The list of observation series
 
     Returns
     -------
@@ -37,13 +37,13 @@ def std_observations(
     observations: list[pd.Series[float]],
 ) -> pd.Series[float]:
     """
-    Compute the element-wise standard deviation across a list of
+    Compute an element-wise standard deviation across a list of
     observation series.
 
     Parameters
     ----------
     observations : list[pd.Series[float]]
-        A list of observation series
+        The list of observation series
 
     Returns
     -------
