@@ -10,14 +10,14 @@ from typing     import TextIO
 
 
 def open_logstream(
-    directory_path: Path,
+    dir_path: Path,
 ) -> TextIO:
     """
     Open a logstream.
 
     Parameters
     ----------
-    directory_path : Path
+    dir_path : Path
         The directory path
 
     Returns
@@ -25,13 +25,13 @@ def open_logstream(
     TextIO
         A logstream
     """
-    directory_path.mkdir(
+    dir_path.mkdir(
         parents     = True,
         exist_ok    = True,
     )
 
     logstream   = Path.open(
-                    directory_path / "log.txt",
+                    dir_path / "log.txt",
                     "a",
                 )
 

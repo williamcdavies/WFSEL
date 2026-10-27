@@ -83,7 +83,7 @@ def arguments_are_valid(
     return True
 
 
-def argument_is_directory(
+def argument_is_dir(
     argument_name:  str,
     argument_value: Path,
 ) -> bool:
