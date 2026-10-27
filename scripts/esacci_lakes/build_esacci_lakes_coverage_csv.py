@@ -43,7 +43,7 @@ from wfsel.sources.esacci_lakes.readers         import (
 from wfsel.utils.argparse_utils                 import (
                                                     arguments_are_valid as _arguments_are_valid,
                                                     build_parser        as _build_parser,
-                                                    argument_is_directory,
+                                                    argument_is_dir,
                                                     argument_is_file,
                                                 )
 
@@ -103,7 +103,7 @@ def arguments_are_valid(
     argument_name_to_validator  = {
                                     "esacci_lakes_metadata_csv_path":                               argument_is_file,
                                     "esacci_lakes_counts_of_distinct_start_days_by_year_csv_path":  argument_is_file,
-                                    "esacci_lakes_merged_product_dir_path":                         argument_is_directory,
+                                    "esacci_lakes_merged_product_dir_path":                         argument_is_dir,
                                 }
 
     boolean = _arguments_are_valid(

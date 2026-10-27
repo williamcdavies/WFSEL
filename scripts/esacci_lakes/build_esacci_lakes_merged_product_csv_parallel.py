@@ -38,7 +38,7 @@ from wfsel.sources.esacci_lakes.arguments import (
     add_argument_esacci_lakes_static_lake_mask_nc_path,
 )
 from wfsel.utils.argparse_utils           import (
-    argument_is_directory,
+    argument_is_dir,
     argument_is_file,
 )
 from wfsel.utils.argparse_utils           import (
@@ -115,8 +115,8 @@ def arguments_are_valid(
     argument_name_to_validator = {
         "esacci_lakes_metadata_csv_path":        argument_is_file,
         "esacci_lakes_static_lake_mask_nc_path": argument_is_file,
-        "esacci_lakes_merged_product_dir_path":  argument_is_directory,
-        "output":                                argument_is_directory,
+        "esacci_lakes_merged_product_dir_path":  argument_is_dir,
+        "output":                                argument_is_dir,
     }
 
     boolean = _arguments_are_valid(
