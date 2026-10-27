@@ -17,17 +17,17 @@ from pathlib    import Path
 import pandas as pd
 
 # Local Application/Library Specific Imports
-from wfsel.exit_codes                       import (
-                                                EXIT_FAILURE,
-                                                EXIT_SUCCESS,
-                                            )
-from wfsel.io.arguments                     import add_argument_output
-from wfsel.io.writers                       import to_csv
-from wfsel.utils.argparse_utils             import (
-                                                arguments_are_valid as _arguments_are_valid,
-                                                build_parser        as _build_parser,
-                                                argument_is_file,
-                                            )
+from wfsel.exit_codes           import (
+                                    EXIT_FAILURE,
+                                    EXIT_SUCCESS,
+                                )
+from wfsel.io.arguments         import add_argument_output
+from wfsel.io.writers           import to_csv
+from wfsel.utils.argparse_utils import (
+                                    arguments_are_valid as _arguments_are_valid,
+                                    build_parser        as _build_parser,
+                                    argument_is_file,
+                                )
 
 PROG    = "build_esacci_lakes_deltas_csv.py"
 DESC    = ""
@@ -260,28 +260,57 @@ def comprehend_column_names(
 
 
 def build_deltas_df(
-    esacci_lakes_high_smoke_year_observations_anomaly_df:   pd.DataFrame,
-    esacci_lakes_low_smoke_year_observations_anomaly_df:    pd.DataFrame,
-    column_names:                                           list[str],
+    esacci_lakes_high_smoke_year_observations_df:   pd.DataFrame,
+    esacci_lakes_low_smoke_year_observations_df:    pd.DataFrame,
+    column_names:                                   list[str],
 ) -> pd.DataFrame:
-    if esacci_lakes_high_smoke_year_observations_anomaly_df.shape != esacci_lakes_low_smoke_year_observations_anomaly_df.shape:
+    """
+    Build a deltas dataframe.
+
+    Parameters
+    ----------
+    esacci_lakes_high_smoke_year_observations_df : pd.DataFrame
+        The ESA CCI Lakes high smoke year observations
+    esacci_lakes_low_smoke_year_observations_df : pd.DataFrame
+        The ESA CCI Lakes low somke year observations
+    column_names : list[str]
+        The list of column names
+
+    Returns
+    -------
+    pd.DataFrame
+        A deltas dataframe
+
+    Raises
+    ------
+    ValueError
+        If high smoke year observations dataframe and low smoke year
+        observations dataframe are not of the same shape
+    ValueError
+        If high smoke year observations dataframe and low smoke year
+        observations dataframe are not of the same index
+    ValueError
+        If high smoke year observations dataframe and low smoke year
+        observations dataframe are not of the same NaN mask
+    """
+    if esacci_lakes_high_smoke_year_observations_df.shape != esacci_lakes_low_smoke_year_observations_df.shape:
         message = "expected high smoke year observations dataframe and low smoke year observations dataframe to be of the same shape"
 
         raise ValueError(message)
 
-    if not esacci_lakes_high_smoke_year_observations_anomaly_df.index.equals(esacci_lakes_low_smoke_year_observations_anomaly_df.index):
+    if not esacci_lakes_high_smoke_year_observations_df.index.equals(esacci_lakes_low_smoke_year_observations_df.index):
         message = "expected high smoke year observations dataframe and low smoke year observations dataframe to be of the same index"
 
         raise ValueError(message)
 
-    if not (esacci_lakes_high_smoke_year_observations_anomaly_df.isna() == esacci_lakes_low_smoke_year_observations_anomaly_df.isna()).all(axis=None):
+    if not (esacci_lakes_high_smoke_year_observations_df.isna() == esacci_lakes_low_smoke_year_observations_df.isna()).all(axis=None):
         message = "expected high smoke year observations dataframe and low smoke year observations dataframe to be of the same NaN mask"
 
         raise ValueError(message)
 
-    windowed_high_smoke_year_observations_anomaly_df    = esacci_lakes_high_smoke_year_observations_anomaly_df[column_names]
-    windowed_low_smoke_year_observations_anomaly_df     = esacci_lakes_low_smoke_year_observations_anomaly_df[column_names]
-    diff                                                = windowed_high_smoke_year_observations_anomaly_df - windowed_low_smoke_year_observations_anomaly_df
+    windowed_high_smoke_year_observations_df    = esacci_lakes_high_smoke_year_observations_df[column_names]
+    windowed_low_smoke_year_observations_df     = esacci_lakes_low_smoke_year_observations_df[column_names]
+    diff                                        = windowed_high_smoke_year_observations_df - windowed_low_smoke_year_observations_df
 
     delta       = (
                     diff
@@ -298,7 +327,7 @@ def build_deltas_df(
                 "delta":    delta,
                 "coverage": coverage,
             },
-            index = windowed_high_smoke_year_observations_anomaly_df.index,
+            index = windowed_high_smoke_year_observations_df.index,
         )
 
     return df
