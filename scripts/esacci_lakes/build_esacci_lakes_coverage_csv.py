@@ -1,5 +1,5 @@
 """
-build_esacci_lakes_merged_product_coverage_csv.py.
+build_esacci_lakes_coverage_csv.py.
 
 Written by William Chuter-Davies
 """
@@ -11,6 +11,7 @@ from argparse   import (
                     ArgumentParser,
                     Namespace,
                 )
+from pathlib    import Path
 
 # Related Third-party Imports
 import pandas as pd
@@ -46,7 +47,7 @@ from wfsel.utils.argparse_utils                 import (
                                                     argument_is_file,
                                                 )
 
-PROG    = "build_esacci_lakes_merged_product_coverage_csv.py"
+PROG    = "build_esacci_lakes_coverage_csv.py"
 DESC    = ""
 
 
@@ -114,6 +115,96 @@ def arguments_are_valid(
 
 
 # ----------------------------------------------------------------------
+# core
+# ----------------------------------------------------------------------
+def build_coverage_row(
+    esacci_lakes_id:                                            int,
+    esacci_lakes_counts_of_distinct_start_days_by_year_df_long: pd.DataFrame,
+    esacci_lakes_merged_product_dir_path:                       Path,
+) -> dict[str, int]:
+    """
+    Build a coverage row.
+
+    Parameters
+    ----------
+    esacci_lakes_id : int
+        The ESA CCI Lakes id
+    esacci_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
+        The unpivoted ESA CCI Lakes counts of distinct start days by
+        year dataframe
+    esacci_lakes_merged_product_dir_path : Path
+        The ESA CCI Lakes merged product directory path
+
+    Returns
+    -------
+    dict[str, int]
+        A coverage row
+    """
+    try:
+        high_smoke_year                     = get_most_smoke_year(
+                                                esacci_lakes_id,
+                                                esacci_lakes_counts_of_distinct_start_days_by_year_df_long,
+                                            )
+        high_smoke_year_observations_ser    = get_observations_ser(
+                                                esacci_lakes_id,
+                                                high_smoke_year,
+                                                esacci_lakes_merged_product_dir_path,
+                                            )
+        high_smoke_year_coverage            = (
+                                                high_smoke_year_observations_ser
+                                                .notna()
+                                                .sum()
+                                            )
+    except ValueError:
+        high_smoke_year_coverage = 0
+
+    row = {
+            "esacci_lakes_id":          esacci_lakes_id,
+            "high_smoke_year_coverage": high_smoke_year_coverage,
+        }
+
+    return row
+
+
+def comprehend_coverage_df(
+    esacci_lakes_metadata_df:                                   pd.DataFrame,
+    esacci_lakes_counts_of_distinct_start_days_by_year_df_long: pd.DataFrame,
+    esacci_lakes_merged_product_dir_path:                       Path,
+) -> pd.DataFrame:
+    """
+    Comprehend a coverage dataframe.
+
+    Parameters
+    ----------
+    esacci_lakes_metadata_df : pd.DataFrame
+        The ESA CCI Lakes metadata
+    esacci_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
+        The unpivoted ESA CCI Lakes counts of distinct start days by
+        year dataframe
+    esacci_lakes_merged_product_dir_path : Path
+        The ESA CCI Lakes merged product directory path
+
+    Returns
+    -------
+    pd.DataFrame
+        A coverage dataframe
+    """
+    df  = pd.DataFrame(
+            [
+                build_coverage_row(
+                    esacci_lakes_id,
+                    esacci_lakes_counts_of_distinct_start_days_by_year_df_long,
+                    esacci_lakes_merged_product_dir_path,
+                )
+                for esacci_lakes_id
+                in tqdm(esacci_lakes_metadata_df.index)
+            ]
+        ).set_index("esacci_lakes_id")
+    
+    return df
+
+
+# ----------------------------------------------------------------------
 # main
 # ----------------------------------------------------------------------
 def main(
@@ -145,36 +236,11 @@ def main(
                                                                     >= COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
                                                                 ]
 
-    records = []
-
-    for esacci_lakes_id in tqdm(metadata_df.index):
-        try:
-            high_smoke_year = get_most_smoke_year(
-                                esacci_lakes_id,
-                                counts_of_distinct_start_days_by_high_smoke_year_df_long,
-                            )
-        except ValueError:
-            continue
-
-        high_smoke_year_observations_ser    = get_observations_ser(
-                                                esacci_lakes_id,
-                                                high_smoke_year,
-                                                args.esacci_lakes_merged_product_dir_path,
-                                            )
-        high_smoke_year_coverage            = (
-                                                high_smoke_year_observations_ser
-                                                .notna()
-                                                .sum()
-                                            ) 
-
-        records.append(
-            {
-                "esacci_lakes_id":          esacci_lakes_id,
-                "high_smoke_year_coverage": high_smoke_year_coverage,
-            }
-        )
-
-    coverage_df = pd.DataFrame(records).set_index("esacci_lakes_id")
+    coverage_df = comprehend_coverage_df(
+                    metadata_df,
+                    counts_of_distinct_start_days_by_high_smoke_year_df_long,
+                    args.esacci_lakes_merged_product_dir_path,
+                )
 
     to_csv(
         coverage_df,
