@@ -104,8 +104,8 @@ def get_most_recent_year(
 
 
 def get_most_smoke_year(
-    esacci_lakes_id:                                int,
-    counts_of_distinct_start_days_by_year_df_long:  pd.DataFrame,
+    esacci_lakes_id:                                            int,
+    esacci_lakes_counts_of_distinct_start_days_by_year_df_long: pd.DataFrame,
 ) -> int:
     """
     Get the most smoke year of a lake by its id.
@@ -130,8 +130,8 @@ def get_most_smoke_year(
         year dataframe contains zero rows labeled by the ESA CCI Lakes
         id
     """
-    group   = counts_of_distinct_start_days_by_year_df_long[
-                counts_of_distinct_start_days_by_year_df_long["esacci_lakes_id"]
+    group   = esacci_lakes_counts_of_distinct_start_days_by_year_df_long[
+                esacci_lakes_counts_of_distinct_start_days_by_year_df_long["esacci_lakes_id"]
                 == esacci_lakes_id
             ]
 

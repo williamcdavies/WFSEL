@@ -48,7 +48,7 @@ def to_svg(
     output_file_path:   Path,
 ) -> None:
     """
-    Write a figure to a .png file.
+    Write a figure to a .svg file.
 
     Parameters
     ----------

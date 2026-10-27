@@ -20,7 +20,7 @@ def comprehend_observations(
     esacci_lakes_merged_product_dir_path:   Path,
 ) -> list[pd.Series]:
     """
-    Get the observations series of a lake by its id and a list of years.
+    Comprehend a list of observation series.
 
     Parameters
     ----------

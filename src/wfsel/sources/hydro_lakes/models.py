@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 @dataclass(kw_only = True)
 class HylakField:
-    """Encapsulates HylakField."""
+    """Encapsulate a HylakField."""
 
     field_id:       str
     long_name:      str

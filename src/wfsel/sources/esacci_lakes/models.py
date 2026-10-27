@@ -12,7 +12,7 @@ import pandas as pd
 
 @dataclass(kw_only = True)
 class ESACCILakesVariable:
-    """Encapsulates ESACCILakesVariable."""
+    """Encapsulate a ESACCILakesVariable."""
 
     var_id:     str
     long_name:  str

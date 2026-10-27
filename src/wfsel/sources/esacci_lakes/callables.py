@@ -19,7 +19,7 @@ def apply_season_function(
     fn:                 Callable[[], tuple[int, int] | None],
 ) -> Season | None:
     """
-    Construct a season by an observation series and a season function.
+    Construct a season by a season function.
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ def apply_season_function(
     Returns
     -------
     Season | None
-        A season, or None
+        A season, or None if the season function fails
     """
     if (r := fn()) is None:
         return None

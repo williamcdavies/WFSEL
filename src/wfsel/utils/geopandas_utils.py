@@ -14,7 +14,7 @@ def filter_gdf_rows_by_values(
     values:     list[str],
 ) -> gpd.GeoDataFrame:
     """
-    Filter a geodataframe by values.
+    Filter a geodataframe by a list of values.
 
     Parameters
     ----------
@@ -23,7 +23,7 @@ def filter_gdf_rows_by_values(
     colname : str
         The column name
     values : list[str]
-        The values
+        The list of values
 
     Returns
     -------
