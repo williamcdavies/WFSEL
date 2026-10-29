@@ -1,6 +1,7 @@
-"""wfsel.sources.esacci_lakes.models.
-
-Written by William Chuter-Davies
+"""
+Filename:   wfsel.sources.esacci_lakes.models.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Standard Library Imports
@@ -17,7 +18,6 @@ class ESACCILakesVariable:
     var_id:     str
     long_name:  str
     units:      str
-
 
 ESACCI_LAKES_VARIABLES  = {
                             "lake_surface_water_temperature":
@@ -55,7 +55,7 @@ class Season:
         self,
     ) -> None:
         """
-        Post initialisation checks.
+        Perform post-initialisation checks.
 
         Raises
         ------

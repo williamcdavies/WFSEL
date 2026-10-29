@@ -1,7 +1,7 @@
 """
-wfsel.sources.esacci_lakes.readers.
-
-Written by William Chuter-Davies
+Filename:   wfsel.sources.esacci_lakes.readers.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Standard Library Imports
@@ -27,11 +27,11 @@ def read_esacci_lakes_metadata_csv(
     pd.DataFrame
         A dataframe
     """
-    df = pd.read_csv(
-        esacci_lakes_metadata_csv_path,
-        delimiter   = ";",
-        index_col   = "id",
-    )
+    df  = pd.read_csv(
+            esacci_lakes_metadata_csv_path,
+            index_col   = "id",
+            delimiter   = ";",
+        )
 
     return df
 
@@ -55,10 +55,10 @@ def read_esacci_lakes_merged_product_csv(
     pd.DataFrame
         A dataframe
     """
-    df = pd.read_csv(
-        esacci_lakes_merged_product_csv_path,
-        index_col = "esacci_lakes_id",
-    )
+    df  = pd.read_csv(
+            esacci_lakes_merged_product_csv_path,
+            index_col = "esacci_lakes_id",
+        )
 
     return df
 
@@ -81,10 +81,10 @@ def read_esacci_lakes_counts_of_distinct_start_days_by_year_csv(
     pd.DataFrame
         A dataframe
     """
-    df = pd.read_csv(
-        esacci_lakes_counts_of_distinct_start_days_by_year_csv_path,
-        index_col = "esacci_lakes_id",
-    )
+    df  = pd.read_csv(
+            esacci_lakes_counts_of_distinct_start_days_by_year_csv_path,
+            index_col = "esacci_lakes_id",
+        )
 
     return df
 
@@ -105,9 +105,9 @@ def read_esacci_lakes_hylak_field_values_csv(
     pd.DataFrame
         A dataframe
     """
-    df = pd.read_csv(
-        esacci_lakes_hylak_field_values_csv_path,
-        index_col = "esacci_lakes_id",
-    )
+    df  = pd.read_csv(
+            esacci_lakes_hylak_field_values_csv_path,
+            index_col = "esacci_lakes_id",
+        )
 
     return df

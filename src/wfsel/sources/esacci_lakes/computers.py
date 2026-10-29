@@ -1,7 +1,7 @@
 """
-wfsel.sources.esacci_lakes.computers.
-
-Written by William Chuter-Davies
+Filename:   wfsel.sources.esacci_lakes.computers.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Related Third-party Imports
@@ -12,16 +12,16 @@ import pandas   as pd
 from wfsel.sources.esacci_lakes.models import Season
 
 
-def comp_observations_mean(
+def compute_observations_mean(
     observations: list[pd.Series[float]],
 ) -> pd.Series[float]:
     """
-    Compute an element-wise mean across a list of observation series.
+    Compute an element-wise mean across a list of observations series.
 
     Parameters
     ----------
     observations : list[pd.Series[float]]
-        The list of observation series
+        The list of observations series
 
     Returns
     -------
@@ -37,17 +37,17 @@ def comp_observations_mean(
     return mean
 
 
-def comp_observations_std(
+def compute_observations_std(
     observations: list[pd.Series[float]],
 ) -> pd.Series[float]:
     """
     Compute an element-wise standard deviation across a list of
-    observation series.
+    observations series.
 
     Parameters
     ----------
     observations : list[pd.Series[float]]
-        The list of observation series
+        The list of observations series
 
     Returns
     -------
@@ -63,7 +63,7 @@ def comp_observations_std(
     return std
 
 
-def comp_pre_season_mean(
+def compute_pre_season_mean(
     season: Season,
     start:  int,
     stop:   int,
@@ -103,7 +103,7 @@ def comp_pre_season_mean(
     return pre_season_mean
 
 
-def comp_pre_season_std(
+def compute_pre_season_std(
     season: Season,
     start:  int,
     stop:   int,

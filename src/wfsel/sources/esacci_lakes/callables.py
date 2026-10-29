@@ -1,7 +1,7 @@
 """
-wfsel.sources.esacci_lakes.callables.
-
-Written by William Chuter-Davies
+Filename:   wfsel.sources.esacci_lakes.callables.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Standard Library Imports
@@ -16,16 +16,16 @@ from wfsel.sources.esacci_lakes.models import Season
 
 def apply_season_function(
     observations_ser:   pd.Series[float],
-    fn:                 Callable[[], tuple[int, int] | None],
+    season_fn:          Callable[[], tuple[int, int] | None],
 ) -> Season | None:
     """
-    Construct a season by a season function.
+    Construct a season with a season function.
 
     Parameters
     ----------
     observations_ser : pd.Series[float]
-        The observation series
-    fn : Callable[[], tuple[int, int]  |  None]
+        The observations series
+    season_fn : Callable[[], tuple[int, int]  |  None]
         The season function
 
     Returns
@@ -33,7 +33,7 @@ def apply_season_function(
     Season | None
         A season, or None if the season function fails
     """
-    if (r := fn()) is None:
+    if (r := season_fn()) is None:
         return None
 
     (
@@ -51,7 +51,7 @@ def apply_season_function(
 
 
 def season_function_sliding_window(
-    distinct_ser: pd.Series[int],
+    distinct_labels_ser: pd.Series[int],
     *,
     width:      int,
     trigger:    int,
@@ -62,8 +62,8 @@ def season_function_sliding_window(
 
     Parameters
     ----------
-    distinct_ser : pd.Series[int]
-        The distinct series
+    distinct_labels_ser : pd.Series[int]
+        The distinct labels series
     width : int
         The width
     trigger : int
@@ -80,10 +80,10 @@ def season_function_sliding_window(
     ) -> int | None:
         for i in range(
             trigger - 1,
-            len(distinct_ser),
+            len(distinct_labels_ser),
         ):
-            left    = distinct_ser.iloc[i - (trigger - 1)]
-            right   = distinct_ser.iloc[i]
+            left    = distinct_labels_ser.iloc[i - (trigger - 1)]
+            right   = distinct_labels_ser.iloc[i]
 
             if right - left < width:
                 match edge:
@@ -103,10 +103,10 @@ def season_function_sliding_window(
     ) -> int | None:
         for i in reversed(range(
             trigger - 1,
-            len(distinct_ser),
+            len(distinct_labels_ser),
         )):
-            left    = distinct_ser.iloc[i - (trigger - 1)]
-            right   = distinct_ser.iloc[i]
+            left    = distinct_labels_ser.iloc[i - (trigger - 1)]
+            right   = distinct_labels_ser.iloc[i]
 
             if right - left < width:
                 match edge:

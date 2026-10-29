@@ -1,7 +1,7 @@
 """
-wfsel.sources.esacci_lakes.comprehenders.
-
-Written by William Chuter-Davies
+Filename:   wfsel.sources.esacci_lakes.comprehenders.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Standard Library Imports
@@ -18,9 +18,9 @@ def comprehend_observations(
     esacci_lakes_id:                        int,
     years:                                  list[int],
     esacci_lakes_merged_product_dir_path:   Path,
-) -> list[pd.Series]:
+) -> list[pd.Series[float]]:
     """
-    Comprehend a list of observation series.
+    Comprehend a list of observations series.
 
     Parameters
     ----------
@@ -33,8 +33,8 @@ def comprehend_observations(
 
     Returns
     -------
-    list[pd.Series]
-        A list of observation series
+    list[pd.Series[float]]
+        A list of observations series
     """
     observations    = [
                         get_observations_ser(

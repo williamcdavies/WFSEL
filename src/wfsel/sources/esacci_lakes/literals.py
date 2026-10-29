@@ -1,7 +1,7 @@
 """
-wfsel.sources.esacci_lakes.literals.
-
-Written by William Chuter-Davies
+Filename:   wfsel.sources.esacci_lakes.literals.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND    = 7

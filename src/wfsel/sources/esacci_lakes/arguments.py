@@ -1,7 +1,7 @@
 """
-wfsel.sources.esacci_lakes.arguments.
-
-Written by William Chuter-Davies
+Filename:   wfsel.sources.esacci_lakes.arguments.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Standard Library Imports

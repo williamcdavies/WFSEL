@@ -1,7 +1,7 @@
 """
-wfsel.sources.esacci_lakes.queries.
-
-Written by William Chuter-Davies
+Filename:   wfsel.sources.esacci_lakes.queries.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Related Third-party Imports
@@ -32,7 +32,7 @@ def query_distinct_start_days(
     connection:         psycopg.Connection,
 ) -> pd.Series[int]:
     """
-    Query the distinct start start days of a lake by its id and a year.
+    Query the distinct start days of a lake by its id and a year.
 
     Parameters
     ----------
@@ -46,7 +46,7 @@ def query_distinct_start_days(
     Returns
     -------
     pd.Series[int]
-        A distinct series
+        A distinct labels series
     """
     query = DISTINCT_START_DAYS_QUERY.format(table = sql.Identifier(f"hms_smokes{year}"))
 

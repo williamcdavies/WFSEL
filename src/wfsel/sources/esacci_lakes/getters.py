@@ -1,7 +1,7 @@
 """
-wfsel.sources.esacci_lakes.getters.
-
-Written by William Chuter-Davies
+Filename:   wfsel.sources.esacci_lakes.getters.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Standard Library Imports
@@ -70,7 +70,7 @@ def get_most_recent_year(
     Returns
     -------
     int
-        A year
+        A most recent year
 
     Raises
     ------
@@ -121,7 +121,7 @@ def get_most_smoke_year(
     Returns
     -------
     int
-        A year
+        A most smoke year
 
     Raises
     ------
@@ -174,7 +174,7 @@ def get_observations_ser(
     Returns
     -------
     pd.Series[float]
-        An observation series
+        An observations series
     """
     dir_path    = (
                     esacci_lakes_merged_product_dir_path
