@@ -169,8 +169,12 @@ esacci_lakes_id : int
     The ESA CCI Lakes id
 esacci_lakes_merged_product_dir_path : Path
     The ESA CCI Lakes merged product directory path
+esacci_lakes_merged_product_ds : xr.Dataset
+    The ESA CCI Lakes merged product dataset
 esacci_lakes_metadata_df : pd.DataFrame
     The ESA CCI Lakes metadata dataframe
+esacci_lakes_static_lake_mask_ds : xr.Dataset
+    The ESA CCI Lakes static lake mask dataset
 observations : list[pd.Series[float]]
     The list of observations series
 observations_ser : pd.Series[float]
