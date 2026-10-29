@@ -1,12 +1,12 @@
 """
-wfsel.io.arguments.
-
-Written by William Chuter-Davies
+Filename:   wfsel.io.arguments.py
+Author:     William Chuter-Davies
+Modified:   29/10/26
 """
 
 # Standard Library Imports
-from argparse import ArgumentParser
-from pathlib  import Path
+from argparse   import ArgumentParser
+from pathlib    import Path
 
 
 def add_argument_output(

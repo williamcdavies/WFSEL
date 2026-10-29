@@ -1,7 +1,7 @@
 """
-wfsel.io.openers.
-
-Written by William Chuter-Davies
+Filename:   wfsel.io.openers.py
+Author:     William Chuter-Davies
+Modified:   29/10/26
 """
 
 # Standard Library Imports

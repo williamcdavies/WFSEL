@@ -1,14 +1,14 @@
 """
-wfsel.io.writers.
-
-Written by William Chuter-Davies
+Filename:   wfsel.io.writers.py
+Author:     William Chuter-Davies
+Modified:   29/10/26
 """
 
 # Standard Library Imports
 from datetime   import (
-    UTC,
-    datetime,
-)
+                    UTC,
+                    datetime,
+                )
 from pathlib    import Path
 from typing     import TextIO
 
