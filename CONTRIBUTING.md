@@ -40,7 +40,7 @@ These categories should be explicitly documented:
 # Local Application/Library Specific Imports
 ```
 
-Imports should be ordered alphabetically within each category. `import X` style imports should be separated from from `X import Y` style imports by exactly one newline. Categories with no imports should not be included.
+Imports should be ordered alphabetically within each category. `import X` style imports should be separated from `from X import Y` style imports by exactly one newline. Categories with no imports should not be included.
 
 ### Classes
 
@@ -58,7 +58,6 @@ class <class_name>:
 ```
 
 ### Functions
-
 
 ### Internal Functions
 Internal functions are functions defined within another function's body. Internal functions should be prefixed with an underscore.
@@ -148,6 +147,8 @@ ser : pd.Series
 ###### Argument Parameters
 ```python
 """
+arguments : Namespace
+    The arguments
 parser : ArgumentParser
     The parser
 """
@@ -168,6 +169,8 @@ esacci_lakes_id : int
     The ESA CCI Lakes id
 esacci_lakes_merged_product_dir_path : Path
     The ESA CCI Lakes merged product directory path
+esacci_lakes_metadata_df : pd.DataFrame
+    The ESA CCI Lakes metadata dataframe
 observations : list[pd.Series[float]]
     The list of observations series
 observations_ser : pd.Series[float]
@@ -192,3 +195,108 @@ Return descriptions should start with "A" or "An".
 
 #### Tab-alignment
 Where consecutive lines share a common structure, the right-hand side of each line should be aligned to a common column using tabs. This applies to, but is not limited to: type hints in dataclass fields, `as` aliases in import statements, `=` assignments, and keyword arguments.
+
+### Scripts
+Scripts should be of the following template:
+
+```python
+"""
+Filename:   <filename>
+Author:     <author>
+Modified:   <date>
+"""
+
+# <imports>
+
+PROG    = "<filename>"
+DESC    = "<description>"
+
+
+# ----------------------------------------------------------------------
+# setup functions
+# ----------------------------------------------------------------------
+def build_parser(
+) -> ArgumentParser:
+    ...
+
+
+def arguments_are_valid(
+    arguments: Namespace,
+) -> bool:
+    ...
+
+
+# ----------------------------------------------------------------------
+# main
+# ----------------------------------------------------------------------
+def main(
+) -> int:
+    ...
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+```
+
+#### `build_parser`
+`build_parser` should wrap `wfsel.utils.argparse_utils.build_parser`. It should construct an `ArgumentParser` from `PROG`, `DESC`, and `usage = "%(prog)s [options]"`, pass it to `wfsel.utils.argparse_utils.build_parser` alongside the script’s positional and optional argument functions, and return the result.
+
+`build_parser` should have the following docstring:
+
+```python
+"""
+Wrap _build_parser.
+
+Returns
+-------
+ArgumentParser
+    A parser
+"""
+```
+
+#### `arguments_are_valid`
+`arguments_are_valid` should wrap `wfsel.utils.argparse_utils.arguments_are_valid`. It should construct an argument name to validator mapping, pass it to `wfsel.utils.argparse_utils.arguments_are_valid`, and return the result.
+
+`arguments_are_valid` should have the following docstring:
+
+```python
+"""
+Wrap _arguments_are_valid.
+
+Parameters
+----------
+arguments : Namespace
+    The arguments
+
+Returns
+-------
+bool
+    True if all arguments are valid, False otherwise
+"""
+```
+
+#### `main`
+The first four lines of `main` should be:
+
+```python
+args = build_parser().parse_args()
+
+if not arguments_are_valid(args):
+    return EXIT_FAILURE
+```
+
+`EXIT_FAILURE` and `EXIT_SUCCESS` can be sourced from `wfsel.exit_codes`.
+
+`main` should have the following docstring:
+
+```python
+"""
+Run program.
+
+Returns
+-------
+int
+    0 if program runs successfully, 1 otherwise
+"""
+```
