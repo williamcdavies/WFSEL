@@ -17,7 +17,7 @@ def compute_quantiles(
 
     Parameters
     ----------
-    ser : pd.Series
+    ser : pd.Series[float]
         The series
     levels : list[float]
         The list of levels
