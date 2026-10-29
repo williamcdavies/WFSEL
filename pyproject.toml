@@ -50,7 +50,10 @@ ignore  = [
         ]
 
 [tool.ruff.lint.pydocstyle]
-convention  = "numpy"
+convention = "numpy"
+
+[tool.ruff.lint.pylint]
+max-args = 10
 
 [tool.sqlfluff.core]
 dialect         = "postgres"
