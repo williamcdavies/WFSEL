@@ -1,7 +1,7 @@
 """
-template.py.
-
-Written by William Chuter-Davies
+Filename:   template.py
+Author:     William Chuter-Davies
+Modified:   29-10-26
 """
 
 # Standard Library Imports
@@ -64,7 +64,7 @@ def arguments_are_valid(
     Parameters
     ----------
     arguments : Namespace
-        The arguments namespace
+        The arguments
 
     Returns
     -------
