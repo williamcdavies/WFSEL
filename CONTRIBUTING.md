@@ -131,14 +131,19 @@ If the parameter name ends with a type suffix, e.g. "df", "ser", "ds", "da", etc
 """
 ax : Axes
     The axes
+
 connection : psycopg.Connection
     The connection
+
 df : pd.DataFrame
     The dataframe
+
 fig : Figure
     The figure
+
 gdf : gpd.GeoDataFrame
     The geodataframe
+
 ser : pd.Series
     The series
 """
@@ -149,6 +154,7 @@ ser : pd.Series
 """
 arguments : Namespace
     The arguments
+
 parser : ArgumentParser
     The parser
 """
@@ -159,24 +165,36 @@ parser : ArgumentParser
 """
 distinct_labels_ser : pd.Series[int]
     The distinct labels series
+
 esacci_lakes_counts_of_distinct_start_days_by_year_df : pd.DataFrame
     The ESA CCI Lakes counts of distinct start days by year
     dataframe
+
 esacci_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
     The unpivoted ESA CCI Lakes counts of distinct start days by
     year dataframe
+
 esacci_lakes_id : int
     The ESA CCI Lakes id
+
 esacci_lakes_merged_product_dir_path : Path
     The ESA CCI Lakes merged product directory path
+
 esacci_lakes_merged_product_ds : xr.Dataset
     The ESA CCI Lakes merged product dataset
+
+esacci_lakes_merged_product_nc_path : Path
+    The ESA CCI Lakes merged product path
+
 esacci_lakes_metadata_df : pd.DataFrame
     The ESA CCI Lakes metadata dataframe
+
 esacci_lakes_static_lake_mask_ds : xr.Dataset
     The ESA CCI Lakes static lake mask dataset
+
 observations : list[pd.Series[float]]
     The list of observations series
+
 observations_ser : pd.Series[float]
     The observations series
 """
@@ -187,6 +205,7 @@ observations_ser : pd.Series[float]
 """
 dir_path : Path
     The directory path
+
 output_file_path : Path
     The output file path
 """
