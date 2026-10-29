@@ -1,7 +1,7 @@
 """
-build_esacci_lakes_coverage_csv.py.
-
-Written by William Chuter-Davies
+Filename:   build_esacci_lakes_coverage_csv.py
+Author:     William Chuter-Davies
+Modified:   29-10-26
 """
 
 # Standard Library Imports
@@ -141,22 +141,28 @@ def build_coverage_row(
         A coverage row
     """
     try:
-        high_smoke_year                     = get_most_smoke_year(
-                                                esacci_lakes_id,
-                                                esacci_lakes_counts_of_distinct_start_days_by_year_df_long,
-                                            )
-        high_smoke_year_observations_ser    = get_observations_ser(
-                                                esacci_lakes_id,
-                                                high_smoke_year,
-                                                esacci_lakes_merged_product_dir_path,
-                                            )
-        high_smoke_year_coverage            = (
-                                                high_smoke_year_observations_ser
-                                                .notna()
-                                                .sum()
-                                            )
+        high_smoke_year = get_most_smoke_year(
+                            esacci_lakes_id,
+                            esacci_lakes_counts_of_distinct_start_days_by_year_df_long,
+                        )
     except ValueError:
-        high_smoke_year_coverage = 0
+        row = {
+                "esacci_lakes_id":          esacci_lakes_id,
+                "high_smoke_year_coverage": 0,
+            }
+
+        return row
+
+    high_smoke_year_observations_ser    = get_observations_ser(
+                                            esacci_lakes_id,
+                                            high_smoke_year,
+                                            esacci_lakes_merged_product_dir_path,
+                                        )
+    high_smoke_year_coverage            = (
+                                            high_smoke_year_observations_ser
+                                            .notna()
+                                            .sum()
+                                        )
 
     row = {
             "esacci_lakes_id":          esacci_lakes_id,
