@@ -1,7 +1,7 @@
 """
-wfsel.plot.setters.
-
-Written by William Chuter-Davies
+Filename:   wfsel.plot.setters.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Related Third-party Imports
@@ -11,8 +11,8 @@ from matplotlib.axes import Axes
 
 
 def set_ax_xlim_to_gdf_total_bounds(
-    ax:  Axes,
-    gdf: gpd.GeoDataFrame,
+    ax:     Axes,
+    gdf:    gpd.GeoDataFrame,
 ) -> None:
     """
     Set xlim to the bounds of a geodataframe.
@@ -31,8 +31,8 @@ def set_ax_xlim_to_gdf_total_bounds(
 
 
 def set_ax_ylim_to_gdf_total_bounds(
-    ax:  Axes,
-    gdf: gpd.GeoDataFrame,
+    ax:     Axes,
+    gdf:    gpd.GeoDataFrame,
 ) -> None:
     """
     Set ylim to the bounds of a geodataframe.
