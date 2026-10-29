@@ -1,7 +1,7 @@
 """
-wfsel.utils.pandas_utils.
-
-Written by William Chuter-Davies
+Filename:   wfsel.utils.pandas_utils.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Related Third-party Imports
@@ -9,7 +9,7 @@ import pandas as pd
 
 
 def compute_quantiles(
-    ser:    pd.Series,
+    ser:    pd.Series[float],
     levels: list[float],
 ) -> list[float]:
     """
@@ -20,7 +20,7 @@ def compute_quantiles(
     ser : pd.Series
         The series
     levels : list[float]
-        The levels
+        The list of levels
 
     Returns
     -------

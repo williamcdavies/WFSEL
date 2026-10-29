@@ -1,7 +1,7 @@
 """
-wfsel.utils.argparse_utils.
-
-Written by William Chuter-Davies
+Filename:   wfsel.utils.argparse_utils.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Standard Library Imports
@@ -57,7 +57,7 @@ def arguments_are_valid(
     ----------
     arguments : Namespace
         The arguments
-    argument_name_to_validator : dict[str, Callable[[Any], bool]]
+    argument_name_to_validator : dict[str, Callable[[str, Any], bool]]
         The mapping of argument names to validators
 
     Returns

@@ -1,7 +1,7 @@
 """
-wfsel.utils.xarray_utils.
-
-Written by William Chuter-Davies
+Filename:   wfsel.utils.xarray_utils.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Related Third-party Imports
@@ -31,9 +31,9 @@ def build_geographic_bounding_box(
     lat_min : float
         The minimum latitude
     lon_max : float
-        The maximum latitude
+        The maximum longitude
     lon_min : float
-        The minimum latitude
+        The minimum longitude
 
     Returns
     -------
@@ -116,12 +116,12 @@ def compute_spatial_mean(
     da: xr.DataArray,
 ) -> float:
     """
-    Compute the spatial mean of a dataset.
+    Compute the spatial mean of a dataarray.
 
     Parameters
     ----------
     da : xr.DataArray
-        The dataset
+        The dataarray
 
     Returns
     -------

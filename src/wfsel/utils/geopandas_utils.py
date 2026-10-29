@@ -1,7 +1,7 @@
 """
-wfsel.utils.geopandas_utils.
-
-Written by William Chuter-Davies
+Filename:   wfsel.utils.geopandas_utils.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Related Third-party Imports
