@@ -13,7 +13,7 @@ def compute_quantiles(
     levels: list[float],
 ) -> list[float]:
     """
-    Compute the quantiles of a series.
+    Compute the list of quantiles of a series.
 
     Parameters
     ----------

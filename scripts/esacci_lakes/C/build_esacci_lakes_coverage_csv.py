@@ -35,7 +35,6 @@ from wfsel.sources.esacci_lakes.getters         import (
                                                     get_observations_ser,
                                                 )
 from wfsel.sources.esacci_lakes.filters         import filter_counts_of_distinct_start_days_by_year_df_long_by_upper_bound
-from wfsel.sources.esacci_lakes.literals        import COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
 from wfsel.sources.esacci_lakes.melters         import melt_esacci_lakes_counts_of_distinct_start_days_by_year_df
 from wfsel.sources.esacci_lakes.readers         import (
                                                     read_esacci_lakes_counts_of_distinct_start_days_by_year_csv,
@@ -205,9 +204,9 @@ def comprehend_coverage_df(
                 )
                 for esacci_lakes_id
                 in tqdm(esacci_lakes_metadata_df.index)
-            ]
+            ],
         ).set_index("esacci_lakes_id")
-    
+
     return df
 
 
@@ -239,7 +238,7 @@ def main(
                                                                     counts_of_distinct_start_days_by_year_df,
                                                                 )
     counts_of_distinct_start_days_by_high_smoke_year_df_long    = filter_counts_of_distinct_start_days_by_year_df_long_by_upper_bound(
-                                                                    counts_of_distinct_start_days_by_year_df_long
+                                                                    counts_of_distinct_start_days_by_year_df_long,
                                                                 )
 
     coverage_df = comprehend_coverage_df(
