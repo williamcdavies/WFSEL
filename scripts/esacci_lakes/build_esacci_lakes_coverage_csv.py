@@ -34,6 +34,7 @@ from wfsel.sources.esacci_lakes.getters         import (
                                                     get_most_smoke_year,
                                                     get_observations_ser,
                                                 )
+from wfsel.sources.esacci_lakes.filters         import filter_counts_of_distinct_start_days_by_year_df_long_by_upper_bound
 from wfsel.sources.esacci_lakes.literals        import COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
 from wfsel.sources.esacci_lakes.melters         import melt_esacci_lakes_counts_of_distinct_start_days_by_year_df
 from wfsel.sources.esacci_lakes.readers         import (
@@ -183,7 +184,7 @@ def comprehend_coverage_df(
     Parameters
     ----------
     esacci_lakes_metadata_df : pd.DataFrame
-        The ESA CCI Lakes metadata
+        The ESA CCI Lakes metadata dataframe
     esacci_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
         The unpivoted ESA CCI Lakes counts of distinct start days by
         year dataframe
@@ -237,10 +238,9 @@ def main(
     counts_of_distinct_start_days_by_year_df_long               = melt_esacci_lakes_counts_of_distinct_start_days_by_year_df(
                                                                     counts_of_distinct_start_days_by_year_df,
                                                                 )
-    counts_of_distinct_start_days_by_high_smoke_year_df_long    = counts_of_distinct_start_days_by_year_df_long[
-                                                                    counts_of_distinct_start_days_by_year_df_long["count_of_distinct_start_days"]
-                                                                    >= COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
-                                                                ]
+    counts_of_distinct_start_days_by_high_smoke_year_df_long    = filter_counts_of_distinct_start_days_by_year_df_long_by_upper_bound(
+                                                                    counts_of_distinct_start_days_by_year_df_long
+                                                                )
 
     coverage_df = comprehend_coverage_df(
                     metadata_df,
