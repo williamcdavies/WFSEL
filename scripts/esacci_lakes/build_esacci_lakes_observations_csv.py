@@ -1,7 +1,7 @@
 """
-build_esacci_lakes_observations_csv.py.
-
-Written by William Chuter-Davies
+Filename:   build_esacci_lakes_observations_csv.py
+Author:     William Chuter-Davies
+Modified:   29/10/26
 """
 
 # Standard Library Imports
@@ -13,8 +13,7 @@ from argparse   import (
                 )
 
 # Related Third-party Imports
-import numpy    as np
-import pandas   as pd
+import pandas as pd
 import psycopg
 
 # Local Application/Library Specific Imports
@@ -29,24 +28,25 @@ from wfsel.sources.esacci_lakes.arguments       import (
                                                     add_argument_esacci_lakes_counts_of_distinct_start_days_by_year_csv_path,
                                                     add_argument_esacci_lakes_merged_product_dir_path,
                                                 )
+from wfsel.sources.esacci_lakes.builders        import build_distinct_labels_mask
 from wfsel.sources.esacci_lakes.callables       import (
                                                     season_function_sliding_window as _season_function_sliding_window,
                                                     apply_season_function,
                                                 )
 from wfsel.sources.esacci_lakes.comprehenders   import comprehend_observations
 from wfsel.sources.esacci_lakes.computers       import (
-                                                    comp_observations_mean,
-                                                    comp_observations_std,
-                                                    comp_pre_season_mean
+                                                    compute_observations_mean,
+                                                    compute_observations_std,
+                                                    compute_pre_season_mean,
+                                                )
+from wfsel.sources.esacci_lakes.filters         import (
+                                                    filter_counts_of_distinct_start_days_by_year_df_long_by_lower_bound,
+                                                    filter_counts_of_distinct_start_days_by_year_df_long_by_upper_bound,
                                                 )
 from wfsel.sources.esacci_lakes.getters         import (
                                                     get_all_years,
                                                     get_most_smoke_year,
                                                     get_observations_ser,
-                                                )
-from wfsel.sources.esacci_lakes.literals        import (
-                                                    COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND,
-                                                    COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND,
                                                 )
 from wfsel.sources.esacci_lakes.melters         import melt_esacci_lakes_counts_of_distinct_start_days_by_year_df
 from wfsel.sources.esacci_lakes.queries         import query_distinct_start_days
@@ -105,7 +105,7 @@ def arguments_are_valid(
     Parameters
     ----------
     arguments : Namespace
-        The arguments namespace
+        The arguments
 
     Returns
     -------
@@ -128,68 +128,35 @@ def arguments_are_valid(
 # ----------------------------------------------------------------------
 # core
 # ----------------------------------------------------------------------
-def build_distinct_mask(
-    distinct_ser:   pd.Series,
-    start:          int,
-    stop:           int
-) -> pd.Series:
-    """
-    Build a distinct mask.
-
-    Parameters
-    ----------
-    distinct_ser : pd.Series
-        The distinct ser
-    start : int
-        The start of the range index, inclusive
-    stop : int
-        The stop of the range index, exclusive
-
-    Returns
-    -------
-    pd.Series
-        A distinct mask
-    """
-    mask    = pd.Series(
-        0,
-        pd.RangeIndex(
-            start,
-            stop,
-        )
-    )
-    mask[distinct_ser] = 1
-
-    return mask
-
-
 def build_observations_df(
-    high_smoke_year_observations_ser:               pd.Series,
-    low_smoke_year_observations:                    list[pd.Series],
-    low_smoke_year_observations_mean_ser:           pd.Series,
-    low_smoke_year_observations_std_ser:            pd.Series,
-    high_smoke_year_observations_anomaly_ser:       pd.Series,
-    low_smoke_year_observations_mean_anomaly_ser:   pd.Series,
-    high_smoke_year_distinct_start_days_mask:       pd.Series,
+    *,
+    high_smoke_year_observations_ser:               pd.Series[float],
+    low_smoke_year_observations:                    list[pd.Series[float]],
+    low_smoke_year_observations_mean_ser:           pd.Series[float],
+    low_smoke_year_observations_std_ser:            pd.Series[float],
+    high_smoke_year_observations_anomaly_ser:       pd.Series[float],
+    low_smoke_year_observations_mean_anomaly_ser:   pd.Series[float],
+    high_smoke_year_distinct_start_days_mask:       pd.Series[int],
 ) -> pd.DataFrame:
     """
     Build an observations dataframe.
 
     Parameters
     ----------
-    high_smoke_year_observations_ser : pd.Series
-        The high smoke year observations
-    low_smoke_year_observations : list[pd.Series]
-        The list of low smoke year observations
-    low_smoke_year_observations_mean_ser : pd.Series
-        The list of low smoke year observations mean
-    low_smoke_year_observations_std_ser : pd.Series
-        The list of low smoke year observations standard deviation
-    high_smoke_year_observations_anomaly_ser : pd.Series
-        The high smoke year observations anomaly
-    low_smoke_year_observations_mean_anomaly_ser : pd.Series
-        The low smoke year observations anomaly
-    high_smoke_year_distinct_start_days_mask : pd.Series
-        The high smoke year distinct start days mask
+    high_smoke_year_observations_ser : pd.Series[float]
+        The high smoke year observations series
+    low_smoke_year_observations : list[pd.Series[float]]
+        The list of low smoke year observations series
+    low_smoke_year_observations_mean_ser : pd.Series[float]
+        The low smoke year observations mean series
+    low_smoke_year_observations_std_ser : pd.Series[float]
+        The low smoke year observations standard deviation series
+    high_smoke_year_observations_anomaly_ser : pd.Series[float]
+        The high smoke year observations anomaly series
+    low_smoke_year_observations_mean_anomaly_ser : pd.Series[float]
+        The low smoke year observations mean anomaly series
+    high_smoke_year_distinct_start_days_mask : pd.Series[int]
+        The high smoke year distinct start days mask series
 
     Returns
     -------
@@ -240,14 +207,12 @@ def main(
     counts_of_distinct_start_days_by_year_df_long               = melt_esacci_lakes_counts_of_distinct_start_days_by_year_df(
                                                                     counts_of_distinct_start_days_by_year_df,
                                                                 )
-    counts_of_distinct_start_days_by_high_smoke_year_df_long    = counts_of_distinct_start_days_by_year_df_long[
-                                                                    counts_of_distinct_start_days_by_year_df_long["count_of_distinct_start_days"]
-                                                                    >= COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
-                                                                ]
-    counts_of_distinct_start_days_by_low_smoke_year_df_long     = counts_of_distinct_start_days_by_year_df_long[
-                                                                    counts_of_distinct_start_days_by_year_df_long["count_of_distinct_start_days"]
-                                                                    <= COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND
-                                                                ]
+    counts_of_distinct_start_days_by_high_smoke_year_df_long    = filter_counts_of_distinct_start_days_by_year_df_long_by_upper_bound(
+                                                                    counts_of_distinct_start_days_by_year_df_long,
+                                                                )
+    counts_of_distinct_start_days_by_low_smoke_year_df_long     = filter_counts_of_distinct_start_days_by_year_df_long_by_lower_bound(
+                                                                    counts_of_distinct_start_days_by_year_df_long,
+                                                                )
 
     try:
         high_smoke_year = get_most_smoke_year(
@@ -279,8 +244,8 @@ def main(
                                                 low_smoke_years,
                                                 args.esacci_lakes_merged_product_dir_path,
                                             )
-    low_smoke_year_observations_mean_ser    = comp_observations_mean(low_smoke_year_observations)
-    low_smoke_year_observations_std_ser     = comp_observations_std(low_smoke_year_observations)
+    low_smoke_year_observations_mean_ser    = compute_observations_mean(low_smoke_year_observations)
+    low_smoke_year_observations_std_ser     = compute_observations_std(low_smoke_year_observations)
 
     with psycopg.connect("dbname=spatial") as connection:
         high_smoke_year_distinct_start_days_ser = query_distinct_start_days(
@@ -302,10 +267,10 @@ def main(
 
         raise ValueError(message)
 
-    if (pre_season_mean := comp_pre_season_mean(
+    if (pre_season_mean := compute_pre_season_mean(
                             smoke_season,
                             7,
-                            1
+                            1,
                         )) is None:
         message = f"fatal: lake {args.esacci_lakes_id} has no pre-season mean"
 
@@ -314,20 +279,20 @@ def main(
     high_smoke_year_observations_anomaly_ser        = high_smoke_year_observations_ser - pre_season_mean
     low_smoke_year_observations_mean_anomaly_ser    = low_smoke_year_observations_mean_ser - pre_season_mean
 
-    high_smoke_year_distinct_start_days_mask    = build_distinct_mask(
+    high_smoke_year_distinct_start_days_mask    = build_distinct_labels_mask(
                                                     high_smoke_year_distinct_start_days_ser,
                                                     1,
-                                                    367
+                                                    367,
                                                 )
 
     observations_df = build_observations_df(
-                        high_smoke_year_observations_ser,
-                        low_smoke_year_observations,
-                        low_smoke_year_observations_mean_ser,
-                        low_smoke_year_observations_std_ser,
-                        high_smoke_year_observations_anomaly_ser,
-                        low_smoke_year_observations_mean_anomaly_ser,
-                        high_smoke_year_distinct_start_days_mask
+                        high_smoke_year_observations_ser                = high_smoke_year_observations_ser,
+                        low_smoke_year_observations                     = low_smoke_year_observations,
+                        low_smoke_year_observations_mean_ser            = low_smoke_year_observations_mean_ser,
+                        low_smoke_year_observations_std_ser             = low_smoke_year_observations_std_ser,
+                        high_smoke_year_observations_anomaly_ser        = high_smoke_year_observations_anomaly_ser,
+                        low_smoke_year_observations_mean_anomaly_ser    = low_smoke_year_observations_mean_anomaly_ser,
+                        high_smoke_year_distinct_start_days_mask        = high_smoke_year_distinct_start_days_mask,
                     )
 
     to_csv(
