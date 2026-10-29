@@ -1,7 +1,7 @@
 """
-wfsel.geo.arguments.
-
-Written by William Chuter-Davies
+Filename:   wfsel.geo.arguments.py
+Author:     William Chuter-Davies
+Modified:   27/10/26
 """
 
 # Standard Library Imports
@@ -21,6 +21,6 @@ def add_argument_stusps(
     """
     parser.add_argument(
         "stusps",
-        nargs   = "+",
         type    = str,
+        nargs   = "+",
     )

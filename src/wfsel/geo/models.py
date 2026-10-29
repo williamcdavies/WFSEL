@@ -1,7 +1,7 @@
 """
-wfsel.geo.models.
-
-Written by William Chuter-Davies
+Filename:   wfsel.geo.models.py
+Author:     William Chuter-Davies
+Modified:   29/10/26
 """
 
 # Standard Library Imports
