@@ -1,5 +1,5 @@
 # run from WFSEL/
 
-A0="scripts/template.py"
+A1="scripts/template.py"
 
-python "${A0}"
+python "${A1}"
