@@ -7,4 +7,4 @@ A3="data/esacci_lakes/merged_product"
 A4="-o"
 A5="coverage.csv"
 
-python ${A0} ${A1} ${A2} ${A3} ${A4} ${A5}
+python "${A0}" "${A1}" "${A2}" "${A3}" "${A4}" "${A5}"
