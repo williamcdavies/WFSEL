@@ -1,7 +1,7 @@
 """
-build_esacci_lakes_deltas_csv.py.
-
-Written by William Chuter-Davies
+Filename:   build_esacci_lakes_deltas_csv.py
+Author:     William Chuter-Davies
+Modified:   29/10/26
 """
 
 # Standard Library Imports
@@ -149,7 +149,7 @@ def arguments_are_valid(
     Parameters
     ----------
     arguments : Namespace
-        The arguments namespace
+        The arguments
 
     Returns
     -------
@@ -225,6 +225,7 @@ def read_esacci_lakes_low_smoke_year_observations_anomaly_csv(
 
     return df
 
+
 # ----------------------------------------------------------------------
 # core
 # ----------------------------------------------------------------------
@@ -270,9 +271,9 @@ def build_deltas_df(
     Parameters
     ----------
     esacci_lakes_high_smoke_year_observations_df : pd.DataFrame
-        The ESA CCI Lakes high smoke year observations
+        The ESA CCI Lakes high smoke year observations dataframe
     esacci_lakes_low_smoke_year_observations_df : pd.DataFrame
-        The ESA CCI Lakes low somke year observations
+        The ESA CCI Lakes low smoke year observations dataframe
     column_names : list[str]
         The list of column names
 
@@ -338,6 +339,14 @@ def build_deltas_df(
 # ----------------------------------------------------------------------
 def main(
 ) -> int:
+    """
+    Run program.
+
+    Returns
+    -------
+    int
+        0 if program runs successfully, 1 otherwise
+    """
     args = build_parser().parse_args()
 
     if not arguments_are_valid(args):
