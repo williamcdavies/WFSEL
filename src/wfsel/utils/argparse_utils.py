@@ -135,3 +135,47 @@ def argument_is_file(
         raise ValueError(message)
 
     return True
+
+
+def argument_is_dependent(
+    arguments:                  Namespace,
+    independent_argument_name:  str,
+    independent_argument_value: Any,    # noqa: ANN401
+) -> Callable[[str, Any], bool]:
+    """
+    Build a validator that validates an argument as a dependent.
+
+    Parameters
+    ----------
+    arguments : Namespace
+        The arguments
+    independent_argument_name : str
+        The independent argument name
+    independent_argument_value : Any
+        The independent argument value
+
+    Returns
+    -------
+    Callable[[str, Any], bool]
+        A validator
+    """
+    def _validator(
+        dependent_argument_name:    str,
+        dependent_argument_value:   Any,    # noqa: ANN401
+    ) -> bool:
+        actual_independent_argument_value   = getattr(
+                                                arguments,
+                                                independent_argument_name,
+                                            )
+
+        if (
+                actual_independent_argument_value == independent_argument_value
+            and dependent_argument_value is None
+        ):
+            message = f"expected argument {dependent_argument_name} to be set"
+
+            raise ValueError(message)
+
+        return True
+
+    return _validator
