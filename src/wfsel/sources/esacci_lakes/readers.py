@@ -111,3 +111,57 @@ def read_esacci_lakes_hylak_field_values_csv(
         )
 
     return df
+
+
+def read_esacci_lakes_high_smoke_year_observations_anomaly_csv(
+    esacci_lakes_high_smoke_year_observations_anomaly_csv_path: Path,
+) -> pd.DataFrame:
+    """
+    Read "high_smoke_season_lake_surface_water_temperature_anomaly.csv"
+    (or similar) into a dataframe.
+
+    Parameters
+    ----------
+    esacci_lakes_high_smoke_year_observations_anomaly_csv_path : Path
+        The path to
+        "high_smoke_season_lake_surface_water_temperature_anomaly.csv"
+        (or similar)
+
+    Returns
+    -------
+    pd.DataFrame
+        A dataframe
+    """
+    df  = pd.read_csv(
+            esacci_lakes_high_smoke_year_observations_anomaly_csv_path,
+            index_col = "esacci_lakes_id",
+        )
+
+    return df
+
+
+def read_esacci_lakes_low_smoke_year_observations_anomaly_csv(
+    esacci_lakes_low_smoke_year_observations_anomaly_csv_path: Path,
+) -> pd.DataFrame:
+    """
+    Read "low_smoke_season_lake_surface_water_temperature_anomaly.csv"
+    (or similar) into a dataframe.
+
+    Parameters
+    ----------
+    esacci_lakes_low_smoke_year_observations_anomaly_csv_path : Path
+        The path to
+        "low_smoke_season_lake_surface_water_temperature_anomaly.csv"
+        (or similar)
+
+    Returns
+    -------
+    pd.DataFrame
+        A dataframe
+    """
+    df  = pd.read_csv(
+            esacci_lakes_low_smoke_year_observations_anomaly_csv_path,
+            index_col = "esacci_lakes_id",
+        )
+
+    return df

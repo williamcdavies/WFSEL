@@ -15,6 +15,7 @@ dependencies    = [
                     "pandas",
                     "psycopg",
                     "rasterio",
+                    "scipy",
                     "sqlalchemy",
                     "tqdm",
                     "xarray",

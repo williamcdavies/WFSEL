@@ -17,93 +17,31 @@ from pathlib    import Path
 import pandas as pd
 
 # Local Application/Library Specific Imports
-from wfsel.exit_codes           import (
-                                    EXIT_FAILURE,
-                                    EXIT_SUCCESS,
-                                )
-from wfsel.io.arguments         import add_argument_output
-from wfsel.io.writers           import to_csv
-from wfsel.utils.argparse_utils import (
-                                    arguments_are_valid as _arguments_are_valid,
-                                    build_parser        as _build_parser,
-                                    argument_is_file,
-                                )
+from wfsel.exit_codes                           import (
+                                                    EXIT_FAILURE,
+                                                    EXIT_SUCCESS,
+                                                )
+from wfsel.io.arguments                         import add_argument_output
+from wfsel.io.writers                           import to_csv
+from wfsel.sources.esacci_lakes.arguments       import (
+                                                    add_argument_esacci_lakes_high_smoke_year_observations_anomaly_csv_path,
+                                                    add_argument_esacci_lakes_low_smoke_year_observations_anomaly_csv_path,
+                                                    add_argument_esacci_lakes_week_first,
+                                                    add_argument_esacci_lakes_week_last,
+                                                )
+from wfsel.sources.esacci_lakes.comprehenders   import comprehend_column_names
+from wfsel.sources.esacci_lakes.readers         import (
+                                                    read_esacci_lakes_high_smoke_year_observations_anomaly_csv,
+                                                    read_esacci_lakes_low_smoke_year_observations_anomaly_csv
+                                                )
+from wfsel.utils.argparse_utils                 import (
+                                                    arguments_are_valid as _arguments_are_valid,
+                                                    build_parser        as _build_parser,
+                                                    argument_is_file,
+                                                )
 
 PROG    = "build_esacci_lakes_deltas_csv.py"
 DESC    = ""
-
-
-# ----------------------------------------------------------------------
-# argument functions
-# ----------------------------------------------------------------------
-def add_argument_esacci_lakes_high_smoke_year_observations_anomaly_csv_path(
-    parser: ArgumentParser,
-) -> None:
-    """
-    Add a "esacci_lakes_high_smoke_year_observations_anomaly_csv_path"
-    argument to a parser.
-
-    Parameters
-    ----------
-    parser : ArgumentParser
-        The parser
-    """
-    parser.add_argument(
-        "esacci_lakes_high_smoke_year_observations_anomaly_csv_path",
-        type = Path,
-    )
-
-
-def add_argument_esacci_lakes_low_smoke_year_observations_anomaly_csv_path(
-    parser: ArgumentParser,
-) -> None:
-    """
-    Add a "esacci_lakes_low_smoke_year_observations_anomaly_csv_path"
-    argument to a parser.
-
-    Parameters
-    ----------
-    parser : ArgumentParser
-        The parser
-    """
-    parser.add_argument(
-        "esacci_lakes_low_smoke_year_observations_anomaly_csv_path",
-        type = Path,
-    )
-
-
-def add_argument_esacci_lakes_week_first(
-    parser: ArgumentParser,
-) -> None:
-    """
-    Add a "esacci_lakes_week_first" argument to a parser.
-
-    Parameters
-    ----------
-    parser : ArgumentParser
-        The parser
-    """
-    parser.add_argument(
-        "esacci_lakes_week_first",
-        type = int,
-    )
-
-
-def add_argument_esacci_lakes_week_last(
-    parser: ArgumentParser,
-) -> None:
-    """
-    Add a "esacci_lakes_week_last" argument to a parser.
-
-    Parameters
-    ----------
-    parser : ArgumentParser
-        The parser
-    """
-    parser.add_argument(
-        "esacci_lakes_week_last",
-        type = int,
-    )
 
 
 # ----------------------------------------------------------------------
@@ -170,96 +108,8 @@ def arguments_are_valid(
 
 
 # ----------------------------------------------------------------------
-# reader functions
-# ----------------------------------------------------------------------
-def read_esacci_lakes_high_smoke_year_observations_anomaly_csv(
-    esacci_lakes_high_smoke_year_observations_anomaly_csv_path: Path,
-) -> pd.DataFrame:
-    """
-    Read "high_smoke_season_lake_surface_water_temperature_anomaly.csv"
-    (or similar) into a dataframe.
-
-    Parameters
-    ----------
-    esacci_lakes_high_smoke_year_observations_anomaly_csv_path : Path
-        The path to
-        "high_smoke_season_lake_surface_water_temperature_anomaly.csv"
-        (or similar)
-
-    Returns
-    -------
-    pd.DataFrame
-        A dataframe
-    """
-    df  = pd.read_csv(
-            esacci_lakes_high_smoke_year_observations_anomaly_csv_path,
-            index_col = "esacci_lakes_id",
-        )
-
-    return df
-
-
-def read_esacci_lakes_low_smoke_year_observations_anomaly_csv(
-    esacci_lakes_low_smoke_year_observations_anomaly_csv_path: Path,
-) -> pd.DataFrame:
-    """
-    Read "low_smoke_season_lake_surface_water_temperature_anomaly.csv"
-    (or similar) into a dataframe.
-
-    Parameters
-    ----------
-    esacci_lakes_low_smoke_year_observations_anomaly_csv_path : Path
-        The path to
-        "low_smoke_season_lake_surface_water_temperature_anomaly.csv"
-        (or similar)
-
-    Returns
-    -------
-    pd.DataFrame
-        A dataframe
-    """
-    df  = pd.read_csv(
-            esacci_lakes_low_smoke_year_observations_anomaly_csv_path,
-            index_col = "esacci_lakes_id",
-        )
-
-    return df
-
-
-# ----------------------------------------------------------------------
 # core
 # ----------------------------------------------------------------------
-def comprehend_column_names(
-    esacci_lakes_week_first: int,
-    esacci_lakes_week_last:  int,
-) -> list[str]:
-    """
-    Comprehend a list of column names.
-
-    Parameters
-    ----------
-    esacci_lakes_week_first : int
-        The first week
-    esacci_lakes_week_last : int
-        The last week
-
-    Returns
-    -------
-    list[str]
-        A list of column names
-    """
-    column_names   = [
-                f"w_{i}"
-                for i
-                in range(
-                    esacci_lakes_week_first,
-                    esacci_lakes_week_last + 1,
-                )
-            ]
-
-    return column_names
-
-
 def build_deltas_df(
     esacci_lakes_high_smoke_year_observations_df:   pd.DataFrame,
     esacci_lakes_low_smoke_year_observations_df:    pd.DataFrame,

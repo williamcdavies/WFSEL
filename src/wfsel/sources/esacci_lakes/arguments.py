@@ -145,3 +145,73 @@ def add_argument_esacci_lakes_hylak_field_values_csv_path(
         "esacci_lakes_hylak_field_values_csv_path",
         type = Path,
     )
+
+
+def add_argument_esacci_lakes_high_smoke_year_observations_anomaly_csv_path(
+    parser: ArgumentParser,
+) -> None:
+    """
+    Add a "esacci_lakes_high_smoke_year_observations_anomaly_csv_path"
+    argument to a parser.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        The parser
+    """
+    parser.add_argument(
+        "esacci_lakes_high_smoke_year_observations_anomaly_csv_path",
+        type = Path,
+    )
+
+
+def add_argument_esacci_lakes_low_smoke_year_observations_anomaly_csv_path(
+    parser: ArgumentParser,
+) -> None:
+    """
+    Add a "esacci_lakes_low_smoke_year_observations_anomaly_csv_path"
+    argument to a parser.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        The parser
+    """
+    parser.add_argument(
+        "esacci_lakes_low_smoke_year_observations_anomaly_csv_path",
+        type = Path,
+    )
+
+
+def add_argument_esacci_lakes_week_first(
+    parser: ArgumentParser,
+) -> None:
+    """
+    Add a "esacci_lakes_week_first" argument to a parser.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        The parser
+    """
+    parser.add_argument(
+        "esacci_lakes_week_first",
+        type = int,
+    )
+
+
+def add_argument_esacci_lakes_week_last(
+    parser: ArgumentParser,
+) -> None:
+    """
+    Add a "esacci_lakes_week_last" argument to a parser.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        The parser
+    """
+    parser.add_argument(
+        "esacci_lakes_week_last",
+        type = int,
+    )

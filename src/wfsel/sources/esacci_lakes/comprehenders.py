@@ -47,3 +47,34 @@ def comprehend_observations(
                     ]
 
     return observations
+
+
+def comprehend_column_names(
+    esacci_lakes_week_first: int,
+    esacci_lakes_week_last:  int,
+) -> list[str]:
+    """
+    Comprehend a list of column names.
+
+    Parameters
+    ----------
+    esacci_lakes_week_first : int
+        The first week
+    esacci_lakes_week_last : int
+        The last week
+
+    Returns
+    -------
+    list[str]
+        A list of column names
+    """
+    column_names   = [
+                f"w_{i}"
+                for i
+                in range(
+                    esacci_lakes_week_first,
+                    esacci_lakes_week_last + 1,
+                )
+            ]
+
+    return column_names
