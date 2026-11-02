@@ -1,7 +1,7 @@
 """
 Filename:   view_esacci_lakes_anomaly_distributions.py
 Author:     William Chuter-Davies
-Modified:   30/10/26
+Modified:   02/11/26
 """
 
 # Standard Library Imports
@@ -13,9 +13,11 @@ from argparse   import (
                 )
 
 # Related Third-party Imports
+import matplotlib.colors    as mcolors
 import matplotlib.pyplot    as plt
 import pandas               as pd
 
+from matplotlib         import cm
 from matplotlib.axes    import Axes
 from matplotlib.figure  import Figure
 from scipy.stats        import gaussian_kde
@@ -47,14 +49,21 @@ from wfsel.utils.argparse_utils                 import (
 PROG    = "view_esacci_lakes_anomaly_distributions.py"
 DESC    = ""
 
-OPACITY = 0.25
+HSPACE  = 0.33
+OPACITY = 0.75
 
 HIGH_SMOKE_YEAR_AX_TITLE    = "Distributions of High Smoke Season Anomalies"
-HIGH_SMOKE_YEAR_AX_COLOUR   = "red"
+HIGH_SMOKE_YEAR_AX_CMAP     = cm.Reds_r
 LOW_SMOKE_YEAR_AX_TITLE     = "Distributions of Low Smoke Season Anomalies"
-LOW_SMOKE_YEAR_AX_COLOUR    = "blue"
-X_LABEL                     = "Temperature anomaly (°C)"
-Y_LABEL                     = "Density"
+LOW_SMOKE_YEAR_AX_CMAP      = cm.Blues_r
+
+X_LABEL = "Temperature anomaly (°C)"
+Y_LABEL = "Density"
+C_LABEL = "Week Number"
+
+FONTSIZE_TITLE  = 12
+FONTSIZE_LABEL  = 10
+FONTSIZE_TICK   = 8
 
 plt.rcParams["font.family"] = "Arial"
 
@@ -144,9 +153,10 @@ def compute_kde(
 
 
 def plot_kde(
-    ax:     Axes,
+    ax: Axes,
+    *,
     ser:    pd.Series[float],
-    colour: str,
+    colour: tuple[float, float, float, float],
 ) -> None:
     """
     Plot a KDE of a series onto an axes.
@@ -165,7 +175,7 @@ def plot_kde(
     x   = ser.sort_values()
     y   = pd.Series(
             kde(x),
-            index = x.index
+            index = x.index,
         )
 
     ax.plot(
@@ -173,6 +183,52 @@ def plot_kde(
         y,
         alpha   = OPACITY,
         color   = colour,
+    )
+
+
+def plot_colorbar(
+    ax: Axes,
+    *,
+    cmap:   mcolors.Colormap,
+    vmin:   int,
+    vmax:   int,
+    label:  str,
+) -> None:
+    """
+    Plot a colorbar onto an axes.
+
+    Parameters
+    ----------
+    ax : Axes
+        The axes
+    cmap : mcolors.Colormap
+        The colormap
+    vmin : int
+        The value minimum
+    vmax : int
+        The value maximum
+    label : str
+        The label
+    """
+    norm = mcolors.Normalize(
+        vmin    = vmin,
+        vmax    = vmax,
+    )
+
+    sm = cm.ScalarMappable(
+        cmap    = cmap,
+        norm    = norm,
+    )
+
+    plt.colorbar(
+        sm,
+        ax      = ax,
+        ticks   = range(
+            vmin,
+            vmax + 1,
+            vmax - 1,
+        ),
+        label   = label,
     )
 
 
@@ -203,7 +259,7 @@ def build_figure(
         (
             high_smoke_year_ax,
             low_smoke_year_ax,
-        )
+        ),
     )   = plt.subplots(
             nrows   = 2,
             ncols   = 1,
@@ -211,29 +267,67 @@ def build_figure(
             sharey  = True,
         )
 
-    for column_name in column_names:
-        ser = esacci_lakes_high_smoke_year_observations_anomaly_df[column_name]
-    
+    fig.subplots_adjust(hspace = HSPACE)
+
+    for i, column_name in enumerate(column_names):
+        ser     = esacci_lakes_high_smoke_year_observations_anomaly_df[column_name]
+        colour  = HIGH_SMOKE_YEAR_AX_CMAP(i / max(len(column_names) - 1, 1))
+
         plot_kde(
             high_smoke_year_ax,
-            ser,
-            HIGH_SMOKE_YEAR_AX_COLOUR,
+            ser     = ser,
+            colour  = colour,
         )
 
-    for column_name in column_names:
-        ser = esacci_lakes_low_smoke_year_observations_anomaly_df[column_name]
-    
+    plot_colorbar(
+        high_smoke_year_ax,
+        cmap    = HIGH_SMOKE_YEAR_AX_CMAP,
+        vmin    = 1,
+        vmax    = len(column_names),
+        label   = C_LABEL,
+    )
+
+    for i, column_name in enumerate(column_names):
+        ser     = esacci_lakes_low_smoke_year_observations_anomaly_df[column_name]
+        colour  = LOW_SMOKE_YEAR_AX_CMAP(i / max(len(column_names) - 1, 1))
+
         plot_kde(
             low_smoke_year_ax,
-            ser,
-            LOW_SMOKE_YEAR_AX_COLOUR,
+            ser     = ser,
+            colour  = colour,
         )
-    
-    high_smoke_year_ax.set_title(HIGH_SMOKE_YEAR_AX_TITLE)
-    high_smoke_year_ax.set_ylabel(Y_LABEL)
-    low_smoke_year_ax.set_title(LOW_SMOKE_YEAR_AX_TITLE)
-    low_smoke_year_ax.set_ylabel(Y_LABEL)
-    low_smoke_year_ax.set_xlabel(X_LABEL)
+
+    plot_colorbar(
+        low_smoke_year_ax,
+        cmap    = LOW_SMOKE_YEAR_AX_CMAP,
+        vmin    = 1,
+        vmax    = len(column_names),
+        label   = C_LABEL,
+    )
+
+    high_smoke_year_ax.set_title(
+        HIGH_SMOKE_YEAR_AX_TITLE,
+        fontsize = FONTSIZE_TITLE,
+    )
+    high_smoke_year_ax.set_ylabel(
+        Y_LABEL,
+        fontsize = FONTSIZE_LABEL,
+    )
+    high_smoke_year_ax.tick_params(labelsize = FONTSIZE_TICK)
+
+    low_smoke_year_ax.set_title(
+        LOW_SMOKE_YEAR_AX_TITLE,
+        fontsize = FONTSIZE_TITLE,
+    )
+    low_smoke_year_ax.set_ylabel(
+        Y_LABEL,
+        fontsize = FONTSIZE_LABEL,
+    )
+    low_smoke_year_ax.set_xlabel(
+        X_LABEL,
+        fontsize = FONTSIZE_LABEL,
+    )
+    low_smoke_year_ax.tick_params(labelsize = FONTSIZE_TICK)
 
     return fig
 

@@ -11,7 +11,6 @@ from argparse   import (
                     ArgumentParser,
                     Namespace,
                 )
-from pathlib    import Path
 
 # Related Third-party Imports
 import pandas as pd
@@ -32,7 +31,7 @@ from wfsel.sources.esacci_lakes.arguments       import (
 from wfsel.sources.esacci_lakes.comprehenders   import comprehend_column_names
 from wfsel.sources.esacci_lakes.readers         import (
                                                     read_esacci_lakes_high_smoke_year_observations_anomaly_csv,
-                                                    read_esacci_lakes_low_smoke_year_observations_anomaly_csv
+                                                    read_esacci_lakes_low_smoke_year_observations_anomaly_csv,
                                                 )
 from wfsel.utils.argparse_utils                 import (
                                                     arguments_are_valid as _arguments_are_valid,
