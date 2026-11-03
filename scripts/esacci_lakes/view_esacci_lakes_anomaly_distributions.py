@@ -444,7 +444,7 @@ def build_figure_2d(
         fontsize = FONTSIZE_LABEL,
     )
     high_smoke_year_ax.tick_params(
-        labelsize = FONTSIZE_TICK
+        labelsize = FONTSIZE_TICK,
     )
 
     high_smoke_year_ax.set_facecolor(PANE_COLOUR)
@@ -462,7 +462,7 @@ def build_figure_2d(
         fontsize = FONTSIZE_LABEL,
     )
     low_smoke_year_ax.tick_params(
-        labelsize = FONTSIZE_TICK
+        labelsize = FONTSIZE_TICK,
     )
 
     low_smoke_year_ax.set_facecolor(PANE_COLOUR)
@@ -570,9 +570,9 @@ def build_figure_3d(
         azim = azimuth,
     )
 
-    high_smoke_year_ax.zaxis.set_pane_color(PANE_COLOUR)    # type: ignore
-    high_smoke_year_ax.xaxis.set_pane_color(PANE_COLOUR)    # type: ignore
-    high_smoke_year_ax.yaxis.set_pane_color(PANE_COLOUR)    # type: ignore
+    high_smoke_year_ax.zaxis.set_pane_color(PANE_COLOUR)    # type: ignore[name-defined]
+    high_smoke_year_ax.xaxis.set_pane_color(PANE_COLOUR)    # type: ignore[name-defined]
+    high_smoke_year_ax.yaxis.set_pane_color(PANE_COLOUR)    # type: ignore[name-defined]
 
     low_smoke_year_ax.set_title(
         LOW_SMOKE_YEAR_AX_TITLE,
@@ -604,9 +604,9 @@ def build_figure_3d(
         azim = azimuth,
     )
 
-    low_smoke_year_ax.zaxis.set_pane_color(PANE_COLOUR) # type: ignore
-    low_smoke_year_ax.xaxis.set_pane_color(PANE_COLOUR) # type: ignore
-    low_smoke_year_ax.yaxis.set_pane_color(PANE_COLOUR) # type: ignore
+    low_smoke_year_ax.zaxis.set_pane_color(PANE_COLOUR) # type: ignore[name-defined]
+    low_smoke_year_ax.xaxis.set_pane_color(PANE_COLOUR) # type: ignore[name-defined]
+    low_smoke_year_ax.yaxis.set_pane_color(PANE_COLOUR) # type: ignore[name-defined]
 
     return fig
 
