@@ -1,7 +1,7 @@
 """
 Filename:   build_esacci_lakes_merged_product_csv_parallel.py
 Author:     William Chuter-Davies
-Modified:   29/10/26
+Modified:   03/11/26
 """
 
 # Standard Library Imports
@@ -46,16 +46,6 @@ from wfsel.utils.argparse_utils             import (
 
 PROG    = "build_esacci_lakes_merged_product_csv_parallel.py"
 DESC    = ""
-
-DATE_STRING_FIELD_INDEX = 5
-YEAR_STRING_SLICE       = slice(
-                            0,
-                            4,
-                        )
-MONTH_STRING_SLICE      = slice(
-                            4,
-                            6,
-                        )
 
 MAX_WORKERS = 8
 
@@ -290,9 +280,9 @@ def build_output_file_path(
         An output file path
     """
     stem                = esacci_lakes_merged_product_nc_path.stem
-    date_string         = stem.split("-")[DATE_STRING_FIELD_INDEX]
-    year_string         = date_string[YEAR_STRING_SLICE]
-    month_string        = date_string[MONTH_STRING_SLICE]
+    date_string         = stem.split("-")[5]
+    year_string         = date_string[0:4]
+    month_string        = date_string[4:6]
     output_file_path    = dir_path / year_string / month_string / f"{stem}.csv"
 
     return output_file_path
