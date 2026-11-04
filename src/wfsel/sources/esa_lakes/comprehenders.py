@@ -15,9 +15,9 @@ from wfsel.sources.esa_lakes.getters import get_observations_ser
 
 
 def comprehend_observations(
-    esa_lakes_id:                       int,
-    years:                              list[int],
-    esa_lakes_merged_product_dir_path:  Path,
+    esa_lakes_id:               int,
+    years:                      list[int],
+    esa_lakes_product_dir_path: Path,
 ) -> list[pd.Series[float]]:
     """
     Comprehend a list of observations series.
@@ -28,8 +28,8 @@ def comprehend_observations(
         The ESA Lakes id
     years : list[int]
         The list of years
-    esa_lakes_merged_product_dir_path : Path
-        The ESA Lakes merged product directory path
+    esa_lakes_product_dir_path : Path
+        The ESA Lakes product directory path
 
     Returns
     -------
@@ -40,7 +40,7 @@ def comprehend_observations(
                         get_observations_ser(
                             esa_lakes_id,
                             year,
-                            esa_lakes_merged_product_dir_path,
+                            esa_lakes_product_dir_path,
                         )
                         for year
                         in years

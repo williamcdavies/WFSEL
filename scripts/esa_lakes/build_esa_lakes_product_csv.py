@@ -25,7 +25,7 @@ from wfsel.exit_codes                   import (
 from wfsel.io.arguments                 import add_argument_output
 from wfsel.io.writers                   import to_csv
 from wfsel.sources.esa_lakes.arguments  import (
-                                            add_argument_esa_lakes_merged_product_nc_path,
+                                            add_argument_esa_lakes_product_nc_path,
                                             add_argument_esa_lakes_metadata_csv_path,
                                             add_argument_esa_lakes_static_lake_mask_nc_path,
                                         )
@@ -73,7 +73,7 @@ def build_parser(
                 positional_arguments    = [
                     add_argument_esa_lakes_metadata_csv_path,
                     add_argument_esa_lakes_static_lake_mask_nc_path,
-                    add_argument_esa_lakes_merged_product_nc_path,
+                    add_argument_esa_lakes_product_nc_path,
                 ],
                 optional_arguments      = [
                     add_argument_output,
@@ -102,7 +102,7 @@ def arguments_are_valid(
     argument_name_to_validator  = {
                                     "esa_lakes_metadata_csv_path":          argument_is_file,
                                     "esa_lakes_static_lake_mask_nc_path":   argument_is_file,
-                                    "esa_lakes_merged_product_nc_path":     argument_is_file,
+                                    "esa_lakes_product_nc_path":            argument_is_file,
                                 }
 
     boolean = _arguments_are_valid(
@@ -116,14 +116,14 @@ def arguments_are_valid(
 # ----------------------------------------------------------------------
 # builder functions
 # ----------------------------------------------------------------------
-def build_esa_lakes_merged_product_row(
+def build_esa_lakes_product_row(
     esa_lakes_id:                   int,
     esa_lakes_metadata_df:          pd.DataFrame,
     esa_lakes_static_lake_mask_ds:  xr.Dataset,
-    esa_lakes_merged_product_ds:    xr.Dataset,
+    esa_lakes_product_ds:           xr.Dataset,
 ) -> dict[str, Any]:
     """
-    Build an ESA Lakes merged product row.
+    Build an ESA Lakes product row.
 
     Parameters
     ----------
@@ -133,13 +133,13 @@ def build_esa_lakes_merged_product_row(
         The ESA Lakes metadata dataframe
     esa_lakes_static_lake_mask_ds : xr.Dataset
         The ESA Lakes static lake mask dataset
-    esa_lakes_merged_product_ds : xr.Dataset
-        The ESA Lakes merged product dataset
+    esa_lakes_product_ds : xr.Dataset
+        The ESA Lakes product dataset
 
     Returns
     -------
     dict[str, Any]
-        An ESA Lakes merged product row
+        An ESA Lakes product row
     """
     (
         lat_max,
@@ -165,13 +165,13 @@ def build_esa_lakes_merged_product_row(
             )
 
     static_lake_mask_ds_window  = window(esa_lakes_static_lake_mask_ds, bbox)
-    merged_product_ds_window    = window(esa_lakes_merged_product_ds, bbox)
+    product_ds_window           = window(esa_lakes_product_ds, bbox)
 
     lake_mask           = static_lake_mask_ds_window["CCI_lakeid"] == esa_lakes_id
-    lake_ice_cover_mask = merged_product_ds_window["lake_cover_class"]  == LAKE_COVER_CLASS_ICE
+    lake_ice_cover_mask = product_ds_window["lake_cover_class"]  == LAKE_COVER_CLASS_ICE
 
     x   = (
-            merged_product_ds_window["lake_surface_water_temperature"]
+            product_ds_window["lake_surface_water_temperature"]
             .where(lake_mask)
             .where(~lake_ice_cover_mask)
         )
@@ -195,13 +195,13 @@ def build_esa_lakes_merged_product_row(
     return row
 
 
-def build_esa_lakes_merged_product_df(
+def build_esa_lakes_product_df(
     esa_lakes_metadata_df:          pd.DataFrame,
     esa_lakes_static_lake_mask_ds:  xr.Dataset,
-    esa_lakes_merged_product_ds:    xr.Dataset,
+    esa_lakes_product_ds:           xr.Dataset,
 ) -> pd.DataFrame:
     """
-    Build an ESA Lakes merged product dataframe.
+    Build an ESA Lakes product dataframe.
 
     Parameters
     ----------
@@ -209,28 +209,28 @@ def build_esa_lakes_merged_product_df(
         The ESA Lakes metadata dataframe
     esa_lakes_static_lake_mask_ds : xr.Dataset
         The ESA Lakes static lake mask dataset
-    esa_lakes_merged_product_ds : xr.Dataset
-        The ESA Lakes merged product dataset
+    esa_lakes_product_ds : xr.Dataset
+        The ESA Lakes product dataset
 
     Returns
     -------
     pd.DataFrame
-        An ESA Lakes merged product dataframe
+        An ESA Lakes product dataframe
     """
     rows    = [
-                build_esa_lakes_merged_product_row(
+                build_esa_lakes_product_row(
                     esa_lakes_id,
                     esa_lakes_metadata_df,
                     esa_lakes_static_lake_mask_ds,
-                    esa_lakes_merged_product_ds,
+                    esa_lakes_product_ds,
                 )
                 for esa_lakes_id
                 in esa_lakes_metadata_df.index
             ]
 
-    esa_lakes_merged_product_df = pd.DataFrame(rows).set_index("esa_lakes_id")
+    esa_lakes_product_df = pd.DataFrame(rows).set_index("esa_lakes_id")
 
-    return esa_lakes_merged_product_df
+    return esa_lakes_product_df
 
 
 # ----------------------------------------------------------------------
@@ -256,17 +256,17 @@ def main(
                 )
 
     with (
-        xr.open_dataset(arguments.esa_lakes_static_lake_mask_nc_path)    as static_lake_mask_ds,
-        xr.open_dataset(arguments.esa_lakes_merged_product_nc_path)      as merged_product_ds,
+        xr.open_dataset(arguments.esa_lakes_static_lake_mask_nc_path)   as static_lake_mask_ds,
+        xr.open_dataset(arguments.esa_lakes_product_nc_path)            as product_ds,
     ):
-        merged_product_df   = build_esa_lakes_merged_product_df(
-                                metadata_df,
-                                static_lake_mask_ds,
-                                merged_product_ds,
-                            )
+        product_df  = build_esa_lakes_product_df(
+                        metadata_df,
+                        static_lake_mask_ds,
+                        product_ds,
+                    )
 
         to_csv(
-            merged_product_df,
+            product_df,
             arguments.output,
         )
 

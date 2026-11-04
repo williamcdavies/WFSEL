@@ -36,8 +36,8 @@ def read_esa_lakes_metadata_csv(
     return df
 
 
-def read_esa_lakes_merged_product_csv(
-    esa_lakes_merged_product_csv_path: Path,
+def read_esa_lakes_product_csv(
+    esa_lakes_product_csv_path: Path,
 ) -> pd.DataFrame:
     """
     Read "ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20110101-fv3.0.0.csv" (or
@@ -45,7 +45,7 @@ def read_esa_lakes_merged_product_csv(
 
     Parameters
     ----------
-    esa_lakes_merged_product_csv_path : Path
+    esa_lakes_product_csv_path : Path
         The path to
         "ESACCI-LAKES-L3S-LK_PRODUCTS-MERGED-20110101-fv3.0.0.csv" (or
         similar)
@@ -56,7 +56,7 @@ def read_esa_lakes_merged_product_csv(
         A dataframe
     """
     df  = pd.read_csv(
-            esa_lakes_merged_product_csv_path,
+            esa_lakes_product_csv_path,
             index_col = "esa_lakes_id",
         )
 

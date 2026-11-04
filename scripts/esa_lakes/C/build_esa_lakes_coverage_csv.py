@@ -28,7 +28,7 @@ from wfsel.io.writers                   import to_csv
 from wfsel.sources.esa_lakes.arguments  import (
                                             add_argument_esa_lakes_metadata_csv_path,
                                             add_argument_esa_lakes_counts_of_distinct_start_days_by_year_csv_path,
-                                            add_argument_esa_lakes_merged_product_dir_path,
+                                            add_argument_esa_lakes_product_dir_path,
                                         )
 from wfsel.sources.esa_lakes.getters    import (
                                             get_most_smoke_year,
@@ -74,7 +74,7 @@ def build_parser(
                 positional_arguments    = [
                     add_argument_esa_lakes_metadata_csv_path,
                     add_argument_esa_lakes_counts_of_distinct_start_days_by_year_csv_path,
-                    add_argument_esa_lakes_merged_product_dir_path,
+                    add_argument_esa_lakes_product_dir_path,
                 ],
                 optional_arguments      = [
                     add_argument_output,
@@ -103,7 +103,7 @@ def arguments_are_valid(
     argument_name_to_validator  = {
                                     "esa_lakes_metadata_csv_path":                              argument_is_file,
                                     "esa_lakes_counts_of_distinct_start_days_by_year_csv_path": argument_is_file,
-                                    "esa_lakes_merged_product_dir_path":                        argument_is_dir,
+                                    "esa_lakes_product_dir_path":                               argument_is_dir,
                                 }
 
     boolean = _arguments_are_valid(
@@ -120,7 +120,7 @@ def arguments_are_valid(
 def build_coverage_row(
     esa_lakes_id:                                               int,
     esa_lakes_counts_of_distinct_start_days_by_year_df_long:    pd.DataFrame,
-    esa_lakes_merged_product_dir_path:                          Path,
+    esa_lakes_product_dir_path:                                 Path,
 ) -> dict[str, int]:
     """
     Build a coverage row.
@@ -132,8 +132,8 @@ def build_coverage_row(
     esa_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
         The unpivoted ESA Lakes counts of distinct start days by year
         dataframe
-    esa_lakes_merged_product_dir_path : Path
-        The ESA Lakes merged product directory path
+    esa_lakes_product_dir_path : Path
+        The ESA Lakes product directory path
 
     Returns
     -------
@@ -156,7 +156,7 @@ def build_coverage_row(
     high_smoke_year_observations_ser    = get_observations_ser(
                                             esa_lakes_id,
                                             high_smoke_year,
-                                            esa_lakes_merged_product_dir_path,
+                                            esa_lakes_product_dir_path,
                                         )
     high_smoke_year_coverage            = (
                                             high_smoke_year_observations_ser
@@ -175,7 +175,7 @@ def build_coverage_row(
 def comprehend_coverage_df(
     esa_lakes_metadata_df:                                      pd.DataFrame,
     esa_lakes_counts_of_distinct_start_days_by_year_df_long:    pd.DataFrame,
-    esa_lakes_merged_product_dir_path:                          Path,
+    esa_lakes_product_dir_path:                                 Path,
 ) -> pd.DataFrame:
     """
     Comprehend a coverage dataframe.
@@ -187,8 +187,8 @@ def comprehend_coverage_df(
     esa_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
         The unpivoted ESA Lakes counts of distinct start days by year
         dataframe
-    esa_lakes_merged_product_dir_path : Path
-        The ESA Lakes merged product directory path
+    esa_lakes_product_dir_path : Path
+        The ESA Lakes product directory path
 
     Returns
     -------
@@ -200,7 +200,7 @@ def comprehend_coverage_df(
                 build_coverage_row(
                     esa_lakes_id,
                     esa_lakes_counts_of_distinct_start_days_by_year_df_long,
-                    esa_lakes_merged_product_dir_path,
+                    esa_lakes_product_dir_path,
                 )
                 for esa_lakes_id
                 in tqdm(esa_lakes_metadata_df.index)
@@ -244,7 +244,7 @@ def main(
     coverage_df = comprehend_coverage_df(
                     metadata_df,
                     counts_of_distinct_start_days_by_high_smoke_year_df_long,
-                    args.esa_lakes_merged_product_dir_path,
+                    args.esa_lakes_product_dir_path,
                 )
 
     to_csv(

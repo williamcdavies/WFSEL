@@ -26,7 +26,7 @@ from wfsel.io.writers                       import to_csv
 from wfsel.sources.esa_lakes.arguments      import (
                                                 add_argument_esa_lakes_id,
                                                 add_argument_esa_lakes_counts_of_distinct_start_days_by_year_csv_path,
-                                                add_argument_esa_lakes_merged_product_dir_path,
+                                                add_argument_esa_lakes_product_dir_path,
                                             )
 from wfsel.sources.esa_lakes.builders       import build_distinct_labels_mask
 from wfsel.sources.esa_lakes.callables      import (
@@ -86,7 +86,7 @@ def build_parser(
                 positional_arguments    = [
                     add_argument_esa_lakes_id,
                     add_argument_esa_lakes_counts_of_distinct_start_days_by_year_csv_path,
-                    add_argument_esa_lakes_merged_product_dir_path,
+                    add_argument_esa_lakes_product_dir_path,
                 ],
                 optional_arguments      = [
                     add_argument_output,
@@ -114,7 +114,7 @@ def arguments_are_valid(
     """
     argument_name_to_validator  = {
                                     "esa_lakes_counts_of_distinct_start_days_by_year_csv_path": argument_is_file,
-                                    "esa_lakes_merged_product_dir_path":                        argument_is_dir,
+                                    "esa_lakes_product_dir_path":                               argument_is_dir,
                                 }
 
     boolean = _arguments_are_valid(
@@ -237,12 +237,12 @@ def main(
     high_smoke_year_observations_ser        = get_observations_ser(
                                                 args.esa_lakes_id,
                                                 high_smoke_year,
-                                                args.esa_lakes_merged_product_dir_path,
+                                                args.esa_lakes_product_dir_path,
                                             )
     low_smoke_year_observations             = comprehend_observations(
                                                 args.esa_lakes_id,
                                                 low_smoke_years,
-                                                args.esa_lakes_merged_product_dir_path,
+                                                args.esa_lakes_product_dir_path,
                                             )
     low_smoke_year_observations_mean_ser    = compute_observations_mean(low_smoke_year_observations)
     low_smoke_year_observations_std_ser     = compute_observations_std(low_smoke_year_observations)

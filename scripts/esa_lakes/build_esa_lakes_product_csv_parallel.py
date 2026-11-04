@@ -33,7 +33,7 @@ from wfsel.io.models                    import CompletedProcessLog
 from wfsel.io.openers                   import open_logstream
 from wfsel.io.writers                   import to_logstream
 from wfsel.sources.esa_lakes.arguments  import (
-                                            add_argument_esa_lakes_merged_product_dir_path,
+                                            add_argument_esa_lakes_product_dir_path,
                                             add_argument_esa_lakes_metadata_csv_path,
                                             add_argument_esa_lakes_static_lake_mask_nc_path,
                                         )
@@ -73,7 +73,7 @@ def build_parser(
                 positional_arguments    = [
                     add_argument_esa_lakes_metadata_csv_path,
                     add_argument_esa_lakes_static_lake_mask_nc_path,
-                    add_argument_esa_lakes_merged_product_dir_path,
+                    add_argument_esa_lakes_product_dir_path,
                 ],
                 optional_arguments      = [
                     add_argument_output,
@@ -102,7 +102,7 @@ def arguments_are_valid(
     argument_name_to_validator  = {
                                     "esa_lakes_metadata_csv_path":          argument_is_file,
                                     "esa_lakes_static_lake_mask_nc_path":   argument_is_file,
-                                    "esa_lakes_merged_product_dir_path":    argument_is_dir,
+                                    "esa_lakes_product_dir_path":           argument_is_dir,
                                     "output":                               argument_is_dir,
                                 }
 
@@ -117,15 +117,15 @@ def arguments_are_valid(
 # ----------------------------------------------------------------------
 # subprocess functions
 # ----------------------------------------------------------------------
-def run_build_esa_lakes_merged_product_csv(
+def run_build_esa_lakes_product_csv(
     *,
     esa_lakes_metadata_csv_path:        Path,
     esa_lakes_static_lake_mask_nc_path: Path,
-    esa_lakes_merged_product_nc_path:   Path,
+    esa_lakes_product_nc_path:          Path,
     output_file_path:                   Path,
 ) -> CompletedProcessLog:
     """
-    Run `build_esa_lakes_merged_product_csv.py` as a subprocess.
+    Run `build_esa_lakes_product_csv.py` as a subprocess.
 
     Parameters
     ----------
@@ -133,8 +133,8 @@ def run_build_esa_lakes_merged_product_csv(
         The ESA Lakes metadata path
     esa_lakes_static_lake_mask_nc_path : Path
         The ESA Lakes static lake mask path
-    esa_lakes_merged_product_nc_path : Path
-        The ESA Lakes merged product path
+    esa_lakes_product_nc_path : Path
+        The ESA Lakes product path
     output_file_path : Path
         The output file path
 
@@ -146,10 +146,10 @@ def run_build_esa_lakes_merged_product_csv(
     completed_process   = run(
                             [
                                 sys.executable,
-                                f"{Path(__file__).resolve().parent / "build_esa_lakes_merged_product_csv.py"}",
+                                f"{Path(__file__).resolve().parent / "build_esa_lakes_product_csv.py"}",
                                 str(esa_lakes_metadata_csv_path),
                                 str(esa_lakes_static_lake_mask_nc_path),
-                                str(esa_lakes_merged_product_nc_path),
+                                str(esa_lakes_product_nc_path),
                                 "-o", str(output_file_path),
                             ],
                             capture_output  = True,
@@ -167,16 +167,16 @@ def run_build_esa_lakes_merged_product_csv(
     return completed_process_log
 
 
-def submit_build_esa_lakes_merged_product_csv(
+def submit_build_esa_lakes_product_csv(
     executor: ThreadPoolExecutor,
     *,
     esa_lakes_metadata_csv_path:        Path,
     esa_lakes_static_lake_mask_nc_path: Path,
-    esa_lakes_merged_product_nc_path:   Path,
+    esa_lakes_product_nc_path:   Path,
     output_file_path:                   Path,
 ) -> Future:
     """
-    Submit `build_esa_lakes_merged_product_csv.py`.
+    Submit `build_esa_lakes_product_csv.py`.
 
     Parameters
     ----------
@@ -186,8 +186,8 @@ def submit_build_esa_lakes_merged_product_csv(
         The ESA Lakes metadata path
     esa_lakes_static_lake_mask_nc_path : Path
         The ESA Lakes static lake mask path
-    esa_lakes_merged_product_nc_path : Path
-        The ESA Lakes merged product path
+    esa_lakes_product_nc_path : Path
+        The ESA Lakes product path
     output_file_path : Path
        The output file path
 
@@ -197,26 +197,26 @@ def submit_build_esa_lakes_merged_product_csv(
         A future
     """
     future  = executor.submit(
-                run_build_esa_lakes_merged_product_csv,
+                run_build_esa_lakes_product_csv,
                 esa_lakes_metadata_csv_path         = esa_lakes_metadata_csv_path,
                 esa_lakes_static_lake_mask_nc_path  = esa_lakes_static_lake_mask_nc_path,
-                esa_lakes_merged_product_nc_path    = esa_lakes_merged_product_nc_path,
+                esa_lakes_product_nc_path           = esa_lakes_product_nc_path,
                 output_file_path                    = output_file_path,
             )
 
     return future
 
 
-def submit_build_esa_lakes_merged_product_csvs(
+def submit_build_esa_lakes_product_csvs(
     executor: ThreadPoolExecutor,
     *,
     esa_lakes_metadata_csv_path:        Path,
     esa_lakes_static_lake_mask_nc_path: Path,
-    esa_lakes_merged_product_nc_paths:  list[Path],
+    esa_lakes_product_nc_paths:         list[Path],
     output_file_paths:                  list[Path],
 ) -> list[Future]:
     """
-    Submit `build_esa_lakes_merged_product_csv.py`s.
+    Submit `build_esa_lakes_product_csv.py`s.
 
     Parameters
     ----------
@@ -226,8 +226,8 @@ def submit_build_esa_lakes_merged_product_csvs(
         The ESA Lakes metadata path
     esa_lakes_static_lake_mask_nc_path : Path
         The ESA Lakes static lake mask path
-    esa_lakes_merged_product_nc_paths : list[Path]
-        The list of ESA Lakes merged product paths
+    esa_lakes_product_nc_paths : list[Path]
+        The list of ESA Lakes product paths
     output_file_paths : list[Path]
         The list of output file paths
 
@@ -237,18 +237,18 @@ def submit_build_esa_lakes_merged_product_csvs(
         A list of futures
     """
     futures = [
-                submit_build_esa_lakes_merged_product_csv(
+                submit_build_esa_lakes_product_csv(
                     executor,
                     esa_lakes_metadata_csv_path         = esa_lakes_metadata_csv_path,
                     esa_lakes_static_lake_mask_nc_path  = esa_lakes_static_lake_mask_nc_path,
-                    esa_lakes_merged_product_nc_path    = esa_lakes_merged_product_nc_path,
+                    esa_lakes_product_nc_path           = esa_lakes_product_nc_path,
                     output_file_path                    = output_file_path,
                 )
                 for (
-                    esa_lakes_merged_product_nc_path,
+                    esa_lakes_product_nc_path,
                     output_file_path,
                 ) in zip(
-                    esa_lakes_merged_product_nc_paths,
+                    esa_lakes_product_nc_paths,
                     output_file_paths,
                     strict = True,
                 )
@@ -261,16 +261,16 @@ def submit_build_esa_lakes_merged_product_csvs(
 # builder functions
 # ----------------------------------------------------------------------
 def build_output_file_path(
-    esa_lakes_merged_product_nc_path:   Path,
-    dir_path:                           Path,
+    esa_lakes_product_nc_path:  Path,
+    dir_path:                   Path,
 ) -> Path:
     """
     Build an output file path.
 
     Parameters
     ----------
-    esa_lakes_merged_product_nc_path : Path
-        The ESA Lakes merged product path
+    esa_lakes_product_nc_path : Path
+        The ESA Lakes product path
     dir_path : Path
         The directory path
 
@@ -279,7 +279,7 @@ def build_output_file_path(
     Path
         An output file path
     """
-    stem                = esa_lakes_merged_product_nc_path.stem
+    stem                = esa_lakes_product_nc_path.stem
     date_string         = stem.split("-")[5]
     year_string         = date_string[0:4]
     month_string        = date_string[4:6]
@@ -289,16 +289,16 @@ def build_output_file_path(
 
 
 def build_output_file_paths(
-    esa_lakes_merged_product_nc_paths:  list[Path],
-    dir_path:                           Path,
+    esa_lakes_product_nc_paths: list[Path],
+    dir_path:                   Path,
 ) -> list[Path]:
     """
     Build a list of output file paths.
 
     Parameters
     ----------
-    esa_lakes_merged_product_nc_paths : list[Path]
-        The list of ESA Lakes merged product paths
+    esa_lakes_product_nc_paths : list[Path]
+        The list of ESA Lakes product paths
     dir_path : Path
         The directory path
 
@@ -309,11 +309,11 @@ def build_output_file_paths(
     """
     output_file_paths   = [
                             build_output_file_path(
-                                esa_lakes_merged_product_nc_path,
+                                esa_lakes_product_nc_path,
                                 dir_path,
                             )
-                            for esa_lakes_merged_product_nc_path
-                            in esa_lakes_merged_product_nc_paths
+                            for esa_lakes_product_nc_path
+                            in esa_lakes_product_nc_paths
                         ]
 
     return output_file_paths
@@ -337,24 +337,24 @@ def main(
     if not arguments_are_valid(args):
         return EXIT_FAILURE
 
-    merged_product_nc_paths = find_files_by_extension(
-                                args.esa_lakes_merged_product_dir_path,
-                                "nc",
-                            )
-    output_file_paths       = build_output_file_paths(
-                                merged_product_nc_paths,
-                                args.output,
-                            )
+    product_nc_paths    = find_files_by_extension(
+                            args.esa_lakes_product_dir_path,
+                            "nc",
+                        )
+    output_file_paths   = build_output_file_paths(
+                            product_nc_paths,
+                            args.output,
+                        )
 
     with (
         ThreadPoolExecutor(max_workers = MAX_WORKERS)   as executor,
         open_logstream(args.output)                     as logstream,
     ):
-        futures = submit_build_esa_lakes_merged_product_csvs(
+        futures = submit_build_esa_lakes_product_csvs(
                     executor,
                     esa_lakes_metadata_csv_path         = args.esa_lakes_metadata_csv_path,
                     esa_lakes_static_lake_mask_nc_path  = args.esa_lakes_static_lake_mask_nc_path,
-                    esa_lakes_merged_product_nc_paths   = merged_product_nc_paths,
+                    esa_lakes_product_nc_paths          = product_nc_paths,
                     output_file_paths                   = output_file_paths,
                 )
 

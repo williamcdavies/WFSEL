@@ -177,14 +177,14 @@ esa_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
 esa_lakes_id : int
     The ESA Lakes id
 
-esa_lakes_merged_product_dir_path : Path
-    The ESA Lakes merged product directory path
+esa_lakes_product_dir_path : Path
+    The ESA Lakes product directory path
 
-esa_lakes_merged_product_ds : xr.Dataset
-    The ESA Lakes merged product dataset
+esa_lakes_product_ds : xr.Dataset
+    The ESA Lakes product dataset
 
-esa_lakes_merged_product_nc_path : Path
-    The ESA Lakes merged product path
+esa_lakes_product_nc_path : Path
+    The ESA Lakes product path
 
 esa_lakes_metadata_df : pd.DataFrame
     The ESA Lakes metadata dataframe

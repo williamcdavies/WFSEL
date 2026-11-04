@@ -60,11 +60,11 @@ def add_argument_esa_lakes_static_lake_mask_nc_path(
     )
 
 
-def add_argument_esa_lakes_merged_product_nc_path(
+def add_argument_esa_lakes_product_nc_path(
     parser: ArgumentParser,
 ) -> None:
     """
-    Add a "esa_lakes_merged_product_nc_path" argument to a parser.
+    Add a "esa_lakes_product_nc_path" argument to a parser.
 
     Parameters
     ----------
@@ -72,16 +72,16 @@ def add_argument_esa_lakes_merged_product_nc_path(
         The parser
     """
     parser.add_argument(
-        "esa_lakes_merged_product_nc_path",
+        "esa_lakes_product_nc_path",
         type = Path,
     )
 
 
-def add_argument_esa_lakes_merged_product_csv_path(
+def add_argument_esa_lakes_product_csv_path(
     parser: ArgumentParser,
 ) -> None:
     """
-    Add a "esa_lakes_merged_product_csv_path" argument to a parser.
+    Add a "esa_lakes_product_csv_path" argument to a parser.
 
     Parameters
     ----------
@@ -89,16 +89,16 @@ def add_argument_esa_lakes_merged_product_csv_path(
         The parser
     """
     parser.add_argument(
-        "esa_lakes_merged_product_csv_path",
+        "esa_lakes_product_csv_path",
         type = Path,
     )
 
 
-def add_argument_esa_lakes_merged_product_dir_path(
+def add_argument_esa_lakes_product_dir_path(
     parser: ArgumentParser,
 ) -> None:
     """
-    Add a "esa_lakes_merged_product_dir_path" argument to a parser.
+    Add a "esa_lakes_product_dir_path" argument to a parser.
 
     Parameters
     ----------
@@ -106,7 +106,7 @@ def add_argument_esa_lakes_merged_product_dir_path(
         The parser
     """
     parser.add_argument(
-        "esa_lakes_merged_product_dir_path",
+        "esa_lakes_product_dir_path",
         type = Path,
     )
 

@@ -11,12 +11,12 @@ from pathlib import Path
 import pandas as pd
 
 # Local Application/Library Specific Imports
-from wfsel.sci.literals                     import FREEZING_POINT_OF_WATER_KELVIN
-from wfsel.sources.esa_lakes.literals    import (
-                                                MERGED_PRODUCT_COVERAGE_LOWER_BOUND,
-                                                MERGED_PRODUCT_COVERAGE_UPPER_BOUND,
-                                            )
-from wfsel.sources.esa_lakes.readers     import read_esa_lakes_merged_product_csv
+from wfsel.sci.literals                 import FREEZING_POINT_OF_WATER_KELVIN
+from wfsel.sources.esa_lakes.literals   import (
+                                            PRODUCT_COVERAGE_LOWER_BOUND,
+                                            PRODUCT_COVERAGE_UPPER_BOUND,
+                                        )
+from wfsel.sources.esa_lakes.readers    import read_esa_lakes_product_csv
 
 
 def get_all_years(
@@ -153,9 +153,9 @@ def get_most_smoke_year(
 
 
 def get_observations_ser(
-    esa_lakes_id:                       int,
-    year:                               int,
-    esa_lakes_merged_product_dir_path:  Path,
+    esa_lakes_id:               int,
+    year:                       int,
+    esa_lakes_product_dir_path: Path,
 ) -> pd.Series[float]:
     """
     Get an observations series of a lake by its id and a year.
@@ -166,8 +166,8 @@ def get_observations_ser(
         The ESA Lakes id
     year : int
         The year
-    esa_lakes_merged_product_dir_path : Path
-        The ESA Lakes merged product directory path
+    esa_lakes_product_dir_path : Path
+        The ESA Lakes product directory path
 
     Returns
     -------
@@ -175,7 +175,7 @@ def get_observations_ser(
         An observations series
     """
     dir_path    = (
-                    esa_lakes_merged_product_dir_path
+                    esa_lakes_product_dir_path
                     / str(year)
                 )
 
@@ -184,18 +184,18 @@ def get_observations_ser(
     _observations = []
 
     for path in paths:
-        merged_product_df = read_esa_lakes_merged_product_csv(path)
+        product_df = read_esa_lakes_product_csv(path)
 
         lake_surface_water_temperature_mean     = float(
-            merged_product_df.loc[esa_lakes_id, "lake_surface_water_temperature_mean"],     # type: ignore[arg-type]
+            product_df.loc[esa_lakes_id, "lake_surface_water_temperature_mean"],     # type: ignore[arg-type]
         ) - FREEZING_POINT_OF_WATER_KELVIN
         lake_surface_water_temperature_coverage = float(
-            merged_product_df.loc[esa_lakes_id, "lake_surface_water_temperature_coverage"], # type: ignore[arg-type]
+            product_df.loc[esa_lakes_id, "lake_surface_water_temperature_coverage"], # type: ignore[arg-type]
         )
 
         if (
-                lake_surface_water_temperature_coverage >= MERGED_PRODUCT_COVERAGE_LOWER_BOUND
-            and lake_surface_water_temperature_coverage <= MERGED_PRODUCT_COVERAGE_UPPER_BOUND
+                lake_surface_water_temperature_coverage >= PRODUCT_COVERAGE_LOWER_BOUND
+            and lake_surface_water_temperature_coverage <= PRODUCT_COVERAGE_UPPER_BOUND
         ):
             _observations.append(lake_surface_water_temperature_mean)
         else:
