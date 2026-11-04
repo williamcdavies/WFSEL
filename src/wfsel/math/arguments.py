@@ -7,6 +7,9 @@ Modified:   27/10/26
 # Standard Library Imports
 from argparse import ArgumentParser
 
+# Local Application/Library Specific Imports
+from wfsel.math.literals import SCALES
+
 
 def add_argument_scale(
     parser: ArgumentParser,
@@ -21,6 +24,7 @@ def add_argument_scale(
     """
     parser.add_argument(
         "-s", "--scale",
-        type        = str,
-        required    = True,
+        type    = str,
+        choices = SCALES,
+        default = "linear",
     )

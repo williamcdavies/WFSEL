@@ -160,37 +160,37 @@ parser : ArgumentParser
 """
 ```
 
-###### ESA CCI Lakes Parameters
+###### ESA Lakes Parameters
 ```python
 """
 distinct_labels_ser : pd.Series[int]
     The distinct labels series
 
-esacci_lakes_counts_of_distinct_start_days_by_year_df : pd.DataFrame
-    The ESA CCI Lakes counts of distinct start days by year
+esa_lakes_counts_of_distinct_start_days_by_year_df : pd.DataFrame
+    The ESA Lakes counts of distinct start days by year
     dataframe
 
-esacci_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
-    The unpivoted ESA CCI Lakes counts of distinct start days by
+esa_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
+    The unpivoted ESA Lakes counts of distinct start days by
     year dataframe
 
-esacci_lakes_id : int
-    The ESA CCI Lakes id
+esa_lakes_id : int
+    The ESA Lakes id
 
-esacci_lakes_merged_product_dir_path : Path
-    The ESA CCI Lakes merged product directory path
+esa_lakes_merged_product_dir_path : Path
+    The ESA Lakes merged product directory path
 
-esacci_lakes_merged_product_ds : xr.Dataset
-    The ESA CCI Lakes merged product dataset
+esa_lakes_merged_product_ds : xr.Dataset
+    The ESA Lakes merged product dataset
 
-esacci_lakes_merged_product_nc_path : Path
-    The ESA CCI Lakes merged product path
+esa_lakes_merged_product_nc_path : Path
+    The ESA Lakes merged product path
 
-esacci_lakes_metadata_df : pd.DataFrame
-    The ESA CCI Lakes metadata dataframe
+esa_lakes_metadata_df : pd.DataFrame
+    The ESA Lakes metadata dataframe
 
-esacci_lakes_static_lake_mask_ds : xr.Dataset
-    The ESA CCI Lakes static lake mask dataset
+esa_lakes_static_lake_mask_ds : xr.Dataset
+    The ESA Lakes static lake mask dataset
 
 observations : list[pd.Series[float]]
     The list of observations series
@@ -213,11 +213,6 @@ output_file_path : Path
 
 #### Returns
 Return descriptions should start with "A" or "An".
-
-### Formatting
-
-#### Tab-alignment
-Where consecutive lines share a common structure, the right-hand side of each line should be aligned to a common column using tabs. This applies to, but is not limited to: type hints in dataclass fields, `as` aliases in import statements, `=` assignments, and keyword arguments.
 
 ### Scripts
 Scripts should be of the following template:

@@ -21,10 +21,9 @@ def add_argument_dimension(
     """
     parser.add_argument(
         "-d", "--dimension",
-        type        = int,
-        required    = False,
-        choices     = [2, 3],
-        default     = 2,
+        type    = int,
+        choices = [2, 3],
+        default = 2,
     )
 
 
@@ -41,8 +40,8 @@ def add_argument_elevation(
     """
     parser.add_argument(
         "-e", "--elevation",
-        type        = float,
-        required    = False,
+        type    = float,
+        default = 45,
     )
 
 
@@ -59,6 +58,6 @@ def add_argument_azimuth(
     """
     parser.add_argument(
         "-a", "--azimuth",
-        type        = float,
-        required    = False,
+        type    = float,
+        default = 45,
     )
