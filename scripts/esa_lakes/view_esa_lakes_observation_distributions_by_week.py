@@ -1,7 +1,7 @@
 """
 Filename:   view_esa_lakes_observation_distributions_by_week.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
+Modified:   05/11/26
 """
 
 # Standard Library Imports
@@ -32,10 +32,10 @@ from wfsel.plot.arguments                   import (
                                                 add_argument_elevation,
                                             )
 from wfsel.plot.literals                    import (
-                                                FONTSIZE_LABEL,
-                                                FONTSIZE_TICK,
-                                                FONTSIZE_TITLE,
-                                                GREY,
+                                                AXIS_LABEL_FONTSIZE,
+                                                MEDIUM_GREY,
+                                                TICK_LABEL_FONTSIZE,
+                                                TITLE_FONTSIZE,
                                             )
 from wfsel.plot.plotters                    import (
                                                 plot_colorbar,
@@ -228,17 +228,17 @@ def build_figure_2d(
 
     high_smoke_year_ax.set_title(
         HIGH_SMOKE_AX_TITLE,
-        fontsize = FONTSIZE_TITLE,
+        fontsize = TITLE_FONTSIZE,
     )
     high_smoke_year_ax.set_ylabel(
         Y_LABEL,
-        fontsize = FONTSIZE_LABEL,
+        fontsize = AXIS_LABEL_FONTSIZE,
     )
     high_smoke_year_ax.tick_params(
-        labelsize = FONTSIZE_TICK,
+        labelsize = TICK_LABEL_FONTSIZE,
     )
     high_smoke_year_ax.set_facecolor(
-        GREY,
+        MEDIUM_GREY,
     )
 
     for i, column_name in reversed(list(enumerate(column_names))):
@@ -261,21 +261,21 @@ def build_figure_2d(
 
     low_smoke_year_ax.set_title(
         LOW_SMOKE_AX_TITLE,
-        fontsize = FONTSIZE_TITLE,
+        fontsize = TITLE_FONTSIZE,
     )
     low_smoke_year_ax.set_xlabel(
         X_LABEL,
-        fontsize = FONTSIZE_LABEL,
+        fontsize = AXIS_LABEL_FONTSIZE,
     )
     low_smoke_year_ax.set_ylabel(
         Y_LABEL,
-        fontsize = FONTSIZE_LABEL,
+        fontsize = AXIS_LABEL_FONTSIZE,
     )
     low_smoke_year_ax.tick_params(
-        labelsize = FONTSIZE_TICK,
+        labelsize = TICK_LABEL_FONTSIZE,
     )
     low_smoke_year_ax.set_facecolor(
-        GREY,
+        MEDIUM_GREY,
     )
 
     return fig
@@ -334,19 +334,19 @@ def build_figure_3d(
 
     high_smoke_ax.set_title(
         HIGH_SMOKE_AX_TITLE,
-        fontsize = FONTSIZE_TITLE,
+        fontsize = TITLE_FONTSIZE,
     )
     high_smoke_ax.set_xlabel(
         X_LABEL,
-        fontsize = FONTSIZE_LABEL,
+        fontsize = AXIS_LABEL_FONTSIZE,
     )
     high_smoke_ax.set_ylabel(
         Z_LABEL,
-        fontsize = FONTSIZE_LABEL,
+        fontsize = AXIS_LABEL_FONTSIZE,
     )
     high_smoke_ax.set_zlabel(
         Y_LABEL,
-        fontsize = FONTSIZE_LABEL,
+        fontsize = AXIS_LABEL_FONTSIZE,
     )
     high_smoke_ax.set_yticks(
         range(len(column_names)),
@@ -357,16 +357,16 @@ def build_figure_3d(
                 ],
     )
     high_smoke_ax.tick_params(
-        labelsize = FONTSIZE_TICK,
+        labelsize = TICK_LABEL_FONTSIZE,
     )
     high_smoke_ax.view_init(
         elev = elevation,
         azim = azimuth,
     )
 
-    high_smoke_ax.zaxis.set_pane_color(GREY)    # type: ignore[name-defined]
-    high_smoke_ax.xaxis.set_pane_color(GREY)    # type: ignore[name-defined]
-    high_smoke_ax.yaxis.set_pane_color(GREY)    # type: ignore[name-defined]
+    high_smoke_ax.zaxis.set_pane_color(MEDIUM_GREY)    # type: ignore[name-defined]
+    high_smoke_ax.xaxis.set_pane_color(MEDIUM_GREY)    # type: ignore[name-defined]
+    high_smoke_ax.yaxis.set_pane_color(MEDIUM_GREY)    # type: ignore[name-defined]
 
     for i, column_name in reversed(list(enumerate(column_names))):
         ser     = esa_lakes_low_smoke_year_observations_anomaly_df[column_name]
@@ -381,19 +381,19 @@ def build_figure_3d(
 
     low_smoke_ax.set_title(
         LOW_SMOKE_AX_TITLE,
-        fontsize = FONTSIZE_TITLE,
+        fontsize = TITLE_FONTSIZE,
     )
     low_smoke_ax.set_xlabel(
         X_LABEL,
-        fontsize = FONTSIZE_LABEL,
+        fontsize = AXIS_LABEL_FONTSIZE,
     )
     low_smoke_ax.set_ylabel(
         Z_LABEL,
-        fontsize = FONTSIZE_LABEL,
+        fontsize = AXIS_LABEL_FONTSIZE,
     )
     low_smoke_ax.set_zlabel(
         Y_LABEL,
-        fontsize = FONTSIZE_LABEL,
+        fontsize = AXIS_LABEL_FONTSIZE,
     )
     low_smoke_ax.set_yticks(
         range(len(column_names)),
@@ -404,16 +404,16 @@ def build_figure_3d(
                 ],
     )
     low_smoke_ax.tick_params(
-        labelsize = FONTSIZE_TICK,
+        labelsize = TICK_LABEL_FONTSIZE,
     )
     low_smoke_ax.view_init(
         elev = elevation,
         azim = azimuth,
     )
 
-    low_smoke_ax.zaxis.set_pane_color(GREY) # type: ignore[name-defined]
-    low_smoke_ax.xaxis.set_pane_color(GREY) # type: ignore[name-defined]
-    low_smoke_ax.yaxis.set_pane_color(GREY) # type: ignore[name-defined]
+    low_smoke_ax.zaxis.set_pane_color(MEDIUM_GREY) # type: ignore[name-defined]
+    low_smoke_ax.xaxis.set_pane_color(MEDIUM_GREY) # type: ignore[name-defined]
+    low_smoke_ax.yaxis.set_pane_color(MEDIUM_GREY) # type: ignore[name-defined]
 
     return fig
 

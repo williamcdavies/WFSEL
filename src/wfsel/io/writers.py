@@ -1,7 +1,7 @@
 """
 Filename:   wfsel.io.writers.py
 Author:     William Chuter-Davies
-Modified:   29/10/26
+Modified:   05/11/26
 """
 
 # Standard Library Imports
@@ -69,6 +69,32 @@ def to_svg(
     )
 
 
+def to_png(
+    fig:                Figure,
+    output_file_path:   Path,
+) -> None:
+    """
+    Write a figure to a .png file.
+
+    Parameters
+    ----------
+    fig : Figure
+        The figure
+    output_file_path : Path
+        The output file path
+    """
+    output_file_path.parent.mkdir(
+        parents     = True,
+        exist_ok    = True,
+    )
+
+    fig.savefig(
+        output_file_path,
+        format      = "png",
+        bbox_inches = "tight",
+    )
+
+
 def to_logstream(
     completed_process_log:  CompletedProcessLog,
     logstream:              TextIO,
@@ -83,11 +109,7 @@ def to_logstream(
     logstream : TextIO
         The logstream
     """
-    logstream.write(f"{
-        datetime
-        .now(tz = UTC)
-        .isoformat()
-    }\n")
+    logstream.write(f"{datetime.now(tz = UTC).isoformat()          }\n")
     logstream.write(f"args:       {completed_process_log.args      }\n")
     logstream.write(f"returncode: {completed_process_log.returncode}\n")
     logstream.write(f"stdout:     {completed_process_log.stdout    }\n")

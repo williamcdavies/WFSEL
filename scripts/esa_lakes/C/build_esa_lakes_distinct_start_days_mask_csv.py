@@ -1,7 +1,7 @@
 """
 Filename:   build_esa_lakes_distinct_start_days_mask_csv.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
+Modified:   05/11/26
 """
 
 # Standard Library Imports
@@ -110,7 +110,7 @@ def arguments_are_valid(
 
 
 # ----------------------------------------------------------------------
-# core
+# builder functions
 # ----------------------------------------------------------------------
 def build_distinct_start_days_mask_column(
     esa_lakes_id:                                               int,

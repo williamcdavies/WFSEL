@@ -1,7 +1,7 @@
 """
 Filename:   build_esa_lakes_coverage_csv.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
+Modified:   05/11/26
 """
 
 # Standard Library Imports
@@ -115,7 +115,7 @@ def arguments_are_valid(
 
 
 # ----------------------------------------------------------------------
-# core
+# builder functions
 # ----------------------------------------------------------------------
 def build_coverage_row(
     esa_lakes_id:                                               int,

@@ -1,7 +1,7 @@
 """
 Filename:   wfsel.sources.esa_lakes.comprehenders.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
+Modified:   05/11/26
 """
 
 # Standard Library Imports
@@ -68,13 +68,13 @@ def comprehend_column_names(
     list[str]
         A list of column names
     """
-    column_names   = [
-                f"w_{i}"
-                for i
-                in range(
-                    esa_lakes_week_first,
-                    esa_lakes_week_last + 1,
-                )
-            ]
+    column_names    = [
+                        f"w_{i}"
+                        for i
+                        in range(
+                            esa_lakes_week_first,
+                            esa_lakes_week_last + 1,
+                        )
+                    ]
 
     return column_names
