@@ -1,7 +1,7 @@
 """
 Filename:   build_esa_lakes_observations_csv.py
 Author:     William Chuter-Davies
-Modified:   05/11/26
+Modified:   06/11/26
 """
 
 # Standard Library Imports
@@ -49,7 +49,7 @@ from wfsel.sources.esa_lakes.getters        import (
                                                 get_observations_ser,
                                             )
 from wfsel.sources.esa_lakes.melters        import melt_esa_lakes_counts_of_distinct_start_days_by_year_df
-from wfsel.sources.esa_lakes.queries        import query_distinct_start_days
+from wfsel.sources.esa_lakes.queries        import query_esa_lakes_distinct_start_days
 from wfsel.sources.esa_lakes.readers        import read_esa_lakes_counts_of_distinct_start_days_by_year_csv
 from wfsel.time.literals                    import DAYS_IN_A_WEEK
 from wfsel.utils.argparse_utils             import (
@@ -248,7 +248,7 @@ def main(
     low_smoke_year_observations_std_ser     = compute_observations_std(low_smoke_year_observations)
 
     with psycopg.connect("dbname=spatial") as connection:
-        high_smoke_year_distinct_start_days_ser = query_distinct_start_days(
+        high_smoke_year_distinct_start_days_ser = query_esa_lakes_distinct_start_days(
                                                     args.esa_lakes_id,
                                                     high_smoke_year,
                                                     connection,

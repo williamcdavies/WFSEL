@@ -1,7 +1,7 @@
 """
 Filename:   wfsel.sources.esa_lakes.queries.py
 Author:     William Chuter-Davies
-Modified:   27/10/26
+Modified:   06/11/26
 """
 
 # Related Third-party Imports
@@ -10,7 +10,7 @@ import psycopg
 
 from psycopg import sql
 
-DISTINCT_START_DAYS_QUERY = sql.SQL("""
+ESA_LAKES_DISTINCT_START_DAYS_QUERY = sql.SQL("""
 SELECT DISTINCT
     s.start_day AS "day"
 FROM {table} AS s
@@ -26,7 +26,7 @@ ORDER BY s.start_day
 """)
 
 
-def query_distinct_start_days(
+def query_esa_lakes_distinct_start_days(
     esa_lakes_id:   int,
     year:           int,
     connection:     psycopg.Connection,
@@ -48,7 +48,7 @@ def query_distinct_start_days(
     pd.Series[int]
         A distinct labels series
     """
-    query = DISTINCT_START_DAYS_QUERY.format(table = sql.Identifier(f"hms_smokes{year}"))
+    query = ESA_LAKES_DISTINCT_START_DAYS_QUERY.format(table = sql.Identifier(f"hms_smokes{year}"))
 
     with connection.cursor() as cursor:
         cursor.execute(

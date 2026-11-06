@@ -1,7 +1,7 @@
 """
 Filename:   wfsel.sources.esa_lakes.getters.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
+Modified:   06/11/26
 """
 
 # Standard Library Imports
@@ -13,8 +13,8 @@ import pandas as pd
 # Local Application/Library Specific Imports
 from wfsel.sci.literals                 import FREEZING_POINT_OF_WATER_KELVIN
 from wfsel.sources.esa_lakes.literals   import (
-                                            PRODUCT_COVERAGE_LOWER_BOUND,
-                                            PRODUCT_COVERAGE_UPPER_BOUND,
+                                            ESA_LAKES_PRODUCT_COVERAGE_LOWER_BOUND,
+                                            ESA_LAKES_PRODUCT_COVERAGE_UPPER_BOUND,
                                         )
 from wfsel.sources.esa_lakes.readers    import read_esa_lakes_product_csv
 
@@ -194,8 +194,8 @@ def get_observations_ser(
         )
 
         if (
-                lake_surface_water_temperature_coverage >= PRODUCT_COVERAGE_LOWER_BOUND
-            and lake_surface_water_temperature_coverage <= PRODUCT_COVERAGE_UPPER_BOUND
+                lake_surface_water_temperature_coverage >= ESA_LAKES_PRODUCT_COVERAGE_LOWER_BOUND
+            and lake_surface_water_temperature_coverage <= ESA_LAKES_PRODUCT_COVERAGE_UPPER_BOUND
         ):
             _observations.append(lake_surface_water_temperature_mean)
         else:

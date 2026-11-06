@@ -1,7 +1,7 @@
 """
 Filename:   wfsel.utils.pandas_utils.py
 Author:     William Chuter-Davies
-Modified:   27/10/26
+Modified:   06/11/26
 """
 
 # Related Third-party Imports
@@ -13,7 +13,7 @@ def compute_quantiles(
     levels: list[float],
 ) -> list[float]:
     """
-    Compute the list of quantiles of a series.
+    Compute the quantiles of a series.
 
     Parameters
     ----------

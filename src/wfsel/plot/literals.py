@@ -1,13 +1,13 @@
 """
 Filename:   wfsel.plot.literals.py
 Author:     William Chuter-Davies
-Modified:   05/11/26
+Modified:   06/11/26
 """
 
-TITLE_FONTSIZE      = 12
-AXIS_LABEL_FONTSIZE = 10
-TICK_LABEL_FONTSIZE = 8
+FONTSIZE_TITLE      = 12
+FONTSIZE_AXIS_LABEL = 10
+FONTSIZE_TICK_LABEL = 8
 
-LIGHT_GREY  = (0.75, 0.75, 0.75, 1.00)
-MEDIUM_GREY = (0.50, 0.50, 0.50, 1.00)
-DARK_GREY   = (0.25, 0.25, 0.25, 1.00)
+GREY_L  = (0.75, 0.75, 0.75, 1.00)
+GREY_M  = (0.50, 0.50, 0.50, 1.00)
+GREY_D  = (0.25, 0.25, 0.25, 1.00)

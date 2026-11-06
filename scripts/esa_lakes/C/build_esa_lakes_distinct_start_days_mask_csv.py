@@ -1,7 +1,7 @@
 """
 Filename:   build_esa_lakes_distinct_start_days_mask_csv.py
 Author:     William Chuter-Davies
-Modified:   05/11/26
+Modified:   06/11/26
 """
 
 # Standard Library Imports
@@ -33,7 +33,7 @@ from wfsel.sources.esa_lakes.builders   import build_distinct_labels_mask
 from wfsel.sources.esa_lakes.filters    import filter_counts_of_distinct_start_days_by_year_df_long_by_upper_bound
 from wfsel.sources.esa_lakes.getters    import get_most_smoke_year
 from wfsel.sources.esa_lakes.melters    import melt_esa_lakes_counts_of_distinct_start_days_by_year_df
-from wfsel.sources.esa_lakes.queries    import query_distinct_start_days
+from wfsel.sources.esa_lakes.queries    import query_esa_lakes_distinct_start_days
 from wfsel.sources.esa_lakes.readers    import (
                                             read_esa_lakes_counts_of_distinct_start_days_by_year_csv,
                                             read_esa_lakes_metadata_csv,
@@ -145,7 +145,7 @@ def build_distinct_start_days_mask_column(
 
         return column
 
-    distinct_start_days_ser = query_distinct_start_days(
+    distinct_start_days_ser = query_esa_lakes_distinct_start_days(
                                 esa_lakes_id,
                                 high_smoke_year,
                                 connection,

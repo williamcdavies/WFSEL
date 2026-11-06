@@ -1,7 +1,7 @@
 """
 Filename:   view_esa_lakes_observation_distributions_by_week.py
 Author:     William Chuter-Davies
-Modified:   05/11/26
+Modified:   06/11/26
 """
 
 # Standard Library Imports
@@ -16,8 +16,10 @@ from argparse   import (
 import matplotlib.pyplot    as plt
 import pandas               as pd
 
-from matplotlib         import cm
-from matplotlib.figure  import Figure
+from matplotlib                     import cm
+from matplotlib.axes                import Axes
+from matplotlib.figure              import Figure
+from mpl_toolkits.mplot3d.axes3d    import Axes3D
 
 # Local Application/Library Specific Imports
 from wfsel.exit_codes                       import (
@@ -32,10 +34,10 @@ from wfsel.plot.arguments                   import (
                                                 add_argument_elevation,
                                             )
 from wfsel.plot.literals                    import (
-                                                AXIS_LABEL_FONTSIZE,
-                                                MEDIUM_GREY,
-                                                TICK_LABEL_FONTSIZE,
-                                                TITLE_FONTSIZE,
+                                                FONTSIZE_AXIS_LABEL,
+                                                FONTSIZE_TICK_LABEL,
+                                                FONTSIZE_TITLE,
+                                                GREY_M,
                                             )
 from wfsel.plot.plotters                    import (
                                                 plot_colorbar,
@@ -62,27 +64,21 @@ from wfsel.utils.argparse_utils             import (
 PROG    = "view_esa_lakes_observation_distributions_by_week.py"
 DESC    = ""
 
-HIGH_SMOKE_AX_TITLE = "Distributions of High Smoke Temperature Anomalies"
-LOW_SMOKE_AX_TITLE  = "Distributions of Low Smoke Temperature Anomalies"
+FIGSIZE_2D  = (6.4, 4.8)
+FIGSIZE_3D  = (19.2, 14.4)
+ALPHA       = 0.75
 
-X_LABEL = "Temperature Anomaly (°C)"
-Y_LABEL = "Density"
-Z_LABEL = "Week Number"
+HIGH_SMOKE_AX_CMAP          = cm.Reds_r
+HIGH_SMOKE_AX_TITLE         = "Distributions of High Smoke Temperature Anomalies"
+HIGH_SMOKE_AX_XAXIS_LABEL   = "Temperature Anomaly (°C)"
+HIGH_SMOKE_AX_YAXIS_LABEL   = "Density"
+HIGH_SMOKE_AX_ZAXIS_LABEL   = "Week Number"
 
-HIGH_SMOKE_AX_CMAP  = cm.Reds_r
-LOW_SMOKE_AX_CMAP   = cm.Blues_r
-
-FIGSIZE_2D  = (
-                6.4,    # x
-                4.8,    # y
-            )
-FIGSIZE_3D  = (
-                19.2,   # x
-                14.4,   # y
-            )
-
-ALPHA   = 0.75
-HSPACE  = 0.33
+LOW_SMOKE_AX_CMAP           = cm.Blues_r
+LOW_SMOKE_AX_TITLE          = "Distributions of Low Smoke Temperature Anomalies"
+LOW_SMOKE_AX_XAXIS_LABEL    = "Temperature Anomaly (°C)"
+LOW_SMOKE_AX_YAXIS_LABEL    = "Density"
+LOW_SMOKE_AX_ZAXIS_LABEL    = "Week Number"
 
 plt.rcParams["font.family"] = "Arial"
 
@@ -176,7 +172,7 @@ def build_figure_2d(
     column_names:                                       list[str],
 ) -> Figure:
     """
-    Build a 2D distributions figure.
+    Build a 2D figure.
 
     Parameters
     ----------
@@ -195,8 +191,8 @@ def build_figure_2d(
     (
         fig,
         (
-            high_smoke_year_ax,
-            low_smoke_year_ax,
+            high_smoke_ax,
+            low_smoke_ax,
         ),
     )   = plt.subplots(
             nrows   = 2,
@@ -206,77 +202,23 @@ def build_figure_2d(
             figsize = FIGSIZE_2D,
         )
 
-    fig.subplots_adjust(hspace = HSPACE)
-
-    for i, column_name in reversed(list(enumerate(column_names))):
-        ser     = esa_lakes_high_smoke_year_observations_anomaly_df[column_name]
-        colour  = HIGH_SMOKE_AX_CMAP(i / max(len(column_names) - 1, 1))
-
-        plot_kde_2d(
-            high_smoke_year_ax,
-            ser     = ser,
-            color   = colour,
-        )
-
-    plot_colorbar(
-        high_smoke_year_ax,
-        cmap    = HIGH_SMOKE_AX_CMAP,
-        vmin    = 1,
-        vmax    = len(column_names),
-        label   = Z_LABEL,
+    plot_high_smoke_ax_2d(
+        high_smoke_ax,
+        esa_lakes_high_smoke_year_observations_anomaly_df,
+        column_names,
+    )
+    plot_low_smoke_ax_2d(
+        low_smoke_ax,
+        esa_lakes_low_smoke_year_observations_anomaly_df,
+        column_names,
     )
 
-    high_smoke_year_ax.set_title(
-        HIGH_SMOKE_AX_TITLE,
-        fontsize = TITLE_FONTSIZE,
-    )
-    high_smoke_year_ax.set_ylabel(
-        Y_LABEL,
-        fontsize = AXIS_LABEL_FONTSIZE,
-    )
-    high_smoke_year_ax.tick_params(
-        labelsize = TICK_LABEL_FONTSIZE,
-    )
-    high_smoke_year_ax.set_facecolor(
-        MEDIUM_GREY,
-    )
+    decorate_high_smoke_ax_2d(high_smoke_ax)
+    decorate_low_smoke_ax_2d(low_smoke_ax)
 
-    for i, column_name in reversed(list(enumerate(column_names))):
-        ser     = esa_lakes_low_smoke_year_observations_anomaly_df[column_name]
-        colour  = LOW_SMOKE_AX_CMAP(i / max(len(column_names) - 1, 1))
-
-        plot_kde_2d(
-            low_smoke_year_ax,
-            ser     = ser,
-            color   = colour,
-        )
-
-    plot_colorbar(
-        low_smoke_year_ax,
-        cmap    = LOW_SMOKE_AX_CMAP,
-        vmin    = 1,
-        vmax    = len(column_names),
-        label   = Z_LABEL,
-    )
-
-    low_smoke_year_ax.set_title(
-        LOW_SMOKE_AX_TITLE,
-        fontsize = TITLE_FONTSIZE,
-    )
-    low_smoke_year_ax.set_xlabel(
-        X_LABEL,
-        fontsize = AXIS_LABEL_FONTSIZE,
-    )
-    low_smoke_year_ax.set_ylabel(
-        Y_LABEL,
-        fontsize = AXIS_LABEL_FONTSIZE,
-    )
-    low_smoke_year_ax.tick_params(
-        labelsize = TICK_LABEL_FONTSIZE,
-    )
-    low_smoke_year_ax.set_facecolor(
-        MEDIUM_GREY,
-    )
+    fig.subplots_adjust(hspace = 0.25)
+    fig.align_xlabels()
+    fig.align_ylabels()
 
     return fig
 
@@ -290,7 +232,7 @@ def build_figure_3d(
     azimuth:    float,
 ) -> Figure:
     """
-    Build a 3D distributions figure.
+    Build a 3D figure.
 
     Parameters
     ----------
@@ -312,15 +254,131 @@ def build_figure_3d(
     """
     fig = plt.figure(figsize = FIGSIZE_3D)
 
-    high_smoke_ax  = fig.add_subplot(
-        211,
-        projection="3d",
+    high_smoke_ax  = fig.add_subplot(211, projection="3d")
+    low_smoke_ax   = fig.add_subplot(212, projection="3d")
+
+    plot_high_smoke_ax_3d(
+        high_smoke_ax,
+        esa_lakes_high_smoke_year_observations_anomaly_df,
+        column_names,
     )
-    low_smoke_ax   = fig.add_subplot(
-        212,
-        projection="3d",
+    plot_low_smoke_ax_3d(
+        low_smoke_ax,
+        esa_lakes_low_smoke_year_observations_anomaly_df,
+        column_names,
     )
 
+    decorate_high_smoke_ax_3d(
+        high_smoke_ax,
+        column_names,
+        elevation,
+        azimuth,
+    )
+    decorate_low_smoke_ax_3d(
+        low_smoke_ax,
+        column_names,
+        elevation,
+        azimuth,
+    )
+
+    fig.align_xlabels()
+    fig.align_ylabels()
+
+    return fig
+
+
+# ----------------------------------------------------------------------
+# builder functions
+# ----------------------------------------------------------------------
+def plot_high_smoke_ax_2d(
+    high_smoke_ax:                                      Axes,
+    esa_lakes_high_smoke_year_observations_anomaly_df:  pd.DataFrame,
+    column_names:                                       list[str],
+) -> None:
+    """
+    Plot onto a high smoke axes.
+
+    Parameters
+    ----------
+    high_smoke_ax : Axes
+        The high smoke axes
+    esa_lakes_high_smoke_year_observations_anomaly_df : pd.DataFrame
+        The ESA Lakes high smoke year observations anomaly dataframe
+    column_names : list[str]
+        The list of column names
+    """
+    for i, column_name in reversed(list(enumerate(column_names))):
+        ser     = esa_lakes_high_smoke_year_observations_anomaly_df[column_name]
+        colour  = HIGH_SMOKE_AX_CMAP(i / max(len(column_names) - 1, 1))
+
+        plot_kde_2d(
+            high_smoke_ax,
+            ser     = ser,
+            color   = colour,
+        )
+
+    plot_colorbar(
+        high_smoke_ax,
+        cmap    = HIGH_SMOKE_AX_CMAP,
+        vmin    = 1,
+        vmax    = len(column_names),
+        label   = HIGH_SMOKE_AX_ZAXIS_LABEL,
+    )
+
+
+def plot_low_smoke_ax_2d(
+    low_smoke_ax:                                       Axes,
+    esa_lakes_low_smoke_year_observations_anomaly_df:   pd.DataFrame,
+    column_names:                                       list[str],
+) -> None:
+    """
+    Plot onto a low smoke axes.
+
+    Parameters
+    ----------
+    low_smoke_ax : Axes
+        The low smoke axes
+    esa_lakes_low_smoke_year_observations_anomaly_df : pd.DataFrame
+        The ESA Lakes low smoke year observations anomaly dataframe
+    column_names : list[str]
+        The list of column names
+    """
+    for i, column_name in reversed(list(enumerate(column_names))):
+        ser     = esa_lakes_low_smoke_year_observations_anomaly_df[column_name]
+        colour  = LOW_SMOKE_AX_CMAP(i / max(len(column_names) - 1, 1))
+
+        plot_kde_2d(
+            low_smoke_ax,
+            ser     = ser,
+            color   = colour,
+        )
+
+    plot_colorbar(
+        low_smoke_ax,
+        cmap    = LOW_SMOKE_AX_CMAP,
+        vmin    = 1,
+        vmax    = len(column_names),
+        label   = LOW_SMOKE_AX_ZAXIS_LABEL,
+    )
+
+
+def plot_high_smoke_ax_3d(
+    high_smoke_ax:                                      Axes,
+    esa_lakes_high_smoke_year_observations_anomaly_df:  pd.DataFrame,
+    column_names:                                       list[str],
+) -> None:
+    """
+    Plot onto a high smoke axes.
+
+    Parameters
+    ----------
+    high_smoke_ax : Axes
+        The high smoke axes
+    esa_lakes_high_smoke_year_observations_anomaly_df : pd.DataFrame
+        The ESA Lakes high smoke year observations anomaly dataframe
+    column_names : list[str]
+        The list of column names
+    """
     for i, column_name in reversed(list(enumerate(column_names))):
         ser     = esa_lakes_high_smoke_year_observations_anomaly_df[column_name]
         colour  = HIGH_SMOKE_AX_CMAP(i / max(len(column_names) - 1, 1))
@@ -332,42 +390,24 @@ def build_figure_3d(
             color   = colour,
         )
 
-    high_smoke_ax.set_title(
-        HIGH_SMOKE_AX_TITLE,
-        fontsize = TITLE_FONTSIZE,
-    )
-    high_smoke_ax.set_xlabel(
-        X_LABEL,
-        fontsize = AXIS_LABEL_FONTSIZE,
-    )
-    high_smoke_ax.set_ylabel(
-        Z_LABEL,
-        fontsize = AXIS_LABEL_FONTSIZE,
-    )
-    high_smoke_ax.set_zlabel(
-        Y_LABEL,
-        fontsize = AXIS_LABEL_FONTSIZE,
-    )
-    high_smoke_ax.set_yticks(
-        range(len(column_names)),
-        labels  = [
-                    column_name.split("_")[1]
-                    for column_name
-                    in column_names
-                ],
-    )
-    high_smoke_ax.tick_params(
-        labelsize = TICK_LABEL_FONTSIZE,
-    )
-    high_smoke_ax.view_init(
-        elev = elevation,
-        azim = azimuth,
-    )
 
-    high_smoke_ax.zaxis.set_pane_color(MEDIUM_GREY)    # type: ignore[name-defined]
-    high_smoke_ax.xaxis.set_pane_color(MEDIUM_GREY)    # type: ignore[name-defined]
-    high_smoke_ax.yaxis.set_pane_color(MEDIUM_GREY)    # type: ignore[name-defined]
+def plot_low_smoke_ax_3d(
+    low_smoke_ax:                                       Axes,
+    esa_lakes_low_smoke_year_observations_anomaly_df:   pd.DataFrame,
+    column_names:                                       list[str],
+) -> None:
+    """
+    Plot onto a low smoke axes.
 
+    Parameters
+    ----------
+    low_smoke_ax : Axes
+        The low smoke axes
+    esa_lakes_low_smoke_year_observations_anomaly_df : pd.DataFrame
+        The ESA Lakes low smoke year observations anomaly dataframe
+    column_names : list[str]
+        The list of column names
+    """
     for i, column_name in reversed(list(enumerate(column_names))):
         ser     = esa_lakes_low_smoke_year_observations_anomaly_df[column_name]
         colour  = LOW_SMOKE_AX_CMAP(i / max(len(column_names) - 1, 1))
@@ -379,22 +419,109 @@ def build_figure_3d(
             color   = colour,
         )
 
-    low_smoke_ax.set_title(
-        LOW_SMOKE_AX_TITLE,
-        fontsize = TITLE_FONTSIZE,
+# ----------------------------------------------------------------------
+# decorator functions
+# ----------------------------------------------------------------------
+def decorate_high_smoke_ax_2d(
+    high_smoke_ax: Axes,
+) -> None:
+    """
+    Decorate a high smoke axes.
+
+    Parameters
+    ----------
+    high_smoke_ax : Axes
+        The high smoke axes
+    """
+    high_smoke_ax.set_title(HIGH_SMOKE_AX_TITLE, fontsize = FONTSIZE_TITLE)
+    high_smoke_ax.set_xlabel(HIGH_SMOKE_AX_XAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
+    high_smoke_ax.set_ylabel(HIGH_SMOKE_AX_YAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
+    high_smoke_ax.tick_params(labelsize = FONTSIZE_TICK_LABEL)
+    high_smoke_ax.set_facecolor(GREY_M)
+
+
+def decorate_low_smoke_ax_2d(
+    low_smoke_ax: Axes,
+) -> None:
+    """
+    Decorate a low smoke axes.
+
+    Parameters
+    ----------
+    low_smoke_ax : Axes
+        The low smoke axes
+    """
+    low_smoke_ax.set_title(LOW_SMOKE_AX_TITLE, fontsize = FONTSIZE_TITLE)
+    low_smoke_ax.set_xlabel(LOW_SMOKE_AX_XAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
+    low_smoke_ax.set_ylabel(LOW_SMOKE_AX_YAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
+    low_smoke_ax.tick_params(labelsize = FONTSIZE_TICK_LABEL)
+    low_smoke_ax.set_facecolor(GREY_M)
+
+
+def decorate_high_smoke_ax_3d(
+    high_smoke_ax:  Axes3D,
+    column_names:   list[str],
+    elevation:      float,
+    azimuth:        float,
+) -> None:
+    """
+    Decorate a high smoke axes.
+
+    Parameters
+    ----------
+    high_smoke_ax : Axes3D
+        The high smoke axes
+    column_names : list[str]
+        The list of column names
+    elevation : float
+        The elevation
+    azimuth : float
+        The azimuth
+    """
+    high_smoke_ax.set_title(HIGH_SMOKE_AX_TITLE, fontsize = FONTSIZE_TITLE)
+    high_smoke_ax.set_xlabel(HIGH_SMOKE_AX_XAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
+    high_smoke_ax.set_ylabel(HIGH_SMOKE_AX_ZAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
+    high_smoke_ax.set_zlabel(HIGH_SMOKE_AX_YAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
+    high_smoke_ax.set_yticks(
+        range(len(column_names)),
+        labels  = [
+                    column_name.split("_")[1]
+                    for column_name
+                    in column_names
+                ],
     )
-    low_smoke_ax.set_xlabel(
-        X_LABEL,
-        fontsize = AXIS_LABEL_FONTSIZE,
-    )
-    low_smoke_ax.set_ylabel(
-        Z_LABEL,
-        fontsize = AXIS_LABEL_FONTSIZE,
-    )
-    low_smoke_ax.set_zlabel(
-        Y_LABEL,
-        fontsize = AXIS_LABEL_FONTSIZE,
-    )
+    high_smoke_ax.tick_params(labelsize = FONTSIZE_TICK_LABEL)
+    high_smoke_ax.view_init(elev = elevation, azim = azimuth)
+
+    high_smoke_ax.zaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
+    high_smoke_ax.xaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
+    high_smoke_ax.yaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
+
+
+def decorate_low_smoke_ax_3d(
+    low_smoke_ax:   Axes3D,
+    column_names:   list[str],
+    elevation:      float,
+    azimuth:        float,
+) -> None:
+    """
+    Decorate a low smoke axes.
+
+    Parameters
+    ----------
+    low_smoke_ax : Axes3D
+        The low smoke axes
+    column_names : list[str]
+        The list of column names
+    elevation : float
+        The elevation
+    azimuth : float
+        The azimuth
+    """
+    low_smoke_ax.set_title(LOW_SMOKE_AX_TITLE, fontsize = FONTSIZE_TITLE)
+    low_smoke_ax.set_xlabel(LOW_SMOKE_AX_XAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
+    low_smoke_ax.set_ylabel(LOW_SMOKE_AX_ZAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
+    low_smoke_ax.set_zlabel(LOW_SMOKE_AX_YAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
     low_smoke_ax.set_yticks(
         range(len(column_names)),
         labels  = [
@@ -403,19 +530,12 @@ def build_figure_3d(
                     in column_names
                 ],
     )
-    low_smoke_ax.tick_params(
-        labelsize = TICK_LABEL_FONTSIZE,
-    )
-    low_smoke_ax.view_init(
-        elev = elevation,
-        azim = azimuth,
-    )
+    low_smoke_ax.tick_params(labelsize = FONTSIZE_TICK_LABEL)
+    low_smoke_ax.view_init(elev = elevation, azim = azimuth)
 
-    low_smoke_ax.zaxis.set_pane_color(MEDIUM_GREY) # type: ignore[name-defined]
-    low_smoke_ax.xaxis.set_pane_color(MEDIUM_GREY) # type: ignore[name-defined]
-    low_smoke_ax.yaxis.set_pane_color(MEDIUM_GREY) # type: ignore[name-defined]
-
-    return fig
+    low_smoke_ax.zaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
+    low_smoke_ax.xaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
+    low_smoke_ax.yaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
 
 
 # ----------------------------------------------------------------------

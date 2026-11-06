@@ -1,7 +1,7 @@
 """
 Filename:   wfsel.sources.esa_lakes.filters.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
+Modified:   06/11/26
 """
 
 # Related Third-party Imports
@@ -9,8 +9,8 @@ import pandas as pd
 
 # Local Application/Library Specific Imports
 from wfsel.sources.esa_lakes.literals   import (
-                                            COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND,
-                                            COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND,
+                                            ESA_LAKES_COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND,
+                                            ESA_LAKES_COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND,
                                         )
 
 
@@ -35,7 +35,7 @@ def filter_counts_of_distinct_start_days_by_year_df_long_by_upper_bound(
     """
     df  = esa_lakes_counts_of_distinct_start_days_by_year_df_long[
             esa_lakes_counts_of_distinct_start_days_by_year_df_long["count_of_distinct_start_days"]
-            >= COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
+            >= ESA_LAKES_COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND
         ]
 
     return df
@@ -62,7 +62,7 @@ def filter_counts_of_distinct_start_days_by_year_df_long_by_lower_bound(
     """
     df  = esa_lakes_counts_of_distinct_start_days_by_year_df_long[
             esa_lakes_counts_of_distinct_start_days_by_year_df_long["count_of_distinct_start_days"]
-            <= COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND
+            <= ESA_LAKES_COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND
         ]
 
     return df
