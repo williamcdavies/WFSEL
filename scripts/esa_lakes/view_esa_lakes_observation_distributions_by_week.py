@@ -64,7 +64,7 @@ from wfsel.utils.argparse_utils             import (
 PROG    = "view_esa_lakes_observation_distributions_by_week.py"
 DESC    = ""
 
-FIGSIZE_2D  = (6.4, 4.8)
+FIGSIZE_2D  = (6.40, 4.80)
 FIGSIZE_3D  = (19.2, 14.4)
 ALPHA       = 0.75
 
