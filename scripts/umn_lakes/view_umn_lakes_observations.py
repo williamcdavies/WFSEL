@@ -68,6 +68,26 @@ A4_PRODUCT_AX_YAXIS_LABEL   = "A440 CDOM ()"
 
 
 # ----------------------------------------------------------------------
+# argument functions
+# ----------------------------------------------------------------------
+def add_argument_stacked(
+    parser: ArgumentParser,
+) -> None:
+    """
+    Add a "stacked" argument to a parser.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        The parser
+    """
+    parser.add_argument(
+        "-s", "--stacked",
+        action = "store_true",
+    )
+
+
+# ----------------------------------------------------------------------
 # setup functions
 # ----------------------------------------------------------------------
 def build_parser(
@@ -83,7 +103,6 @@ def build_parser(
     parser  = ArgumentParser(
                 prog        = PROG,
                 description = DESC,
-                usage       = "%(prog)s [options]",
             )
     parser  = _build_parser(
                 parser,
@@ -92,6 +111,7 @@ def build_parser(
                     add_argument_umn_lakes_product_dir_path,
                 ],
                 optional_arguments      = [
+                    add_argument_stacked,
                     add_argument_output,
                 ],
             )
@@ -177,14 +197,14 @@ def build_umn_lakes_product_df(
     return df
 
 
-def build_figure(
+def build_figure_stacked(
     *,
     umn_lakes_sd_product_df:    pd.DataFrame | None,
     umn_lakes_cl_product_df:    pd.DataFrame | None,
     umn_lakes_a4_product_df:    pd.DataFrame | None,
 ) -> Figure:
     """
-    Build a figure.
+    Build a figure (stacked).
 
     Parameters
     ----------
@@ -215,13 +235,70 @@ def build_figure(
         )
 
     if umn_lakes_sd_product_df is not None:
-        plot_umn_lakes_sd_product_ax(sd_product_ax, umn_lakes_sd_product_df)
+        plot_umn_lakes_sd_product_ax_stacked(sd_product_ax, umn_lakes_sd_product_df)
 
     if umn_lakes_cl_product_df is not None:
-        plot_umn_lakes_cl_product_ax(cl_product_ax, umn_lakes_cl_product_df)
+        plot_umn_lakes_cl_product_ax_stacked(cl_product_ax, umn_lakes_cl_product_df)
 
     if umn_lakes_a4_product_df is not None:
-        plot_umn_lakes_a4_product_ax(a4_product_ax, umn_lakes_a4_product_df)
+        plot_umn_lakes_a4_product_ax_stacked(a4_product_ax, umn_lakes_a4_product_df)
+
+    decorate_umn_lakes_sd_product_ax(sd_product_ax)
+    decorate_umn_lakes_cl_product_ax(cl_product_ax)
+    decorate_umn_lakes_a4_product_ax(a4_product_ax)
+
+    fig.subplots_adjust(hspace = 0.25)
+    fig.align_xlabels()
+    fig.align_ylabels()
+
+    return fig
+
+
+def build_figure_unstacked(
+    *,
+    umn_lakes_sd_product_df:    pd.DataFrame | None,
+    umn_lakes_cl_product_df:    pd.DataFrame | None,
+    umn_lakes_a4_product_df:    pd.DataFrame | None,
+) -> Figure:
+    """
+    Build a figure (unstacked).
+
+    Parameters
+    ----------
+    umn_lakes_sd_product_df : pd.DataFrame | None
+        The UMN Lakes SD product dataframe
+    umn_lakes_cl_product_df : pd.DataFrame | None
+        The UMN Lakes CL product dataframe
+    umn_lakes_a4_product_df : pd.DataFrame | None
+        The UMN Lakes A4 product dataframe
+
+    Returns
+    -------
+    Figure
+        A figure
+    """
+    (
+        fig,
+        (
+            sd_product_ax,
+            cl_product_ax,
+            a4_product_ax,
+        ),
+    )   = plt.subplots(
+            nrows   = 3,
+            ncols   = 1,
+            sharex  = True,
+            sharey  = False,
+        )
+
+    if umn_lakes_sd_product_df is not None:
+        plot_umn_lakes_sd_product_ax_unstacked(sd_product_ax, umn_lakes_sd_product_df)
+
+    if umn_lakes_cl_product_df is not None:
+        plot_umn_lakes_cl_product_ax_unstacked(cl_product_ax, umn_lakes_cl_product_df)
+
+    if umn_lakes_a4_product_df is not None:
+        plot_umn_lakes_a4_product_ax_unstacked(a4_product_ax, umn_lakes_a4_product_df)
 
     decorate_umn_lakes_sd_product_ax(sd_product_ax)
     decorate_umn_lakes_cl_product_ax(cl_product_ax)
@@ -237,12 +314,12 @@ def build_figure(
 # ----------------------------------------------------------------------
 # plotter functions
 # ----------------------------------------------------------------------
-def plot_umn_lakes_product_scatter(
+def plot_umn_lakes_product_scatter_stacked(
     umn_lakes_product_ax:   Axes,
     umn_lakes_product_df:   pd.DataFrame,
 ) -> None:
     """
-    Plot a UMN Lakes product scatter.
+    Plot a UMN Lakes product scatter (stacked).
 
     Parameters
     ----------
@@ -251,15 +328,17 @@ def plot_umn_lakes_product_scatter(
     umn_lakes_product_df : pd.DataFrame
         The UMN Lakes product dataframe
     """
-    x       = pd.to_datetime(
-                (
-                    umn_lakes_product_df
-                    .index
-                    .get_level_values(UMN_LAKES_PRODUCT_COLUMN_NAME_DATE)
-                    .astype(str)
-                ),
-                format = DATE_FORMAT_YMD,
-            )
+    x   = pd.to_datetime(
+            (
+                umn_lakes_product_df
+                .index
+                .get_level_values(UMN_LAKES_PRODUCT_COLUMN_NAME_DATE)
+                .astype(str)
+            ),
+            format = DATE_FORMAT_YMD,
+        )
+    x   = pd.to_datetime(f"9999" + x.strftime(r"%m%d"))
+
     y_v25p  = umn_lakes_product_df[UMN_LAKES_PRODUCT_COLUMN_NAME_V25P]
     y_v50p  = umn_lakes_product_df[UMN_LAKES_PRODUCT_COLUMN_NAME_V50P]
     y_v75p  = umn_lakes_product_df[UMN_LAKES_PRODUCT_COLUMN_NAME_V75P]
@@ -269,12 +348,45 @@ def plot_umn_lakes_product_scatter(
     umn_lakes_product_ax.scatter(x, y_v75p, color = "red")
 
 
-def plot_umn_lakes_sd_product_ax(
+def plot_umn_lakes_product_scatter_unstacked(
+    umn_lakes_product_ax:   Axes,
+    umn_lakes_product_df:   pd.DataFrame,
+) -> None:
+    """
+    Plot a UMN Lakes product scatter (unstacked).
+
+    Parameters
+    ----------
+    umn_lakes_product_ax : Axes
+        The UMN Lakes product axes
+    umn_lakes_product_df : pd.DataFrame
+        The UMN Lakes product dataframe
+    """
+    x   = pd.to_datetime(
+            (
+                umn_lakes_product_df
+                .index
+                .get_level_values(UMN_LAKES_PRODUCT_COLUMN_NAME_DATE)
+                .astype(str)
+            ),
+            format = DATE_FORMAT_YMD,
+        )
+
+    y_v25p  = umn_lakes_product_df[UMN_LAKES_PRODUCT_COLUMN_NAME_V25P]
+    y_v50p  = umn_lakes_product_df[UMN_LAKES_PRODUCT_COLUMN_NAME_V50P]
+    y_v75p  = umn_lakes_product_df[UMN_LAKES_PRODUCT_COLUMN_NAME_V75P]
+
+    umn_lakes_product_ax.scatter(x, y_v25p, color = "blue")
+    umn_lakes_product_ax.scatter(x, y_v50p, color = "green")
+    umn_lakes_product_ax.scatter(x, y_v75p, color = "red")
+
+
+def plot_umn_lakes_sd_product_ax_stacked(
     umn_lakes_sd_product_ax:    Axes,
     umn_lakes_sd_product_df:    pd.DataFrame,
 ) -> None:
     """
-    Plot onto an UMN Lakes SD product axes.
+    Plot onto an UMN Lakes SD product axes (stacked).
 
     Parameters
     ----------
@@ -283,18 +395,18 @@ def plot_umn_lakes_sd_product_ax(
     umn_lakes_sd_product_df : pd.DataFrame
         The UMN Lakes SD product dataframe
     """
-    plot_umn_lakes_product_scatter(
+    plot_umn_lakes_product_scatter_stacked(
         umn_lakes_sd_product_ax,
         umn_lakes_sd_product_df,
     )
 
 
-def plot_umn_lakes_cl_product_ax(
+def plot_umn_lakes_cl_product_ax_stacked(
     umn_lakes_cl_product_ax:    Axes,
     umn_lakes_cl_product_df:    pd.DataFrame,
 ) -> None:
     """
-    Plot onto an UMN Lakes CL product axes.
+    Plot onto an UMN Lakes CL product axes (stacked).
 
     Parameters
     ----------
@@ -303,18 +415,18 @@ def plot_umn_lakes_cl_product_ax(
     umn_lakes_cl_product_df : pd.DataFrame
         The UMN Lakes CL product dataframe
     """
-    plot_umn_lakes_product_scatter(
+    plot_umn_lakes_product_scatter_stacked(
         umn_lakes_cl_product_ax,
         umn_lakes_cl_product_df,
     )
 
 
-def plot_umn_lakes_a4_product_ax(
+def plot_umn_lakes_a4_product_ax_stacked(
     umn_lakes_a4_product_ax:    Axes,
     umn_lakes_a4_product_df:    pd.DataFrame,
 ) -> None:
     """
-    Plot onto an UMN Lakes A4 product axes.
+    Plot onto an UMN Lakes A4 product axes (stacked).
 
     Parameters
     ----------
@@ -323,7 +435,67 @@ def plot_umn_lakes_a4_product_ax(
     umn_lakes_a4_product_df : pd.DataFrame
         The UMN Lakes A4 product dataframe
     """
-    plot_umn_lakes_product_scatter(
+    plot_umn_lakes_product_scatter_stacked(
+        umn_lakes_a4_product_ax,
+        umn_lakes_a4_product_df,
+    )
+
+
+def plot_umn_lakes_sd_product_ax_unstacked(
+    umn_lakes_sd_product_ax:    Axes,
+    umn_lakes_sd_product_df:    pd.DataFrame,
+) -> None:
+    """
+    Plot onto an UMN Lakes SD product axes (unstacked).
+
+    Parameters
+    ----------
+    umn_lakes_sd_product_ax : Axes
+        The UMN Lakes SD product axes
+    umn_lakes_sd_product_df : pd.DataFrame
+        The UMN Lakes SD product dataframe
+    """
+    plot_umn_lakes_product_scatter_unstacked(
+        umn_lakes_sd_product_ax,
+        umn_lakes_sd_product_df,
+    )
+
+
+def plot_umn_lakes_cl_product_ax_unstacked(
+    umn_lakes_cl_product_ax:    Axes,
+    umn_lakes_cl_product_df:    pd.DataFrame,
+) -> None:
+    """
+    Plot onto an UMN Lakes CL product axes (unstacked).
+
+    Parameters
+    ----------
+    umn_lakes_cl_product_ax : Axes
+        The UMN Lakes CL product axes
+    umn_lakes_cl_product_df : pd.DataFrame
+        The UMN Lakes CL product dataframe
+    """
+    plot_umn_lakes_product_scatter_unstacked(
+        umn_lakes_cl_product_ax,
+        umn_lakes_cl_product_df,
+    )
+
+
+def plot_umn_lakes_a4_product_ax_unstacked(
+    umn_lakes_a4_product_ax:    Axes,
+    umn_lakes_a4_product_df:    pd.DataFrame,
+) -> None:
+    """
+    Plot onto an UMN Lakes A4 product axes (unstacked).
+
+    Parameters
+    ----------
+    umn_lakes_a4_product_ax : Axes
+        The UMN Lakes A4 product axes
+    umn_lakes_a4_product_df : pd.DataFrame
+        The UMN Lakes A4 product dataframe
+    """
+    plot_umn_lakes_product_scatter_unstacked(
         umn_lakes_a4_product_ax,
         umn_lakes_a4_product_df,
     )
@@ -415,11 +587,18 @@ def main(
                         a4_product_tsv_paths,
                     )
 
-    fig = build_figure(
-        umn_lakes_sd_product_df = sd_product_df,
-        umn_lakes_cl_product_df = cl_product_df,
-        umn_lakes_a4_product_df = a4_product_df,
-    )
+    if args.stacked:
+        fig = build_figure_stacked(
+                umn_lakes_sd_product_df = sd_product_df,
+                umn_lakes_cl_product_df = cl_product_df,
+                umn_lakes_a4_product_df = a4_product_df,
+            )
+    else:
+        fig = build_figure_unstacked(
+                umn_lakes_sd_product_df = sd_product_df,
+                umn_lakes_cl_product_df = cl_product_df,
+                umn_lakes_a4_product_df = a4_product_df,
+            )
 
     to_svg(
         fig,
