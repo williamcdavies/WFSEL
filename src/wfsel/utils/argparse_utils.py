@@ -182,4 +182,3 @@ def argument_is_file(
         raise ValueError(message)
 
     return True
-    

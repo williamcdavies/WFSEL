@@ -35,7 +35,7 @@ def find_file_paths_by_extension(
         message = f"directory not found: {dir_path}"
 
         raise FileNotFoundError(message)
-    
+
     file_paths          = dir_path.glob(f"**/*.{file_extension}")
     sorted_file_paths   = sorted(file_paths)
 

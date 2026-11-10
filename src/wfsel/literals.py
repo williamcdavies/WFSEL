@@ -4,11 +4,8 @@ Author:     William Chuter-Davies
 """
 
 # Standard Library Imports
-from typing import (
-                Literal,
-                TypeAlias
-            )
+from typing import Literal
 
-Direction:  TypeAlias   = Literal["forward", "reverse"]
-Edge:       TypeAlias   = Literal["left", "right"]
-Statistic:  TypeAlias   = Literal["mean", "std"]
+type Direction  = Literal["forward", "reverse"]
+type Edge       = Literal["left", "right"]
+type Statistic  = Literal["mean", "std"]

@@ -99,7 +99,7 @@ def plot_colorbar(
                 vmin    = vmin,
                 vmax    = vmax,
             )
-    
+
     scalar_mappable = cm.ScalarMappable(
                         cmap    = cmap,
                         norm    = norm,

@@ -12,7 +12,7 @@ import pandas as pd
 # Local Application/Library Specific Imports
 from wfsel.literals                 import (
                                         Direction,
-                                        Edge, 
+                                        Edge,
                                     )
 from wfsel.sources.esa_lakes.models import Season
 

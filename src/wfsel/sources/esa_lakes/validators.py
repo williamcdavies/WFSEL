@@ -31,7 +31,7 @@ def argument_is_valid_esa_lakes_id(
     ValueError
         If argument is not a valid ESA Lakes id
     """
-    if (    
+    if (
             argument_value > ESA_LAKES_ID_UPPER_BOUND
         or  argument_value < ESA_LAKES_ID_LOWER_BOUND
     ):
