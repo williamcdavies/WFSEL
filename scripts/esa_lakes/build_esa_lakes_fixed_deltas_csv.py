@@ -59,7 +59,6 @@ def build_parser(
     parser  = ArgumentParser(
                 prog        = PROG,
                 description = DESC,
-                usage       = "%(prog)s [options]",
             )
     parser  = _build_parser(
                 parser,

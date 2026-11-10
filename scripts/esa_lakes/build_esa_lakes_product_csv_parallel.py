@@ -66,7 +66,6 @@ def build_parser(
     parser  = ArgumentParser(
                 prog        = PROG,
                 description = DESC,
-                usage       = "%(prog)s [options]",
             )
     parser  = _build_parser(
                 parser,
@@ -143,15 +142,17 @@ def run_build_esa_lakes_product_csv(
     CompletedProcessLog
         A completed process log
     """
+    cmd = [
+            sys.executable,
+            f"{Path(__file__).resolve().parent / "build_esa_lakes_product_csv.py"}",
+            str(esa_lakes_metadata_csv_path),
+            str(esa_lakes_static_lake_mask_nc_path),
+            str(esa_lakes_product_nc_path),
+            "-o", str(output_file_path),
+        ]
+
     completed_process   = run(
-                            [
-                                sys.executable,
-                                f"{Path(__file__).resolve().parent / "build_esa_lakes_product_csv.py"}",
-                                str(esa_lakes_metadata_csv_path),
-                                str(esa_lakes_static_lake_mask_nc_path),
-                                str(esa_lakes_product_nc_path),
-                                "-o", str(output_file_path),
-                            ],
+                            cmd,
                             capture_output  = True,
                             check           = False,
                             text            = True,
