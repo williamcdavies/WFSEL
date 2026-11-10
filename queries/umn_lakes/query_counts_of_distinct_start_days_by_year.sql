@@ -22,7 +22,9 @@ COPY (
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2020) AS "2020",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2021) AS "2021",
         COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2022) AS "2022",
-        COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2023) AS "2023"
+        COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2023) AS "2023",
+        COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2024) AS "2024",
+        COUNT(DISTINCT s.start_day) FILTER (WHERE s.start_year = 2025) AS "2025"
     FROM umn_lakes AS l
     LEFT JOIN hms_smokes AS s
         ON
@@ -31,7 +33,7 @@ COPY (
                 ST_TRANSFORM(l.wkb_geometry, 4326)
             )
             AND s.density > 1
-            AND s.start_year BETWEEN 2011 AND 2023
+            AND s.start_year BETWEEN 2011 AND 2025
     GROUP BY l.unmlknum
     ORDER BY l.unmlknum
 ) TO STDOUT WITH (FORMAT csv, HEADER);

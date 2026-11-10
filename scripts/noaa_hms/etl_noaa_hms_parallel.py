@@ -18,7 +18,7 @@ from concurrent.futures import (
                         )
 from datetime           import (
                             date,
-                            timedelta
+                            timedelta,
                         )
 from pathlib            import Path
 from subprocess         import run
@@ -29,7 +29,7 @@ from tqdm import tqdm
 # Local Application/Library Specific Imports
 from wfsel.arguments            import (
                                     add_argument_force,
-                                    add_argument_output
+                                    add_argument_output,
                                 )
 from wfsel.exit_codes           import (
                                     EXIT_FAILURE,
@@ -136,7 +136,7 @@ def arguments_are_valid(
         True if all arguments are valid, False otherwise
     """
     argument_name_to_validator  = {
-                                    "output": argument_is_dir
+                                    "output": argument_is_dir,
                                 }
 
     boolean = _arguments_are_valid(
