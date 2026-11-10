@@ -1,19 +1,19 @@
 """
-Filename:   wfsel.io.arguments.py
+Filename:   wfsel.time.arguments.py
 Author:     William Chuter-Davies
-Modified:   29/10/26
+Modified:   10/11/26
 """
 
 # Standard Library Imports
 from argparse   import ArgumentParser
-from pathlib    import Path
+from datetime   import date
 
 
-def add_argument_output(
+def add_argument_date(
     parser: ArgumentParser,
 ) -> None:
     """
-    Add a "output" argument to a parser.
+    Add a "date" argument to a parser.
 
     Parameters
     ----------
@@ -21,7 +21,6 @@ def add_argument_output(
         The parser
     """
     parser.add_argument(
-        "-o", "--output",
-        type        = Path,
-        required    = True,
+        "date",
+        type = date.fromisoformat,
     )

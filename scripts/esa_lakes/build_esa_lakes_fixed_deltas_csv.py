@@ -1,7 +1,7 @@
 """
 Filename:   build_esa_lakes_fixed_deltas_csv.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
+Modified:   10/11/26
 """
 
 # Standard Library Imports
@@ -16,11 +16,11 @@ from argparse   import (
 import pandas as pd
 
 # Local Application/Library Specific Imports
+from wfsel.arguments                        import add_argument_output
 from wfsel.exit_codes                       import (
                                                 EXIT_FAILURE,
                                                 EXIT_SUCCESS,
                                             )
-from wfsel.io.arguments                     import add_argument_output
 from wfsel.io.writers                       import to_csv
 from wfsel.sources.esa_lakes.arguments      import (
                                                 add_argument_esa_lakes_high_smoke_year_observations_anomaly_csv_path,

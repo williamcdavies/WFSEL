@@ -1,7 +1,7 @@
 """
 Filename:   build_esa_lakes_coverage_csv.py
 Author:     William Chuter-Davies
-Modified:   05/11/26
+Modified:   10/11/26
 """
 
 # Standard Library Imports
@@ -19,11 +19,11 @@ import pandas as pd
 from tqdm import tqdm
 
 # Local Application/Library Specific Imports
+from wfsel.arguments                    import add_argument_output
 from wfsel.exit_codes                   import (
                                             EXIT_FAILURE,
                                             EXIT_SUCCESS,
                                         )
-from wfsel.io.arguments                 import add_argument_output
 from wfsel.io.writers                   import to_csv
 from wfsel.sources.esa_lakes.arguments  import (
                                             add_argument_esa_lakes_metadata_csv_path,

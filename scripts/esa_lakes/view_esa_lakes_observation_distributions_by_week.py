@@ -1,7 +1,7 @@
 """
 Filename:   view_esa_lakes_observation_distributions_by_week.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
+Modified:   10/11/26
 """
 
 # Standard Library Imports
@@ -22,11 +22,11 @@ from matplotlib.figure              import Figure
 from mpl_toolkits.mplot3d.axes3d    import Axes3D
 
 # Local Application/Library Specific Imports
+from wfsel.arguments                        import add_argument_output
 from wfsel.exit_codes                       import (
                                                 EXIT_FAILURE,
                                                 EXIT_SUCCESS,
                                             )
-from wfsel.io.arguments                     import add_argument_output
 from wfsel.io.writers                       import to_svg
 from wfsel.plot.arguments                   import (
                                                 add_argument_azimuth,

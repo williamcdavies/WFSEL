@@ -1,11 +1,12 @@
 """
 Filename:   wfsel.utils.argparse_utils.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
+Modified:   10/11/26
 """
 
 # Standard Library Imports
 from argparse           import (
+                            _SubParsersAction,
                             ArgumentParser,
                             Namespace,
                         )
@@ -44,6 +45,43 @@ def build_parser(
         f(parser)
 
     return parser
+
+
+def build_subparser(
+    action: _SubParsersAction,
+    *,
+    name:                   str,
+    positional_arguments:   list[Callable[[ArgumentParser], None]] | None = None,
+    optional_arguments:     list[Callable[[ArgumentParser], None]] | None = None,
+) -> ArgumentParser:
+    """
+    Build a subparser.
+
+    Parameters
+    ----------
+    action : _SubParsersAction
+        The subparser action
+    name : str
+        The subparser name
+    positional_arguments : list[Callable[[ArgumentParser], None]] | None, optional
+        The list of positional argument adder functions, by default None
+    optional_arguments : list[Callable[[ArgumentParser], None]] | None, optional
+        The list of optional argument adder functions, by default None
+
+    Returns
+    -------
+    ArgumentParsers
+        A parser
+    """
+    subparser = action.add_parser(name)
+
+    for f in (
+        *(positional_arguments or []),  # if None, unpack empty list
+        *(optional_arguments   or []),  # if None, unpack empty list
+    ):
+        f(subparser)
+
+    return subparser
 
 
 def arguments_are_valid(

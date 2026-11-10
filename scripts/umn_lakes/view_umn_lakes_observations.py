@@ -1,7 +1,7 @@
 """
 Filename:   view_umn_lakes_observations.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
+Modified:   10/11/26
 """
 
 # Standard Library Imports
@@ -21,11 +21,11 @@ from matplotlib.axes    import Axes
 from matplotlib.figure  import Figure
 
 # Local Application/Library Specific Imports
+from wfsel.arguments                    import add_argument_output
 from wfsel.exit_codes                   import (
                                             EXIT_FAILURE,
                                             EXIT_SUCCESS,
                                         )
-from wfsel.io.arguments                 import add_argument_output
 from wfsel.io.writers                   import to_svg
 from wfsel.plot.literals                import (
                                             FONTSIZE_AXIS_LABEL,
@@ -337,7 +337,7 @@ def plot_umn_lakes_product_scatter_stacked(
             ),
             format = DATE_FORMAT_YMD,
         )
-    x   = pd.to_datetime(f"9999" + x.strftime(r"%m%d"))
+    x   = pd.to_datetime("9999" + x.strftime(r"%m%d"))
 
     y_v25p  = umn_lakes_product_df[UMN_LAKES_PRODUCT_COLUMN_NAME_V25P]
     y_v50p  = umn_lakes_product_df[UMN_LAKES_PRODUCT_COLUMN_NAME_V50P]

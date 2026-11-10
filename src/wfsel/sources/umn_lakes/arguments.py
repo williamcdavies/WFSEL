@@ -1,7 +1,7 @@
 """
 Filename:   wfsel.sources.umn_lakes.arguments.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
+Modified:   10/11/26
 """
 
 # Standard Library Imports
@@ -22,7 +22,7 @@ def add_argument_umn_lakes_id(
     """
     parser.add_argument(
         "umn_lakes_id",
-        type = int,
+        type = str,
     )
 
 
