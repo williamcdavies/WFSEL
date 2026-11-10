@@ -8,11 +8,10 @@ File headers should be of the following format:
 """
 Filename:   <filename>
 Author:     <author>
-Modified:   <date>
 """
 ```
 
-The filename field should include the file's extension. If the file belongs to a module, the filename field should be written as a dot-separated module path, e.g. `wfsel.exit_codes.py`. The author field should match the author name field under `[project]` in `pyproject.toml`. The modified field should be of the format `DD/MM/YY`. The file header should be followed by exactly one newline.
+The filename field should include the file's extension. If the file belongs to a module, the filename field should be written as a dot-separated module path, e.g. `wfsel.exit_codes.py`. The author field should match the author name field under `[project]` in `pyproject.toml`. The file header should be followed by exactly one newline.
 
 > Example
 > 
@@ -20,7 +19,6 @@ The filename field should include the file's extension. If the file belongs to a
 > """
 > Filename:   wfsel.exit_codes.py
 > Author:     William Chuter-Davies
-> Modified:   27/10/26
 > """
 > ```
 
@@ -59,7 +57,7 @@ class <class_name>:
 
 ### Functions
 
-### Internal Functions
+#### Internal Functions
 Internal functions are functions defined within another function's body. Internal functions should be prefixed with an underscore.
 
 #### Argument Functions
@@ -84,7 +82,7 @@ def add_argument_<argument_name>(
 ```
 
 ##### Optional Argument Functions
-Either `required = True` or `required = False` should be passed to the `add_argument` call within an optional argument function.
+Either `required = True` or `required = False` should be passed to the `add_argument` call within an optional argument function (those whose flags begin with `-`).
 
 #### Reader Functions
 Reader functions should be of the following template:
@@ -108,7 +106,7 @@ def read_<file_name>_<file_extension>(
     """
     df  = pd.read_csv(
             <file_name>_<file_extension>_path,
-            index_col = "id",
+            index_col = <index_col>,
         )
 
     return df
@@ -124,93 +122,6 @@ Parameter descriptions should start with "The".
 
 If the parameter name ends with a type suffix, e.g. "df", "ser", "ds", "da", etc., the description of that parameter should end with the full name of that type, e.g. "dataframe", "series", "dataset", "dataarray", etc.
 
-##### Common Parameters
-
-###### Abstract Parameters
-```python
-"""
-ax : Axes
-    The axes
-
-connection : psycopg.Connection
-    The connection
-
-df : pd.DataFrame
-    The dataframe
-
-fig : Figure
-    The figure
-
-gdf : gpd.GeoDataFrame
-    The geodataframe
-
-ser : pd.Series
-    The series
-"""
-```
-
-###### Argument Parameters
-```python
-"""
-arguments : Namespace
-    The arguments
-
-parser : ArgumentParser
-    The parser
-"""
-```
-
-###### ESA Lakes Parameters
-```python
-"""
-distinct_labels_ser : pd.Series[int]
-    The distinct labels series
-
-esa_lakes_counts_of_distinct_start_days_by_year_df : pd.DataFrame
-    The ESA Lakes counts of distinct start days by year
-    dataframe
-
-esa_lakes_counts_of_distinct_start_days_by_year_df_long : pd.DataFrame
-    The unpivoted ESA Lakes counts of distinct start days by
-    year dataframe
-
-esa_lakes_id : int
-    The ESA Lakes id
-
-esa_lakes_product_dir_path : Path
-    The ESA Lakes product directory path
-
-esa_lakes_product_ds : xr.Dataset
-    The ESA Lakes product dataset
-
-esa_lakes_product_nc_path : Path
-    The ESA Lakes product path
-
-esa_lakes_metadata_df : pd.DataFrame
-    The ESA Lakes metadata dataframe
-
-esa_lakes_static_lake_mask_ds : xr.Dataset
-    The ESA Lakes static lake mask dataset
-
-observations : list[pd.Series[float]]
-    The list of observations series
-
-observations_ser : pd.Series[float]
-    The observations series
-"""
-```
-
-###### IO Parameters 
-```python
-"""
-dir_path : Path
-    The directory path
-
-output_file_path : Path
-    The output file path
-"""
-```
-
 #### Returns
 Return descriptions should start with "A" or "An".
 
@@ -221,7 +132,6 @@ Scripts should be of the following template:
 """
 Filename:   <filename>
 Author:     <author>
-Modified:   <date>
 """
 
 # <imports>
