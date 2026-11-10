@@ -1,8 +1,10 @@
 """
 Filename:   wfsel.sources.esa_lakes.literals.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
 """
+
+ESA_LAKES_ID_LOWER_BOUND    = 1
+ESA_LAKES_ID_UPPER_BOUND    = 399999999
 
 ESA_LAKES_COUNT_OF_DISTINCT_START_DAYS_LOWER_BOUND  = 7
 ESA_LAKES_COUNT_OF_DISTINCT_START_DAYS_UPPER_BOUND  = 42

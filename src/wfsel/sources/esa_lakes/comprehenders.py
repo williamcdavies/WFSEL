@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.esa_lakes.comprehenders.py
 Author:     William Chuter-Davies
-Modified:   05/11/26
 """
 
 # Standard Library Imports
@@ -14,7 +13,7 @@ import pandas as pd
 from wfsel.sources.esa_lakes.getters import get_observations_ser
 
 
-def comprehend_observations(
+def comprehend_observations_ser_list(
     esa_lakes_id:               int,
     years:                      list[int],
     esa_lakes_product_dir_path: Path,
@@ -36,25 +35,25 @@ def comprehend_observations(
     list[pd.Series[float]]
         A list of observations series
     """
-    observations    = [
-                        get_observations_ser(
-                            esa_lakes_id,
-                            year,
-                            esa_lakes_product_dir_path,
-                        )
-                        for year
-                        in years
-                    ]
+    observations_ser_list   = [
+                                get_observations_ser(
+                                    esa_lakes_id,
+                                    year,
+                                    esa_lakes_product_dir_path,
+                                )
+                                for year
+                                in years
+                            ]
 
-    return observations
+    return observations_ser_list
 
 
-def comprehend_column_names(
+def comprehend_esa_lakes_column_name_list(
     esa_lakes_week_first:   int,
     esa_lakes_week_last:    int,
 ) -> list[str]:
     """
-    Comprehend a list of column names.
+    Comprehend a list of ESA Lakes column names.
 
     Parameters
     ----------
@@ -68,13 +67,13 @@ def comprehend_column_names(
     list[str]
         A list of column names
     """
-    column_names    = [
-                        f"w_{i}"
-                        for i
-                        in range(
-                            esa_lakes_week_first,
-                            esa_lakes_week_last + 1,
-                        )
-                    ]
+    column_name_list    = [
+                            f"w_{i}"
+                            for i
+                            in range(
+                                esa_lakes_week_first,
+                                esa_lakes_week_last + 1,
+                            )
+                        ]
 
-    return column_names
+    return column_name_list

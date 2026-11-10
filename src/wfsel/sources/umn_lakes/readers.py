@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.umn_lakes.readers.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
 """
 
 # Standard Library Imports
@@ -12,7 +11,7 @@ import pandas as pd
 
 
 def read_umn_lakes_product_tsv(
-    umn_lakes_product_csv_path: Path,
+    umn_lakes_product_tsv_path: Path,
 ) -> pd.DataFrame:
     """
     Read "S2MSI1C_MN_2017_2m0iA4.tsv" (or
@@ -20,7 +19,7 @@ def read_umn_lakes_product_tsv(
 
     Parameters
     ----------
-    umn_lakes_product_csv_path : Path
+    umn_lakes_product_tsv_path : Path
         The path to
         "S2MSI1C_MN_2017_2m0iA4.tsv" (or
         similar)
@@ -31,7 +30,7 @@ def read_umn_lakes_product_tsv(
         A dataframe
     """
     df  = pd.read_csv(
-            umn_lakes_product_csv_path,
+            umn_lakes_product_tsv_path,
             index_col   = [
                             "Field",
                             "Date",

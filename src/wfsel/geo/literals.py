@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.geo.literals.py
 Author:     William Chuter-Davies
-Modified:   27/10/26
 """
 
 TWO_LETTER_STATE_AND_POSSESSION_ABBREVIATIONS = {

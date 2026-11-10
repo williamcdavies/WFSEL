@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.esa_lakes.models.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
 """
 
 # Standard Library Imports
@@ -13,43 +12,21 @@ import pandas as pd
 
 @dataclass(kw_only = True)
 class ESALakesVariable:
-    """Encapsulate a ESALakesVariable."""
+    """Encapsulate an ESA Lakes variable."""
 
     var_id:     str
     long_name:  str
     units:      str
 
-ESA_LAKES_VARIABLES = {
-                        "lake_surface_water_temperature":
-                        ESALakesVariable(
-                            var_id      = "lake_surface_water_temperature",
-                            long_name   = "Lake Surface Skin Temperature",
-                            units       = "K",
-                        ),
-                    }
-
 
 @dataclass(kw_only = True)
 class Season:
-    """
-    Encapsulate a Season.
-
-    Raises
-    ------
-    ValueError
-        If the index of the observations series is not [1,
-        len(observations series)]
-    ValueError
-        If first is not in [1, len(observations series)]
-    ValueError
-        If last is not in [1, len(observations series)]
-    ValueError
-        If first is greater than last
-    """
+    """Encapsulate a lake observation season."""
 
     observations_ser:   pd.Series[float]
     first:              int
     last:               int
+
 
     def __post_init__(
         self,
@@ -91,6 +68,16 @@ class Season:
             raise ValueError(message)
 
         if self.first > self.last:
-            message =  f"expected first ({self.first}) to be less than or equal to last ({self.last})"
+            message = f"expected first ({self.first}) to be less than or equal to last ({self.last})"
 
             raise ValueError(message)
+
+
+ESA_LAKES_VARIABLES = {
+                        "lake_surface_water_temperature":
+                        ESALakesVariable(
+                            var_id      = "lake_surface_water_temperature",
+                            long_name   = "Lake Surface Skin Temperature",
+                            units       = "K",
+                        ),
+                    }

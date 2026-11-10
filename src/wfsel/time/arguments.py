@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.time.arguments.py
 Author:     William Chuter-Davies
-Modified:   10/11/26
 """
 
 # Standard Library Imports
@@ -22,5 +21,6 @@ def add_argument_date(
     """
     parser.add_argument(
         "date",
-        type = date.fromisoformat,
+        type    = date.fromisoformat,
+        metavar = "YYYY-MM-DD",
     )

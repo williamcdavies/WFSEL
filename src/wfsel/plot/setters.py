@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.plot.setters.py
 Author:     William Chuter-Davies
-Modified:   27/10/26
 """
 
 # Related Third-party Imports
@@ -11,8 +10,9 @@ from matplotlib.axes import Axes
 
 
 def set_ax_xlim_to_gdf_total_bounds(
-    ax:     Axes,
-    gdf:    gpd.GeoDataFrame,
+    ax:         Axes,
+    gdf:        gpd.GeoDataFrame,
+    padding:    float = 1,
 ) -> None:
     """
     Set xlim to the bounds of a geodataframe.
@@ -23,16 +23,21 @@ def set_ax_xlim_to_gdf_total_bounds(
         The axes
     gdf : gpd.GeoDataFrame
         The geodataframe
+    padding : float
+        The padding
     """
+    minx, _, maxx, _ = gdf.total_bounds
+
     ax.set_xlim(
-        gdf.total_bounds[0] - 1,    # minx
-        gdf.total_bounds[2] + 1,    # maxx
+        minx - padding,
+        maxx + padding,
     )
 
 
 def set_ax_ylim_to_gdf_total_bounds(
-    ax:     Axes,
-    gdf:    gpd.GeoDataFrame,
+    ax:         Axes,
+    gdf:        gpd.GeoDataFrame,
+    padding:    float = 1,
 ) -> None:
     """
     Set ylim to the bounds of a geodataframe.
@@ -43,8 +48,12 @@ def set_ax_ylim_to_gdf_total_bounds(
         The axes
     gdf : gpd.GeoDataFrame
         The geodataframe
+    padding : float
+        The padding
     """
+    _, miny, _, maxy = gdf.total_bounds
+
     ax.set_ylim(
-        gdf.total_bounds[1] - 1,    # miny
-        gdf.total_bounds[3] + 1,    # maxy
+        miny - padding,
+        maxy + padding,
     )

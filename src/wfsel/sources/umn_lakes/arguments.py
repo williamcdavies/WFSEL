@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.umn_lakes.arguments.py
 Author:     William Chuter-Davies
-Modified:   10/11/26
 """
 
 # Standard Library Imports
@@ -22,7 +21,8 @@ def add_argument_umn_lakes_id(
     """
     parser.add_argument(
         "umn_lakes_id",
-        type = str,
+        type    = str,
+        metavar = "INT",
     )
 
 
@@ -39,7 +39,8 @@ def add_argument_umn_lakes_product_tsv_path(
     """
     parser.add_argument(
         "umn_lakes_product_tsv_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -56,5 +57,6 @@ def add_argument_umn_lakes_product_dir_path(
     """
     parser.add_argument(
         "umn_lakes_product_dir_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )

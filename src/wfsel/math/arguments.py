@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.math.arguments.py
 Author:     William Chuter-Davies
-Modified:   27/10/26
 """
 
 # Standard Library Imports
@@ -24,7 +23,8 @@ def add_argument_scale(
     """
     parser.add_argument(
         "-s", "--scale",
-        type    = str,
-        choices = SCALES,
-        default = "linear",
+        type        = str,
+        required    = False,
+        choices     = SCALES,
+        default     = "linear",
     )

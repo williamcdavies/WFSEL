@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.esa_lakes.filters.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
 """
 
 # Related Third-party Imports

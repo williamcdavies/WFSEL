@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.utils.argparse_utils.py
 Author:     William Chuter-Davies
-Modified:   10/11/26
 """
 
 # Standard Library Imports
@@ -70,7 +69,7 @@ def build_subparser(
 
     Returns
     -------
-    ArgumentParsers
+    ArgumentParser
         A parser
     """
     subparser = action.add_parser(name)
@@ -183,67 +182,4 @@ def argument_is_file(
         raise ValueError(message)
 
     return True
-
-
-def argument_is_valid_esa_lakes_id(
-    argument_name:  str,
-    argument_value: int,
-) -> bool:
-    """
-    Validate an argument as an ESA Lakes id.
-
-    Parameters
-    ----------
-    argument_name : str
-        The argument name
-    argument_value : Path
-        The argument value
-
-    Returns
-    -------
-    bool
-        True if argument is a valid ESA Lakes id, False otherwise
-
-    Raises
-    ------
-    ValueError
-        If argument is not a valid ESA Lakes id
-    """
-    if not argument_value < 400000000: # noqa: PLR2004
-        message = f"expected argument {argument_name} to be a valid ESA Lakes id"
-
-        raise ValueError(message)
-
-    return True
-
-
-def argument_is_valid_umn_lakes_id(
-    argument_name:  str,
-    argument_value: str,
-) -> bool:
-    """
-    Validate an argument as an UMN Lakes id.
-
-    Parameters
-    ----------
-    argument_name : str
-        The argument name
-    argument_value : Path
-        The argument value
-
-    Returns
-    -------
-    bool
-        True if argument is a valid UMN Lakes id, False otherwise
-
-    Raises
-    ------
-    ValueError
-        If argument is not a valid UMN Lakes id
-    """
-    if len(argument_value) != 8: # noqa: PLR2004
-        message = f"expected argument {argument_name} to be a valid UMN Lakes id"
-
-        raise ValueError(message)
-
-    return True
+    

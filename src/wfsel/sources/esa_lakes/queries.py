@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.esa_lakes.queries.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
 """
 
 # Related Third-party Imports
@@ -48,7 +47,9 @@ def query_esa_lakes_distinct_start_days(
     pd.Series[int]
         A distinct labels series
     """
-    query = ESA_LAKES_DISTINCT_START_DAYS_QUERY.format(table = sql.Identifier(f"hms_smokes{year}"))
+    query   = ESA_LAKES_DISTINCT_START_DAYS_QUERY.format(
+                table = sql.Identifier(f"hms_smokes{year}"),
+            )
 
     with connection.cursor() as cursor:
         cursor.execute(
@@ -58,12 +59,13 @@ def query_esa_lakes_distinct_start_days(
             },
         )
 
-        distinct_start_days_ser = pd.Series(
-                                    [
-                                        record[0]
-                                        for record
-                                        in cursor.fetchall()
-                                    ],
-                                )
+        records                 = cursor.fetchall()
+        days                    = [
+                                    day
+                                    for
+                                    (day,)
+                                    in records
+                                ]
+        distinct_start_days_ser = pd.Series(days)
 
     return distinct_start_days_ser

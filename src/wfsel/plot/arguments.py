@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.plot.arguments.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
 """
 
 # Standard Library Imports
@@ -21,9 +20,10 @@ def add_argument_dimension(
     """
     parser.add_argument(
         "-d", "--dimension",
-        type    = int,
-        choices = [2, 3],
-        default = 2,
+        type        = int,
+        required    = False,
+        choices     = [2, 3],
+        default     = 2,
     )
 
 
@@ -40,8 +40,10 @@ def add_argument_elevation(
     """
     parser.add_argument(
         "-e", "--elevation",
-        type    = float,
-        default = 45,
+        type        = float,
+        required    = False,
+        metavar     = "FLOAT",
+        default     = 45,
     )
 
 
@@ -58,6 +60,8 @@ def add_argument_azimuth(
     """
     parser.add_argument(
         "-a", "--azimuth",
-        type    = float,
-        default = 45,
+        type        = float,
+        required    = False,
+        metavar     = "FLOAT",
+        default     = 45,
     )

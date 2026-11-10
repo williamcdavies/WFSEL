@@ -1,12 +1,11 @@
 """
 Filename:   wfsel.arguments.py
 Author:     William Chuter-Davies
-Modified:   10/11/26
 """
 
 # Standard Library Imports
-from argparse import ArgumentParser
-from pathlib  import Path
+from argparse   import ArgumentParser
+from pathlib    import Path
 
 
 def add_argument_force(
@@ -26,6 +25,23 @@ def add_argument_force(
     )
 
 
+def add_argument_verbose(
+    parser: ArgumentParser,
+) -> None:
+    """
+    Add a "verbose" argument to a parser.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        The parser
+    """
+    parser.add_argument(
+        "-v", "--verbose",
+        action = "store_true",
+    )
+
+
 def add_argument_output(
     parser: ArgumentParser,
 ) -> None:
@@ -41,4 +57,5 @@ def add_argument_output(
         "-o", "--output",
         type        = Path,
         required    = True,
+        metavar     = "PATH",
     )

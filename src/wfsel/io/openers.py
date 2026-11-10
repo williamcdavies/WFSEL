@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.io.openers.py
 Author:     William Chuter-Davies
-Modified:   29/10/26
 """
 
 # Standard Library Imports
@@ -9,30 +8,22 @@ from pathlib    import Path
 from typing     import TextIO
 
 
-def open_logstream(
-    dir_path: Path,
+def open_file_in_append(
+    file_path: Path,
 ) -> TextIO:
     """
-    Open a logstream.
+    Open a file in append mode.
 
     Parameters
     ----------
-    dir_path : Path
-        The directory path
+    file_path : Path
+        The file path
 
     Returns
     -------
     TextIO
-        A logstream
+        A file object
     """
-    dir_path.mkdir(
-        parents     = True,
-        exist_ok    = True,
-    )
+    file_object = file_path.open("a")
 
-    logstream   = Path.open(
-                    dir_path / "log.txt",
-                    "a",
-                )
-
-    return logstream
+    return file_object

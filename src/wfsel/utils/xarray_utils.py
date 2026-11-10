@@ -1,11 +1,11 @@
 """
 Filename:   wfsel.utils.xarray_utils.py
 Author:     William Chuter-Davies
-Modified:   27/10/26
 """
 
 # Related Third-party Imports
-import xarray as xr
+import pandas   as pd
+import xarray   as xr
 
 # Local Application/Library Specific Imports
 from wfsel.geo.models import GeographicBoundingBox
@@ -40,51 +40,51 @@ def build_geographic_bounding_box(
     GeographicBoundingBox
         A geographic bounding box
     """
-    lat_max = float(
-                ds["lat"]
-                .sel(
-                    lat     = lat_max,
-                    method  = "nearest",
-                ),
-            )
-    lat_min = float(
-                ds["lat"]
-                .sel(
-                    lat     = lat_min,
-                    method  = "nearest",
-                ),
-            )
-    lon_max = float(
-                ds["lon"]
-                .sel(
-                    lon     = lon_max,
-                    method  = "nearest",
-                ),
-            )
-    lon_min = float(
-                ds["lon"]
-                .sel(
-                    lon     = lon_min,
-                    method  = "nearest",
-                ),
-            )
+    nearest_lat_max = float(
+                        ds["lat"]
+                        .sel(
+                            lat     = lat_max,
+                            method  = "nearest",
+                        ),
+                    )
+    nearest_lat_min = float(
+                        ds["lat"]
+                        .sel(
+                            lat     = lat_min,
+                            method  = "nearest",
+                        ),
+                    )
+    nearest_lon_max = float(
+                        ds["lon"]
+                        .sel(
+                            lon     = lon_max,
+                            method  = "nearest",
+                        ),
+                    )
+    nearest_lon_min = float(
+                        ds["lon"]
+                        .sel(
+                            lon     = lon_min,
+                            method  = "nearest",
+                        ),
+                    )
 
     bbox    = GeographicBoundingBox(
-                lat_max = lat_max,
-                lat_min = lat_min,
-                lon_max = lon_max,
-                lon_min = lon_min,
+                lat_max = nearest_lat_max,
+                lat_min = nearest_lat_min,
+                lon_max = nearest_lon_max,
+                lon_min = nearest_lon_min,
             )
 
     return bbox
 
 
-def window(
-    ds:                      xr.Dataset,
-    geographic_bounding_box: GeographicBoundingBox,
+def clip_to_geographic_bounding_box(
+    ds:                         xr.Dataset,
+    geographic_bounding_box:    GeographicBoundingBox,
 ) -> xr.Dataset:
     """
-    Window a dataset by a geographic bounding box.
+    Clip a dataset to a geographic bounding box.
 
     Parameters
     ----------
@@ -98,18 +98,18 @@ def window(
     xr.Dataset
         A dataset
     """
-    window  = ds.sel(
-                lat = slice(
-                    geographic_bounding_box.lat_min,
-                    geographic_bounding_box.lat_max,
-                ),
-                lon = slice(
-                    geographic_bounding_box.lon_min,
-                    geographic_bounding_box.lon_max,
-                ),
-            )
+    clipped_ds  = ds.sel(
+                    lat = slice(
+                        geographic_bounding_box.lat_min,
+                        geographic_bounding_box.lat_max,
+                    ),
+                    lon = slice(
+                        geographic_bounding_box.lon_min,
+                        geographic_bounding_box.lon_max,
+                    ),
+                )
 
-    return window
+    return clipped_ds
 
 
 def compute_spatial_mean(
@@ -169,12 +169,12 @@ def compute_spatial_coverage(
     TypeError
         If the denominator mask is not of dtype bool
     """
-    if numerator_mask.dtype != bool:
+    if not pd.api.types.is_bool_dtype(numerator_mask):
         message = f"expected numerator mask to be of dtype bool: got {numerator_mask.dtype}"
 
         raise TypeError(message)
 
-    if denominator_mask.dtype != bool:
+    if not pd.api.types.is_bool_dtype(denominator_mask):
         message = f"expected denominator mask to be of dtype bool: got {denominator_mask.dtype}"
 
         raise TypeError(message)

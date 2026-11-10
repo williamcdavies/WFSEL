@@ -1,8 +1,10 @@
 """
 Filename:   wfsel.utils.geopandas_utils.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
 """
+
+# Standard Library Imports
+from typing import Any
 
 # Related Third-party Imports
 import geopandas as gpd
@@ -11,7 +13,7 @@ import geopandas as gpd
 def filter_gdf_by_values(
     gdf:            gpd.GeoDataFrame,
     column_name:    str,
-    values:         list[str],
+    values:         list[Any],
 ) -> gpd.GeoDataFrame:
     """
     Filter a geodataframe by a list of values.
@@ -22,7 +24,7 @@ def filter_gdf_by_values(
         The geodataframe
     column_name : str
         The column name
-    values : list[str]
+    values : list[Any]
         The list of values
 
     Returns
@@ -30,6 +32,6 @@ def filter_gdf_by_values(
     gpd.GeoDataFrame
         A geodataframe
     """
-    gdf = gdf[gdf[column_name].isin(values)]
+    filtered_gdf = gdf[gdf[column_name].isin(values)]
 
-    return gdf
+    return filtered_gdf

@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.hydro_lakes.models.py
 Author:     William Chuter-Davies
-Modified:   27/10/26
 """
 
 # Standard Library Imports
@@ -10,7 +9,7 @@ from dataclasses import dataclass
 
 @dataclass(kw_only = True)
 class HylakField:
-    """Encapsulate a HylakField."""
+    """Encapsulate a HydroLAKES field."""
 
     field_id:       str
     long_name:      str
@@ -20,6 +19,7 @@ class HylakField:
     display_scale:  float | None
     lower_bound:    float | None
     upper_bound:    float | None
+
 
 HYLAK_FIELDS    = {
                     "lake_area_m2":

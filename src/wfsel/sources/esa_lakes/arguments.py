@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.esa_lakes.arguments.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
 """
 
 # Standard Library Imports
@@ -22,7 +21,8 @@ def add_argument_esa_lakes_id(
     """
     parser.add_argument(
         "esa_lakes_id",
-        type = int,
+        type    = int,
+        metavar = "INT",
     )
 
 
@@ -39,7 +39,8 @@ def add_argument_esa_lakes_metadata_csv_path(
     """
     parser.add_argument(
         "esa_lakes_metadata_csv_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -56,7 +57,8 @@ def add_argument_esa_lakes_static_lake_mask_nc_path(
     """
     parser.add_argument(
         "esa_lakes_static_lake_mask_nc_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -73,7 +75,8 @@ def add_argument_esa_lakes_product_nc_path(
     """
     parser.add_argument(
         "esa_lakes_product_nc_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -90,7 +93,8 @@ def add_argument_esa_lakes_product_csv_path(
     """
     parser.add_argument(
         "esa_lakes_product_csv_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -107,7 +111,8 @@ def add_argument_esa_lakes_product_dir_path(
     """
     parser.add_argument(
         "esa_lakes_product_dir_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -125,7 +130,8 @@ def add_argument_esa_lakes_counts_of_distinct_start_days_by_year_csv_path(
     """
     parser.add_argument(
         "esa_lakes_counts_of_distinct_start_days_by_year_csv_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -142,7 +148,8 @@ def add_argument_esa_lakes_hylak_field_values_csv_path(
     """
     parser.add_argument(
         "esa_lakes_hylak_field_values_csv_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -160,7 +167,8 @@ def add_argument_esa_lakes_high_smoke_year_observations_anomaly_csv_path(
     """
     parser.add_argument(
         "esa_lakes_high_smoke_year_observations_anomaly_csv_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -178,7 +186,8 @@ def add_argument_esa_lakes_low_smoke_year_observations_anomaly_csv_path(
     """
     parser.add_argument(
         "esa_lakes_low_smoke_year_observations_anomaly_csv_path",
-        type = Path,
+        type    = Path,
+        metavar = "PATH",
     )
 
 
@@ -194,8 +203,11 @@ def add_argument_esa_lakes_week_first(
         The parser
     """
     parser.add_argument(
-        "esa_lakes_week_first",
-        type = int,
+        "-wf", "--esa-lakes-week-first",
+        type        = int,
+        required    = False,
+        metavar     = "INT",
+        default     = 1,
     )
 
 
@@ -211,6 +223,9 @@ def add_argument_esa_lakes_week_last(
         The parser
     """
     parser.add_argument(
-        "esa_lakes_week_last",
-        type = int,
+        "-wl", "--esa-lakes-week-last",
+        type        = int,
+        required    = False,
+        metavar     = "INT",
+        default     = 20,
     )

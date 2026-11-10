@@ -1,14 +1,9 @@
 """
 Filename:   wfsel.io.writers.py
 Author:     William Chuter-Davies
-Modified:   05/11/26
 """
 
 # Standard Library Imports
-from datetime   import (
-                    UTC,
-                    datetime,
-                )
 from pathlib    import Path
 from typing     import TextIO
 
@@ -35,11 +30,6 @@ def to_csv(
     output_file_path : Path
         The output file path
     """
-    output_file_path.parent.mkdir(
-        parents     = True,
-        exist_ok    = True,
-    )
-
     df.to_csv(output_file_path)
 
 
@@ -57,11 +47,6 @@ def to_svg(
     output_file_path : Path
         The output file path
     """
-    output_file_path.parent.mkdir(
-        parents     = True,
-        exist_ok    = True,
-    )
-
     fig.savefig(
         output_file_path,
         format      = "svg",
@@ -83,11 +68,6 @@ def to_png(
     output_file_path : Path
         The output file path
     """
-    output_file_path.parent.mkdir(
-        parents     = True,
-        exist_ok    = True,
-    )
-
     fig.savefig(
         output_file_path,
         format      = "png",
@@ -95,24 +75,19 @@ def to_png(
     )
 
 
-def to_logstream(
+def to_log(
     completed_process_log:  CompletedProcessLog,
-    logstream:              TextIO,
+    file_object:            TextIO,
 ) -> None:
     """
-    Write a completed process log to a logstream.
+    Write a completed process log to a file.
 
     Parameters
     ----------
     completed_process_log : CompletedProcessLog
         The completed process log
-    logstream : TextIO
-        The logstream
+    file_object : TextIO
+        The file object
     """
-    logstream.write(f"{datetime.now(tz = UTC).isoformat()          }\n")
-    logstream.write(f"args:       {completed_process_log.args      }\n")
-    logstream.write(f"returncode: {completed_process_log.returncode}\n")
-    logstream.write(f"stdout:     {completed_process_log.stdout    }\n")
-    logstream.write(f"stderr:     {completed_process_log.stderr    }\n")
-    logstream.write("\n")
-    logstream.flush()
+    file_object.write(f"{completed_process_log}\n")
+    file_object.flush()

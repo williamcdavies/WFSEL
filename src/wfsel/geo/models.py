@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.geo.models.py
 Author:     William Chuter-Davies
-Modified:   29/10/26
 """
 
 # Standard Library Imports
@@ -10,7 +9,7 @@ from dataclasses import dataclass
 
 @dataclass(kw_only = True)
 class GeographicBoundingBox:
-    """Encapsulate a GeographicBoundingBox."""
+    """Encapsulate a geographic bounding box."""
 
     lat_max:    float
     lat_min:    float

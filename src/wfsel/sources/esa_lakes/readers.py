@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.esa_lakes.readers.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
 """
 
 # Standard Library Imports

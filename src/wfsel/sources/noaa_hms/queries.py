@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.noaa_hms.queries.py
 Author:     William Chuter-Davies
-Modified:   10/11/26
 """
 
 # Related Third-party Imports
@@ -10,7 +9,7 @@ import psycopg
 
 from psycopg import sql
 
-HMS_SMOKES_RECORD_EXISTS_QUERY      = sql.SQL("""
+HMS_SMOKES_RECORD_EXISTS_QUERY  = sql.SQL("""
 SELECT EXISTS (
     SELECT
         1
@@ -19,12 +18,12 @@ SELECT EXISTS (
         AND h.start_day = %(start_day)s
 )
 """)
-DELETE_FROM_HMS_SMOKES_RECORD_QUERY = sql.SQL("""
+HMS_SMOKES_RECORD_DELETE_QUERY  = sql.SQL("""
 DELETE FROM hms_smokes
 WHERE start_year = %(start_year)s
     AND start_day = %(start_day)s
 """)
-INSERT_INTO_HMS_SMOKES_RECORD_QUERY = sql.SQL("""
+HMS_SMOKES_RECORD_INSERT_QUERY  = sql.SQL("""
 INSERT INTO hms_smokes
     (
         start_year,
@@ -81,12 +80,13 @@ def query_hms_smokes_record_exists(
             },
         )
 
-        boolean = cursor.fetchone()[0] # type: ignore[attr-defined]
+        record      = cursor.fetchone()
+        (exists,)   = record    # type: ignore[misc]
 
-        return boolean
+    return exists
 
 
-def query_delete_from_hms_smokes_record(
+def query_hms_smokes_record_delete(
     start_year: int,
     start_day:  int,
     connection: psycopg.Connection,
@@ -105,7 +105,7 @@ def query_delete_from_hms_smokes_record(
     """
     with connection.cursor() as cursor:
         cursor.execute(
-            DELETE_FROM_HMS_SMOKES_RECORD_QUERY,
+            HMS_SMOKES_RECORD_DELETE_QUERY,
             {
                 "start_year":   start_year,
                 "start_day":    start_day,
@@ -113,9 +113,9 @@ def query_delete_from_hms_smokes_record(
         )
 
 
-def query_insert_into_hms_smokes_record(
-    noaa_hms_gdf: gpd.GeoDataFrame,
-    connection:   psycopg.Connection,
+def query_hms_smokes_record_insert(
+    noaa_hms_gdf:   gpd.GeoDataFrame,
+    connection:     psycopg.Connection,
 ) -> None:
     """
     Query the insertion of an hms_smokes record.
@@ -123,7 +123,7 @@ def query_insert_into_hms_smokes_record(
     Parameters
     ----------
     noaa_hms_gdf : gpd.GeoDataFrame
-        The NOAA HMS geodataframe.
+        The NOAA HMS geodataframe
     connection : psycopg.Connection
         The connection
     """
@@ -144,6 +144,6 @@ def query_insert_into_hms_smokes_record(
 
     with connection.cursor() as cursor:
         cursor.executemany(
-            INSERT_INTO_HMS_SMOKES_RECORD_QUERY,
+            HMS_SMOKES_RECORD_INSERT_QUERY,
             records,
         )

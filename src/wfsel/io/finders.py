@@ -1,32 +1,42 @@
 """
 Filename:   wfsel.io.finders.py
 Author:     William Chuter-Davies
-Modified:   29/10/26
 """
 
 # Standard Library Imports
 from pathlib import Path
 
 
-def find_files_by_extension(
-    dir_path:   Path,
-    extension:  str,
+def find_file_paths_by_extension(
+    dir_path:       Path,
+    file_extension: str,
 ) -> list[Path]:
     """
-    Find files by extension.
+    Find file paths by extension.
 
     Parameters
     ----------
     dir_path : Path
         The directory path
-    extension : str
-        The extension
+    file_extension : str
+        The file extension
 
     Returns
     -------
     list[Path]
-        A list of paths
-    """
-    paths = sorted(dir_path.glob(f"**/*.{extension}"))
+        A sorted list of file paths
 
-    return paths
+    Raises
+    ------
+    FileNotFoundError
+        If the directory path does not exist
+    """
+    if not dir_path.exists():
+        message = f"directory not found: {dir_path}"
+
+        raise FileNotFoundError(message)
+    
+    file_paths          = dir_path.glob(f"**/*.{file_extension}")
+    sorted_file_paths   = sorted(file_paths)
+
+    return sorted_file_paths

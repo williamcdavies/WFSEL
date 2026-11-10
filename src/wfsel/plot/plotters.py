@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.plot.plotters.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
 """
 
 # Standard Library Imports
@@ -16,17 +15,17 @@ from matplotlib         import cm
 from matplotlib.axes    import Axes
 
 # Local Application/Library Specific Imports
-from wfsel.math.computers import compute_kde
+from wfsel.plot.computers import compute_kde
 
 
 def plot_kde_2d(
     ax: Axes,
     *,
-    ser:        pd.Series[float],
-    **kwargs:   Any,
+    ser: pd.Series,
+    **kwargs: Any,
 ) -> None:
     """
-    Plot a KDE of a series onto a 2D axes.
+    Plot a KDE onto a 2D axes.
 
     Parameters
     ----------
@@ -35,14 +34,11 @@ def plot_kde_2d(
     ser : pd.Series[float]
         The series
     """
-    ser = ser.dropna()
-    kde = compute_kde(ser)
-    xs  = ser.sort_values()
-    ys  = pd.Series(kde(xs))
+    x_values, y_values = compute_kde(ser)
 
     ax.plot(
-        xs,
-        ys,
+        x_values,
+        y_values,
         **kwargs,
     )
 
@@ -50,12 +46,12 @@ def plot_kde_2d(
 def plot_kde_3d(
     ax: Axes,
     *,
-    ser:        pd.Series[float],
-    zs:         int,
-    **kwargs:   Any,
+    ser:        pd.Series,
+    z_value:    int,
+    **kwargs: Any,
 ) -> None:
     """
-    Plot a KDE of a series onto a 3D axes.
+    Plot a KDE onto a 3D axes.
 
     Parameters
     ----------
@@ -63,18 +59,15 @@ def plot_kde_3d(
         The axes
     ser : pd.Series[float]
         The series
-    zs : int
-        The zs
+    z_value : int
+        The z-value
     """
-    ser = ser.dropna()
-    kde = compute_kde(ser)
-    xs  = ser.sort_values()
-    ys  = pd.Series(kde(xs))
+    x_values, y_values = compute_kde(ser)
 
     ax.plot(
-        xs,
-        ys,
-        zs      = zs,
+        x_values,
+        y_values,
+        zs      = z_value,
         zdir    = "y",
         **kwargs,
     )
@@ -83,10 +76,10 @@ def plot_kde_3d(
 def plot_colorbar(
     ax: Axes,
     *,
-    cmap:       mcolors.Colormap,
-    vmin:       int,
-    vmax:       int,
-    **kwargs:   Any,
+    cmap:   mcolors.Colormap,
+    vmin:   int,
+    vmax:   int,
+    **kwargs: Any,
 ) -> None:
     """
     Plot a colorbar onto an axes.
@@ -103,21 +96,22 @@ def plot_colorbar(
         The value maximum
     """
     norm    = mcolors.Normalize(
-        vmin    = vmin,
-        vmax    = vmax,
-    )
-    sm      = cm.ScalarMappable(
-        cmap    = cmap,
-        norm    = norm,
-    )
+                vmin    = vmin,
+                vmax    = vmax,
+            )
+    
+    scalar_mappable = cm.ScalarMappable(
+                        cmap    = cmap,
+                        norm    = norm,
+                    )
 
     plt.colorbar(
-        sm,
+        scalar_mappable,
         ax      = ax,
         ticks   = range(
-            vmin,
-            vmax + 1,
-            vmax - 1,
-        ),
+                    vmin,
+                    vmax + 1,
+                    vmax - 1,
+                ),
         **kwargs,
     )

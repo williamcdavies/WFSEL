@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.esa_lakes.callables.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
 """
 
 # Standard Library Imports
@@ -11,6 +10,10 @@ from collections.abc import Callable
 import pandas as pd
 
 # Local Application/Library Specific Imports
+from wfsel.literals                 import (
+                                        Direction,
+                                        Edge, 
+                                    )
 from wfsel.sources.esa_lakes.models import Season
 
 
@@ -33,13 +36,12 @@ def apply_season_function(
     Season | None
         A season, or None if the season function fails
     """
-    if (r := season_fn()) is None:
+    result = season_fn()
+
+    if result is None:
         return None
 
-    (
-        first,
-        last,
-    ) = r
+    first, last = result
 
     season  = Season(
                 observations_ser    = observations_ser,
@@ -55,7 +57,7 @@ def season_function_sliding_window(
     *,
     width:      int,
     trigger:    int,
-    edge:       str,
+    edge:       Edge,
 ) -> tuple[int, int] | None:
     """
     Season function: sliding window.
@@ -68,7 +70,7 @@ def season_function_sliding_window(
         The width
     trigger : int
         The trigger
-    edge : str
+    edge : Edge
         The edge
 
     Returns
@@ -76,12 +78,18 @@ def season_function_sliding_window(
     tuple[int, int] | None
         A (first, last) pair, or None if no valid pair was found
     """
-    def _compute_first(
+    def _compute_extent(
+        direction: Direction,
     ) -> int | None:
-        for i in range(
-            trigger - 1,
-            len(distinct_labels_ser),
-        ):
+        indices = range(
+                    trigger - 1,
+                    len(distinct_labels_ser),
+                )
+
+        if direction == "reverse":
+            indices = reversed(indices)
+
+        for i in indices:
             left    = distinct_labels_ser.iloc[i - (trigger - 1)]
             right   = distinct_labels_ser.iloc[i]
 
@@ -99,31 +107,8 @@ def season_function_sliding_window(
         return None
 
 
-    def _compute_last(
-    ) -> int | None:
-        for i in reversed(range(
-            trigger - 1,
-            len(distinct_labels_ser),
-        )):
-            left    = distinct_labels_ser.iloc[i - (trigger - 1)]
-            right   = distinct_labels_ser.iloc[i]
-
-            if right - left < width:
-                match edge:
-                    case "left":
-                        return left
-                    case "right":
-                        return right
-                    case _:
-                        message = f'expected edge to be in ["left", "right"]: got {edge}'
-
-                        raise ValueError(message)
-
-        return None
-
-
-    first   = _compute_first()
-    last    = _compute_last()
+    first   = _compute_extent("forward")
+    last    = _compute_extent("reverse")
 
     if (
             first is None
@@ -131,10 +116,7 @@ def season_function_sliding_window(
     ):
         return None
 
-    return (
-        first,
-        last,
-    )
+    return first, last
 
 
 def season_function_interest(
@@ -169,7 +151,4 @@ def season_function_interest(
     ):
         return None
 
-    return (
-        first,
-        last,
-    )
+    return first, last

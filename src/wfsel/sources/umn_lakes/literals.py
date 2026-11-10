@@ -1,8 +1,9 @@
 """
 Filename:   wfsel.sources.umn_lakes.literals.py
 Author:     William Chuter-Davies
-Modified:   06/11/26
 """
+
+UMN_LAKES_ID_LENGTH = 8
 
 UMN_LAKES_PRODUCT_GLOB_PATTERN_SD   = "**/*SD.tsv"
 UMN_LAKES_PRODUCT_GLOB_PATTERN_CL   = "**/*CL.tsv"

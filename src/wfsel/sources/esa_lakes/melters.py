@@ -1,7 +1,6 @@
 """
 Filename:   wfsel.sources.esa_lakes.melters.py
 Author:     William Chuter-Davies
-Modified:   03/11/26
 """
 
 # Related Third-party Imports
