@@ -30,7 +30,7 @@ from wfsel.exit_codes                   import (
                                             EXIT_FAILURE,
                                             EXIT_SUCCESS,
                                         )
-from wfsel.io.interfacers               import download
+from wfsel.io.client               import download
 from wfsel.sources.noaa_hms.literals    import (
                                             NOAA_HMS_DENSITY_NAME_TO_DENSITY_VALUE,
                                             NOAA_HMS_URL_TEMPLATE,

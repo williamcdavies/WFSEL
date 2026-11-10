@@ -35,8 +35,8 @@ from wfsel.sources.esa_lakes.callables      import (
                                             )
 from wfsel.sources.esa_lakes.comprehenders  import comprehend_observations
 from wfsel.sources.esa_lakes.computers      import (
-                                                compute_observations_mean,
-                                                compute_observations_std,
+                                                compute_observations_ser_list_mean,
+                                                compute_observations_ser_list_std,
                                                 compute_pre_season_mean,
                                             )
 from wfsel.sources.esa_lakes.filters        import (
@@ -244,8 +244,8 @@ def main(
                                                 low_smoke_years,
                                                 args.esa_lakes_product_dir_path,
                                             )
-    low_smoke_year_observations_mean_ser    = compute_observations_mean(low_smoke_year_observations)
-    low_smoke_year_observations_std_ser     = compute_observations_std(low_smoke_year_observations)
+    low_smoke_year_observations_mean_ser    = compute_observations_ser_list_mean(low_smoke_year_observations)
+    low_smoke_year_observations_std_ser     = compute_observations_ser_list_std(low_smoke_year_observations)
 
     with psycopg.connect("dbname=spatial") as connection:
         high_smoke_year_distinct_start_days_ser = query_esa_lakes_distinct_start_days(
