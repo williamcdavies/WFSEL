@@ -81,8 +81,21 @@ def add_argument_<argument_name>(
     )
 ```
 
-##### Optional Argument Functions
-Either `required = True` or `required = False` should be passed to the `add_argument` call within an optional argument function (those whose flags begin with `-`).
+`metavar = <metavar>` shoould be passed to the `add_argument` call for all arguments that accept a value.
+
+#### Calling Functions
+Function calls should not be nested, except in which the assignment of an intermediate variable would not aid debugging, e.g. `sys.exit(main())`.
+
+> Example
+>
+> ```python
+> # correct
+> file_paths          = dir_path.glob(f"**/*.{extension}")
+> sorted_file_paths   = sorted(file_paths)
+>
+> # incorrect
+> sorted_file_paths = sorted(dir_path.glob(f"**/*.{extension}"))
+> ```
 
 #### Reader Functions
 Reader functions should be of the following template:
@@ -228,3 +241,27 @@ int
     0 if program runs successfully, 1 otherwise
 """
 ```
+
+### Naming
+
+#### Suffixes
+Variable suffixes should be used for complex types or in such instances where the type of a variable cannot be inferred from context.
+
+> example
+> ```python
+> observations_ser        # pd.Series[float]          — type not clear from name alone
+> observations_ser_list   # list[pd.Series[float]]    — type not clear from name alone
+> years                   # list[int]                 — pluralisation is sufficient
+> ```
+
+The following suffixes are expected and should be used:
+
+| Suffix | Type                       |
+|:------ |:-------------------------- |
+| `df`   | `pandas.DataFrame`         |
+| `ser`  | `pandas.Series`            |
+| `gdf`  | `geopandas.GeoDataFrame`   |
+| `ds`   | `xarray.Dataset`           |
+| `da`   | `xarray.DataArray`         |
+| `ax`   | `matplotlib.Axes.Axes`     |
+| `fig`  | `matplotlib.Figure.Figure` |
