@@ -3,24 +3,26 @@ requires        = ["hatchling >= 1.26"]
 build-backend   = "hatchling.build"
 
 [project]
-name            = "WFSEL"
-version         = "1.0"
+name            = "wfsel"
+version         = "0.1.0"
+description     = "..."
+license         = {file = "LICENSE"}
 authors         = [{name = "William Chuter-Davies", email = "wchuterdavies@unr.edu"}]
 requires-python = ">= 3.14"
 dependencies    = [
-                    "geopandas",
-                    "matplotlib",
-                    "netcdf4",
-                    "numpy",
-                    "pandas",
-                    "psycopg",
-                    "python-dotenv",
-                    "rasterio",
-                    "requests",
-                    "scipy",
-                    "sqlalchemy",
-                    "tqdm",
-                    "xarray",
+                    "geopandas      >= 1.2.0",
+                    "matplotlib     >= 3.11.2",
+                    "netcdf4        >= 1.7.5",
+                    "numpy          >= 2.5.4",
+                    "pandas         >= 3.1.0",
+                    "psycopg        >= 3.3.6",
+                    "python-dotenv  >= 1.2.4",
+                    "rasterio       >= 1.5.2",
+                    "requests       >= 2.34.2",
+                    "scipy          >= 1.18.1",
+                    "sqlalchemy     >= 2.1.6",
+                    "tqdm           >= 4.70.1",
+                    "xarray         >= 2026.9.0",
                 ]
 
 [dependency-groups]
@@ -28,7 +30,13 @@ linting = [
             "ruff",
             "sqlfluff",
         ]
-all     = [{include-group = "linting"}]
+testing = [
+            "pytest"
+        ]
+all     = [
+            {include-group = "linting"},
+            {include-group = "testing"},
+        ]
 
 [tool.ruff]
 indent-width    = 4
@@ -41,12 +49,10 @@ ignore  = [
             "D104",
             "D205",
             "D400",
-            "E501",
             "I001",
             "INP001",
             "PD004",
             "RET504",
-            "S603",
             "TC001",
             "TC002",
             "TC003",
@@ -54,9 +60,6 @@ ignore  = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
-
-[tool.ruff.lint.pylint]
-max-args = 10
 
 [tool.sqlfluff.core]
 dialect         = "postgres"
