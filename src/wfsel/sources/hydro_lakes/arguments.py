@@ -22,4 +22,5 @@ def add_argument_hylak_field(
         "hylak_field",
         type    = str,
         metavar = "FIELD",
+        help    = "hylak_field",
     )

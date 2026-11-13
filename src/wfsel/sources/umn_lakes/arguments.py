@@ -23,6 +23,7 @@ def add_argument_umn_lakes_id(
         "umn_lakes_id",
         type    = str,
         metavar = "INT",
+        help    = "umn_lakes_id",
     )
 
 
@@ -41,6 +42,7 @@ def add_argument_umn_lakes_product_tsv_path(
         "umn_lakes_product_tsv_path",
         type    = Path,
         metavar = "PATH",
+        help    = "umn_lakes_product_tsv_path",
     )
 
 
@@ -59,4 +61,5 @@ def add_argument_umn_lakes_product_dir_path(
         "umn_lakes_product_dir_path",
         type    = Path,
         metavar = "PATH",
+        help    = "umn_lakes_product_dir_path",
     )

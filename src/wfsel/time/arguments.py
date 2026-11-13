@@ -23,4 +23,5 @@ def add_argument_date(
         "date",
         type    = date.fromisoformat,
         metavar = "YYYY-MM-DD",
+        help    = "date",
     )

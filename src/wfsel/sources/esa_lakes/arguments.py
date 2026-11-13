@@ -23,6 +23,7 @@ def add_argument_esa_lakes_id(
         "esa_lakes_id",
         type    = int,
         metavar = "INT",
+        help    = "esa_lakes_id",
     )
 
 
@@ -41,6 +42,7 @@ def add_argument_esa_lakes_metadata_csv_path(
         "esa_lakes_metadata_csv_path",
         type    = Path,
         metavar = "PATH",
+        help    = "esa_lakes_metadata_csv_path",
     )
 
 
@@ -59,6 +61,7 @@ def add_argument_esa_lakes_static_lake_mask_nc_path(
         "esa_lakes_static_lake_mask_nc_path",
         type    = Path,
         metavar = "PATH",
+        help    = "esa_lakes_static_lake_mask_nc_path",
     )
 
 
@@ -77,6 +80,7 @@ def add_argument_esa_lakes_product_nc_path(
         "esa_lakes_product_nc_path",
         type    = Path,
         metavar = "PATH",
+        help    = "esa_lakes_product_nc_path",
     )
 
 
@@ -95,6 +99,7 @@ def add_argument_esa_lakes_product_csv_path(
         "esa_lakes_product_csv_path",
         type    = Path,
         metavar = "PATH",
+        help    = "esa_lakes_product_csv_path",
     )
 
 
@@ -113,6 +118,7 @@ def add_argument_esa_lakes_product_dir_path(
         "esa_lakes_product_dir_path",
         type    = Path,
         metavar = "PATH",
+        help    = "esa_lakes_product_dir_path",
     )
 
 
@@ -132,6 +138,7 @@ def add_argument_esa_lakes_counts_of_distinct_start_days_by_year_csv_path(
         "esa_lakes_counts_of_distinct_start_days_by_year_csv_path",
         type    = Path,
         metavar = "PATH",
+        help    = "esa_lakes_counts_of_distinct_start_days_by_year_csv_path",
     )
 
 
@@ -150,6 +157,7 @@ def add_argument_esa_lakes_hylak_field_values_csv_path(
         "esa_lakes_hylak_field_values_csv_path",
         type    = Path,
         metavar = "PATH",
+        help    = "esa_lakes_hylak_field_values_csv_path",
     )
 
 
@@ -169,6 +177,7 @@ def add_argument_esa_lakes_high_smoke_year_observations_anomaly_csv_path(
         "esa_lakes_high_smoke_year_observations_anomaly_csv_path",
         type    = Path,
         metavar = "PATH",
+        help    = "esa_lakes_high_smoke_year_observations_anomaly_csv_path",
     )
 
 
@@ -188,6 +197,7 @@ def add_argument_esa_lakes_low_smoke_year_observations_anomaly_csv_path(
         "esa_lakes_low_smoke_year_observations_anomaly_csv_path",
         type    = Path,
         metavar = "PATH",
+        help    = "esa_lakes_low_smoke_year_observations_anomaly_csv_path",
     )
 
 
