@@ -3,8 +3,13 @@ Filename:   wfsel.sources.esa_lakes.validators.py
 Author:     William Chuter-Davies
 """
 
+# Standard Library Imports
+import logging
+
 # Local Application/Library Specific Imports
-from wfsel.sources.esa_lakes.literals import ESA_LAKES_ID_LOWER_BOUND, ESA_LAKES_ID_UPPER_BOUND
+from wfsel.sources.esa_lakes.literals import ESA_LAKES_ID_UPPER_BOUND
+
+logger = logging.getLogger(__name__)
 
 
 def argument_is_valid_esa_lakes_id(
@@ -25,18 +30,10 @@ def argument_is_valid_esa_lakes_id(
     -------
     bool
         True if argument is a valid ESA Lakes id, False otherwise
-
-    Raises
-    ------
-    ValueError
-        If argument is not a valid ESA Lakes id
     """
-    if (
-            argument_value > ESA_LAKES_ID_UPPER_BOUND
-        or  argument_value < ESA_LAKES_ID_LOWER_BOUND
-    ):
-        message = f"expected argument {argument_name} to be a valid ESA Lakes id"
+    if argument_value >= ESA_LAKES_ID_UPPER_BOUND:
+        logger.error("argument %s: expected a valid ESA Lakes id: got %s", argument_name, argument_value)
 
-        raise ValueError(message)
+        return False
 
     return True

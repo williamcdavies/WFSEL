@@ -4,6 +4,8 @@ Author:     William Chuter-Davies
 """
 
 # Standard Library Imports
+import logging
+
 from argparse           import (
                             _SubParsersAction,
                             ArgumentParser,
@@ -12,6 +14,8 @@ from argparse           import (
 from collections.abc    import Callable
 from pathlib            import Path
 from typing             import Any
+
+logger = logging.getLogger(__name__)
 
 
 def build_parser(
@@ -138,16 +142,11 @@ def argument_is_dir(
     -------
     bool
         True if argument is a directory, False otherwise
-
-    Raises
-    ------
-    ValueError
-        If argument is not a directory
     """
     if not argument_value.is_dir():
-        message = f"expected argument {argument_name} to be a directory"
+        logger.error("argument %s: expected a directory: got %s", argument_name, argument_value)
 
-        raise ValueError(message)
+        return False
 
     return True
 
@@ -170,15 +169,10 @@ def argument_is_file(
     -------
     bool
         True if argument is a file, False otherwise
-
-    Raises
-    ------
-    ValueError
-        If argument is not a file
     """
     if not argument_value.is_file():
-        message = f"expected argument {argument_name} to be a file"
+        logger.error("argument %s: expected a file: got %s", argument_name, argument_value)
 
-        raise ValueError(message)
+        return False
 
     return True

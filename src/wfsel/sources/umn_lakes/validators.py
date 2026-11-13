@@ -3,8 +3,13 @@ Filename:   wfsel.sources.umn_lakes.validators.py
 Author:     William Chuter-Davies
 """
 
+# Standard Library Imports
+import logging
+
 # Local Application/Library Specific Imports
 from wfsel.sources.umn_lakes.literals import UMN_LAKES_ID_LENGTH
+
+logger = logging.getLogger(__name__)
 
 
 def argument_is_valid_umn_lakes_id(
@@ -25,15 +30,10 @@ def argument_is_valid_umn_lakes_id(
     -------
     bool
         True if argument is a valid UMN Lakes id, False otherwise
-
-    Raises
-    ------
-    ValueError
-        If argument is not a valid UMN Lakes id
     """
     if len(argument_value) != UMN_LAKES_ID_LENGTH:
-        message = f"expected argument {argument_name} to be a valid UMN Lakes id"
+        logger.error("argument %s: expected a valid UMN Lakes id: got %s", argument_name, argument_value)
 
-        raise ValueError(message)
+        return False
 
     return True
