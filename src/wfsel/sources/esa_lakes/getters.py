@@ -135,11 +135,11 @@ def get_most_recent_year(
         If the unpivoted ESA Lakes counts of distinct start days by year
         dataframe contains zero rows labeled by the ESA Lakes id
     """
-    year = _get_year_by_sort(
-        esa_lakes_id,
-        esa_lakes_counts_of_distinct_start_days_by_year_df_long,
-        "recent",
-    )
+    year    = _get_year_by_sort(
+                esa_lakes_id,
+                esa_lakes_counts_of_distinct_start_days_by_year_df_long,
+                "recent",
+            )
 
     return year
 
@@ -170,11 +170,11 @@ def get_most_smoke_year(
         If the unpivoted ESA Lakes counts of distinct start days by year
         dataframe contains zero rows labeled by the ESA Lakes id
     """
-    year = _get_year_by_sort(
-        esa_lakes_id,
-        esa_lakes_counts_of_distinct_start_days_by_year_df_long,
-        "smoke",
-    )
+    year    = _get_year_by_sort(
+                esa_lakes_id,
+                esa_lakes_counts_of_distinct_start_days_by_year_df_long,
+                "smoke",
+            )
 
     return year
 
