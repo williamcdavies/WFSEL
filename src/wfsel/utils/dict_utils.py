@@ -23,8 +23,6 @@ def keys_are_similar(
                     for d
                     in dicts
                 ]
+    boolean     = len(set(frozensets)) == 1
 
-    if len(set(frozensets)) == 1:
-        return True
-
-    return False
+    return boolean
