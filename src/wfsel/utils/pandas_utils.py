@@ -3,6 +3,9 @@ Filename:   wfsel.utils.pandas_utils.py
 Author:     William Chuter-Davies
 """
 
+# Standard Library Imports
+from typing import Any
+
 # Related Third-party Imports
 import pandas as pd
 
@@ -42,29 +45,55 @@ def build_mask_from_index_ser(
     return mask
 
 
-def compute_quantiles(
-    ser:    pd.Series[float],
-    levels: list[float],
-) -> list[float]:
+def filter_df_by_index(
+    df:             pd.DataFrame,
+    index_name:     str,
+    index_values:   list[Any],
+) -> pd.DataFrame:
     """
-    Compute a list of quantiles from a series.
+    Filter a dataframe by a list of index values.
 
     Parameters
     ----------
-    ser : pd.Series[float]
-        The series
-    levels : list[float]
-        The list of levels
+    df : pd.DataFrame
+        The dataframe
+    index_name : str
+        The index name
+    index_values : list[Any]
+        The list of index values
 
     Returns
     -------
-    list[float]
-        A list of quantiles
+    pd.DataFrame
+        A dataframe
     """
-    quantiles   = [
-                    float(ser.quantile(level))
-                    for level
-                    in levels
-                ]
+    filtered_df = df[df.index.get_level_values(index_name).isin(index_values)]
 
-    return quantiles
+    return filtered_df
+
+
+def filter_df_by_values(
+    df:             pd.DataFrame,
+    column_name:    str,
+    column_values:  list[Any],
+) -> pd.DataFrame:
+    """
+    Filter a dataframe by a list of column values.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The dataframe
+    column_name : str
+        The column name
+    values : list[Any]
+        The list of column values
+
+    Returns
+    -------
+    pd.DataFrame
+        A dataframe
+    """
+    filtered_df = df[df[column_name].isin(column_values)]
+
+    return filtered_df
