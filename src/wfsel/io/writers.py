@@ -17,8 +17,9 @@ from wfsel.io.models import CompletedProcessLog
 
 
 def to_csv(
-    df:                 pd.DataFrame,
-    output_file_path:   Path,
+    df: pd.DataFrame,
+    *,
+    output_file_path: Path,
 ) -> None:
     """
     Write a dataframe to a .csv file.
@@ -34,8 +35,9 @@ def to_csv(
 
 
 def to_svg(
-    fig:                Figure,
-    output_file_path:   Path,
+    fig: Figure,
+    *,
+    output_file_path: Path,
 ) -> None:
     """
     Write a figure to a .svg file.
@@ -55,8 +57,9 @@ def to_svg(
 
 
 def to_png(
-    fig:                Figure,
-    output_file_path:   Path,
+    fig: Figure,
+    *,
+    output_file_path: Path,
 ) -> None:
     """
     Write a figure to a .png file.
@@ -76,8 +79,9 @@ def to_png(
 
 
 def to_log(
-    completed_process_log:  CompletedProcessLog,
-    file_object:            TextIO,
+    completed_process_log: CompletedProcessLog,
+    *,
+    file_object: TextIO,
 ) -> None:
     """
     Write a completed process log to a file.
