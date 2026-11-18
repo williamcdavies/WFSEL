@@ -30,18 +30,18 @@ from wfsel.exit_codes                   import (
                                             EXIT_FAILURE,
                                             EXIT_SUCCESS,
                                         )
-from wfsel.io.client               import download
+from wfsel.io.client                    import get
 from wfsel.sources.noaa_hms.literals    import (
                                             NOAA_HMS_DENSITY_NAME_TO_DENSITY_VALUE,
                                             NOAA_HMS_URL_TEMPLATE,
                                         )
 from wfsel.sources.noaa_hms.queries     import (
-                                            query_delete_from_hms_smokes_record,
+                                            query_hms_smokes_record_delete,
                                             query_hms_smokes_record_exists,
-                                            query_insert_into_hms_smokes_record,
+                                            query_hms_smokes_record_insert,
                                         )
 from wfsel.time.arguments               import add_argument_date
-from wfsel.time.literals                import DATE_FORMAT_YJ_HM
+from wfsel.time.literals                import DATE_FORMAT_YYYYJJJ_HHMM
 from wfsel.utils.argparse_utils         import (
                                             arguments_are_valid as _arguments_are_valid,
                                             build_parser        as _build_parser,
@@ -193,8 +193,8 @@ def build_hms_smokes_gdf(
                     },
         )
 
-    gdf["start_datetime"]   = pd.to_datetime(gdf["start_datetime"], format = DATE_FORMAT_YJ_HM)
-    gdf["end_datetime"]     = pd.to_datetime(gdf["end_datetime"], format = DATE_FORMAT_YJ_HM)
+    gdf["start_datetime"]   = pd.to_datetime(gdf["start_datetime"], format = DATE_FORMAT_YYYYJJJ_HHMM)
+    gdf["end_datetime"]     = pd.to_datetime(gdf["end_datetime"], format = DATE_FORMAT_YYYYJJJ_HHMM)
 
     gdf["start_year"]   = gdf["start_datetime"].dt.year
     gdf["start_day"]    = gdf["start_datetime"].dt.day_of_year
@@ -272,13 +272,13 @@ def load_hms_smokes_gdf(
             return
 
         if hms_smokes_record_exists and force:
-            query_delete_from_hms_smokes_record(
+            query_hms_smokes_record_delete(
                 start_year,
                 start_day,
                 connection,
             )
 
-        query_insert_into_hms_smokes_record(
+        query_hms_smokes_record_insert(
             noaa_hms_gdf,
             connection,
         )
@@ -306,14 +306,14 @@ def main(
 
     if args.subcommand == "inspect":
         noaa_hms_url    = build_noaa_hms_url(args.date)
-        data            = download(noaa_hms_url)
-        noaa_hms_gdf    = build_hms_smokes_gdf(data)
+        response        = get(noaa_hms_url)
+        noaa_hms_gdf    = build_hms_smokes_gdf(response.content)
 
         print_hms_smokes_gdf(noaa_hms_gdf)
     elif args.subcommand == "ingest":
         noaa_hms_url    = build_noaa_hms_url(args.date)
-        data            = download(noaa_hms_url)
-        noaa_hms_gdf    = build_hms_smokes_gdf(data)
+        response        = get(noaa_hms_url)
+        noaa_hms_gdf    = build_hms_smokes_gdf(response.content)
 
         load_hms_smokes_gdf(noaa_hms_gdf, force = args.force)
 

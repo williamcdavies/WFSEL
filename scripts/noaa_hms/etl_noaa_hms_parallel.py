@@ -36,8 +36,8 @@ from wfsel.exit_codes           import (
                                     EXIT_SUCCESS,
                                 )
 from wfsel.io.models            import CompletedProcessLog
-from wfsel.io.openers           import open_logstream
-from wfsel.io.writers           import to_logstream
+from wfsel.io.openers           import open_file_in_append
+from wfsel.io.writers           import to_log
 from wfsel.utils.argparse_utils import (
                                     arguments_are_valid as _arguments_are_valid,
                                     build_parser        as _build_parser,
@@ -322,7 +322,7 @@ def main(
 
     with (
         ThreadPoolExecutor(max_workers = MAX_WORKERS)   as executor,
-        open_logstream(args.output)                     as logstream,
+        open_file_in_append(args.output)                as logstream,
     ):
         futures = submit_etl_noaa_hmss(
                     executor,
@@ -336,9 +336,9 @@ def main(
         ):
             completed_process_log = future.result()
 
-            to_logstream(
+            to_log(
                 completed_process_log,
-                logstream,
+                file_object = logstream,
             )
 
     return EXIT_SUCCESS

@@ -28,7 +28,7 @@ from wfsel.sources.esa_lakes.arguments      import (
                                                 add_argument_esa_lakes_week_first,
                                                 add_argument_esa_lakes_week_last,
                                             )
-from wfsel.sources.esa_lakes.comprehenders  import comprehend_column_names
+from wfsel.sources.esa_lakes.comprehenders  import comprehend_esa_lakes_column_name_list
 from wfsel.sources.esa_lakes.readers        import (
                                                 read_esa_lakes_high_smoke_year_observations_anomaly_csv,
                                                 read_esa_lakes_low_smoke_year_observations_anomaly_csv,
@@ -200,7 +200,7 @@ def main(
                                                 args.esa_lakes_low_smoke_year_observations_anomaly_csv_path,
                                             )
 
-    column_names    = comprehend_column_names(
+    column_names    = comprehend_esa_lakes_column_name_list(
                         args.esa_lakes_week_first,
                         args.esa_lakes_week_last,
                     )
@@ -213,7 +213,7 @@ def main(
 
     to_csv(
         deltas_df,
-        args.output,
+        output_file_path = args.output,
     )
 
     return EXIT_SUCCESS

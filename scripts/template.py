@@ -4,6 +4,7 @@ Author:     William Chuter-Davies
 """
 
 # Standard Library Imports
+import logging
 import sys
 
 from argparse   import (
@@ -26,6 +27,11 @@ from wfsel.utils.argparse_utils import (
 
 PROG    = "template.py"
 DESC    = ""
+
+logging.basicConfig(
+    stream  = sys.stderr,
+    level   = logging.INFO,
+)
 
 
 # ----------------------------------------------------------------------

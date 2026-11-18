@@ -28,6 +28,10 @@ from wfsel.exit_codes                       import (
                                                 EXIT_SUCCESS,
                                             )
 from wfsel.io.writers                       import to_svg
+from wfsel.math.literals                    import (
+                                                DIMENSION_2,
+                                                DIMENSION_3,
+                                            )
 from wfsel.plot.arguments                   import (
                                                 add_argument_azimuth,
                                                 add_argument_dimension,
@@ -37,7 +41,7 @@ from wfsel.plot.literals                    import (
                                                 FONTSIZE_AXIS_LABEL,
                                                 FONTSIZE_TICK_LABEL,
                                                 FONTSIZE_TITLE,
-                                                GREY_M,
+                                                GREY_MEDIUM,
                                             )
 from wfsel.plot.plotters                    import (
                                                 plot_colorbar,
@@ -50,7 +54,7 @@ from wfsel.sources.esa_lakes.arguments      import (
                                                 add_argument_esa_lakes_week_first,
                                                 add_argument_esa_lakes_week_last,
                                             )
-from wfsel.sources.esa_lakes.comprehenders  import comprehend_column_names
+from wfsel.sources.esa_lakes.comprehenders  import comprehend_esa_lakes_column_name_list
 from wfsel.sources.esa_lakes.readers        import (
                                                 read_esa_lakes_high_smoke_year_observations_anomaly_csv,
                                                 read_esa_lakes_low_smoke_year_observations_anomaly_csv,
@@ -135,14 +139,14 @@ def arguments_are_valid(
     bool
         True if all arguments are valid, False otherwise
     """
-    if (    arguments.dimension == 3
+    if (    arguments.dimension == DIMENSION_3
         and arguments.elevation is None
     ):
         message = "expected argument elevation to be set if --dimension=3 is true"
 
         raise ValueError(message)
 
-    if (    arguments.dimension == 3
+    if (    arguments.dimension == DIMENSION_3
         and arguments.azimuth is None
     ):
         message = "expected argument azimuth to be set if --dimension=3 is true"
@@ -385,7 +389,7 @@ def plot_high_smoke_ax_3d(
         plot_kde_3d(
             high_smoke_ax,
             ser     = ser,
-            zs      = i,
+            z_value = i,
             color   = colour,
         )
 
@@ -414,7 +418,7 @@ def plot_low_smoke_ax_3d(
         plot_kde_3d(
             low_smoke_ax,
             ser     = ser,
-            zs      = i,
+            z_value = i,
             color   = colour,
         )
 
@@ -436,7 +440,7 @@ def decorate_high_smoke_ax_2d(
     high_smoke_ax.set_xlabel(HIGH_SMOKE_AX_XAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
     high_smoke_ax.set_ylabel(HIGH_SMOKE_AX_YAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
     high_smoke_ax.tick_params(labelsize = FONTSIZE_TICK_LABEL)
-    high_smoke_ax.set_facecolor(GREY_M)
+    high_smoke_ax.set_facecolor(GREY_MEDIUM)
 
 
 def decorate_low_smoke_ax_2d(
@@ -454,7 +458,7 @@ def decorate_low_smoke_ax_2d(
     low_smoke_ax.set_xlabel(LOW_SMOKE_AX_XAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
     low_smoke_ax.set_ylabel(LOW_SMOKE_AX_YAXIS_LABEL, fontsize = FONTSIZE_AXIS_LABEL)
     low_smoke_ax.tick_params(labelsize = FONTSIZE_TICK_LABEL)
-    low_smoke_ax.set_facecolor(GREY_M)
+    low_smoke_ax.set_facecolor(GREY_MEDIUM)
 
 
 def decorate_high_smoke_ax_3d(
@@ -492,9 +496,9 @@ def decorate_high_smoke_ax_3d(
     high_smoke_ax.tick_params(labelsize = FONTSIZE_TICK_LABEL)
     high_smoke_ax.view_init(elev = elevation, azim = azimuth)
 
-    high_smoke_ax.zaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
-    high_smoke_ax.xaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
-    high_smoke_ax.yaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
+    high_smoke_ax.zaxis.set_pane_color(GREY_MEDIUM) # type: ignore[name-defined]
+    high_smoke_ax.xaxis.set_pane_color(GREY_MEDIUM) # type: ignore[name-defined]
+    high_smoke_ax.yaxis.set_pane_color(GREY_MEDIUM) # type: ignore[name-defined]
 
 
 def decorate_low_smoke_ax_3d(
@@ -532,9 +536,9 @@ def decorate_low_smoke_ax_3d(
     low_smoke_ax.tick_params(labelsize = FONTSIZE_TICK_LABEL)
     low_smoke_ax.view_init(elev = elevation, azim = azimuth)
 
-    low_smoke_ax.zaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
-    low_smoke_ax.xaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
-    low_smoke_ax.yaxis.set_pane_color(GREY_M)    # type: ignore[name-defined]
+    low_smoke_ax.zaxis.set_pane_color(GREY_MEDIUM)  # type: ignore[name-defined]
+    low_smoke_ax.xaxis.set_pane_color(GREY_MEDIUM)  # type: ignore[name-defined]
+    low_smoke_ax.yaxis.set_pane_color(GREY_MEDIUM)  # type: ignore[name-defined]
 
 
 # ----------------------------------------------------------------------
@@ -562,12 +566,12 @@ def main(
                                                 args.esa_lakes_low_smoke_year_observations_anomaly_csv_path,
                                             )
 
-    column_names    = comprehend_column_names(
+    column_names    = comprehend_esa_lakes_column_name_list(
                         args.esa_lakes_week_first,
                         args.esa_lakes_week_last,
                     )
 
-    if args.dimension == 2:
+    if args.dimension == DIMENSION_2:
         fig = build_figure_2d(
                 high_smoke_year_observations_anomaly_df,
                 low_smoke_year_observations_anomaly_df,
@@ -584,7 +588,7 @@ def main(
 
     to_svg(
         fig,
-        args.output,
+        output_file_path = args.output,
     )
 
     return EXIT_SUCCESS

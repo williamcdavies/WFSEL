@@ -28,10 +28,10 @@ from wfsel.exit_codes                   import (
                                             EXIT_FAILURE,
                                             EXIT_SUCCESS,
                                         )
-from wfsel.io.finders                   import find_files_by_extension
+from wfsel.io.finders                   import find_file_paths_by_extension
 from wfsel.io.models                    import CompletedProcessLog
-from wfsel.io.openers                   import open_logstream
-from wfsel.io.writers                   import to_logstream
+from wfsel.io.openers                   import open_file_in_append
+from wfsel.io.writers                   import to_log
 from wfsel.sources.esa_lakes.arguments  import (
                                             add_argument_esa_lakes_product_dir_path,
                                             add_argument_esa_lakes_metadata_csv_path,
@@ -338,7 +338,7 @@ def main(
     if not arguments_are_valid(args):
         return EXIT_FAILURE
 
-    product_nc_paths    = find_files_by_extension(
+    product_nc_paths    = find_file_paths_by_extension(
                             args.esa_lakes_product_dir_path,
                             "nc",
                         )
@@ -349,7 +349,7 @@ def main(
 
     with (
         ThreadPoolExecutor(max_workers = MAX_WORKERS)   as executor,
-        open_logstream(args.output)                     as logstream,
+        open_file_in_append(args.output)                as logstream,
     ):
         futures = submit_build_esa_lakes_product_csvs(
                     executor,
@@ -365,9 +365,9 @@ def main(
         ):
             completed_process_log = future.result()
 
-            to_logstream(
+            to_log(
                 completed_process_log,
-                logstream,
+                file_object = logstream,
             )
 
     return EXIT_SUCCESS

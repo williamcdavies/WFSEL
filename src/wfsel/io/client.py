@@ -23,7 +23,10 @@ def get(
     requests.Response
         The response
     """
-    response = requests.get(url, timeout = 30)
+    response = requests.get(
+                url,
+                timeout = 30,
+            )
 
     response.raise_for_status()
 

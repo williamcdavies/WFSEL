@@ -36,7 +36,6 @@ def find_file_paths_by_extension(
 
         raise FileNotFoundError(message)
 
-    file_paths      = dir_path.glob(f"**/*.{file_extension}")
-    file_paths_list = list(file_paths)
+    file_paths = list(dir_path.glob(f"**/*.{file_extension}"))
 
-    return file_paths_list
+    return file_paths

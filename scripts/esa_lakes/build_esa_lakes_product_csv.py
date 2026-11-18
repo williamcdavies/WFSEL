@@ -37,9 +37,9 @@ from wfsel.utils.argparse_utils         import (
                                         )
 from wfsel.utils.xarray_utils           import (
                                             build_geographic_bounding_box,
+                                            clip_to_geographic_bounding_box,
                                             compute_spatial_coverage,
                                             compute_spatial_mean,
-                                            window,
                                         )
 
 PROG    = "build_esa_lakes_product_csv.py"
@@ -163,8 +163,8 @@ def build_esa_lakes_product_row(
                 lon_min = lon_min,  # type: ignore[assignment]
             )
 
-    static_lake_mask_ds_window  = window(esa_lakes_static_lake_mask_ds, bbox)
-    product_ds_window           = window(esa_lakes_product_ds, bbox)
+    static_lake_mask_ds_window  = clip_to_geographic_bounding_box(esa_lakes_static_lake_mask_ds, bbox)
+    product_ds_window           = clip_to_geographic_bounding_box(esa_lakes_product_ds, bbox)
 
     lake_mask           = static_lake_mask_ds_window["CCI_lakeid"] == esa_lakes_id
     lake_ice_cover_mask = product_ds_window["lake_cover_class"]  == LAKE_COVER_CLASS_ICE
@@ -266,7 +266,7 @@ def main(
 
         to_csv(
             product_df,
-            arguments.output,
+            output_file_path = arguments.output,
         )
 
     return EXIT_SUCCESS

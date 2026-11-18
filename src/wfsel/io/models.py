@@ -30,7 +30,11 @@ class CompletedProcessLog:
         str
             A string representation of the completed process log
         """
-        timestamp = datetime.now(tz = UTC).isoformat()
+        timestamp   = (
+                        datetime
+                        .now(tz = UTC)
+                        .isoformat()
+                    )
 
         return (
             f"{timestamp}\n"

@@ -31,12 +31,7 @@ def read_umn_lakes_product_tsv(
     """
     df  = pd.read_csv(
             umn_lakes_product_tsv_path,
-            index_col   = [
-                            "Field",
-                            "Date",
-                            "unmlknum",
-                        ],
-            delimiter   = "\t",
+            delimiter = "\t",
         )
 
     return df
